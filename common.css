@@ -1,0 +1,96 @@
+/* Common Stylesheet for Forge of Olympus */
+
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Eczar', serif;
+    background-color: #1a1a1a; /* Dark background */
+    color: #f5f5f5; /* Light text */
+    line-height: 1.6;
+    margin: 0;
+    text-align: center;
+}
+
+/* Link Styling */
+a {
+    color: #ffcc33; /* Gold */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: crimson;
+}
+
+/* Buttons */
+button {
+    background: linear-gradient(45deg, crimson, #ffcc33);
+    border: none;
+    color: #f5f5f5;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.05);
+    background: linear-gradient(45deg, #ffcc33, crimson);
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+    color: #ffcc33;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Ensure the list items are centered correctly */
+ul {
+    list-style-position: inside; /* Ensures bullets are inside the content area */
+    text-align: center; /* Centers the list items themselves */
+    padding-left: 0; /* Removes default padding */
+    margin-left: 0; /* Removes default left margin */
+}
+
+ul li {
+    display: inline-block; /* Makes each list item inline so they align with the text */
+    margin-bottom: 10px; /* Optional: Adds some space between the items */
+}
+
+/* Containers */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #111;
+    color: #888;
+    font-size: 14px;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none;
+}
+.text-center {
+    text-align: center;
+}
+.mt-20 {
+    margin-top: 20px;
+}
+.mb-20 {
+    margin-bottom: 20px;
+}

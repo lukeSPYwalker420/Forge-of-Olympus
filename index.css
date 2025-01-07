@@ -1,0 +1,297 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Eczar', serif;
+    line-height: 1.6;
+    background-color: #f7f7f7; /* Soft background color for contrast */
+}
+
+#company-name {
+    font-size: 4rem; /* Large font size for prominence */
+    font-weight: 700; /* Bold */
+    font-family: Eczar, serif; /* Use Eczar font */
+    color: #ffcc33; /* Gold color to match theme */
+    text-transform: uppercase; /* All caps for impact */
+    letter-spacing: 5px; /* Spaced out letters for grandeur */
+    text-align: center; /* Center alignment */
+    margin-top: 30px; /* Add space at the top */
+    margin-bottom: 20px; /* Space below the heading */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Subtle shadow for depth */
+    border-bottom: 2px solid crimson; /* Underline with theme color */
+    padding-bottom: 10px; /* Space between text and underline */
+    width: fit-content; /* Shrinks to fit content */
+    margin-inline: auto; /* Centers the heading horizontally */
+}
+
+/* Hero Section */
+.hero-section {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Align content to the bottom */
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: url('images/hero-bg.jpg') no-repeat center center/cover;
+    border-bottom: 5px solid #8b0000; /* Crimson */
+}
+
+/* Hero Content */
+.hero-content {
+    position: absolute; /* Keep content above the background */
+    bottom: 20px; /* Align to bottom of the section */
+    left: 50%; /* Horizontally center content */
+    transform: translateX(-50%); /* Center the content */
+    max-width: 100%;
+    margin-bottom: 20px; /* Add space between the content and the bottom */
+    padding: 20px;
+    color: white;
+    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.8); /* Solid shadow with no blur */
+    z-index: 2;
+    font-family: Eczar, serif; /* Use Eczar font */
+    font-size: 2rem; /* Large font size */
+    text-align: center; /* Center the text */
+}
+
+/* Hero Text */
+.hero-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: crimson;
+    text-align: center;
+    padding: 20px;
+    z-index: 2; /* Ensures the text is above the background */
+    font-family: Eczar, serif; /* Use Eczar font */
+    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.8); /* Solid shadow with no blur */
+}
+
+/* Hero Button */
+.hero-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, crimson, #ffcc33);
+    border: none;
+    color: #fff;
+    font-family: Eczar, serif;
+    font-size: 1.2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+    z-index: 2;
+    text-transform: uppercase;
+}
+
+.hero-button:hover {
+    transform: scale(1.05);
+    background: linear-gradient(45deg, #ffcc33, crimson);
+}
+
+/* CTA Button */
+.cta-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-family: Eczar, serif; /* Use Eczar font */
+    font-weight: bold; /* Bold text */
+    text-align: center;
+    color: #fff; /* Text color */
+    background-color: #8b0000; /* Button background color */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s; /* Add smooth transition for hover */
+    text-transform: uppercase; /* Uppercase text for style */
+    border: 2px solid #8b0000; /* Add border to keep consistent button surround */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Slight shadow for depth */
+}
+
+.cta-button:hover {
+    background-color: #a40000; /* Change background color on hover */
+    transform: scale(1.05); /* Slight scaling effect */
+}
+
+/* Overlay */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Darker overlay for more contrast */
+    z-index: 1; /* Put this behind the text */
+}
+
+/* Features Section */
+.features {
+    background-color: #f0f0f0; /* Light grey background for section contrast */
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.features h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #8b0000; /* Crimson */
+    margin-bottom: 20px;
+}
+
+.features ul {
+    list-style-type: none;
+}
+
+.features li {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #333; /* Dark text for better readability */
+}
+
+/* Testimonials Section */
+.testimonials {
+    background-color: #e6e6e6; /* Light grey background for section contrast */
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.testimonials h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #8b0000;
+    margin-bottom: 20px;
+}
+
+.testimonials blockquote {
+    font-size: 1.2rem;
+    margin: 20px auto;
+    color: #555;
+    font-style: italic;
+    max-width: 800px;
+}
+
+.testimonials cite {
+    display: block;
+    margin-top: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Pricing Section */
+.pricing {
+    padding: 60px 20px;
+    background-color: #f0f0f0;
+    text-align: center;
+}
+
+.pricing h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #8b0000;
+    margin-bottom: 20px;
+}
+
+.pricing-options {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.plan {
+    background-color: #fff;
+    border: 2px solid #8b0000;
+    border-radius: 10px;
+    padding: 30px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.plan h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #8b0000;
+    margin-bottom: 20px;
+}
+
+.plan p {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.plan .premium {
+    background-color: #ffcc33; /* Highlight premium plan */
+}
+
+.plan p.price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #8b0000;
+}
+
+/* FAQ Section */
+.faq {
+    padding: 60px 20px;
+    background-color: #e6e6e6;
+}
+
+.faq h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #8b0000;
+    margin-bottom: 20px;
+}
+
+.faq-item {
+    margin-bottom: 20px;
+}
+
+.faq-item h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #8b0000;
+    margin-bottom: 10px;
+}
+
+.faq-item p {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+/* Footer */
+.footer {
+    background-color: #8b0000;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+.footer p {
+    margin-bottom: 10px;
+}
+
+.footer-links {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.footer-links li {
+    font-size: 1rem;
+}
+
+.footer-links a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}

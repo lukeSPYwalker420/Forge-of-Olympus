@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Quiz</title>
+    <!-- Link to your external CSS file -->
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="quiz.css">
+</head>
+<body>
+    <h1>Quiz</h1>
+    
+    <!-- Container for the questions -->
+    <div class="question-container" id="question-container">
+        <h2 class="question">What are your primary fitness goals?</h2> <!-- First Question -->
+        <div class="goal-buttons">
+            <button class="goal-btn" data-goal="weight-loss" onclick="nextQuestion('weight-loss')">
+                <img src="images/weight-loss.jpg" alt="Weight Loss">
+                <span>Weight Loss</span>
+            </button>
+            <button class="goal-btn" data-goal="muscle-gain" onclick="nextQuestion('muscle-gain')">
+                <img src="images/muscle-gain.jpg" alt="Muscle Gain">
+                <span>Muscle Gain</span>
+            </button>
+            <button class="goal-btn" data-goal="improved-endurance" onclick="nextQuestion('improved-endurance')">
+                <img src="images/improved-endurance.jpg" alt="Improved Endurance">
+                <span>Improved Endurance</span>
+            </button>
+            <button class="goal-btn" data-goal="flexibility" onclick="nextQuestion('flexibility')">
+                <img src="images/flexibility.jpg" alt="Flexibility">
+                <span>Flexibility</span>
+            </button>
+            <button class="goal-btn" data-goal="overall-health" onclick="nextQuestion('overall-health')">
+                <img src="images/overall-health.jpg" alt="Overall Health">
+                <span>Overall Health</span>
+            </button>
+            <button class="goal-btn" data-goal="improved-mental-health" onclick="nextQuestion('improved-mental-health')">
+                <img src="images/improved-mental-health.jpg" alt="Improved Mental Health">
+                <span>Improved Mental Health</span>
+            </button>
+            <button class="goal-btn" data-goal="injury-rehabilitation" onclick="nextQuestion('injury-rehabilitation')">
+                <img src="images/injury-rehabilitation.jpg" alt="Injury Rehabilitation">
+                <span>Injury Rehabilitation</span>
+            </button>
+            <button class="goal-btn" data-goal="athletic-performance" onclick="nextQuestion('athletic-performance')">
+                <img src="images/athletic-performance.jpg" alt="Athletic Performance">
+                <span>Athletic Performance</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="result-container" class="result" style="display: none;">
+    <h3 class="result-heading">Thank you for your responses!</h3>
+    <pre id="result-summary" class="result-text"></pre>
+    <div class="button-container">
+        <button id="submit-btn" onclick="submitAnswers()" style="display: none;">Submit</button>
+    </div>
+</div>
+
+    <!-- Link to the external JavaScript file -->
+    <script src="GetStartedQuiz.js"></script>
+</body>
+</html>

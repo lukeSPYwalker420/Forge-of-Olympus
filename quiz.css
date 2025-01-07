@@ -1,0 +1,190 @@
+/* General Reset and existing styles... */
+
+.question-container {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Ensures vertical alignment */
+    gap: 20px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Question styling - span across the grid */
+.question-container .question {
+    grid-column: span 1; /* Ensure it occupies a full row */
+    text-align: center;
+    font-family: 'Eczar', serif;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #dfce3a;
+}
+
+/* Goal buttons container */
+.goal-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 items per row */
+    gap: 20px; /* Space between items */
+    width: 100%;
+    margin-top: 20px;
+    justify-items: center; /* Ensure grid items are centered */
+}
+
+/* Individual goal button styling */
+.goal-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background-color: transparent;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, border 0.3s ease;
+    width: 100%; /* Full width of the column */    
+    height: 200px; /* Adjust as needed */
+    text-align: center;
+}
+
+/* Image inside the button */
+.goal-btn img {
+    width: 100px; /* Adjust to the size of the images */
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Text under each button */
+.goal-btn span {
+    margin-top: 10px;
+    font-family: 'Eczar', serif;
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Add a box-shadow on hover for the buttons */
+.goal-btn:hover {
+    transform: scale(1.05);
+    border-color: crimson;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Result Container as a 4x4 Grid */
+#result-container {
+    display: grid;                     /* Enable grid layout */
+    grid-template-columns: repeat(4, 1fr); /* 4 columns of equal width */
+    grid-template-rows: auto;          /* Automatically adjust row height based on content */
+    gap: 20px;                          /* Space between items */
+    max-width: 1200px;                  /* Ensure max-width for large screens */
+    margin: 0 auto;                     /* Center the container */
+    padding: 20px;                      /* Padding inside the container */
+}
+
+/* Box Styling for each grid cell (Content and Text) */
+.grid-box {
+    display: flex;                     /* Use flexbox for each box */
+    flex-direction: column;            /* Stack content vertically */
+    justify-content: space-between;    /* Space out content and text */
+    padding: 20px;                     /* Padding inside each box */
+    background: linear-gradient(45deg, #333, #444); /* Soft gradient background */
+    border-radius: 10px;               /* Round corners for the box */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for the box */
+}
+
+/* Headings inside each box */
+.grid-box h4 {
+    color: #ffcc33;                     /* Gold color, matches theme */
+    text-transform: uppercase;          /* Uppercase text */
+    letter-spacing: 2px;                /* Spacing between letters */
+    font-size: 20px;                    /* Slightly smaller font size for box titles */
+    margin-bottom: 10px;                 /* Space below the heading */
+    font-weight: bold;                  /* Bold to make the heading stand out */
+    font-family: 'Eczar', serif;        /* Match the font used in common.css */
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;  /* Center the button horizontally */
+    align-items: center;      /* Ensure vertical alignment */
+    width: 100%;              /* Ensure the container takes full width */
+    margin-top: 20px;         /* Space between results and button */
+}
+
+#submit-btn {
+    background: linear-gradient(45deg, #ffcc33, crimson); /* Keep the gradient button style */
+    border: none;
+    color: #f5f5f5;
+    padding: 12px 30px;
+    font-size: 18px; /* Slightly larger font size for the button */
+    border-radius: 5px; /* Round the corners */
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for button */
+}
+
+#submit-btn:hover {
+    transform: scale(1.05); /* Slight hover effect */
+    background: linear-gradient(45deg, crimson, #ffcc33); /* Inverse gradient on hover */
+}
+
+/* Optional: Smooth Scroll for a Better Experience */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Results Styling */
+.result-heading {
+    color: #ffcc33; /* Gold, matches your theme color */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 26px; /* Slightly larger heading for emphasis */
+    margin-bottom: 20px; /* Space below the heading */
+    font-weight: bold; /* Make the heading bold */
+    font-family: 'Eczar', serif; /* Keep the font consistent with your page */
+}
+
+.result-text {
+    font-size: 18px;  /* Appropriate size for readability */
+    color: #f5f5f5;   /* Light text color */
+    line-height: 1.8;  /* Improved line height for readability */
+    text-align: left;  /* Align text to the left */
+    margin-bottom: 20px; /* Space below the results text */
+    white-space: pre-wrap; /* Ensure line breaks are respected */
+    font-family: 'Arial', sans-serif; /* Modern, clean sans-serif font for body text */
+    background: linear-gradient(45deg, #333, #444); /* Subtle gradient background */
+    border-radius: 10px; /* Rounded corners for a more modern look */
+    padding: 20px; /* Adequate padding to give space around the text */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow to make the box stand out */
+}
+
+.result-text code {
+    background-color: #333; /* Dark background for code */
+    color: #ffcc33; /* Gold color for code */
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Adjust button styling for mobile responsiveness */
+@media (max-width: 768px) {
+    #submit-btn {
+        padding: 10px 25px;  /* Adjust button size */
+        font-size: 16px;      /* Make text smaller on mobile */
+    }
+
+    .goal-buttons {
+        grid-template-columns: 1fr 1fr; /* 2 items per row on smaller screens */
+    }
+
+    .goal-btn {
+        height: 180px; /* Adjust height on mobile */
+        max-width: 100%; /* Ensure full width on smaller screens */
+    }
+
+    .goal-btn img {
+        width: 100px; /*Slightly larger for better visibility */
+        height: 100px;
+    }
+}
