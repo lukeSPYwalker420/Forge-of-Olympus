@@ -1,3 +1,13 @@
+let sessionId = localStorage.getItem('sessionId');
+if (!sessionId) {
+    // Generate and store a temporary session ID if it doesn't exist
+    sessionId = uuidv4();
+    localStorage.setItem('sessionId', sessionId);
+}
+
+// Initialize data storage for the quiz answers
+let answers = [];
+
 const questions = [
     {
         question: "What are your primary fitness goals?",
@@ -149,19 +159,13 @@ const questions = [
     }
 ];
 
-// Your questions array remains unchanged
-
 let currentQuestionIndex = 0;
 let currentFollowUp = null;
-const answers = [];
 
 function renderQuestion() {
     const questionContainer = document.getElementById('question-container');
-
-    // Get the current question data
     const questionData = currentFollowUp || questions[currentQuestionIndex];
 
-    // Check if there are no more questions to show
     if (!questionData) {
         console.error("No question data available!");
         return;
@@ -178,41 +182,24 @@ function renderQuestion() {
                 <h2 class="question">${questionData.question}</h2>
                 <div class="goal-buttons">
                     ${questionData.choices
-                        .map(
-                            (choice) =>
-                                `<button class="goal-btn" onclick="handleAnswer('${choice}')">${choice}</button>`
-                        )
+                        .map(choice => `<button class="goal-btn" onclick="handleAnswer('${choice}')">${choice}</button>`)
                         .join("")}
                 </div>
             </div>
         `;
 
-        // Reapply the fade-in class
+        // Reapply fade-in
         questionContainer.classList.remove('fade-out');
         questionContainer.classList.add('fade-in');
-
-        // Center the content
-        const questionContent = questionContainer.querySelector('.question-content');
-        questionContent.style.display = 'flex';
-        questionContent.style.flexDirection = 'column';
-        questionContent.style.alignItems = 'center';
-
-        // Style buttons in grid
-        const goalButtonsContainer = questionContent.querySelector('.goal-buttons');
-        goalButtonsContainer.style.display = 'grid';
-        goalButtonsContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
-        goalButtonsContainer.style.gap = '20px';
-        goalButtonsContainer.style.justifyItems = 'center';
     }, 500);
 }
 
 function handleAnswer(choice) {
     const questionData = currentFollowUp || questions[currentQuestionIndex];
 
-    // Ensure questionData is valid
     if (!questionData) {
         console.error("No question data available!");
-        return; // Prevent further execution
+        return;
     }
 
     // Store the answer in the answers array
@@ -227,19 +214,16 @@ function handleAnswer(choice) {
 
     // Check for follow-up questions
     if (questionData.follow_up && questionData.follow_up[choice]) {
-        // Set the follow-up question
         currentFollowUp = questionData.follow_up[choice];
     } else {
-        // No follow-up, move to the next main question
         currentFollowUp = null;
         currentQuestionIndex++;
     }
 
-    // Check if we have more questions to show or if the quiz is finished
+    // Render next question or finish the quiz
     if (currentQuestionIndex < questions.length || currentFollowUp) {
         renderQuestion();
     } else {
-        // Quiz finished, display results or perform final action
         showResults();
     }
 }
@@ -248,19 +232,64 @@ function showResults() {
     const resultContainer = document.getElementById("result-container");
     const resultSummary = document.getElementById("result-summary");
 
-    // Hide quiz elements
     document.querySelector(".question-container").style.display = "none";
 
-    // Format the answers and display them
     const formattedAnswers = answers
-        .map(answer => `${answer.question}: ${answer.answer}`)
+        .map(answer => `${answer.question}: ${Array.isArray(answer.answer) ? answer.answer.join(", ") : answer.answer}`)
         .join("\n");
 
     resultSummary.textContent = formattedAnswers;
-
-    // Show results container
     resultContainer.style.display = "block";
+
+    // Add email input and final submit button
+    attachEmailInput();
 }
 
-// Initialize quiz by rendering the first question
+function attachEmailInput() {
+    const resultContainer = document.getElementById('result-container');
+    const emailInputContainer = document.createElement('div');
+    emailInputContainer.classList.add('email-input-container');
+
+    emailInputContainer.innerHTML = `
+        <label for="email">Enter your email to finalize:</label>
+        <input type="email" id="email" name="email" required>
+        <button class="submit-btn" onclick="finalizeAndSubmit()">Submit</button>
+    `;
+
+    resultContainer.appendChild(emailInputContainer);
+}
+
+function finalizeAndSubmit() {
+    const email = document.getElementById('email').value;
+
+    if (!email) {
+        alert("Please enter your email.");
+        return;
+    }
+
+    // Add email to the answers and prepare the data
+    const finalData = {
+        sessionId: sessionId,
+        answers: answers,
+        email: email,
+    };
+
+    // Send data to the server
+    fetch('/api/user/merge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(finalData)
+    })
+        .then(response => {
+            if (response.ok) {
+                console.log('Data sent successfully');
+                window.location.href = 'paywall.html'; // Redirect after successful submission
+            } else {
+                console.error('Error sending data:', response.statusText);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Initialize the quiz
 renderQuestion();

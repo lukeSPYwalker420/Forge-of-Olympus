@@ -42,10 +42,8 @@ app.use(express.static(path.join(__dirname)));  // Serve from root folder
 
 // MongoDB Schema and Model
 const userSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true },
-  name: { type: String },
-  email: { type: String, required: true, unique: true },
-  age: { type: Number },
+  sessionId: { type: String, unique: true },
+  email: { type: String, unique: true, sparse: true }, // Sparse allows null values
   workoutPreferences: { type: String },
   dietPreferences: { type: String },
   activityLevel: { type: String },
@@ -60,29 +58,55 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// Handle API requests (POST request example)
+// Handle quiz data (POST request)
 app.post('/api/user/process', async (req, res) => {
   const { step, data } = req.body;
 
-  if (!step || !data) {
-    return res.status(400).json({ error: 'Missing step or data' });
+  if (!step || !data || !data.sessionId) {
+    return res.status(400).json({ error: 'Missing step, data, or sessionId' });
   }
 
   try {
-    let user = await User.findOne({ email: data.email });
+    let user = await User.findOne({ sessionId: data.sessionId });
 
     if (!user) {
-      user = new User({ id: uuidv4(), ...data });
+      user = new User({ sessionId: data.sessionId, ...data });
     } else {
       user = Object.assign(user, data);
     }
 
-    user.step = step;
+    user.step = step; // Save the current step
     await user.save();
+
     res.json({ success: true, message: 'Data saved successfully' });
   } catch (error) {
     console.error('Error during data save:', error);
     res.status(500).json({ error: 'Error saving data' });
+  }
+});
+
+// Handle profile completion (POST request)
+app.post('/api/user/complete-profile', async (req, res) => {
+  const { sessionId, email, profileData } = req.body;
+
+  if (!sessionId || !email) {
+    return res.status(400).json({ error: 'Missing sessionId or email' });
+  }
+
+  try {
+    const user = await User.findOne({ sessionId });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.email = email; // Update the email
+    Object.assign(user, profileData); // Merge profile data
+    await user.save();
+
+    res.json({ success: true, message: 'Profile completed successfully' });
+  } catch (error) {
+    console.error('Error during profile completion:', error);
+    res.status(500).json({ error: 'Error completing profile' });
   }
 });
 
