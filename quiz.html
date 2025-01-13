@@ -14,52 +14,54 @@
     
     <!-- Container for the questions -->
     <div class="question-container" id="question-container">
-        <h2 class="question">What are your primary fitness goals?</h2> <!-- First Question -->
+        <!-- The first question will be rendered dynamically here -->
+        <h2 class="question">What are your primary fitness goals?</h2>
         <div class="goal-buttons">
-            <button class="goal-btn" data-goal="weight-loss" onclick="nextQuestion('weight-loss')">
+            <button class="goal-btn" data-goal="weight-loss" onclick="handleAnswer('weight-loss')">
                 <img src="images/weight-loss.jpg" alt="Weight Loss">
                 <span>Weight Loss</span>
             </button>
-            <button class="goal-btn" data-goal="muscle-gain" onclick="nextQuestion('muscle-gain')">
+            <button class="goal-btn" data-goal="muscle-gain" onclick="handleAnswer('muscle-gain')">
                 <img src="images/muscle-gain.jpg" alt="Muscle Gain">
                 <span>Muscle Gain</span>
             </button>
-            <button class="goal-btn" data-goal="improved-endurance" onclick="nextQuestion('improved-endurance')">
+            <button class="goal-btn" data-goal="improved-endurance" onclick="handleAnswer('improved-endurance')">
                 <img src="images/improved-endurance.jpg" alt="Improved Endurance">
                 <span>Improved Endurance</span>
             </button>
-            <button class="goal-btn" data-goal="flexibility" onclick="nextQuestion('flexibility')">
+            <button class="goal-btn" data-goal="flexibility" onclick="handleAnswer('flexibility')">
                 <img src="images/flexibility.jpg" alt="Flexibility">
                 <span>Flexibility</span>
             </button>
-            <button class="goal-btn" data-goal="overall-health" onclick="nextQuestion('overall-health')">
+            <button class="goal-btn" data-goal="overall-health" onclick="handleAnswer('overall-health')">
                 <img src="images/overall-health.jpg" alt="Overall Health">
                 <span>Overall Health</span>
             </button>
-            <button class="goal-btn" data-goal="improved-mental-health" onclick="nextQuestion('improved-mental-health')">
+            <button class="goal-btn" data-goal="improved-mental-health" onclick="handleAnswer('improved-mental-health')">
                 <img src="images/improved-mental-health.jpg" alt="Improved Mental Health">
                 <span>Improved Mental Health</span>
             </button>
-            <button class="goal-btn" data-goal="injury-rehabilitation" onclick="nextQuestion('injury-rehabilitation')">
+            <button class="goal-btn" data-goal="injury-rehabilitation" onclick="handleAnswer('injury-rehabilitation')">
                 <img src="images/injury-rehabilitation.jpg" alt="Injury Rehabilitation">
                 <span>Injury Rehabilitation</span>
             </button>
-            <button class="goal-btn" data-goal="athletic-performance" onclick="nextQuestion('athletic-performance')">
+            <button class="goal-btn" data-goal="athletic-performance" onclick="handleAnswer('athletic-performance')">
                 <img src="images/athletic-performance.jpg" alt="Athletic Performance">
                 <span>Athletic Performance</span>
             </button>
         </div>
     </div>
 
+    <!-- Results container and submit button -->
     <div id="result-container" class="result" style="display: none;">
-    <h3 class="result-heading">Thank you for your responses!</h3>
-    <pre id="result-summary" class="result-text"></pre>
-    <div class="button-container">
-        <button id="submit-btn" onclick="submitAnswers()" style="display: none;">Submit</button>
+        <h3 class="result-heading">Thank you for your responses!</h3>
+        <pre id="result-summary" class="result-text"></pre>
+        <div class="button-container">
+            <a id="submit-btn" href="paywall.html" class="button-style">Submit</a>
+        </div>
     </div>
-</div>
 
     <!-- Link to the external JavaScript file -->
-    <script src="GetStartedQuiz.js"></script>
+    <script src="Quiz.js"></script>
 </body>
 </html>
