@@ -55,6 +55,15 @@ const userSchema = new mongoose.Schema({
   measurementPreference: { type: String },
 });
 
+// Add indexing for scalability
+userSchema.index({ sessionId: 1 });  // Index for sessionId field
+userSchema.index({ email: 1 });  // Optional: Index for email field
+userSchema.index({ activityLevel: 1 });  // Index for activityLevel field
+userSchema.index({ workoutPreferences: 1 });  // Index for workoutPreferences field
+userSchema.index({ mealFrequency: 1 });  // Index for mealFrequency field
+userSchema.index({ cookFrequency: 1 });  // Index for cookFrequency field
+userSchema.index({ step: 1 });  // Index for step field
+
 const User = mongoose.model('User', userSchema);
 
 // MongoDB Models for exercises and meals
@@ -95,8 +104,8 @@ function getExercises(userData) {
     goal: userData.goal,
     difficulty: { $lte: userData.activity_level }, // Filter by activity level
     equipment: userData.equipment_preference,
-    environment: userData.workout_environment, // Add workout environment filter
-    type: userData.exercise_type_preference,   // Add type of exercise preference filter
+    environment: userData.workout_environment, // Filter by workout environment
+    type: userData.exercise_type_preference,   // Filter by type of exercise preference
   };
 
   // Avoid exercises that the user needs to skip due to injury or other reasons
@@ -106,20 +115,64 @@ function getExercises(userData) {
 
   // If the user has a workout frequency preference, adjust the query to match
   if (userData.workout_frequency_preference) {
-    // This is just an example: you can further modify this based on the frequency preference.
-    // e.g., suggesting different number of sets/reps based on the workout frequency.
     query.frequency = userData.workout_frequency_preference;
+  }
+
+  // New: If the user prefers beginner or advanced exercises, filter based on complexity
+  if (userData.complexity_preference) {
+    query.complexity = userData.complexity_preference; // E.g., "Beginner", "Advanced"
   }
 
   return Exercise.find(query);
 }
 
 function getMeals(userData) {
-  return Meal.find({
-    calories: { $lte: userData.daily_calories },
-    restrictions: { $in: userData.dietary_restrictions },
-    mealCategory: { $in: userData.mealTimes } // user specifies meal times (e.g., Breakfast, Lunch, etc.)
-  });
+  // Create a query object for meal filtering
+  let query = {
+    calories: { $lte: userData.daily_calories },  // Max calorie limit
+    restrictions: { $in: userData.dietary_restrictions },  // Dietary restrictions
+    mealCategory: { $in: userData.mealTimes }  // Meal categories (e.g., Breakfast, Lunch, etc.)
+  };
+
+  // Optional: Add budget filter (if user has a grocery budget set)
+  if (userData.groceryBudget) {
+    query.price = { $lte: userData.groceryBudget };  // Assuming you have a price field in your meals collection
+  }
+
+  // Optional: Add macronutrient goals (protein, carbs, fats) if available
+  if (userData.macronutrientGoals) {
+    query['macronutrients.protein'] = { $gte: userData.macronutrientGoals.protein };
+    query['macronutrients.carbs'] = { $lte: userData.macronutrientGoals.carbs };
+    query['macronutrients.fats'] = { $lte: userData.macronutrientGoals.fats };
+  }
+
+  return Meal.find(query);
+}
+
+// Helper function for TDEE calculation
+function calculateTDEE(weight, height, age, activityLevel, bodyFatPercentage = null) {
+  let BMR;
+
+  if (bodyFatPercentage) {
+    // Katch-McArdle Formula (for lean body mass)
+    const leanBodyMass = weight * (1 - bodyFatPercentage / 100);
+    BMR = 370 + (21.6 * leanBodyMass);
+  } else {
+    // Harris-Benedict Formula (for standard BMR)
+    BMR = 10 * weight + 6.25 * height - 5 * age + 5; // For men
+  }
+
+  // Activity level multipliers (you can adjust these values)
+  const activityMultipliers = {
+    sedentary: 1.2,
+    light: 1.375,
+    moderate: 1.55,
+    heavy: 1.725,
+    veryHeavy: 1.9,
+  };
+
+  // Calculate TDEE (Total Daily Energy Expenditure)
+  return BMR * (activityMultipliers[activityLevel] || 1.2); // Default to sedentary if not found
 }
 
 async function generatePlan(userData) {
@@ -172,8 +225,14 @@ app.post('/api/user/process', async (req, res) => {
 app.post('/api/user/complete-profile', async (req, res) => {
   const { sessionId, email, profileData } = req.body;
 
+  // Check if sessionId or email is missing
   if (!sessionId || !email) {
     return res.status(400).json({ error: 'Missing sessionId or email' });
+  }
+
+  // Email validation
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ error: 'Invalid email format' });
   }
 
   try {
