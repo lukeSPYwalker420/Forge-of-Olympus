@@ -70,16 +70,21 @@ const exerciseSchema = new mongoose.Schema({
 });
 
 const mealSchema = new mongoose.Schema({
-  name: String,                 // e.g., "Grilled Chicken Salad"
-  ingredients: [String],        // e.g., ["Chicken", "Lettuce", "Tomatoes"]
-  calories: Number,             // e.g., 350
-  macronutrients: {             // Macronutrient split
-    protein: Number,            // e.g., 30 (grams)
-    carbs: Number,              // e.g., 10 (grams)
-    fats: Number                // e.g., 15 (grams)
+  name: String,
+  ingredients: [String],
+  calories: Number,
+  macronutrients: {
+    protein: Number,
+    carbs: Number,
+    fats: Number
   },
-  restrictions: [String],       // e.g., ["gluten-free", "low-carb"]
-  type: String                  // e.g., "Lunch"
+  restrictions: [String],
+  mealCategory: { 
+    type: String, 
+    enum: ['Breakfast', 'Lunch', 'Dinner', 'Snack'], // Define valid categories
+    required: true // Ensure that every meal has a category
+  },
+  type: String, // e.g., "Lunch"
 });
 
 const Exercise = mongoose.model('Exercise', exerciseSchema);
@@ -87,28 +92,54 @@ const Meal = mongoose.model('Meal', mealSchema);
 
 // Helper Functions for Plan Generation
 function getExercises(userData) {
-  return Exercise.find({
+  const query = {
     goal: userData.goal,
-    difficulty: { $lte: userData.activity_level },
-    equipment: userData.equipment_preference
-  });
+    difficulty: { $lte: userData.activity_level }, // Filter by activity level
+    equipment: userData.equipment_preference,
+    environment: userData.workout_environment, // Add workout environment filter
+    type: userData.exercise_type_preference,   // Add type of exercise preference filter
+  };
+
+  // Avoid exercises that the user needs to skip due to injury or other reasons
+  if (userData.injury_avoidances && userData.injury_avoidances.length > 0) {
+    query.name = { $nin: userData.injury_avoidances }; // Exclude exercises with specific names
+  }
+
+  // If the user has a workout frequency preference, adjust the query to match
+  if (userData.workout_frequency_preference) {
+    // This is just an example: you can further modify this based on the frequency preference.
+    // e.g., suggesting different number of sets/reps based on the workout frequency.
+    query.frequency = userData.workout_frequency_preference;
+  }
+
+  return Exercise.find(query);
 }
 
 function getMeals(userData) {
   return Meal.find({
     calories: { $lte: userData.daily_calories },
-    restrictions: { $in: userData.dietary_restrictions }
+    restrictions: { $in: userData.dietary_restrictions },
+    mealCategory: { $in: userData.mealTimes } // user specifies meal times (e.g., Breakfast, Lunch, etc.)
   });
 }
 
 async function generatePlan(userData) {
-  const exercises = await getExercises(userData);
+  // Fetch exercises based on user data with the new conditions
+  const exercises = await getExercises(userData); 
   const meals = await getMeals(userData);
 
-  const exercisePlan = buildExerciseSchedule(exercises, userData.available_days);
-  const dietPlan = buildDietSchedule(meals, userData.daily_calories);
+  // Group meals by their mealCategory
+  const mealPlan = {
+    breakfast: meals.filter(meal => meal.mealCategory === 'Breakfast'),
+    lunch: meals.filter(meal => meal.mealCategory === 'Lunch'),
+    dinner: meals.filter(meal => meal.mealCategory === 'Dinner'),
+    snacks: meals.filter(meal => meal.mealCategory === 'Snack')
+  };
 
-  return { exercise_plan: exercisePlan, diet_plan: dietPlan };
+  // Generate exercise plan, considering the available days and user preferences
+  const exercisePlan = buildExerciseSchedule(exercises, userData.available_days);
+  
+  return { exercise_plan: exercisePlan, diet_plan: mealPlan };
 }
 
 // Routes for processing user data
