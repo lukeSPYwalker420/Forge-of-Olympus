@@ -37,7 +37,6 @@ app.use(cors({
 // Body parser middleware for JSON data
 app.use(express.json());
 
-// Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname)));  // Serve from root folder
 
 // MongoDB Schema and Model
@@ -213,7 +212,7 @@ app.post('/api/user/generate-plan', async (req, res) => {
 
 // Serve the frontend (SPA fallback)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Set the port variable

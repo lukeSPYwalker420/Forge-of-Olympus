@@ -1,7 +1,7 @@
+// Ensure a unique session ID is stored in localStorage
 let sessionId = localStorage.getItem('sessionId');
 if (!sessionId) {
-    // Generate and store a temporary session ID if it doesn't exist
-    sessionId = uuidv4();
+    sessionId = uuid.v4();  // Use uuid.v4() to generate a new session ID
     localStorage.setItem('sessionId', sessionId);
 }
 
@@ -36,10 +36,6 @@ const questions = [
             "Improved mental health": {
                 question: "What mental health improvements are you aiming for?",
                 choices: ["Reduced stress", "Improved focus", "Better sleep", "Increased mood"],
-            },
-            "Injury rehabilitation": {
-                question: "What injury are you rehabilitating?",
-                choices: ["Back injury", "Knee injury", "Shoulder injury", "Ankle injury"]
             },
             "Athletic performance": {
                 question: "Which area of athletic performance are you aiming to improve?",
@@ -171,56 +167,60 @@ function renderQuestion() {
         return;
     }
 
-    // Fade out current content
     questionContainer.classList.remove('fade-in');
     questionContainer.classList.add('fade-out');
 
     setTimeout(() => {
-        // Insert new content
         questionContainer.innerHTML = `
             <div class="question-content">
                 <h2 class="question">${questionData.question}</h2>
-                <div class="goal-buttons">
-                    ${questionData.choices
-                        .map(choice => `<button class="goal-btn" onclick="handleAnswer('${choice}')">${choice}</button>`)
-                        .join("")}
-                </div>
+                <div id="goal-buttons" class="goal-buttons"></div>
             </div>
         `;
 
-        // Reapply fade-in
+        const goalButtons = document.getElementById('goal-buttons');
+        questionData.choices.forEach(choice => {
+            const button = document.createElement('button');
+            button.classList.add('goal-btn');
+            button.textContent = choice;
+            button.onclick = () => handleAnswer(choice);
+            goalButtons.appendChild(button);
+        });
+
         questionContainer.classList.remove('fade-out');
         questionContainer.classList.add('fade-in');
     }, 500);
 }
 
 function handleAnswer(choice) {
-    const questionData = currentFollowUp || questions[currentQuestionIndex];
+    const questionData = currentFollowUp ? currentFollowUp : questions[currentQuestionIndex];
 
     if (!questionData) {
         console.error("No question data available!");
         return;
     }
 
-    // Store the answer in the answers array
+    const existingAnswer = answers.find(a => a.question === questionData.question);
     if (questionData.is_multiple_choice) {
-        if (!answers.some(a => a.question === questionData.question)) {
+        if (!existingAnswer) {
             answers.push({ question: questionData.question, answer: [] });
         }
         answers.find(a => a.question === questionData.question).answer.push(choice);
     } else {
-        answers.push({ question: questionData.question, answer: choice });
+        if (existingAnswer) {
+            existingAnswer.answer = choice;
+        } else {
+            answers.push({ question: questionData.question, answer: choice });
+        }
     }
 
-    // Check for follow-up questions
     if (questionData.follow_up && questionData.follow_up[choice]) {
-        currentFollowUp = questionData.follow_up[choice];
+        currentFollowUp = JSON.parse(JSON.stringify(questionData.follow_up[choice]));
     } else {
         currentFollowUp = null;
         currentQuestionIndex++;
     }
 
-    // Render next question or finish the quiz
     if (currentQuestionIndex < questions.length || currentFollowUp) {
         renderQuestion();
     } else {
@@ -241,7 +241,6 @@ function showResults() {
     resultSummary.textContent = formattedAnswers;
     resultContainer.style.display = "block";
 
-    // Add email input and final submit button
     attachEmailInput();
 }
 
@@ -259,22 +258,25 @@ function attachEmailInput() {
     resultContainer.appendChild(emailInputContainer);
 }
 
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
 function finalizeAndSubmit() {
     const email = document.getElementById('email').value;
 
-    if (!email) {
-        alert("Please enter your email.");
+    if (!email || !isValidEmail(email)) {
+        alert("Please enter a valid email.");
         return;
     }
 
-    // Add email to the answers and prepare the data
     const finalData = {
         sessionId: sessionId,
         answers: answers,
         email: email,
     };
 
-    // Send data to the server
     fetch('/api/user/merge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -283,12 +285,17 @@ function finalizeAndSubmit() {
         .then(response => {
             if (response.ok) {
                 console.log('Data sent successfully');
-                window.location.href = 'paywall.html'; // Redirect after successful submission
+                alert('Your answers have been submitted successfully!');
+                window.location.href = 'paywall.html';
             } else {
                 console.error('Error sending data:', response.statusText);
+                alert('An error occurred while submitting your data. Please try again.');
             }
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Unable to connect to the server. Please check your internet connection.');
+        });
 }
 
 // Initialize the quiz
