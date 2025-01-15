@@ -41,7 +41,7 @@ app.use(express.static(path.join(__dirname)));  // Serve from root folder
 
 // MongoDB Schema and Model
 const userSchema = new mongoose.Schema({
-  sessionId: { type: String, unique: true },
+  sessionId: { type: String, index:true},
   email: { type: String, unique: true, sparse: true }, // Sparse allows null values
   workoutPreferences: { type: String },
   dietPreferences: { type: String },
@@ -98,34 +98,6 @@ const mealSchema = new mongoose.Schema({
 const Exercise = mongoose.model('Exercise', exerciseSchema);
 const Meal = mongoose.model('Meal', mealSchema);
 
-// Helper Functions for Plan Generation
-function getExercises(userData) {
-  const query = {
-    goal: userData.goal,
-    difficulty: { $lte: userData.activity_level }, // Filter by activity level
-    equipment: userData.equipment_preference,
-    environment: userData.workout_environment, // Filter by workout environment
-    type: userData.exercise_type_preference,   // Filter by type of exercise preference
-  };
-
-  // Avoid exercises that the user needs to skip due to injury or other reasons
-  if (userData.injury_avoidances && userData.injury_avoidances.length > 0) {
-    query.name = { $nin: userData.injury_avoidances }; // Exclude exercises with specific names
-  }
-
-  // If the user has a workout frequency preference, adjust the query to match
-  if (userData.workout_frequency_preference) {
-    query.frequency = userData.workout_frequency_preference;
-  }
-
-  // New: If the user prefers beginner or advanced exercises, filter based on complexity
-  if (userData.complexity_preference) {
-    query.complexity = userData.complexity_preference; // E.g., "Beginner", "Advanced"
-  }
-
-  return Exercise.find(query);
-}
-
 function getMeals(userData) {
   // Create a query object for meal filtering
   let query = {
@@ -173,25 +145,6 @@ function calculateTDEE(weight, height, age, activityLevel, bodyFatPercentage = n
 
   // Calculate TDEE (Total Daily Energy Expenditure)
   return BMR * (activityMultipliers[activityLevel] || 1.2); // Default to sedentary if not found
-}
-
-async function generatePlan(userData) {
-  // Fetch exercises based on user data with the new conditions
-  const exercises = await getExercises(userData); 
-  const meals = await getMeals(userData);
-
-  // Group meals by their mealCategory
-  const mealPlan = {
-    breakfast: meals.filter(meal => meal.mealCategory === 'Breakfast'),
-    lunch: meals.filter(meal => meal.mealCategory === 'Lunch'),
-    dinner: meals.filter(meal => meal.mealCategory === 'Dinner'),
-    snacks: meals.filter(meal => meal.mealCategory === 'Snack')
-  };
-
-  // Generate exercise plan, considering the available days and user preferences
-  const exercisePlan = buildExerciseSchedule(exercises, userData.available_days);
-  
-  return { exercise_plan: exercisePlan, diet_plan: mealPlan };
 }
 
 // Routes for processing user data
