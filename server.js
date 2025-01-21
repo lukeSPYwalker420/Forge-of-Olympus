@@ -55,17 +55,6 @@ const userSchema = new mongoose.Schema({
   measurementPreference: { type: String },
 });
 
-// Add indexing for scalability
-userSchema.index({ sessionId: 1 });  // Index for sessionId field
-userSchema.index({ email: 1 });  // Optional: Index for email field
-userSchema.index({ activityLevel: 1 });  // Index for activityLevel field
-userSchema.index({ workoutPreferences: 1 });  // Index for workoutPreferences field
-userSchema.index({ mealFrequency: 1 });  // Index for mealFrequency field
-userSchema.index({ cookFrequency: 1 });  // Index for cookFrequency field
-userSchema.index({ step: 1 });  // Index for step field
-
-const User = mongoose.model('User', userSchema);
-
 // MongoDB Models for exercises and meals
 const exerciseSchema = new mongoose.Schema({
   name: String,                 // e.g., "Bench Press"
@@ -95,56 +84,40 @@ const mealSchema = new mongoose.Schema({
   type: String, // e.g., "Lunch"
 });
 
+const User = mongoose.model('User', userSchema);
 const Exercise = mongoose.model('Exercise', exerciseSchema);
 const Meal = mongoose.model('Meal', mealSchema);
 
-function getMeals(userData) {
-  // Create a query object for meal filtering
-  let query = {
-    calories: { $lte: userData.daily_calories },  // Max calorie limit
-    restrictions: { $in: userData.dietary_restrictions },  // Dietary restrictions
-    mealCategory: { $in: userData.mealTimes }  // Meal categories (e.g., Breakfast, Lunch, etc.)
+// Function to search for plans based on user data
+async function searchPlans(userData) {
+  // Query for exercises based on user preferences
+  let exerciseQuery = {};
+  if (userData.workoutPreferences) {
+    exerciseQuery.goal = { $in: userData.workoutPreferences.split(',') }; // Match workout goals (e.g., "muscle_gain")
+  }
+  if (userData.activityLevel) {
+    exerciseQuery.difficulty = userData.activityLevel; // Match difficulty (e.g., "Intermediate")
+  }
+
+  const exercises = await Exercise.find(exerciseQuery);
+
+  // Query for meals based on user preferences
+  let mealQuery = {
+    mealCategory: { $in: userData.mealTimes || ['Breakfast', 'Lunch', 'Dinner', 'Snack'] }, // Default to all categories if none specified
   };
 
-  // Optional: Add budget filter (if user has a grocery budget set)
+  // Optional: Filter by dietary restrictions and budget if available
+  if (userData.dietaryRestrictions) {
+    mealQuery.restrictions = { $in: userData.dietaryRestrictions.split(',') }; // Match dietary restrictions (e.g., "gluten-free")
+  }
+
   if (userData.groceryBudget) {
-    query.price = { $lte: userData.groceryBudget };  // Assuming you have a price field in your meals collection
+    mealQuery.calories = { $lte: userData.groceryBudget }; // Assume calorie budget is for simplicity
   }
 
-  // Optional: Add macronutrient goals (protein, carbs, fats) if available
-  if (userData.macronutrientGoals) {
-    query['macronutrients.protein'] = { $gte: userData.macronutrientGoals.protein };
-    query['macronutrients.carbs'] = { $lte: userData.macronutrientGoals.carbs };
-    query['macronutrients.fats'] = { $lte: userData.macronutrientGoals.fats };
-  }
+  const meals = await Meal.find(mealQuery);
 
-  return Meal.find(query);
-}
-
-// Helper function for TDEE calculation
-function calculateTDEE(weight, height, age, activityLevel, bodyFatPercentage = null) {
-  let BMR;
-
-  if (bodyFatPercentage) {
-    // Katch-McArdle Formula (for lean body mass)
-    const leanBodyMass = weight * (1 - bodyFatPercentage / 100);
-    BMR = 370 + (21.6 * leanBodyMass);
-  } else {
-    // Harris-Benedict Formula (for standard BMR)
-    BMR = 10 * weight + 6.25 * height - 5 * age + 5; // For men
-  }
-
-  // Activity level multipliers (you can adjust these values)
-  const activityMultipliers = {
-    sedentary: 1.2,
-    light: 1.375,
-    moderate: 1.55,
-    heavy: 1.725,
-    veryHeavy: 1.9,
-  };
-
-  // Calculate TDEE (Total Daily Energy Expenditure)
-  return BMR * (activityMultipliers[activityLevel] || 1.2); // Default to sedentary if not found
+  return { exercises, meals };
 }
 
 // Routes for processing user data
@@ -174,57 +147,29 @@ app.post('/api/user/process', async (req, res) => {
   }
 });
 
-// Profile completion route
-app.post('/api/user/complete-profile', async (req, res) => {
-  const { sessionId, email, profileData } = req.body;
+// New route for finding personalized plans
+app.post('/api/user/find-plans', async (req, res) => {
+  const { sessionId } = req.body;
 
-  // Check if sessionId or email is missing
-  if (!sessionId || !email) {
-    return res.status(400).json({ error: 'Missing sessionId or email' });
-  }
-
-  // Email validation
-  if (!validator.isEmail(email)) {
-    return res.status(400).json({ error: 'Invalid email format' });
+  if (!sessionId) {
+    return res.status(400).json({ error: 'Missing sessionId' });
   }
 
   try {
+    // Fetch user data based on sessionId
     const user = await User.findOne({ sessionId });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    user.email = email; // Update the email
-    Object.assign(user, profileData); // Merge profile data
-    await user.save();
+    // Search for matching exercise and meal plans
+    const { exercises, meals } = await searchPlans(user);
 
-    res.json({ success: true, message: 'Profile completed successfully' });
+    res.json({ exercises, meals });
   } catch (error) {
-    console.error('Error during profile completion:', error);
-    res.status(500).json({ error: 'Error completing profile' });
+    console.error('Error finding plans:', error);
+    res.status(500).json({ error: 'Error finding plans' });
   }
-});
-
-// Plan generation route
-app.post('/api/user/generate-plan', async (req, res) => {
-  const { userData } = req.body;
-
-  if (!userData) {
-    return res.status(400).json({ error: 'Missing user data' });
-  }
-
-  try {
-    const { exercise_plan, diet_plan } = await generatePlan(userData);
-    res.json({ exercise_plan, diet_plan });
-  } catch (error) {
-    console.error('Error generating plan:', error);
-    res.status(500).json({ error: 'Error generating plan' });
-  }
-});
-
-// Serve the frontend (SPA fallback)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Set the port variable

@@ -1,0 +1,3165 @@
+[   
+    {
+      "plan": "Beginner Muscle Gain (Weight Training Only - 2 Days a Week)",
+      "tags": ["Beginner", "Muscle Gain", "Weight Training", "2 Days a Week", "Gym/Home Gym", "No Injuries", "Strength Focus"],
+      "schedule": {
+        "Weeks": [
+          {
+            "Week 1": {
+              "Day 1: Full-Body Strength (Heavy Lifting)": [
+                { "exercise": "Barbell Squat", "sets": 4, "reps": 6, "rest": "90 seconds" },
+                { "exercise": "Deadlift (Dumbbell or Barbell)", "sets": 4, "reps": 6, "rest": "90 seconds" },
+                { "exercise": "Bench Press (Barbell)", "sets": 4, "reps": 6, "rest": "90 seconds" },
+                { "exercise": "Pull-Ups (Assisted if Needed)", "sets": 3, "reps": "6-8", "rest": "90 seconds" },
+                { "exercise": "Overhead Press (Barbell or Dumbbell)", "sets": 3, "reps": 6, "rest": "90 seconds" },
+                { "exercise": "Barbell Rows", "sets": 3, "reps": 6, "rest": "90 seconds" }
+              ],
+              "Day 2: Rest or Active Recovery": [
+                { "activity": "Yoga (Beginner)", "duration": "15–20 min" }
+              ],
+              "Day 3: Rest or Active Recovery": [
+                { "activity": "Light Walk", "duration": "20–30 min" }
+
+              ],
+              "Day 4: Full-Body Strength (High Volume)": [
+                { "exercise": "Goblet Squats", "sets": 4, "reps": 12, "rest": "60-75 seconds" },
+                { "exercise": "Dumbbell Lunges", "sets": 4, "reps": 12, "notes": "per leg", "rest": "60-75 seconds" },
+                { "exercise": "Incline Dumbbell Press", "sets": 4, "reps": 12, "rest": "60-75 seconds" },
+                { "exercise": "Seated Row Machine", "sets": 4, "reps": 12, "rest": "60-75 seconds" },
+                { "exercise": "Dumbbell Lateral Raises", "sets": 4, "reps": 15, "rest": "60-75 seconds" },
+                { "exercise": "Triceps Dips (Chair or Bench)", "sets": 4, "reps": 12, "rest": "60-75 seconds" }
+              ],
+              "Day 5: Rest or Active Recovery": [
+                { "activity": "Yoga (Beginner)", "duration": "15–20 min" }
+              ],
+              "Day 6: Rest or Active Recovery": [
+                { "activity": "Light Walk", "duration": "20–30 min" }
+              ],
+              "Day 7: Rest or Active Recovery": [
+                { "activity": "Stretching Routine", "duration": "15–20 min" },
+                { "activity": "Yoga", "duration": "15–20 min" }
+              ]
+            }
+          },
+          {
+            "Week 2": { "ref": "Week 1" }
+          },
+          {
+            "Week 3": { "ref": "Week 1" }
+          },
+          {
+            "Week 4": { "ref": "Week 1" }
+          }
+        ]
+      }
+    },
+    {
+      "plan": "Intermediate Muscle Gain (2 Days a Week)",
+      "tags": ["Muscle Gain", "2 Days a Week", "Intermediate", "Gym/Home Gym", "No Injuries"],
+      "schedule": {
+        "Weeks": [
+          {
+            "Week 1": {
+              "Day 1: Upper Body": [
+                { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                { "exercise": "Overhead Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                { "exercise": "Pull-Ups", "sets": 3, "reps": "6-8", "rest": "2 minutes" },
+                { "exercise": "Barbell Row", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                { "exercise": "Incline Dumbbell Chest Press", "sets": 3, "reps": "8-10", "rest": "1.5-2 minutes" },
+                { "exercise": "Dumbbell Bicep Curl", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" },
+                { "exercise": "Triceps Dips", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" }
+              ],
+              "Day 2: Active Recovery Option": [
+                { "activity": "Stretching Routine", "duration": "15-20 min" },
+                { "activity": "Light Cardio (e.g., Cycling, Walking)", "duration": "20-30 min" },
+                { "activity": "Foam Rolling", "duration": "10-15 min" }
+              ],
+              "Day 3: Rest": [],
+              "Day 4: Lower Body": [
+                { "exercise": "Barbell Squat", "sets": 4, "reps": "6-8", "rest": "2-3 minutes" },
+                { "exercise": "DeDumbbell Stiff Leg Deadlift", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                { "exercise": "Leg Press Machine", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                { "exercise": "Bulgarian Split Squats", "sets": 3, "reps": "8-10", "notes": "per leg", "rest": "1.5-2 minutes" },
+                { "exercise": "Walking Lunges", "sets": 3, "reps": "10-12", "notes": "per leg", "rest": "1.5-2 minutes" },
+                { "exercise": "Standing Calf Raises", "sets": 3, "reps": "12-15", "rest": "1.5 minutes" }
+              ],
+              "Day 5: Active Recovery Option": [
+                { "activity": "Yoga Routine", "duration": "20-30 min" },
+                { "activity": "Light Cardio (e.g., Walking, Swimming)", "duration": "20-30 min" }
+              ],
+              "Day 6: Rest": [],
+              "Day 7: Rest": []
+            }
+          },
+          {
+            "Week 2": { "ref": "Week 1" }
+          },
+          {
+            "Week 3": { "ref": "Week 1" }
+          },
+          {
+            "Week 4": { "ref": "Week 1" }
+          }
+        ]
+      }
+    },
+    {
+      "plan": "Advanced Muscle Gain (2 Days a Week)",
+      "tags": ["Muscle Gain", "2 Days a Week", "Advanced", "Gym/Home Gym", "No Injuries"],
+      "schedule": {
+        "Weeks": [
+          {
+            "Week 1": {
+              "Day 1: Upper Body & Lower Body (Strength Focus)": [
+                { "exercise": "Barbell Bench Press", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                { "exercise": "Barbell Row", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                { "exercise": "Barbell Squat", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                { "exercise": "Romanian Deadlift", "sets": 5, "reps": "4-6", "rest": "3 minutes" }
+              ],
+              "Day 2: Active Recovery": [
+                { "activity": "Yoga", "duration": "30 minutes" },
+                { "activity": "Walking", "duration": "30 minutes" }
+              ],
+              "Day 3: Rest": [
+                { "activity": "Rest" }
+              ],
+              "Day 4: Upper Body & Lower Body (Hypertrophy Focus)": [
+                { "exercise": "Flat Dumbbell Chest Press", "sets": 4, "reps": "8-12", "rest": "2 minutes" },
+                { "exercise": "Dumbbell Rows", "sets": 4, "reps": "8-12", "rest": "2 minutes" },
+                { "exercise": "Bulgarian Split Squats", "sets": 4, "reps": "8-10", "notes": "per leg", "rest": "2 minutes" },
+                { "exercise": "Calf Raises", "sets": 3, "reps": "12-15", "rest": "1.5 minutes" }
+              ],
+              "Day 5: Rest": [
+                { "activity": "Rest" }
+              ],
+              "Day 6: Active Recovery": [
+                { "activity": "Swimming", "duration": "30 minutes" },
+                { "activity": "Stretching Routine", "duration": "20 minutes" }
+              ],
+              "Day 7: Rest": [
+                { "activity": "Rest" }
+              ]
+            }
+          },
+          {
+            "Week 2": { "ref": "Week 1" }
+          },
+          {
+            "Week 3": { "ref": "Week 1" }
+          },
+          {
+            "Week 4": { "ref": "Week 1" }
+          }
+        ]
+      }
+    },            
+    {
+        "plan": "Beginner Muscle Gain (3 Days a Week)",
+        "tags": ["Beginner", "Muscle Gain", "Weight Training", "3 Days a Week", "Gym/Home Gym", "No Injuries", "Strength Focus"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Push Day (Heavy)": [
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": [8, 6, 5, 5], "rest": "90-120 seconds" },
+                  { "exercise": "Incline Barbell Bench Press", "sets": 4, "reps": [8, 6, 5, 5], "rest": "90-120 seconds" },
+                  { "exercise": "Overhead Press (Dumbbell or Barbell)", "sets": 3, "reps": [8, 6, 5], "rest": "90-120 seconds" },
+                  { "exercise": "Leg Press Machine", "sets": 3, "reps": [10, 8, 8], "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Lateral Raises", "sets": 3, "reps": 12, "rest": "60 seconds" }
+                ],
+                "Day 2: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20–30 min" },
+                  { "activity": "Stretching Routine", "duration": "15–20 min" }
+                ],
+                "Day 3: Pull Day (Heavy)": [
+                  { "exercise": "Deadlift (Barbell or Dumbbell)", "sets": 4, "reps": [8, 6, 5, 5], "rest": "120 seconds" },
+                  { "exercise": "Barbell Rows", "sets": 4, "reps": [8, 6, 5, 5], "rest": "90-120 seconds" },
+                  { "exercise": "Pull-Ups (Assisted if Needed)", "sets": 3, "reps": [8, 6, 5], "rest": "90 seconds" },
+                  { "exercise": "Romanian Deadlift (Dumbbells)", "sets": 3, "reps": [10, 8, 8], "rest": "90 seconds" },
+                  { "exercise": "Face Pulls (Cable or Resistance Band)", "sets": 3, "reps": 12, "rest": "60 seconds" }
+                ],
+                "Day 4: Rest or Active Recovery": [
+                  { "activity": "Stretching Routine", "duration": "15–20 min" },
+                  { "activity": "Yoga", "duration": "15–20 min" }
+                ],
+                "Day 5: Full Body (High Volume)": [
+                  { "exercise": "Goblet Squats", "sets": 4, "reps": 12, "rest": "60-75 seconds" },
+                  { "exercise": "Dumbbell Lunges", "sets": 4, "reps": 12, "notes": "per leg", "rest": "60-75 seconds" },
+                  { "exercise": "Incline Dumbbell Press", "sets": 4, "reps": 12, "rest": "60-75 seconds" },
+                  { "exercise": "Seated Row Machine", "sets": 4, "reps": 12, "rest": "60-75 seconds" },
+                  { "exercise": "Dumbbell Lateral Raises", "sets": 4, "reps": 15, "rest": "60 seconds" },
+                  { "exercise": "Triceps Dips (Chair or Bench)", "sets": 4, "reps": 12, "rest": "60-75 seconds" }
+                ],
+                "Day 6: Rest or Active Recovery": [
+                  { "activity": "Stretching Routine", "duration": "15–20 min" },
+                  { "activity": "Yoga", "duration": "15–20 min" }
+                ],
+                "Day 7: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20–30 min" },
+                  { "activity": "Stretching Routine", "duration": "15–20 min" }
+                ]
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Intermediate Muscle Gain (3 Days a Week)",
+        "tags": ["Muscle Gain", "3 Days a Week", "Intermediate", "Gym/Home Gym", "No Injuries"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body (Strength Focus)": [
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Pull-Ups", "sets": 3, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Barbell Row", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Incline Dumbbell Chest Press", "sets": 3, "reps": "8-10", "rest": "1.5-2 minutes" },
+                  { "exercise": "Dumbbell Bicep Curl", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" },
+                  { "exercise": "Triceps Dips", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" }
+                ],
+                "Day 2: Lower Body (Hypertrophy Focus)": [
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": "6-8", "rest": "2-3 minutes" },
+                  { "exercise": "Dumbbell Stiff Leg Deadlift", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Leg Press Machine", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Bulgarian Split Squats", "sets": 3, "reps": "8-10", "notes": "per leg", "rest": "1.5-2 minutes" },
+                  { "exercise": "Walking Lunges", "sets": 3, "reps": "10-12", "notes": "per leg", "rest": "1.5-2 minutes" },
+                  { "exercise": "Standing Calf Raises", "sets": 3, "reps": "12-15", "rest": "1.5 minutes" }
+                ],
+                "Day 3: Active Recovery": [
+                  { "activity": "Stretching Routine", "sets": 1, "reps": "15-20 minutes", "rest": "N/A" },
+                  { "activity": "Light Cardio (e.g., Cycling, Walking)", "sets": 1, "reps": "20-30 minutes", "rest": "N/A" },
+                  { "activity": "Foam Rolling", "sets": 1, "reps": "10-15 minutes", "rest": "N/A" }
+                ],
+                "Day 4: Rest": [],
+                "Day 5: Upper Body (Hypertrophy Focus)": [
+                  { "exercise": "Flat Dumbbell Chest Press", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Seated Shoulder Press", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Bent Over Dumbbell Row", "sets": 4, "reps": "8-10", "rest": "1.5 minutes" },
+                  { "exercise": "Chest Flys (Machine or Dumbbells)", "sets": 3, "reps": "10-12", "rest": "1.5 minutes" },
+                  { "exercise": "Barbell Bicep Curl", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" },
+                  { "exercise": "Overhead Triceps Extension", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" }
+                ],
+                "Day 6: Rest": [],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },      
+      {
+        "plan": "Intermediate Muscle Gain (3 Days a Week)",
+        "tags": ["Muscle Gain", "3 Days a Week", "Intermediate", "Gym/Home Gym", "No Injuries"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body (Strength Focus)": [
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Pull-Ups", "sets": 3, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Barbell Row", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Incline Dumbbell Chest Press", "sets": 3, "reps": "8-10", "rest": "1.5-2 minutes" },
+                  { "exercise": "Dumbbell Bicep Curl", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" },
+                  { "exercise": "Triceps Dips", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" }
+                ],
+                "Day 2: Lower Body (Hypertrophy Focus)": [
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": "6-8", "rest": "2-3 minutes" },
+                  { "exercise": "Dumbbell Stiff Leg Deadlift", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Leg Press Machine", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Bulgarian Split Squats", "sets": 3, "reps": "8-10", "notes": "per leg", "rest": "1.5-2 minutes" },
+                  { "exercise": "Walking Lunges", "sets": 3, "reps": "10-12", "notes": "per leg", "rest": "1.5-2 minutes" },
+                  { "exercise": "Standing Calf Raises", "sets": 3, "reps": "12-15", "rest": "1.5 minutes" }
+                ],
+                "Day 3: Active Recovery": [
+                  { "activity": "Stretching Routine", "sets": 1, "reps": "15-20 minutes", "rest": "N/A" },
+                  { "activity": "Light Cardio (e.g., Cycling, Walking)", "sets": 1, "reps": "20-30 minutes", "rest": "N/A" },
+                  { "activity": "Foam Rolling", "sets": 1, "reps": "10-15 minutes", "rest": "N/A" }
+                ],
+                "Day 4: Rest": [],
+                "Day 5: Upper Body (Hypertrophy Focus)": [
+                  { "exercise": "Flat Dumbbell Chest Press", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Seated Shoulder Press", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Bent Over Dumbbell Row", "sets": 4, "reps": "8-10", "rest": "1.5 minutes" },
+                  { "exercise": "Chest Flys (Machine or Dumbbells)", "sets": 3, "reps": "10-12", "rest": "1.5 minutes" },
+                  { "exercise": "Barbell Bicep Curl", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" },
+                  { "exercise": "Overhead Triceps Extension", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" }
+                ],
+                "Day 6: Rest": [],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },                  
+      {
+        "plan": "Beginner Muscle Gain (Weight Training Only - 4 Days a Week)",
+        "tags": ["Beginner", "Muscle Gain", "Weight Training", "4 Days a Week", "Gym/Home Gym", "No Injuries", "Strength Focus"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body (Heavy)": [
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "6-8", "rest": "90-120 seconds" },
+                  { "exercise": "Dumbbell Shoulder Press", "sets": 4, "reps": "6-8", "rest": "90-120 seconds" },
+                  { "exercise": "Bent-Over Barbell Row", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Pull-Ups (Assisted if needed)", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Barbell Bicep Curls", "sets": 3, "reps": "6-8", "rest": "60 seconds" },
+                  { "exercise": "Triceps Dips (Bench or Chair)", "sets": 3, "reps": "6-8", "rest": "90 seconds" }
+                ],
+                "Day 2: Lower Body (Heavy)": [
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": "6-8", "rest": "90-120 seconds" },
+                  { "exercise": "Romanian Deadlifts (Dumbbells)", "sets": 4, "reps": "6-8", "rest": "90-120 seconds" },
+                  { "exercise": "Leg Press Machine", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Walking Lunges", "sets": 3, "reps": "6-8", "notes": "per leg", "rest": "90 seconds" },
+                  { "exercise": "Calf Raises", "sets": 3, "reps": "10-12", "rest": "60 seconds" }
+                ],
+                "Day 3: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20–30 min" },
+                  { "activity": "Yoga (Beginner)", "duration": "15–20 min" }
+                ],
+                "Day 4: Upper Body (High Volume)": [
+                  { "exercise": "Dumbbell Chest Press", "sets": 4, "reps": "8-10", "rest": "60-90 seconds" },
+                  { "exercise": "Seated Dumbbell Shoulder Press", "sets": 4, "reps": "8-10", "rest": "60-90 seconds" },
+                  { "exercise": "Lat Pulldowns", "sets": 4, "reps": "8-10", "rest": "60-90 seconds" },
+                  { "exercise": "Dumbbell Rows", "sets": 4, "reps": "8-10", "rest": "60 seconds" },
+                  { "exercise": "Dumbbell Bicep Curls", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Triceps Kickbacks", "sets": 3, "reps": "10-12", "rest": "60 seconds" }
+                ],
+                "Day 5: Lower Body (High Volume)": [
+                  { "exercise": "Goblet Squats", "sets": 4, "reps": "8-10", "rest": "60 seconds" },
+                  { "exercise": "Bulgarian Split Squats", "sets": 4, "reps": "8-10", "notes": "per leg", "rest": "60-90 seconds" },
+                  { "exercise": "Leg Curls", "sets": 4, "reps": "8-10", "rest": "60 seconds" },
+                  { "exercise": "Step-Ups", "sets": 3, "reps": "8-10", "notes": "per leg", "rest": "60 seconds" },
+                  { "exercise": "Standing Calf Raises", "sets": 3, "reps": "12-15", "rest": "60 seconds" }
+                ],
+                "Day 6: Rest or Active Recovery": [
+                  { "activity": "Stretching Routine", "duration": "15–20 min" },
+                  { "activity": "Yoga", "duration": "15–20 min" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Intermediate Muscle Gain (4 Days a Week)",
+        "tags": ["Muscle Gain", "4 Days a Week", "Intermediate", "Gym/Home Gym", "No Injuries"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body (Strength Focus)": [
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Pull-Ups", "sets": 3, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Barbell Row", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Incline Dumbbell Chest Press", "sets": 3, "reps": "8-10", "rest": "1.5-2 minutes" },
+                  { "exercise": "Dumbbell Bicep Curl", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" },
+                  { "exercise": "Triceps Dips", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" }
+                ],
+                "Day 2: Lower Body (Strength Focus)": [
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Dumbbell Stiff Leg Deadlift", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Leg Press Machine", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Bulgarian Split Squats", "sets": 3, "reps": "8-10", "notes": "per leg", "rest": "1.5-2 minutes" },
+                  { "exercise": "Walking Lunges", "sets": 3, "reps": "10-12", "notes": "per leg", "rest": "1.5-2 minutes" },
+                  { "exercise": "Standing Calf Raises", "sets": 3, "reps": "12-15", "rest": "1.5 minutes" }
+                ],
+                "Day 3: Active Recovery": [
+                  { "activity": "Stretching Routine", "duration": "15-20 min" },
+                  { "activity": "Light Cardio (e.g., Cycling, Walking)", "duration": "20-30 min" },
+                  { "activity": "Foam Rolling", "duration": "10-15 min" }
+                ],
+                "Day 4: Upper Body (Hypertrophy Focus)": [
+                  { "exercise": "Flat Dumbbell Chest Press", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Seated Shoulder Press", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Bent Over Dumbbell Row", "sets": 4, "reps": "8-10", "rest": "1.5 minutes" },
+                  { "exercise": "Chest Flys (Machine or Dumbbells)", "sets": 3, "reps": "10-12", "rest": "1.5 minutes" },
+                  { "exercise": "Barbell Bicep Curl", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" },
+                  { "exercise": "Overhead Triceps Extension", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" }
+                ],
+                "Day 5: Lower Body (Hypertrophy Focus)": [
+                  { "exercise": "Leg Press", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Lunges", "sets": 3, "reps": "10-12", "rest": "1.5 minutes" },
+                  { "exercise": "Romanian Deadlift", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Hip Thrusts", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Calf Raises", "sets": 4, "reps": "12-15", "rest": "1.5 minutes" }
+                ],
+                "Day 6: Rest": [],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Advanced Muscle Gain (4 Days a Week)",
+        "tags": ["Muscle Gain", "4 Days a Week", "Advanced", "Gym/Home Gym", "No Injuries"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body (Strength Focus)": [
+                  { "exercise": "Barbell Bench Press", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Pull-Ups", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Barbell Row", "sets": 4, "reps": "4-6", "rest": "3 minutes" }
+                ],
+                "Day 2: Lower Body (Strength Focus)": [
+                  { "exercise": "Barbell Squat", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Stiff Leg Dumbbell Deadlift", "sets": 5, "reps": "8-10", "rest": "3 minutes" },
+                  { "exercise": "Leg Press", "sets": 4, "reps": "6-8", "rest": "2 minutes" }
+                ],
+                "Day 3: Rest or Active Recovery": [
+                  { "exercise": "Yoga", "sets": 30, "reps": "minutes", "rest": "N/A" },
+                  { "exercise": "Walking", "sets": 30, "reps": "minutes", "rest": "N/A" }
+                ],
+                "Day 4: Upper Body (Hypertrophy Focus)": [
+                  { "exercise": "Flat Dumbbell Chest Press", "sets": 4, "reps": "8-12", "rest": "2 minutes" },
+                  { "exercise": "Incline Dumbbell Fly", "sets": 4, "reps": "10-12", "rest": "2 minutes" },
+                  { "exercise": "Dumbbell Rows", "sets": 4, "reps": "8-12", "rest": "2 minutes" }
+                ],
+                "Day 5: Lower Body (Hypertrophy Focus)": [
+                  { "exercise": "Bulgarian Split Squats", "sets": 4, "reps": "8-10", "notes": "per leg", "rest": "2 minutes" },
+                  { "exercise": "Hamstring Curls", "sets": 3, "reps": "12-15", "rest": "1.5 minutes" },
+                  { "exercise": "Calf Raises", "sets": 3, "reps": "12-15", "rest": "1.5 minutes" }
+                ],
+                "Day 6: Active Recovery": [
+                  { "exercise": "Swimming", "sets": 30, "reps": "minutes", "rest": "N/A" },
+                  { "exercise": "Stretching Routine", "sets": 20, "reps": "minutes", "rest": "N/A" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },                  
+      {
+        "plan": "Beginner Muscle Gain (Weight Training Only - 5 Days a Week)",
+        "tags": ["Beginner", "Muscle Gain", "Weight Training", "5 Days a Week", "Gym/Home Gym", "No Injuries", "Strength Focus"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body (Push Focus)": [
+                  { "exercise": "Bench Press (Dumbbell)", "sets": 3, "reps": 10, "rest": "60-80 seconds" },
+                  { "exercise": "Shoulder Press (Dumbbell)", "sets": 3, "reps": 10, "rest": "60-80 seconds" },
+                  { "exercise": "Incline Press Machine", "sets": 3, "reps": 12, "rest": "60-80 seconds" },
+                  { "exercise": "Dumbbell Lateral Raises", "sets": 3, "reps": 12, "rest": "60-80 seconds" },
+                  { "exercise": "Triceps Dips (Chair or Bench)", "sets": 3, "reps": 12, "rest": "60-80 seconds" }
+                ],
+                "Day 2: Lower Body": [
+                  { "exercise": "Goblet Squats", "sets": 3, "reps": 15, "rest": "60 seconds" },
+                  { "exercise": "Bulgarian Split Squats", "sets": 3, "reps": 12, "notes": "per leg", "rest": "60-80 seconds" },
+                  { "exercise": "Leg Press Machine", "sets": 3, "reps": 10, "rest": "60-80 seconds" },
+                  { "exercise": "Calf Raises", "sets": 3, "reps": 20, "rest": "40-60 seconds" },
+                  { "exercise": "Plank", "sets": 3, "reps": "30–60 seconds", "rest": "45 seconds" }
+                ],
+                "Day 3: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20–30 min" },
+                  { "activity": "Yoga (Beginner)", "duration": "15–20 min" }
+                ],
+                "Day 4: Upper Body (Pull Focus)": [
+                  { "exercise": "Pull-Ups (Assisted if Needed)", "sets": 3, "reps": 8, "rest": "60-90 seconds" },
+                  { "exercise": "Dumbbell Rows", "sets": 3, "reps": 10, "notes": "per arm", "rest": "60 seconds" },
+                  { "exercise": "Barbell/Dumbbell Bicep Curls", "sets": 3, "reps": "10–12", "rest": "60 seconds" },
+                  { "exercise": "Face Pulls (Cable or Resistance Band)", "sets": 3, "reps": 12, "rest": "60 seconds" },
+                  { "exercise": "Hammer Curls", "sets": 3, "reps": 10, "rest": "60 seconds" }
+                ],
+                "Day 5: Lower Body (Posterior Chain Focus)": [
+                  { "exercise": "Romanian Deadlifts (Dumbbells)", "sets": 3, "reps": 10, "rest": "60-80 seconds" },
+                  { "exercise": "Hip Thrusts (Barbell)", "sets": 3, "reps": 12, "rest": "60-80 seconds" },
+                  { "exercise": "Dumbbell Step-Ups", "sets": 3, "reps": 12, "notes": "per leg", "rest": "60 seconds" },
+                  { "exercise": "Side Plank", "sets": 3, "reps": "20 seconds", "notes": "per side", "rest": "30 seconds" }
+                ],
+                "Day 6: Full-Body Strength": [
+                  { "exercise": "Leg Extension Machine", "sets": 3, "reps": 15, "rest": "60 seconds" },
+                  { "exercise": "Hack Squat", "sets": 3, "reps": "8–10", "rest": "60-90 seconds" },
+                  { "exercise": "Cable Machine Fly", "sets": 3, "reps": 15, "rest": "60 seconds" },
+                  { "exercise": "Bent-Over Rows (Barbell)", "sets": 3, "reps": 10, "rest": "60-80 seconds" },
+                  { "exercise": "Hanging Leg Raises", "sets": 3, "reps": 12, "rest": "45 seconds" }
+                ],
+                "Day 7: Rest or Active Recovery": [
+                  { "activity": "Stretching Routine", "duration": "15–20 min" },
+                  { "activity": "Yoga", "duration": "15–20 min" }
+                ]
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Intermediate Muscle Gain (5 Days a Week)",
+        "tags": ["Muscle Gain", "5 Days a Week", "Intermediate", "Gym/Home Gym", "No Injuries"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body (Strength Focus)": [
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Pull-Ups", "sets": 3, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Barbell Row", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Incline Dumbbell Chest Press", "sets": 3, "reps": "8-10", "rest": "1.5-2 minutes" },
+                  { "exercise": "Dumbbell Bicep Curl", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" },
+                  { "exercise": "Triceps Dips", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" }
+                ],
+                "Day 2: Lower Body (Strength Focus)": [
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Dumbbell Stiff Leg Deadlift", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Leg Press Machine", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Bulgarian Split Squats", "sets": 3, "reps": "8-10", "notes": "per leg", "rest": "1.5-2 minutes" },
+                  { "exercise": "Walking Lunges", "sets": 3, "reps": "10-12", "notes": "per leg", "rest": "1.5-2 minutes" },
+                  { "exercise": "Standing Calf Raises", "sets": 3, "reps": "12-15", "rest": "1.5 minutes" }
+                ],
+                "Day 3: Upper Body (Hypertrophy Focus)": [
+                  { "exercise": "Flat Dumbbell Chest Press", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Seated Shoulder Press", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Bent Over Dumbbell Row", "sets": 4, "reps": "8-10", "rest": "1.5 minutes" },
+                  { "exercise": "Chest Flys (Machine or Dumbbells)", "sets": 3, "reps": "10-12", "rest": "1.5 minutes" },
+                  { "exercise": "Barbell Bicep Curl", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" },
+                  { "exercise": "Overhead Triceps Extension", "sets": 3, "reps": "8-10", "rest": "1.5 minutes" }
+                ],
+                "Day 4: Lower Body (Hypertrophy Focus)": [
+                  { "exercise": "Leg Press", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Lunges", "sets": 3, "reps": "10-12", "rest": "1.5 minutes" },
+                  { "exercise": "Romanian Deadlift", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Hip Thrusts", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Calf Raises", "sets": 4, "reps": "12-15", "rest": "1.5 minutes" }
+                ],
+                "Day 5: Active Recovery": [
+                  { "activity": "Stretching Routine", "duration": "15-20 min" },
+                  { "activity": "Light Cardio (e.g., Cycling, Walking)", "duration": "20-30 min" },
+                  { "activity": "Foam Rolling", "duration": "10-15 min" }
+                ],
+                "Day 6: Rest": [],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Advanced Muscle Gain (5 Days a Week)",
+        "tags": ["Muscle Gain", "5 Days a Week", "Advanced", "Gym/Home Gym", "No Injuries"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body (Strength Focus)": [
+                  { "exercise": "Barbell Bench Press", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Pull-Ups", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Barbell Row", "sets": 4, "reps": "4-6", "rest": "3 minutes" }
+                ],
+                "Day 2: Lower Body (Strength Focus)": [
+                  { "exercise": "Barbell Squat", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Romanian Deadlift", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Leg Press", "sets": 4, "reps": "6-8", "rest": "2 minutes" }
+                ],
+                "Day 3: Upper Body (Hypertrophy Focus)": [
+                  { "exercise": "Flat Dumbbell Chest Press", "sets": 4, "reps": "8-12", "rest": "2 minutes" },
+                  { "exercise": "Incline Dumbbell Fly", "sets": 4, "reps": "10-12", "rest": "2 minutes" },
+                  { "exercise": "Dumbbell Rows", "sets": 4, "reps": "8-12", "rest": "2 minutes" }
+                ],
+                "Day 4: Active Recovery": [
+                  { "exercise": "Yoga", "sets": 30, "reps": "minutes", "rest": "N/A" },
+                  { "exercise": "Walking", "sets": 30, "reps": "minutes", "rest": "N/A" }
+                ],
+                "Day 5: Lower Body (Hypertrophy Focus)": [
+                  { "exercise": "Bulgarian Split Squats", "sets": 4, "reps": "8-10", "notes": "per leg", "rest": "2 minutes" },
+                  { "exercise": "Hamstring Curls", "sets": 3, "reps": "12-15", "rest": "1.5 minutes" },
+                  { "exercise": "Calf Raises", "sets": 3, "reps": "12-15", "rest": "1.5 minutes" }
+                ],
+                "Day 6: Full Body (Varied Intensity)": [
+                  { "exercise": "Deadlift", "sets": 4, "reps": "5-7", "rest": "3 minutes" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Walking Lunges", "sets": 3, "reps": "10-12", "notes": "per leg", "rest": "2 minutes" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },                  
+      {
+        "plan": "Beginner Strength Training (2 Days a Week - Full Body Focus)",
+        "tags": ["Strength", "Beginner", "2 Days a Week", "Full Body", "Gym/Home Gym", "Strength Focus"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Full Body (Strength Focus)": [
+                  { "exercise": "Leg Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Bench Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Seated Row", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Shoulder Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Bicep Curl", "sets": 3, "reps": "10-12", "rest": "60 seconds" }
+                ],
+                "Day 2: Rest or Active Recovery": [
+                  { "activity": "Foam Rolling", "duration": "15-20 min" },
+                  { "activity": "Stretching Routine", "duration": "15-20 min" }
+                ],
+                "Day 3: Rest": [],
+                "Day 4: Full Body (Higher Volume Focus)": [
+                  { "exercise": "Bodyweight Squats", "sets": 3, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Incline Dumbbell Bench Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Lat Pulldown", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Deadlifts", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Triceps Pushdowns", "sets": 3, "reps": "10-12", "rest": "60 seconds" }
+                ],
+                "Day 5: Rest or Active Recovery": [
+                  { "activity": "Foam Rolling", "duration": "15-20 min" },
+                  { "activity": "Stretching Routine", "duration": "15-20 min" }
+                ],
+                "Day 6: Rest": [],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },      
+      {
+        "plan": "Strength Focus (Full Body - 2 Days a Week)",
+        "tags": ["Strength", "2 Days a Week", "Full Body", "Gym/Home Gym", "No Injuries", "Strength Focus", "Intermediate"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Full Body (Strength Focus)": [
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Seated Dumbbell Shoulder Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Pull-Ups (Assisted if needed)", "sets": 3, "reps": "6-8", "rest": "1-2 minutes" },
+                  { "exercise": "Dumbbell Bicep Curl", "sets": 3, "reps": "6-8", "rest": "1-2 minutes" }
+                ],
+                "Day 2: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20-30 min" },
+                  { "activity": "Yoga (Beginner)", "duration": "15-20 min" }
+                ],
+                "Day 3: Rest or Active Recovery": [
+                  { "activity": "Stretching Routine", "duration": "15-20 min" },
+                  { "activity": "Yoga", "duration": "15-20 min" }
+                ],
+                "Day 4: Full Body (Strength Focus)": [
+                  { "exercise": "Deadlift", "sets": 4, "reps": "8-10", "rest": "1.5-2 minutes" },
+                  { "exercise": "Barbell Row", "sets": 4, "reps": "8-10", "rest": "1.5-2 minutes" },
+                  { "exercise": "Leg Press", "sets": 4, "reps": "8-10", "rest": "1.5-2 minutes" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "8-10", "rest": "1.5-2 minutes" },
+                  { "exercise": "Tricep Dips", "sets": 3, "reps": "10-12", "rest": "1 minute" }
+                ],
+                "Day 5: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20-30 min" },
+                  { "activity": "Yoga (Beginner)", "duration": "15-20 min" }
+                ],
+                "Day 6: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20-30 min" },
+                  { "activity": "Yoga (Beginner)", "duration": "15-20 min" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Advanced Strength Training (2 Days a Week - Full Body Focus)",
+        "tags": ["Strength", "Advanced", "2 Days a Week", "Full Body", "Gym/Home Gym", "Strength Focus"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Full Body (Strength Focus)": [
+                  { "exercise": "Barbell Deadlift", "sets": 5, "reps": "3-5", "rest": "3 minutes" },
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Pull-Ups", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "5-7", "rest": "2-3 minutes" },
+                  { "exercise": "Barbell Rows", "sets": 4, "reps": "5-7", "rest": "2-3 minutes" }
+                ],
+                "Day 2: Rest or Active Recovery": [
+                  { "activity": "Foam Rolling", "duration": "20-30 min" },
+                  { "activity": "Stretching Routine", "duration": "20 min" }
+                ],
+                "Day 3: Rest": [],
+                "Day 4: Full Body (Volume & Power Focus)": [
+                  { "exercise": "Pause Squats", "sets": 4, "reps": "3-5", "rest": "3 minutes" },
+                  { "exercise": "Incline Bench Press", "sets": 4, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Romanian Deadlifts", "sets": 4, "reps": "5-7", "rest": "2-3 minutes" },
+                  { "exercise": "Dumbbell Lunges", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Bicep Curls (Barbell)", "sets": 3, "reps": "8-10", "rest": "90 seconds" }
+                ],
+                "Day 5: Active Recovery / Mobility": [
+                  { "activity": "Yoga (Advanced)", "duration": "30 min" },
+                  { "activity": "Foam Rolling", "duration": "20 min" },
+                  { "activity": "Light Cycling", "duration": "30 min" }
+                ],
+                "Day 6: Rest": [],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Beginner Strength Training (3 Days a Week - Full Body Focus)",
+        "tags": ["Strength", "Beginner", "3 Days a Week", "Full Body", "Gym/Home Gym", "Strength Focus"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Full Body (Strength Focus)": [
+                  { "exercise": "Leg Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Bench Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Seated Row", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Shoulder Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Bicep Curl", "sets": 3, "reps": "10-12", "rest": "60 seconds" }
+                ],
+                "Day 2: Active Recovery (Light Focus)": [
+                  { "activity": "Foam Rolling", "duration": "15-20 min" },
+                  { "activity": "Stretching Routine", "duration": "15-20 min" }
+                ],
+                "Day 3: Full Body (Higher Volume Focus)": [
+                  { "exercise": "Bodyweight Squats", "sets": 3, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Incline Dumbbell Bench Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Lat Pulldown", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Deadlifts", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Triceps Pushdowns", "sets": 3, "reps": "10-12", "rest": "60 seconds" }
+                ],
+                "Day 4: Active Recovery (Light Focus)": [
+                  { "activity": "Foam Rolling", "duration": "15-20 min" },
+                  { "activity": "Stretching Routine", "duration": "15-20 min" }
+                ],
+                "Day 5: Full Body (Strength and Core Focus)": [
+                  { "exercise": "Goblet Squats", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Flat Dumbbell Bench Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Single-arm Dumbbell Row", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Plank", "sets": 3, "reps": "30-45 seconds", "rest": "60 seconds" },
+                  { "exercise": "Russian Twists", "sets": 3, "reps": "20-30 per side", "rest": "60 seconds" }
+                ],
+                "Day 6: Active Recovery (Light Focus)": [
+                  { "activity": "Foam Rolling", "duration": "15-20 min" },
+                  { "activity": "Stretching Routine", "duration": "15-20 min" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },                 
+      {
+        "plan": "Strength Focus (3 Days a Week)",
+        "tags": ["Strength", "3 Days a Week", "Full Body", "Gym/Home Gym", "No Injuries", "Strength Focus", "Intermediate"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Full Body Push (Heavy)": [
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "5", "rest": "2 minutes" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "8", "rest": "2 minutes" },
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": "6", "rest": "2 minutes" },
+                  { "exercise": "Incline Dumbbell Press", "sets": 3, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Triceps Dips", "sets": 3, "reps": "10-12", "rest": "1-2 minutes" }
+                ],
+                "Day 2: Full Body Pull (Heavy)": [
+                  { "exercise": "Deadlift", "sets": 4, "reps": "6", "rest": "2-3 minutes" },
+                  { "exercise": "Barbell Row (chest supported if possible)", "sets": 4, "reps": "6-8", "rest": "2-3 minutes" },
+                  { "exercise": "Pull-Ups", "sets": 4, "reps": "6 (or as many as you can until you reach 6)", "rest": "2-3 minutes" },
+                  { "exercise": "Face Pulls", "sets": 3, "reps": "6-8", "rest": "1 minute" },
+                  { "exercise": "Bicep Curls (Dumbbells)", "sets": 3, "reps": "8-10", "rest": "1 minute" }
+                ],
+                "Day 3: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20-30 min" },
+                  { "activity": "Yoga (Beginner)", "duration": "15-20 min" }
+                ],                
+                "Day 4: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20-30 min" },
+                  { "activity": "Yoga (Beginner)", "duration": "15-20 min" }
+                ],
+                "Day 4: Full Body (Higher Volume - Strength Focus)": [
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": "10-12", "rest": "1.5-2 minutes" },
+                  { "exercise": "Dumbbell Chest Press", "sets": 4, "reps": "8-10", "rest": "1.5-2 minutes" },
+                  { "exercise": "Seated Dumbbell Shoulder Press", "sets": 4, "reps": "8-10", "rest": "1.5-2 minutes" },
+                  { "exercise": "Romanian Deadlift (Dumbbells)", "sets": 4, "reps": "8-10", "rest": "1.5-2 minutes" },
+                  { "exercise": "Dumbbell Rows", "sets": 3, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Tricep Kickbacks", "sets": 3, "reps": "10-12", "rest": "1-2 minutes" }
+                ],
+                "Day 6: Rest": [],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Advanced Strength Training (3 Days a Week - Full Body Focus)",
+        "tags": ["Strength", "Advanced", "3 Days a Week", "Full Body", "Gym/Home Gym", "Strength Focus"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Full Body (Strength Focus)": [
+                  { "exercise": "Barbell Squat", "sets": 5, "reps": "3-5", "rest": "3 minutes" },
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Pull-Ups", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Romanian Deadlift", "sets": 4, "reps": "5-7", "rest": "2-3 minutes" },
+                  { "exercise": "Tricep Dips", "sets": 3, "reps": "6-8", "rest": "90 seconds" }
+                ],
+                "Day 2: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20-30 min" },
+                  { "activity": "Stretching Routine", "duration": "20-30 min" }
+                ],
+                "Day 3: Full Body (Volume Focus)": [
+                  { "exercise": "Deadlift", "sets": 4, "reps": "6-8", "rest": "2-3 minutes" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "5-7", "rest": "2-3 minutes" },
+                  { "exercise": "Bent-Over Rows", "sets": 4, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Leg Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Bicep Curls (Barbell)", "sets": 3, "reps": "8-10", "rest": "90 seconds" }
+                ],
+                "Day 4: Rest or Active Recovery": [
+                  { "activity": "Yoga (Advanced)", "duration": "30 min" },
+                  { "activity": "Foam Rolling", "duration": "15-20 min" }
+                ],
+                "Day 5: Full Body (Strength & Power Focus)": [
+                  { "exercise": "Pause Squats", "sets": 4, "reps": "3-5", "rest": "3 minutes" },
+                  { "exercise": "Incline Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "T-Bar Rows", "sets": 4, "reps": "5-7", "rest": "2-3 minutes" },
+                  { "exercise": "Bulgarian Split Squats", "sets": 3, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Face Pulls", "sets": 3, "reps": "8-10", "rest": "90 seconds" }
+                ],
+                "Day 6: Rest": [],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },      
+      {
+        "plan": "Beginner Strength Training (4 Days a Week - Upper/Lower Split)",
+        "tags": ["Strength", "Beginner", "4 Days a Week", "Upper/Lower Split", "Gym/Home Gym", "No Injuries"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body (Push Focus)": [
+                  { "exercise": "Barbell Bench Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Shoulder Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Chest Press Machine", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Tricep Pushdowns", "sets": 3, "reps": "10-12", "rest": "60 seconds" }
+                ],
+                "Day 2: Lower Body (Legs Focus)": [
+                  { "exercise": "Leg Press Machine", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Lunges", "sets": 3, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Leg Curls", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Calf Raises", "sets": 3, "reps": "12-15", "rest": "60 seconds" }
+                ],
+                "Day 3: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20-30 min" },
+                  { "activity": "Stretching Routine", "duration": "15-20 min" }
+                ],
+                "Day 4: Upper Body (Pull Focus)": [
+                  { "exercise": "Lat Pulldown", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Seated Cable Row", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Rows", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Bicep Curls", "sets": 3, "reps": "10-12", "rest": "60 seconds" }
+                ],
+                "Day 5: Lower Body (Legs Focus)": [
+                  { "exercise": "Goblet Squats", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Step-Ups", "sets": 3, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Leg Extensions", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Standing Calf Raises", "sets": 3, "reps": "12-15", "rest": "60 seconds" }
+                ],
+                "Day 6: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20-30 min" },
+                  { "activity": "Yoga (Beginner)", "duration": "15-20 min" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },                  
+      {
+        "plan": "Strength Focus (4 Days a Week - Upper/Lower Split)",
+        "tags": ["Strength", "4 Days a Week", "Upper/Lower Split", "Gym/Home Gym", "No Injuries", "Strength Focus", "Intermediate"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body (Heavy)": [
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Barbell Row", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Pull-Ups (Assisted if needed)", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Triceps Dips", "sets": 3, "reps": "6-8", "rest": "1-2 minutes" }
+                ],
+                "Day 2: Lower Body (Heavy)": [
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Deadlift", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Leg Press Machine", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Walking Lunges", "sets": 3, "reps": "6-8", "notes": "per leg", "rest": "1-2 minutes" },
+                  { "exercise": "Calf Raises", "sets": 3, "reps": "6-8", "rest": "1-2 minutes" }
+                ],
+                "Day 3: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20-30 min" },
+                  { "activity": "Yoga (Beginner)", "duration": "15-20 min" }
+                ],
+                "Day 4: Upper Body (High Volume)": [
+                  { "exercise": "Dumbbell Chest Press", "sets": 4, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Seated Dumbbell Shoulder Press", "sets": 4, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Lat Pulldowns", "sets": 4, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Dumbbell Rows", "sets": 4, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Bicep Curls (Dumbbells)", "sets": 3, "reps": "10-12", "rest": "1-2 minutes" },
+                  { "exercise": "Tricep Kickbacks", "sets": 3, "reps": "10-12", "rest": "1-2 minutes" }
+                ],
+                "Day 5: Lower Body (High Volume)": [
+                  { "exercise": "Goblet Squats", "sets": 4, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Bulgarian Split Squats", "sets": 4, "reps": "8-10", "notes": "per leg", "rest": "1-2 minutes" },
+                  { "exercise": "Leg Curls", "sets": 4, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Step-Ups", "sets": 3, "reps": "8-10", "notes": "per leg", "rest": "1-2 minutes" },
+                  { "exercise": "Standing Calf Raises", "sets": 3, "reps": "12-15", "rest": "1-2 minutes" }
+                ],
+                "Day 6: Rest or Active Recovery": [
+                  { "activity": "Stretching Routine", "duration": "15-20 min" },
+                  { "activity": "Yoga", "duration": "15-20 min" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Strength Focus (4 Days a Week - Upper/Lower Split - Advanced)",
+        "tags": ["Strength", "4 Days a Week", "Upper/Lower Split", "Gym/Home Gym", "No Injuries", "Strength Focus", "Advanced"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body (Heavy)": [
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "3 minutes", "notes": "Pause for 2 seconds at the bottom of each rep" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes", "notes": "Last set: 3-5 partial reps at the end" },
+                  { "exercise": "Barbell Row", "sets": 4, "reps": "6-8", "rest": "2-3 minutes" },
+                  { "exercise": "Weighted Pull-Ups", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Triceps Dips", "sets": 3, "reps": "6-8", "rest": "2 minutes", "notes": "Weighted if possible" }
+                ],
+                "Day 2: Lower Body (Heavy)": [
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": "4-6", "rest": "3 minutes", "notes": "Pause for 2 seconds at the bottom" },
+                  { "exercise": "Hip Thrusts (Barbell)", "sets": 4, "reps": "4-6", "rest": "3 minutes", "notes": "Keep back neutral" },
+                  { "exercise": "Leg Press Machine", "sets": 4, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Walking Lunges", "sets": 3, "reps": "8-10", "notes": "Per leg, with dumbbells", "rest": "2 minutes" },
+                  { "exercise": "Standing Calf Raises", "sets": 3, "reps": "10-12", "rest": "1-2 minutes" }
+                ],
+                "Day 3: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20-30 min" },
+                  { "activity": "Mobility Drills", "duration": "15 min" }
+                ],
+                "Day 4: Upper Body (Pyramid Reps)": [
+                  { "exercise": "Incline Bench Press", "sets": 5, "reps": "10, 8, 6, 8, 10", "rest": "2 minutes" },
+                  { "exercise": "Seated Dumbbell Shoulder Press", "sets": 4, "reps": "6-8", "rest": "2 minutes", "notes": "Last set: 10-12 reps at lighter weight" },
+                  { "exercise": "Weighted Pull-Ups", "sets": 4, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Dumbbell Rows", "sets": 3, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Barbell Bicep Curls", "sets": 3, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Overhead Dumbbell Tricep Extensions", "sets": 3, "reps": "8-10", "rest": "1-2 minutes" }
+                ],
+                "Day 5: Lower Body (Descending Reps)": [
+                  { "exercise": "Front Squat", "sets": 4, "reps": "8, 6, 4, 4", "rest": "3 minutes" },
+                  { "exercise": "Sumo Deadlift", "sets": 4, "reps": "8, 6, 4, 4", "rest": "3 minutes" },
+                  { "exercise": "Leg Curls", "sets": 4, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Step-Ups", "sets": 3, "reps": "8-10", "notes": "Per leg", "rest": "2 minutes" },
+                  { "exercise": "Seated Calf Raises", "sets": 3, "reps": "10-12", "rest": "1-2 minutes" }
+                ],
+                "Day 6: Rest or Active Recovery": [
+                  { "activity": "Yoga", "duration": "20-30 min" },
+                  { "activity": "Stretching Routine", "duration": "15-20 min" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": {
+                "Day 1: Upper Body (Pause Reps)": [
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "3 minutes", "notes": "Pause for 3 seconds at the bottom of each rep" },
+                  { "exercise": "Overhead Press", "sets": 3, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Barbell Row", "sets": 4, "reps": "6-8", "rest": "2-3 minutes" },
+                  { "exercise": "Weighted Chin-Ups", "sets": 3, "reps": "6-8", "rest": "2-3 minutes" },
+                  { "exercise": "Close-Grip Bench Press", "sets": 3, "reps": "6-8", "rest": "2 minutes" }
+                ],
+                "Day 2: Lower Body (Back-Off Sets)": [
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": "6-8", "rest": "3 minutes", "notes": "Last set: Reduce weight by 20% and perform 10-12 reps" },
+                  { "exercise": "Front Rack Reverse Lunge", "sets": 4, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Bulgarian Split Squats", "sets": 3, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Leg Press Machine", "sets": 3, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Standing Calf Raises", "sets": 3, "reps": "10-12", "rest": "1-2 minutes" }
+                ],
+                "Day 3: Rest or Active Recovery": [
+                  { "activity": "Light Cardio", "duration": "20-30 min" },
+                  { "activity": "Mobility Drills", "duration": "15 min" }
+                ],
+                "Day 4: Upper Body (Volume Focus)": [
+                  { "exercise": "Incline Dumbbell Press", "sets": 5, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Seated Barbell Shoulder Press", "sets": 4, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Pull-Ups", "sets": 4, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Dumbbell Rows", "sets": 3, "reps": "8-10", "rest": "2 minutes" },
+                  { "exercise": "Barbell Curls", "sets": 3, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Skull Crushers", "sets": 3, "reps": "8-10", "rest": "1-2 minutes" }
+                ],
+                "Day 5: Lower Body (Variation)": [
+                  { "exercise": "Hack Squats", "sets": 4, "reps": "6-8", "rest": "3 minutes" },
+                  { "exercise": "Romanian Deadlift", "sets": 4, "reps": "6-8", "rest": "3 minutes" },
+                  { "exercise": "Lunges", "sets": 3, "reps": "8-10", "notes": "Per leg", "rest": "2 minutes" },
+                  { "exercise": "Leg Extensions", "sets": 3, "reps": "10-12", "rest": "2 minutes" },
+                  { "exercise": "Seated Calf Raises", "sets": 3, "reps": "12-15", "rest": "1-2 minutes" }
+                ],
+                "Day 6: Rest or Active Recovery": [
+                  { "activity": "Yoga", "duration": "20-30 min" },
+                  { "activity": "Stretching Routine", "duration": "15-20 min" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 2" }
+            }
+          ]
+        }
+      },      
+      {
+        "plan": "Beginner Muscle Gain (5 Days a Week)",
+        "tags": ["Beginner", "Muscle Gain", "5 Days a Week", "Gym/Home Gym", "No Injuries"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body (Push Focus)": [
+                  { "exercise": "Barbell Bench Press", "sets": 3, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Incline Dumbbell Press", "sets": 3, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Overhead Dumbbell Press", "sets": 3, "reps": "12-15", "rest": "60 seconds" },
+                  { "exercise": "Dumbbell Lateral Raises", "sets": 3, "reps": "12-15", "rest": "60 seconds" },
+                  { "exercise": "Cable Tricep Pushdowns", "sets": 3, "reps": "12-15", "rest": "60 seconds" }
+                ],
+                "Day 2: Lower Body (Quad Focus)": [
+                  { "exercise": "Back Squat", "sets": 3, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Leg Press", "sets": 3, "reps": "12-15", "rest": "90 seconds" },
+                  { "exercise": "Walking Lunges", "sets": 3, "reps": "10-12 per leg", "rest": "90 seconds" },
+                  { "exercise": "Leg Extensions", "sets": 3, "reps": "12-15", "rest": "60 seconds" },
+                  { "exercise": "Standing Calf Raises", "sets": 3, "reps": "15-20", "rest": "60 seconds" }
+                ],
+                "Day 3: Rest or Active Recovery": [
+                  { "activity": "Yoga", "duration": "30 minutes" },
+                  { "activity": "Walking", "duration": "30-40 minutes" }
+                ],
+                "Day 4: Upper Body (Pull Focus)": [
+                  { "exercise": "Lat Pulldown", "sets": 3, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Barbell Row", "sets": 3, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Curls", "sets": 3, "reps": "12-15", "rest": "60 seconds" },
+                  { "exercise": "Hammer Curls", "sets": 3, "reps": "12-15", "rest": "60 seconds" },
+                  { "exercise": "Face Pulls", "sets": 3, "reps": "12-15", "rest": "60 seconds" }
+                ],
+                "Day 5: Lower Body (Hamstring and Glute Focus)": [
+                  { "exercise": "Romanian Deadlift", "sets": 3, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Hip Thrusts", "sets": 3, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Bulgarian Split Squats", "sets": 3, "reps": "10-12 per leg", "rest": "90 seconds" },
+                  { "exercise": "Seated Leg Curl", "sets": 3, "reps": "12-15", "rest": "60 seconds" },
+                  { "exercise": "Standing Calf Raises", "sets": 3, "reps": "15-20", "rest": "60 seconds" }
+                ],
+                "Day 6: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20-30 min" },
+                  { "activity": "Stretching Routine", "duration": "15-20 min" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },            
+      {
+        "plan": "Strength Focus (5 Days a Week - Push/Pull/Legs, Upper/Lower Split)",
+        "tags": ["Strength", "5 Days a Week", "Push/Pull/Legs", "Upper/Lower", "Gym/Home Gym", "No Injuries", "Strength Focus", "Intermediate"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Push (Heavy)": [
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Dumbbell Chest Press", "sets": 3, "reps": "6-8", "rest": "1-2 minutes" },
+                  { "exercise": "Triceps Dips", "sets": 3, "reps": "6-8", "rest": "1-2 minutes" },
+                  { "exercise": "Lateral Raises", "sets": 3, "reps": "10-12", "rest": "1-2 minutes" }
+                ],
+                "Day 2: Pull (Heavy)": [
+                  { "exercise": "Deadlift", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Pull-Ups (Assisted if needed)", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Barbell Row", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Dumbbell Rows", "sets": 3, "reps": "6-8", "rest": "1-2 minutes" },
+                  { "exercise": "Face Pulls", "sets": 3, "reps": "10-12", "rest": "1-2 minutes" }
+                ],
+                "Day 3: Legs (Heavy)": [
+                  { "exercise": "Barbell Squat", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Romanian Deadlifts", "sets": 4, "reps": "4-6", "rest": "2-3 minutes" },
+                  { "exercise": "Leg Press", "sets": 4, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Walking Lunges", "sets": 3, "reps": "6-8", "notes": "per leg", "rest": "1-2 minutes" },
+                  { "exercise": "Calf Raises", "sets": 3, "reps": "10-12", "rest": "1-2 minutes" }
+                ],
+                "Day 4: Rest or Active Recovery": [
+                  { "activity": "Light Walk", "duration": "20-30 minutes" },
+                  { "activity": "Yoga (Beginner)", "duration": "15-20 minutes" },
+                  { "activity": "Foam Rolling", "duration": "10-15 minutes" }
+                ],
+                "Day 5: Upper Body (High Volume)": [
+                  { "exercise": "Dumbbell Chest Press", "sets": 4, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Seated Dumbbell Shoulder Press", "sets": 4, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Lat Pulldowns", "sets": 4, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Dumbbell Rows", "sets": 4, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Bicep Curls (Dumbbells)", "sets": 3, "reps": "10-12", "rest": "1-2 minutes" },
+                  { "exercise": "Triceps Kickbacks", "sets": 3, "reps": "10-12", "rest": "1-2 minutes" }
+                ],
+                "Day 6: Lower Body (High Volume)": [
+                  { "exercise": "Goblet Squats", "sets": 4, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Bulgarian Split Squats", "sets": 4, "reps": "8-10", "notes": "per leg", "rest": "1-2 minutes" },
+                  { "exercise": "Leg Curls", "sets": 4, "reps": "8-10", "rest": "1-2 minutes" },
+                  { "exercise": "Step-Ups", "sets": 3, "reps": "8-10", "notes": "per leg", "rest": "1-2 minutes" },
+                  { "exercise": "Standing Calf Raises", "sets": 3, "reps": "12-15", "rest": "1-2 minutes" }
+                ]
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Advanced Strength (5 Days a Week)",
+        "tags": ["Strength", "Advanced", "5 Days a Week", "Push/Pull/Legs Split"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Push (Chest, Shoulders, Triceps) - Low Volume": [
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "120 seconds" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "4-6", "rest": "120 seconds" },
+                  { "exercise": "Incline Dumbbell Press", "sets": 3, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Lateral Raises", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Tricep Dips", "sets": 3, "reps": "6-8", "rest": "90 seconds" }
+                ],
+                "Day 2: Pull (Back, Biceps) - Low Volume": [
+                  { "exercise": "Deadlifts", "sets": 4, "reps": "4-6", "rest": "120 seconds" },
+                  { "exercise": "Pull-Ups", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Barbell Rows", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Barbell Bicep Curls", "sets": 3, "reps": "6-8", "rest": "60 seconds" },
+                  { "exercise": "Hammer Curls", "sets": 3, "reps": "6-8", "rest": "60 seconds" }
+                ],
+                "Day 3: Legs (Quads, Hamstrings, Glutes) - Low Volume": [
+                  { "exercise": "Back Squats", "sets": 4, "reps": "4-6", "rest": "120 seconds" },
+                  { "exercise": "Leg Press", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Romanian Deadlifts", "sets": 3, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Leg Curls", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Calf Raises", "sets": 4, "reps": "10-12", "rest": "60 seconds" }
+                ],
+                "Day 4: Rest or Active Recovery": [
+                  { "activity": "Foam Rolling", "duration": "10-15 minutes" },
+                  { "activity": "Walking", "duration": "30 minutes" }
+                ],
+                "Day 5: Push (Chest, Shoulders, Triceps) - High Volume": [
+                  { "exercise": "Flat Barbell Bench Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Arnold Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Chest Flys", "sets": 4, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Cable Tricep Extensions", "sets": 4, "reps": "8-10", "rest": "60 seconds" },
+                  { "exercise": "Lateral Raises", "sets": 3, "reps": "12-15", "rest": "60 seconds" }
+                ],
+                "Day 6: Pull (Back, Biceps) - High Volume": [
+                  { "exercise": "Barbell Deadlifts", "sets": 4, "reps": "6-8", "rest": "120 seconds" },
+                  { "exercise": "Chin-Ups", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Rows", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Preacher Curls", "sets": 3, "reps": "8-10", "rest": "60 seconds" },
+                  { "exercise": "Concentration Curls", "sets": 3, "reps": "8-10", "rest": "60 seconds" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": {
+                "Day 1: Push (Chest, Shoulders, Triceps) - High Volume": [
+                  { "exercise": "Flat Barbell Bench Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Arnold Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Chest Flys", "sets": 4, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Cable Tricep Extensions", "sets": 4, "reps": "8-10", "rest": "60 seconds" },
+                  { "exercise": "Lateral Raises", "sets": 3, "reps": "12-15", "rest": "60 seconds" }
+                ],
+                "Day 2: Pull (Back, Biceps) - High Volume": [
+                  { "exercise": "Barbell Deadlifts", "sets": 4, "reps": "6-8", "rest": "120 seconds" },
+                  { "exercise": "Chin-Ups", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Rows", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Preacher Curls", "sets": 3, "reps": "8-10", "rest": "60 seconds" },
+                  { "exercise": "Concentration Curls", "sets": 3, "reps": "8-10", "rest": "60 seconds" }
+                ],
+                "Day 3: Legs (Quads, Hamstrings, Glutes) - High Volume": [
+                  { "exercise": "Back Squats", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Leg Press", "sets": 4, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Romanian Deadlifts", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Leg Curls", "sets": 3, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Calf Raises", "sets": 4, "reps": "12-15", "rest": "60 seconds" }
+                ],
+                "Day 4: Rest or Active Recovery": [
+                  { "activity": "Foam Rolling", "duration": "10-15 minutes" },
+                  { "activity": "Walking", "duration": "30 minutes" }
+                ],
+                "Day 5: Push (Chest, Shoulders, Triceps) - Low Volume": [
+                  { "exercise": "Barbell Bench Press", "sets": 4, "reps": "4-6", "rest": "120 seconds" },
+                  { "exercise": "Overhead Press", "sets": 4, "reps": "4-6", "rest": "120 seconds" },
+                  { "exercise": "Incline Dumbbell Press", "sets": 3, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Lateral Raises", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Tricep Dips", "sets": 3, "reps": "6-8", "rest": "90 seconds" }
+                ],
+                "Day 6: Pull (Back, Biceps) - Low Volume": [
+                  { "exercise": "Deadlifts", "sets": 4, "reps": "4-6", "rest": "120 seconds" },
+                  { "exercise": "Pull-Ups", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Barbell Rows", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Barbell Bicep Curls", "sets": 3, "reps": "6-8", "rest": "60 seconds" },
+                  { "exercise": "Hammer Curls", "sets": 3, "reps": "6-8", "rest": "60 seconds" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 2" }
+            }
+          ]
+        }
+      },                        
+      {
+        "plan": "Improved Endurance (Mixed Routine - 2 Days a Week)",
+        "tags": ["Beginner", "Improved Endurance", "Strength", "Cardio", "Flexibility", "2 Days a Week", "Mixed Routine", "Gym/Home Gym"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Strength Focus (Full Body)": [
+                  { "exercise": "Barbell Squat", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Bench Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Lat Pulldown", "sets": 3, "reps": "10-12", "rest": "60-90 seconds" },
+                  { "exercise": "Dumbbell Romanian Deadlift", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Plank", "sets": 3, "duration": "30-45 seconds", "rest": "60 seconds" }
+                ],
+                "Day 2: Rest or Active Recovery": [
+                  { "activity": "Yoga (Beginner)", "duration": "15–20 min" },
+                  { "activity": "Light Walk", "duration": "20–30 min" }
+                ],
+                "Day 3: Cardio (Choose Activity)": [
+                  { "activity": "Running", "duration": "20–30 min", "intensity": "Moderate" },
+                  { "activity": "Cycling", "duration": "30–45 min", "intensity": "Low to Moderate" },
+                  { "activity": "Swimming", "duration": "20–30 min", "intensity": "Moderate" }
+                ],
+                "Day 4: Rest or Active Recovery": [
+                  { "activity": "Foam Rolling and Stretching", "duration": "15–20 min" }
+                ],
+                "Day 5: Optional Push-Up Circuit (20-30 mins)": [
+                  { "exercise": "Standard Push-Ups", "duration": "1 min", "rest": "30 seconds" },
+                  { "exercise": "Wide Grip Push-Ups", "duration": "1 min", "rest": "30 seconds" },
+                  { "exercise": "Diamond Push-Ups", "duration": "1 min", "rest": "30 seconds" },
+                  { "exercise": "Incline Push-Ups", "duration": "1 min", "rest": "30 seconds" },
+                  { "exercise": "Knee Push-Ups (if needed)", "duration": "1 min", "rest": "30 seconds" },
+                  { "exercise": "Pike Push-Ups", "duration": "1 min", "rest": "30 seconds" },
+                  { "instruction": "Repeat the circuit 2-3 times, resting 1-2 minutes between rounds." }
+                ],
+                "Day 6: Rest or Active Recovery": [
+                  { "activity": "Easy Hike or Walk", "duration": "40-60 min" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Improved Endurance (Intermediate, 2 Days a Week)",
+        "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "2 Days a Week", "Mixed Routine", "Intermediate"],
+        "schedule": {
+        "weeks": [
+          {
+            "Week 1": {
+              "Day 1: Strength and Cardio": [
+                { "exercise": "Goblet Squats", "sets": 4, "reps": "10-12", "rest": "75-90 seconds" },
+                { "exercise": "Pull-Ups (band-assisted if necessary)", "sets": 3, "reps": "8-10", "rest": "75-90 seconds" },
+                { "exercise": "Rowing Machine (moderate pace)", "sets": 1, "duration": "10 minutes", "rest": "NA" },
+                { "exercise": "Russian Twists (weighted)", "sets": 3, "reps": "12 per side", "rest": "60 seconds" }
+              ],
+              "Day 2: Rest or Active Recovery": [
+                { "activity": "Walking", "duration": "30 minutes" },
+                { "activity": "Yoga (Gentle Flow)", "duration": "20-30 minutes" }
+              ],
+              "Day 3: Cardio": [
+                { "exercise": "Running (steady pace)", "sets": 1, "duration": "25 minutes", "rest": "NA" },
+                { "exercise": "Stretching (Full Body)", "sets": 1, "duration": "15-20 minutes", "rest": "NA" }
+              ],
+              "Day 4: Rest or Active Recovery": [
+                { "activity": "Swimming (light pace)", "duration": "20-30 minutes" },
+                { "activity": "Stretching (Upper Body Focus)", "duration": "10-15 minutes" }
+              ],
+              "Day 5: Strength and Flexibility": [
+                { "exercise": "Romanian Deadlifts", "sets": 3, "reps": "10-12", "rest": "75-90 seconds" },
+                { "exercise": "Incline Dumbbell Press", "sets": 3, "reps": "8-10", "rest": "75-90 seconds" },
+                { "exercise": "Cycling (steady pace)", "sets": 1, "duration": "10 minutes", "rest": "NA" },
+                { "exercise": "Side Plank (each side)", "sets": 3, "duration": "30 seconds per side", "rest": "60 seconds" }
+              ],
+              "Day 6: Rest or Active Recovery": [
+                { "activity": "Yoga (Dynamic Flow)", "duration": "30-45 minutes" },
+                { "activity": "Walking", "duration": "20-30 minutes" }
+              ],
+              "Day 7: Rest": []
+            }
+          },
+          {
+            "Week 2": {
+              "Day 1: Strength and Cardio": [
+                { "exercise": "Front Squats", "sets": 4, "reps": "8-10", "rest": "75-90 seconds" },
+                { "exercise": "Inverted Rows", "sets": 3, "reps": "8-10", "rest": "75-90 seconds" },
+                { "exercise": "Rowing Machine (intervals)", "sets": 1, "duration": "12 minutes", "rest": "NA" },
+                { "exercise": "Bicycle Crunches", "sets": 3, "reps": "15 per side", "rest": "60 seconds" }
+              ],
+              "Day 2: Rest or Active Recovery": [
+                { "activity": "Yoga (Gentle Flow)", "duration": "30 minutes" },
+                { "activity": "Walking", "duration": "30 minutes" }
+              ],
+              "Day 3: Cardio": [
+                { "exercise": "Cycling (intervals)", "sets": 1, "duration": "20 minutes", "rest": "NA" },
+                { "exercise": "Stretching (Lower Body Focus)", "sets": 1, "duration": "15 minutes", "rest": "NA" }
+              ],
+              "Day 4: Rest or Active Recovery": [
+                { "activity": "Swimming (light pace)", "duration": "25-30 minutes" },
+                { "activity": "Stretching (Full Body)", "duration": "20 minutes" }
+              ],
+              "Day 5: Strength and Flexibility": [
+                { "exercise": "Step-Ups (weighted)", "sets": 3, "reps": "10-12 per leg", "rest": "75-90 seconds" },
+                { "exercise": "Dumbbell Bench Press", "sets": 3, "reps": "10-12", "rest": "75-90 seconds" },
+                { "exercise": "Cycling (moderate pace)", "sets": 1, "duration": "12 minutes", "rest": "NA" },
+                { "exercise": "Bird Dog", "sets": 3, "duration": "30 seconds per side", "rest": "60 seconds" }
+              ],
+              "Day 6: Rest or Active Recovery": [
+                { "activity": "Yoga (Gentle Flow)", "duration": "30 minutes" },
+                { "activity": "Walking", "duration": "20-30 minutes" }
+              ],
+              "Day 7: Rest": []
+            }
+          },
+          {
+            "Week 3": { "ref": "Week 1" }
+          },
+          {
+            "Week 4": { "ref": "Week 2" }
+          }
+        ]
+        }
+      },      
+      {
+         
+          "plan": "Improved Endurance (Advanced, 2 Days a Week)",
+          "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "2 Days a Week", "Mixed Routine", "Advanced"],
+          "schedule": {
+            "Weeks": [
+              {
+                "Week 1": {
+                  "Day 1: Strength and Cardio": [
+                    { "exercise": "Barbell Squat", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                    { "exercise": "Pull-Ups (weighted, if possible)", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Rowing Machine (moderate pace)", "sets": 1, "duration": "12 minutes", "rest": "NA" },
+                    { "exercise": "Plank with Shoulder Taps", "sets": 3, "duration": "45 seconds", "rest": "60 seconds" }
+                  ],
+                  "Day 2: Rest or Active Recovery": [
+                    { "activity": "Yoga (Dynamic Flow)", "duration": "30-45 minutes" },
+                    { "activity": "Walking", "duration": "30 minutes" }
+                  ],
+                  "Day 3: Cardio and Core": [
+                    { "exercise": "Running (intervals)", "sets": 1, "duration": "30 minutes", "rest": "NA" },
+                    { "exercise": "Stretching (Full Body)", "sets": 1, "duration": "20 minutes", "rest": "NA" }
+                  ],
+                  "Day 4: Rest or Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "30-45 minutes" },
+                    { "activity": "Walking", "duration": "30 minutes" }
+                  ],
+                  "Day 5: Strength and Endurance": [
+                    { "exercise": "Romanian Deadlifts", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                    { "exercise": "Push-Ups (weighted, if possible)", "sets": 3, "reps": "12-15", "rest": "60 seconds" },
+                    { "exercise": "Cycling (steady pace)", "sets": 1, "duration": "12 minutes", "rest": "NA" },
+                    { "exercise": "Side Plank (each side)", "sets": 3, "duration": "30 seconds per side", "rest": "60 seconds" }
+                  ],
+                  "Day 6: Rest or Active Recovery": [
+                    { "activity": "Swimming (light pace)", "duration": "30 minutes" },
+                    { "activity": "Stretching (Full Body)", "duration": "20 minutes" }
+                  ],
+                  "Day 7: Rest": []
+                }
+              },
+              {
+                "Week 2": {
+                  "Day 1: Strength and Cardio": [
+                    { "exercise": "Front Squat", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                    { "exercise": "Dumbbell Rows", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Rowing Machine (steady pace)", "sets": 1, "duration": "15 minutes", "rest": "NA" },
+                    { "exercise": "Plank with Leg Lifts", "sets": 3, "duration": "45 seconds", "rest": "60 seconds" }
+                  ],
+                  "Day 2: Rest or Active Recovery": [
+                    { "activity": "Yoga (Dynamic Flow)", "duration": "30-45 minutes" },
+                    { "activity": "Walking", "duration": "30-45 minutes" }
+                  ],
+                  "Day 3: Cardio and Core": [
+                    { "exercise": "Cycling (high-intensity intervals)", "sets": 1, "duration": "30 minutes", "rest": "NA" },
+                    { "exercise": "Stretching (Full Body)", "sets": 1, "duration": "25 minutes", "rest": "NA" }
+                  ],
+                  "Day 4: Rest or Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "30-45 minutes" },
+                    { "activity": "Walking", "duration": "30-45 minutes" }
+                  ],
+                  "Day 5: Strength and Endurance": [
+                    { "exercise": "Romanian Deadlifts", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                    { "exercise": "Dumbbell Bench Press", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Cycling (steady pace)", "sets": 1, "duration": "15 minutes", "rest": "NA" },
+                    { "exercise": "Side Plank with Reach Under (each side)", "sets": 3, "duration": "30 seconds per side", "rest": "60 seconds" }
+                  ],
+                  "Day 6: Rest or Active Recovery": [
+                    { "activity": "Swimming (light pace)", "duration": "30 minutes" },
+                    { "activity": "Stretching (Full Body)", "duration": "20-30 minutes" }
+                  ],
+                  "Day 7: Rest": []
+                }
+              },
+              {
+                "Week 3": { "ref": "Week 1" }
+              },
+              {
+                "Week 4": { "ref": "Week 2" }
+              }
+          ]
+        }
+      },           
+      {
+        "plan": "Improved Endurance (Mixed Routine - 3 Days a Week)",
+        "tags": ["Beginner", "Improved Endurance", "Cardio", "Muscular Endurance", "Flexibility", "3 Days a Week", "Mixed Routine"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Muscular Endurance Training (Full Body with Weights)": [
+                  { "exercise": "Dumbbell Bench Press", "sets": 3, "reps": "10-12", "rest": "45-60 seconds" },
+                  { "exercise": "Goblet Squats", "sets": 3, "reps": "12-15", "rest": "45-60 seconds" },
+                  { "exercise": "Bent-Over Dumbbell Rows", "sets": 3, "reps": "10-12", "rest": "45-60 seconds" },
+                  { "exercise": "Walking Lunges", "sets": 3, "reps": "12 per leg", "rest": "45-60 seconds" },
+                  { "exercise": "Plank to Shoulder Taps", "sets": 3, "duration": "30-40 seconds", "rest": "30 seconds" }
+                ],
+                "Day 2: Rest or Active Recovery": [
+                  { "activity": "Yoga (Beginner)", "duration": "15–20 min" },
+                  { "activity": "Light Walk", "duration": "20–30 min" }
+                ],
+                "Day 3: Cardio Day (Activity of Choice)": [
+                  { "activity": "Running", "duration": "30–45 min", "intensity": "Moderate to High" },
+                  { "activity": "Cycling", "duration": "45–60 min", "intensity": "Low to Moderate" },
+                  { "activity": "Swimming", "duration": "30–40 min", "intensity": "Moderate" },
+                  { "instruction": "Choose one activity and maintain a steady pace or include intervals of higher intensity (e.g., 2 min fast, 3 min recovery)." }
+                ],
+                "Day 4: Rest or Active Recovery": [
+                  { "activity": "Foam Rolling and Stretching", "duration": "15–20 min" }
+                ],
+                "Day 5: Circuit Style HIIT (Bodyweight Focus)": [
+                  {
+                    "circuit": [
+                      { "exercise": "Mountain Climbers", "duration": "40 seconds", "rest": "20 seconds" },
+                      { "exercise": "Jump Squats", "duration": "30 seconds", "rest": "30 seconds" },
+                      { "exercise": "Push-Ups", "reps": "12-15", "rest": "30 seconds" },
+                      { "exercise": "High Knees", "duration": "30 seconds", "rest": "20 seconds" },
+                      { "exercise": "Plank Hold", "duration": "40 seconds", "rest": "30 seconds" }
+                    ],
+                    "rounds": 3,
+                    "rest_between_rounds": "2 minutes"
+                  },
+                  { "note": "Adjust intensity as needed. Complete each exercise in sequence for the specified duration, then rest for 2 minutes before repeating the circuit." }
+                ],
+                "Day 6: Rest or Active Recovery": [
+                  { "activity": "Stretching Routine", "duration": "15–20 min" },
+                  { "activity": "Light Hike or Walk", "duration": "45 min" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+          "plan": "Improved Endurance (Intermediate, 3 Days a Week)",
+          "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "3 Days a Week", "Mixed Routine", "Intermediate"],
+          "schedule": {
+            "Weeks": [
+              {
+                "Week 1": {
+                  "Day 1: Strength and Upper Body Endurance": [
+                    { "exercise": "Incline Dumbbell Bench Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Pull-Ups (Assisted if needed)", "sets": 4, "reps": "AMRAP", "rest": "90 seconds" },
+                    { "exercise": "Dumbbell Shoulder Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Renegade Rows", "sets": 3, "reps": "10-12 per side", "rest": "60 seconds" }
+                  ],
+                  "Day 2: Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "20-30 min" },
+                    { "activity": "Light Walk", "duration": "30 min" }
+                  ],
+                  "Day 3: Cardio Intervals and Full Body Endurance": [
+                    { "activity": "HIIT Running", "duration": "20-30 min", "intervals": "30 sec sprint, 90 sec recovery" },
+                    { "activity": "Bodyweight Circuit (Push-Ups, Squats, Mountain Climbers)", "sets": 3, "rounds": "10-15 reps", "rest_between_rounds": "60 seconds" }
+                  ],
+                  "Day 4: Active Recovery": [
+                    { "activity": "Yoga (Restorative Stretch)", "duration": "20-30 min" },
+                    { "activity": "Light Walk", "duration": "30 min" }
+                  ],
+                  "Day 5: Strength and Lower Body Endurance": [
+                    { "exercise": "Squats (Bodyweight or Dumbbell)", "sets": 4, "reps": "10-12", "rest": "90 seconds" },
+                    { "exercise": "Lunges (Bodyweight or Dumbbell)", "sets": 3, "reps": "10-12 per leg", "rest": "60 seconds" },
+                    { "exercise": "Leg Press (Machine)", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Calf Raises", "sets": 3, "reps": "12-15", "rest": "60 seconds" }
+                  ],
+                  "Day 6: Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "20-30 min" },
+                    { "activity": "Light Walk", "duration": "30 min" }
+                  ],
+                  "Day 7: Rest": [
+                    { "activity": "Complete Rest or Optional Light Stretching" }
+                  ]
+                }
+              },
+              {
+                "Week 2": {
+                  "Day 1: Strength and Upper Body Endurance": [
+                    { "exercise": "Incline Dumbbell Bench Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Pull-Ups (Assisted if needed)", "sets": 4, "reps": "AMRAP", "rest": "90 seconds" },
+                    { "exercise": "Dumbbell Shoulder Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Renegade Rows", "sets": 3, "reps": "10-12 per side", "rest": "60 seconds" }
+                  ],
+                  "Day 2: Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "20-30 min" },
+                    { "activity": "Light Walk", "duration": "30 min" }
+                  ],
+                  "Day 3: Cardio Intervals and Full Body Endurance": [
+                    { "activity": "HIIT Running", "duration": "20-30 min", "intervals": "30 sec sprint, 90 sec recovery" },
+                    { "activity": "Bodyweight Circuit (Push-Ups, Squats, Mountain Climbers)", "sets": 3, "rounds": "10-15 reps", "rest_between_rounds": "60 seconds" }
+                  ],
+                  "Day 4: Active Recovery": [
+                    { "activity": "Yoga (Restorative Stretch)", "duration": "20-30 min" },
+                    { "activity": "Light Walk", "duration": "30 min" }
+                  ],
+                  "Day 5: Strength and Lower Body Endurance": [
+                    { "exercise": "Squats (Bodyweight or Dumbbell)", "sets": 4, "reps": "10-12", "rest": "90 seconds" },
+                    { "exercise": "Lunges (Bodyweight or Dumbbell)", "sets": 3, "reps": "10-12 per leg", "rest": "60 seconds" },
+                    { "exercise": "Leg Press (Machine)", "sets": 3, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Calf Raises", "sets": 3, "reps": "12-15", "rest": "60 seconds" }
+                  ],
+                  "Day 6: Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "20-30 min" },
+                    { "activity": "Light Walk", "duration": "30 min" }
+                  ],
+                  "Day 7: Rest": [
+                    { "activity": "Complete Rest or Optional Light Stretching" }
+                  ]
+                }
+              },
+              {
+                "Week 3": { "ref": "Week 1" }
+              },
+              {
+                "Week 4": { "ref": "Week 2" }
+              }
+          ]
+        }
+      },
+      {
+        "plan": "Improved Endurance (Advanced, 3 Days a Week)",
+          "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "3 Days a Week", "Mixed Routine", "Advanced"],
+          "schedule": {
+            "Weeks": [
+              {
+                "Week 1": {
+                  "Day 1: Strength and Cardio": [
+                    { "exercise": "Barbell Deadlifts", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                    { "exercise": "Pull-Ups", "sets": 4, "reps": "AMRAP", "rest": "90 seconds" },
+                    { "exercise": "Jump Rope", "sets": 4, "duration": "2 minutes", "rest": "60 seconds" },
+                    { "exercise": "Push-Ups", "sets": 4, "reps": "12-15", "rest": "60 seconds" }
+                  ],
+                  "Day 2: Endurance and Flexibility": [
+                    { "exercise": "Cycling (steady pace)", "sets": 1, "duration": "45 minutes" },
+                    { "exercise": "Stretching (Full Body)", "sets": 1, "duration": "30 minutes" }
+                  ],
+                  "Day 3: Rest or Active Recovery": [
+                    { "activity": "Yoga (Dynamic Flow)", "duration": "30-45 minutes" },
+                    { "activity": "Light Jog", "duration": "30 minutes" }
+                  ],
+                  "Day 4: Rest or Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "30-45 minutes" },
+                    { "activity": "Walking", "duration": "45 minutes" }
+                  ],
+                  "Day 5: Strength and Cardio": [
+                    { "exercise": "Barbell Squat", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "15-20", "rest": "60 seconds" },
+                    { "exercise": "Rowing Machine", "sets": 3, "duration": "5 minutes", "rest": "90 seconds" },
+                    { "exercise": "Burpees", "sets": 4, "reps": "12-15", "rest": "60 seconds" }
+                  ],
+                  "Day 6: Rest or Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "30-45 minutes" },
+                    { "activity": "Walking", "duration": "45 minutes" }
+                  ],
+                  "Day 7: Rest": []
+                }
+              },
+              {
+                "Week 2": {
+                  "Day 1: Strength and Cardio": [
+                    { "exercise": "Barbell Deadlifts", "sets": 5, "reps": "4-6", "rest": "90 seconds" },
+                    { "exercise": "Weighted Pull-Ups", "sets": 5, "reps": "4-6", "rest": "90 seconds" },
+                    { "exercise": "Jump Rope", "sets": 5, "duration": "2.5 minutes", "rest": "60 seconds" },
+                    { "exercise": "Diamond Push-Ups", "sets": 5, "reps": "15-20", "rest": "60 seconds" }
+                  ],
+                  "Day 2: Endurance and Flexibility": [
+                    { "exercise": "Cycling (high-intensity intervals)", "sets": 1, "duration": "50 minutes" },
+                    { "exercise": "Stretching (Full Body - Increased Range)", "sets": 1, "duration": "35 minutes" }
+                  ],
+                  "Day 3: Rest or Active Recovery": [
+                    { "activity": "Yoga (Dynamic Flow - Advanced)", "duration": "35-50 minutes" },
+                    { "activity": "Medium-Intensity Jog", "duration": "35 minutes" }
+                  ],
+                  "Day 4: Rest or Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow - Advanced)", "duration": "35-50 minutes" },
+                    { "activity": "Walking", "duration": "50 minutes" }
+                  ],
+                  "Day 5: Strength and Cardio": [
+                    { "exercise": "Barbell Squat", "sets": 5, "reps": "4-6", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 5, "reps": "20-25", "rest": "60 seconds" },
+                    { "exercise": "Rowing Machine (high-intensity)", "sets": 4, "duration": "6 minutes", "rest": "90 seconds" },
+                    { "exercise": "Burpees (with jump)", "sets": 5, "reps": "20-25", "rest": "60 seconds" }
+                  ],
+                  "Day 6: Rest or Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "35-50 minutes" },
+                    { "activity": "Walking", "duration": "50 minutes" }
+                  ],
+                  "Day 7: Rest": []
+                }
+              },
+              {
+                "Week 3": { "ref": "Week 1" }
+              },
+              {
+                "Week 4": { "ref": "Week 2" }
+              }
+            ]
+          }
+      },            
+      {
+        "plan": "Improved Endurance (Mixed Routine - 4 Days a Week)",
+        "tags": ["Beginner", "Improved Endurance", "Cardio", "Muscular Endurance", "Flexibility", "4 Days a Week", "Mixed Routine"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Muscular Endurance Training (Full Body with Weights)": [
+                  { "exercise": "Dumbbell Bench Press", "sets": 3, "reps": "10-12", "rest": "45-60 seconds" },
+                  { "exercise": "Goblet Squats", "sets": 3, "reps": "12-15", "rest": "45-60 seconds" },
+                  { "exercise": "Bent-Over Dumbbell Rows", "sets": 3, "reps": "10-12", "rest": "45-60 seconds" },
+                  { "exercise": "Walking Lunges", "sets": 3, "reps": "12 per leg", "rest": "45-60 seconds" },
+                  { "exercise": "Plank to Shoulder Taps", "sets": 3, "duration": "30-40 seconds", "rest": "30 seconds" }
+                ],
+                "Day 2: Cardio Day (Interval Training)": [
+                  { "activity": "Running", "format": "5 min warm-up, 2 min fast pace, 3 min recovery (repeat 5x)", "cooldown": "5 min walk" },
+                  { "activity": "Cycling", "format": "10 min steady pace, 2 min sprint, 3 min recovery (repeat 4x)", "cooldown": "5 min slow pedal" },
+                  { "activity": "Swimming", "format": "10 min freestyle steady pace, 2 laps sprint, 3 laps recovery (repeat 4x)", "cooldown": "5 min slow swim" },
+                  { "instruction": "Choose one activity and follow the interval format for improved endurance." }
+                ],
+                "Day 3: Rest or Active Recovery": [
+                  { "activity": "Yoga (Beginner)", "duration": "15–20 min" },
+                  { "activity": "Light Walk", "duration": "20–30 min" }
+                ],
+                "Day 4: Muscular Endurance Training (Bodyweight Circuit)": [
+                  {
+                    "circuit": [
+                      { "exercise": "Push-Ups", "reps": "10-12", "rest": "15 seconds" },
+                      { "exercise": "Bodyweight Squats", "reps": "15-20", "rest": "15 seconds" },
+                      { "exercise": "Plank Hold", "duration": "30-40 seconds", "rest": "15 seconds" },
+                      { "exercise": "Mountain Climbers", "duration": "30 seconds", "rest": "15 seconds" },
+                      { "exercise": "Burpees", "reps": "10-12", "rest": "15 seconds" }
+                    ],
+                    "rounds": 3,
+                    "rest_between_rounds": "2 minutes"
+                  },
+                  { "note": "Adjust reps and intensity based on fitness level. Complete all exercises in sequence as a circuit." }
+                ],
+                "Day 5: Cardio Day (Steady-State or Endurance Activity)": [
+                  { "activity": "Running", "duration": "40-50 min", "intensity": "Moderate, steady pace" },
+                  { "activity": "Cycling", "duration": "60-70 min", "intensity": "Moderate, steady pace" },
+                  { "activity": "Swimming", "duration": "30-40 min", "intensity": "Moderate, steady pace" },
+                  { "instruction": "Choose one activity and maintain a consistent pace to build endurance." }
+                ],
+                "Day 6: Rest or Active Recovery": [
+                  { "activity": "Foam Rolling and Stretching", "duration": "15–20 min" },
+                  { "activity": "Yoga (Beginner)", "duration": "20–30 min" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Improved Endurance (Intermediate, 4 Days a Week)",
+          "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "4 Days a Week", "Mixed Routine", "Intermediate"],
+          "schedule": {
+            "Weeks": [
+              {
+                "Week 1": {
+                  "Day 1: Strength and Upper Body Endurance": [
+                    { "exercise": "Incline Dumbbell Bench Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Pull-Ups (Assisted if needed)", "sets": 4, "reps": "AMRAP", "rest": "90 seconds" },
+                    { "exercise": "Dumbbell Shoulder Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Renegade Rows", "sets": 3, "reps": "10-12 per side", "rest": "60 seconds" }
+                  ],
+                  "Day 2: Lower Body Strength and Endurance": [
+                    { "exercise": "Barbell Squat", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Walking Lunges", "sets": 3, "reps": "12 per leg", "rest": "90 seconds" },
+                    { "exercise": "Romanian Deadlift", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Box Jumps", "sets": 3, "reps": "10", "rest": "60 seconds" }
+                  ],
+                  "Day 3: Rest or Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "20-30 min" },
+                    { "activity": "Light Walk", "duration": "30 min" }
+                  ],
+                  "Day 4: Cardio Intervals and Full Body Endurance": [
+                    { "activity": "HIIT Cycling", "duration": "20-30 min", "intervals": "30 sec sprint, 90 sec recovery" },
+                    { "activity": "Bodyweight Circuit (Push-Ups, Squats, Mountain Climbers)", "sets": 3, "rounds": "10-15 reps", "rest_between_rounds": "60 seconds" }
+                  ],
+                  "Day 5: Full Body Strength and Conditioning": [
+                    { "exercise": "Deadlifts", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 3, "reps": "15", "rest": "60 seconds" },
+                    { "exercise": "Barbell Overhead Press", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                    { "exercise": "Burpees", "sets": 3, "reps": "10", "rest": "60 seconds" }
+                  ],
+                  "Day 6: Rest or Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "20-30 min" },
+                    { "activity": "Light Walk", "duration": "30 min" }
+                  ],
+                  "Day 7: Rest": []
+                }
+              },
+              {
+                "Week 2": {
+                  "Day 1: Strength and Upper Body Endurance": [
+                    { "exercise": "Incline Dumbbell Bench Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Pull-Ups (Assisted if needed)", "sets": 4, "reps": "AMRAP", "rest": "90 seconds" },
+                    { "exercise": "Dumbbell Shoulder Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Renegade Rows", "sets": 3, "reps": "10-12 per side", "rest": "60 seconds" }
+                  ],
+                  "Day 2: Lower Body Strength and Endurance": [
+                    { "exercise": "Barbell Squat", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Walking Lunges", "sets": 3, "reps": "12 per leg", "rest": "90 seconds" },
+                    { "exercise": "Romanian Deadlift", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                    { "exercise": "Box Jumps", "sets": 3, "reps": "10", "rest": "60 seconds" }
+                  ],
+                  "Day 3: Rest or Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "20-30 min" },
+                    { "activity": "Light Walk", "duration": "30 min" }
+                  ],
+                  "Day 4: Cardio Intervals and Full Body Endurance": [
+                    { "activity": "HIIT Cycling", "duration": "20-30 min", "intervals": "30 sec sprint, 90 sec recovery" },
+                    { "activity": "Bodyweight Circuit (Push-Ups, Squats, Mountain Climbers)", "sets": 3, "rounds": "10-15 reps", "rest_between_rounds": "60 seconds" }
+                  ],
+                  "Day 5: Full Body Strength and Conditioning": [
+                    { "exercise": "Deadlifts", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 3, "reps": "15", "rest": "60 seconds" },
+                    { "exercise": "Barbell Overhead Press", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                    { "exercise": "Burpees", "sets": 3, "reps": "10", "rest": "60 seconds" }
+                  ],
+                  "Day 6: Rest or Active Recovery": [
+                    { "activity": "Yoga (Gentle Flow)", "duration": "20-30 min" },
+                    { "activity": "Light Walk", "duration": "30 min" }
+                  ],
+                  "Day 7: Rest": []
+                }
+              },
+              {
+                "Week 3": { "ref": "Week 1" }
+              },
+              {
+                "Week 4": { "ref": "Week 2" }
+              }
+            ]
+          }
+        },            
+      {
+        "plan": {
+          "name": "Advanced Endurance (4 Days a Week)",
+          "tags": ["Strength", "Endurance", "Hypertrophy", "Conditioning", "Advanced", "4 Days a Week", "Mixed Routine"],
+          "schedule": [
+            {
+              "Week 1": {
+                "Day 1: Upper Body Strength and Hypertrophy": [
+                  { "exercise": "Flat Barbell Bench Press", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Weighted Pull-Ups", "sets": 4, "reps": "6-8", "rest": "3 minutes" },
+                  { "exercise": "Dumbbell Shoulder Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Bent Over Barbell Rows", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Dips (Weighted if possible)", "sets": 4, "reps": "6-8", "rest": "90 seconds" }
+                ],
+                "Day 2: Lower Body Strength and Power (Squats Focus)": [
+                  { "exercise": "Barbell Squats", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Walking Lunges (Heavy)", "sets": 3, "reps": "12-15 per leg", "rest": "90 seconds" },
+                  { "exercise": "Bulgarian Split Squats", "sets": 4, "reps": "8-10 per leg", "rest": "90 seconds" },
+                  { "exercise": "Barbell Hip Thrusts", "sets": 4, "reps": "8-10", "rest": "90 seconds" }
+                ],
+                "Day 3: Active Recovery": [
+                  { "activity": "Yoga (Gentle Flow)", "duration": "30 minutes" },
+                  { "activity": "Light Walk", "duration": "30-45 minutes" }
+                ],
+                "Day 4: Cardio Intervals and Conditioning": [
+                  { "activity": "HIIT Sprints (30 seconds sprint, 1-minute jog)", "sets": 8, "rest": "90 seconds" },
+                  { "activity": "Battle Ropes", "sets": 4, "duration": "30 seconds", "rest": "60 seconds" },
+                  { "activity": "Kettlebell Swings", "sets": 5, "reps": "20", "rest": "90 seconds" },
+                  { "activity": "Jump Rope", "sets": 4, "duration": "1 minute", "rest": "60 seconds" }
+                ],
+                "Day 5: Full Body Strength and Endurance": [
+                  { "exercise": "Clean and Press", "sets": 5, "reps": "3-5", "rest": "2-3 minutes" },
+                  { "exercise": "Weighted Push-Ups", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Front Squats", "sets": 4, "reps": "6-8", "rest": "2-3 minutes" },
+                  { "exercise": "Kettlebell Snatches", "sets": 5, "reps": "12 per arm", "rest": "90 seconds" },
+                  { "exercise": "Farmer's Walk", "sets": 3, "duration": "30 seconds", "rest": "90 seconds" }
+                ],
+                "Day 6: Active Recovery": [
+                  { "activity": "Yoga (Gentle Flow)", "duration": "30 minutes" },
+                  { "activity": "Light Walk", "duration": "30-45 minutes" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": {
+                "Day 1: Upper Body Strength and Hypertrophy": [
+                  { "exercise": "Incline Dumbbell Press", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Chin-Ups", "sets": 4, "reps": "6-8", "rest": "3 minutes" },
+                  { "exercise": "Dumbbell Lateral Raise", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "T-Bar Row", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Triceps Pushdowns", "sets": 4, "reps": "8-10", "rest": "90 seconds" }
+                ],
+                "Day 2: Lower Body Strength and Power (Deadlift Focus)": [
+                  { "exercise": "Deadlifts (Conventional or Sumo)", "sets": 5, "reps": "4-6", "rest": "3 minutes" },
+                  { "exercise": "Romanian Deadlifts", "sets": 4, "reps": "6-8", "rest": "3 minutes" },
+                  { "exercise": "Leg Press", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Seated Calf Raises", "sets": 4, "reps": "10-12", "rest": "90 seconds" }
+                ],
+                "Day 3: Active Recovery": [
+                  { "activity": "Yoga (Gentle Flow)", "duration": "30 minutes" },
+                  { "activity": "Light Walk", "duration": "30-45 minutes" }
+                ],
+                "Day 4: Cardio Intervals and Conditioning": [
+                  { "activity": "HIIT Sprints (30 seconds sprint, 1-minute jog)", "sets": 8, "rest": "90 seconds" },
+                  { "activity": "Battle Ropes", "sets": 4, "duration": "30 seconds", "rest": "60 seconds" },
+                  { "activity": "Kettlebell Swings", "sets": 5, "reps": "20", "rest": "90 seconds" },
+                  { "activity": "Jump Rope", "sets": 4, "duration": "1 minute", "rest": "60 seconds" }
+                ],
+                "Day 5: Full Body Strength and Endurance": [
+                  { "exercise": "Power Cleans", "sets": 5, "reps": "3-5", "rest": "2-3 minutes" },
+                  { "exercise": "Push-Ups with Weight", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Leg Extensions", "sets": 4, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Kettlebell Snatches", "sets": 5, "reps": "12 per arm", "rest": "90 seconds" },
+                  { "exercise": "Farmer's Walk", "sets": 3, "duration": "30 seconds", "rest": "90 seconds" }
+                ],
+                "Day 6: Active Recovery": [
+                  { "activity": "Yoga (Gentle Flow)", "duration": "30 minutes" },
+                  { "activity": "Light Walk", "duration": "30-45 minutes" }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 2" }
+            }
+          ]
+        }
+      },            
+      {
+        "plan": "Improved Endurance (Beginner-Friendly, 5 Days a Week)",
+        "tags": ["Beginner", "Improved Endurance", "Cardio", "Muscular Endurance", "Flexibility", "5 Days a Week", "Mixed Routine"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Muscular Endurance Training (Full Body with Weights)": [
+                  { "exercise": "Goblet Squat", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Incline Dumbbell Press", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Dumbbell Romanian Deadlift", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Plank (Hold)", "sets": 3, "duration": "20-30 seconds", "rest": "30 seconds" }
+                ],
+                "Day 2: Cardio Day (Steady-State or Low-Impact)": [
+                  { "activity": "Cycling", "duration": "30-40 min", "intensity": "Light to Moderate" },
+                  { "activity": "Swimming", "duration": "20-30 min", "intensity": "Light to Moderate" },
+                  { "instruction": "Choose one activity and maintain a steady, conversational pace." }
+                ],
+                "Day 3: Circuit Training (Bodyweight and Core Focus)": [
+                  {
+                    "circuit": [
+                      { "exercise": "Modified Push-Ups", "reps": "8-10", "rest": "15 seconds" },
+                      { "exercise": "Bodyweight Step-Ups", "reps": "12 per leg", "rest": "15 seconds" },
+                      { "exercise": "Bird Dog (Alternating Sides)", "reps": "8-10 per side", "rest": "15 seconds" },
+                      { "exercise": "Mountain Climbers (Slow Tempo)", "duration": "20-30 seconds", "rest": "15 seconds" }
+                    ],
+                    "rounds": 2,
+                    "rest_between_rounds": "90 seconds"
+                  },
+                  { "note": "Reduce rounds to 1 if needed or slow the pace to focus on form." }
+                ],
+                "Day 4: Cardio Day (Intervals or Moderate Activity)": [
+                  { "activity": "Walking (Fast Pace)", "format": "5 min warm-up, 2 min brisk, 3 min normal (repeat 5x)" },
+                  { "activity": "Rowing Machine", "format": "5 min warm-up, 1 min fast pace, 2 min recovery (repeat 5x)", "cooldown": "5 min easy row" },
+                  { "instruction": "Pick an option suited to your available equipment and preference." }
+                ],
+                "Day 5: Optional Low-Intensity Circuit": [
+                  {
+                    "circuit": [
+                      { "exercise": "Wall Push-Ups", "reps": "10-12", "rest": "20 seconds" },
+                      { "exercise": "Bodyweight Lunges", "reps": "10 per leg", "rest": "20 seconds" },
+                      { "exercise": "Side Plank (Hold)", "duration": "15-20 seconds per side", "rest": "15 seconds" },
+                      { "exercise": "Standing Overhead Dumbbell Press (Light Weight)", "reps": "10-12", "rest": "20 seconds" }
+                    ],
+                    "rounds": 2,
+                    "rest_between_rounds": "2 minutes"
+                  },
+                  { "note": "Make Day 5 optional based on recovery and energy levels." }
+                ],
+                "Day 6: Rest or Active Recovery": [
+                  { "activity": "Yoga (Gentle Flow)", "duration": "15-20 min" },
+                  { "activity": "Light Walk", "duration": "20-30 min" },
+                  { "instruction": "Focus on light movement or stretching to recover." }
+                ],
+                "Day 7: Rest": []
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Improved Endurance (Intermediate, 5 Days a Week)",
+        "tags": ["Intermediate", "Improved Endurance", "Cardio", "Muscular Endurance", "Flexibility", "5 Days a Week", "Mixed Routine"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Muscular Endurance Training (Full Body with Weights)": [
+                  { "exercise": "Barbell Back Squat", "sets": 4, "reps": "8-10", "rest": "60-90 seconds" },
+                  { "exercise": "Dumbbell Bench Press", "sets": 4, "reps": "8-10", "rest": "60-90 seconds" },
+                  { "exercise": "Deadlift to Row", "sets": 3, "reps": "8-10", "rest": "60 seconds" },
+                  { "exercise": "Side Plank (Hold)", "sets": 3, "duration": "40 seconds per side", "rest": "30 seconds" }
+                ],
+                "Day 2: High-Intensity Cardio (VO2 Max Challenge)": [
+                  { "activity": "Running Intervals", "format": "5 min warm-up, 3 min fast, 1 min recovery (repeat 6x)", "cooldown": "5 min easy jog" },
+                  { "activity": "Cycling (Stationary or Road)", "format": "5 min warm-up, 2 min sprint, 3 min recovery (repeat 6x)", "cooldown": "5 min easy spin" },
+                  { "instruction": "Focus on sustained effort during the work periods; aim to challenge your max output." }
+                ],
+                "Day 3: Circuit Training (Strength and Core)": [
+                  {
+                    "circuit": [
+                      { "exercise": "Push-Ups", "reps": "12-15", "rest": "15 seconds" },
+                      { "exercise": "Goblet Squat to Press", "reps": "10", "rest": "15 seconds" },
+                      { "exercise": "Mountain Climbers (Fast Tempo)", "duration": "30 seconds", "rest": "15 seconds" },
+                      { "exercise": "Russian Twists (Weighted)", "reps": "12 per side", "rest": "15 seconds" }
+                    ],
+                    "rounds": 3,
+                    "rest_between_rounds": "2 minutes"
+                  }
+                ],
+                "Day 4: High-Intensity Cardio Intervals": [
+                  { "activity": "Rowing Machine", "format": "5 min warm-up, 4 min fast, 2 min recovery (repeat 5x)", "cooldown": "5 min easy row" },
+                  { "activity": "Treadmill Sprints", "format": "5 min warm-up, 45 sec sprint, 1:30 min walk (repeat 8x)", "cooldown": "5 min walk" },
+                  { "instruction": "Push yourself to maintain speed and intensity during the work intervals." }
+                ],
+                "Day 5: Recovery and Flexibility": [
+                  { "exercise": "Dynamic Yoga Flow", "duration": "30 min" },
+                  { "exercise": "Plank with Shoulder Taps", "sets": 3, "reps": "12 per side", "rest": "30 seconds" },
+                  { "exercise": "Seated Forward Fold Stretch", "duration": "1-2 min", "rest": "N/A" }
+                ]
+              }
+            },
+            {
+              "Week 2": {
+                "Day 1: Muscular Endurance Training (Full Body with Weights)": [
+                  { "exercise": "Barbell Front Squat", "sets": 4, "reps": "10-12", "rest": "60-90 seconds" },
+                  { "exercise": "Incline Dumbbell Bench Press", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Romanian Deadlift", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                  { "exercise": "Plank with Leg Lift", "sets": 3, "duration": "20-30 seconds per side", "rest": "30 seconds" }
+                ],
+                "Day 2: Cardio Day (Steady-State or Low-Impact)": [
+                  { "activity": "Cycling", "duration": "40-50 min", "intensity": "Light to Moderate" },
+                  { "activity": "Swimming", "duration": "30-40 min", "intensity": "Moderate" },
+                  { "instruction": "Focus on maintaining a consistent, conversational pace." }
+                ],
+                "Day 3: Circuit Training (Bodyweight and Core)": [
+                  {
+                    "circuit": [
+                      { "exercise": "Step-Ups (Weighted)", "reps": "12 per leg", "rest": "15 seconds" },
+                      { "exercise": "Push-Ups", "reps": "10-12", "rest": "15 seconds" },
+                      { "exercise": "Bird Dog (Alternating)", "reps": "10 per side", "rest": "15 seconds" },
+                      { "exercise": "High Knees (Slow Tempo)", "duration": "20 seconds", "rest": "15 seconds" }
+                    ],
+                    "rounds": 3,
+                    "rest_between_rounds": "2 minutes"
+                  }
+                ],
+                "Day 4: Moderate Cardio Day": [
+                  { "activity": "Rowing Machine", "duration": "40 min", "intensity": "Moderate (Zone 2-3)" },
+                  { "activity": "Walking (Fast Pace)", "duration": "40 min", "intensity": "Moderate" },
+                  { "instruction": "Focus on endurance and maintaining a steady rhythm." }
+                ],
+                "Day 5: Flexibility and Core Training": [
+                  { "exercise": "Dynamic Yoga Flow", "duration": "30 min" },
+                  { "exercise": "Single-Leg Balance with Dumbbells", "sets": 3, "reps": "12 per leg", "rest": "30 seconds" },
+                  { "exercise": "Side Plank (Hold)", "sets": 3, "duration": "30 seconds per side", "rest": "15 seconds" }
+                ]
+              }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 2" }
+            }
+          ]
+        }
+      },
+      {
+        "plan": "Improved Endurance (Advanced, 6 Days a Week)",
+        "tags": ["Advanced", "Improved Endurance", "Cardio", "Muscular Endurance", "Flexibility", "6 Days a Week", "Mixed Routine"],
+        "schedule": {
+          "Weeks": [
+            {
+              "Week 1": {
+                "Day 1: Muscular Endurance Training (Full Body with Heavier Loads)": [
+                  { "exercise": "Barbell Back Squat", "sets": 5, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Incline Barbell Bench Press", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Weighted Pull-Ups", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Farmers Carry", "sets": 4, "duration": "40 seconds", "rest": "60 seconds" }
+                ],
+                "Day 2: High-Intensity Cardio (VO2 Max Challenge)": [
+                  { "activity": "Running (Hills or Intervals)", "format": "5 min warm-up, 4 min sprint, 1 min recovery (repeat 7x)", "cooldown": "5 min jog" },
+                  { "activity": "Cycling (Power Intervals)", "format": "5 min warm-up, 2 min sprint, 1 min recovery (repeat 8x)", "cooldown": "5 min spin" },
+                  { "instruction": "Push hard but maintain form; the recovery is critical to sustain the intensity." }
+                ],
+                "Day 3: Advanced Circuit Training": [
+                  {
+                    "circuit": [
+                      { "exercise": "Weighted Bulgarian Split Squats", "reps": "10 per leg", "rest": "20 seconds" },
+                      { "exercise": "Barbell Overhead Press", "reps": "8-10", "rest": "20 seconds" },
+                      { "exercise": "Dumbbell Renegade Rows", "reps": "10 per side", "rest": "20 seconds" },
+                      { "exercise": "Burpees with Push-Up", "reps": "12", "rest": "20 seconds" }
+                    ],
+                    "rounds": 4,
+                    "rest_between_rounds": "2 minutes"
+                  }
+                ],
+                "Day 4: High-Intensity Cardio Intervals": [
+                  { "activity": "Rowing Machine (Power Intervals)", "format": "5 min warm-up, 5 min fast, 2 min recovery (repeat 5x)", "cooldown": "5 min easy row" },
+                  { "activity": "Treadmill Sprints", "format": "5 min warm-up, 1 min sprint, 90 sec walk (repeat 8x)", "cooldown": "5 min jog" },
+                  { "instruction": "Max effort during sprints; ensure proper recovery between intervals." }
+                ],
+                "Day 5: Recovery and Active Flexibility": [
+                  { "exercise": "Dynamic Yoga Flow (Power Stretch)", "duration": "40 min" },
+                  { "exercise": "L-Sit Hold", "sets": 3, "duration": "15 seconds", "rest": "45 seconds" },
+                  { "exercise": "Seated Forward Fold", "duration": "1-2 min", "rest": "N/A" }
+                ],
+                "Day 6: Long Endurance Cardio": [
+                  { "activity": "Cycling (Long Ride)", "duration": "60-75 min", "intensity": "Moderate to Hard (Zone 3-4)" },
+                  { "activity": "Swimming (Endurance Laps)", "duration": "50-60 min", "intensity": "Moderate" },
+                  { "instruction": "Focus on consistent pacing and endurance throughout." }
+                ]
+              }
+            },
+            {
+              "Week 2": {
+                "Day 1: Muscular Endurance Training (Full Body)": [
+                  { "exercise": "Front Squats", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Bench Press", "sets": 4, "reps": "10-12", "rest": "90 seconds" },
+                  { "exercise": "Romanian Deadlift", "sets": 4, "reps": "8-10", "rest": "90 seconds" },
+                  { "exercise": "Weighted Side Plank", "sets": 3, "duration": "30 seconds per side", "rest": "30 seconds" }
+                ],
+                "Day 2: Moderate Cardio Day": [
+                  { "activity": "Running", "duration": "50 min", "intensity": "Moderate (Zone 3)" },
+                  { "activity": "Cycling", "duration": "40 min", "intensity": "Steady (Zone 2)" },
+                  { "instruction": "Work on consistent pace; avoid surges." }
+                ],
+                "Day 3: Circuit Training (Core and Endurance)": [
+                  {
+                    "circuit": [
+                      { "exercise": "Single-Leg Deadlift", "reps": "10 per leg", "rest": "20 seconds" },
+                      { "exercise": "Push-Ups to Shoulder Tap", "reps": "10-12", "rest": "20 seconds" },
+                      { "exercise": "Plank with Hip Dips", "reps": "12 per side", "rest": "20 seconds" },
+                      { "exercise": "Box Jumps", "reps": "12", "rest": "20 seconds" }
+                    ],
+                    "rounds": 4,
+                    "rest_between_rounds": "2 minutes"
+                  }
+                ],
+                "Day 4: Moderate Cardio with Intervals": [
+                  { "activity": "Rowing Machine", "duration": "50 min", "intensity": "Moderate (Zone 3)" },
+                  { "activity": "Walking (Incline Treadmill)", "duration": "45 min", "intensity": "Moderate" },
+                  { "instruction": "Mix in short bursts of higher effort every 10 minutes." }
+                ],
+                "Day 5: Recovery and Flexibility": [
+                  { "exercise": "Dynamic Yoga Flow", "duration": "40 min" },
+                  { "exercise": "Single-Leg Balance with Dumbbells", "sets": 3, "reps": "12 per leg", "rest": "30 seconds" },
+                  { "exercise": "Side Plank with Arm Lift", "sets": 3, "duration": "20 seconds per side", "rest": "15 seconds" }
+                ],
+                "Day 6: Endurance Day": [
+                  { "activity": "Running (Long Slow Distance)", "duration": "60 min", "intensity": "Zone 2-3" },
+                  { "activity": "Swimming (Laps)", "duration": "50 min", "intensity": "Moderate" },
+                  { "instruction": "Build endurance with steady pacing." }
+                ]
+              }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 2" }
+            }
+          ]
+        }
+      },      
+      {
+        "plans": [
+          {
+            "plan": {
+              "name": "Overall Health and Wellness (Beginner Friendly, 2 Days a Week)",
+              "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "2 Days a Week", "Mixed Routine", "Beginner"],
+              "reference_plan": "Improved Endurance (Mixed Routine - 2 Days a Week)"
+            }
+          },
+          {
+            "plan": {
+              "name": "Overall Health and Wellness (Beginner Friendly, 3 Days a Week)",
+              "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "3 Days a Week", "Mixed Routine", "Beginner"],
+              "reference_plan": "Improved Endurance (Mixed Routine - 3 Days a Week)"
+            }
+          },
+          {
+            "plan": {
+              "name": "Overall Health and Wellness (Beginner Friendly, 4 Days a Week)",
+              "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "4 Days a Week", "Mixed Routine", "Beginner"],
+              "reference_plan": "Improved Endurance (Mixed Routine - 4 Days a Week)"
+            }
+          },
+          {
+            "plan": {
+              "name": "Overall Health and Wellness (Intermediate, 4 Days a Week)",
+              "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "4 Days a Week", "Mixed Routine", "Intermediate"],
+              "reference_plan": "Improved Endurance (Mixed Routine - 4 Days a Week)"
+            }
+          },
+          {
+            "plan": {
+              "name": "Overall Health and Wellness (Advanced, 4 Days a Week)",
+              "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "4 Days a Week", "Mixed Routine", "Advanced"],
+              "reference_plan": "Improved Endurance (Mixed Routine - 4 Days a Week)"
+            }
+          },                    
+          {
+            "plan": {
+              "name": "Overall Health and Wellness (Beginner Friendly, 5 Days a Week)",
+              "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "5 Days a Week", "Mixed Routine", "Beginner"],
+              "reference_plan": "Improved Endurance (Beginner-Friendly, 5 Days a Week)"
+            }
+          },
+          {
+            "plan": {
+              "name": "Overall Health and Wellness (Intermediate, 5 Days a Week)",
+              "tags": ["Intermediate", "Overall Health", "Strength", "Endurance", "Cardio", "Flexibility", "5 Days a Week", "Mixed Routine"],
+              "reference_plan": "Improved Endurance (Intermediate, 5 Days a Week)"
+            }
+          },
+          {
+            "plan": {
+              "name": "Overall Health and Wellness (Advanced, 6 Days a Week)",
+              "tags": ["Advanced", "Overall Health", "Strength", "Endurance", "Cardio", "Flexibility", "6 Days a Week", "Mixed Routine"],
+              "reference_plan": "Improved Endurance (Advanced, 6 Days a Week)"
+            }
+          }                    
+        ]
+      },                  
+      {
+        "plan": "Athletic Performance (Beginner - 2 Days a Week)",
+          "tags": ["Athletic Performance", "Beginner", "Strength", "Power", "Agility", "Endurance", "2 Days a Week", "Mixed Routine"],
+          "schedule": {
+            "Weeks": [
+              {
+                "Week 1": {
+                  "Day 1: Strength and Power Training (Monday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "4-6", "rest": "90-120 seconds" },
+                    { "exrcise": "incline Dumbbell Bench Press", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                    { "exercise": "Push Press", "sets": 4, "reps": "4-6", "rest": "90 seconds" },
+                    { "exercise": "Box Jumps", "sets": 3, "reps": "10-12", "rest": "60 seconds" }
+                  ],
+                  "Day 2: Rest or Active Recovery (Tuesday)": [
+                    { "activity": "Stretching Routine", "duration": "15-20 minutes" },
+                    { "activity": "Yoga or Foam Rolling", "duration": "15-20 minutes" }
+                  ],
+                  "Day 3: Speed, Agility, and Endurance (Wednesday)": [
+                    { "activity": "Sprint Intervals", "work": "30 seconds", "rest": "90 seconds", "rounds": 8 },
+                    { "activity": "Agility Ladder Drills", "duration": "10 minutes", "notes": "Focus on quick feet and direction changes" },
+                    { "activity": "Cone Drills (e.g., T-Drill)", "rounds": 4, "notes": "Max effort on each run" },
+                    { "activity": "Endurance Run", "duration": "20-30 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 4: Rest or Active Recovery (Thursday)": [
+                    { "activity": "Low-Intensity Cycling", "duration": "30 minutes" }
+                  ],
+                  "Day 5: Rest (Friday)": [],
+                  "Day 6: Rest or Active Recovery (Saturday)": [
+                    { "activity": "Light Walk", "duration": "30 minutes" }
+                  ],
+                  "Day 7: Rest or Active Recovery (Sunday)": [
+                    { "activity": "Yoga", "duration": "20 minutes" }
+                  ]
+                }
+              },
+              {
+                "Week 2": { "ref": "Week 1" }
+              },
+              {
+                "Week 3": { "ref": "Week 1" }
+              },
+              {
+                "Week 4": { "ref": "Week 1" }
+              }
+            ]
+          }
+      },
+      {
+        "plan": "Athletic Performance (Intermediate - 2 Days a Week)",
+          "tags": ["Intermediate", "Athletic Performance", "Strength", "Power", "Agility", "Endurance", "2 Days a Week", "Mixed Routine"],
+          "schedule": {
+            "Weeks": [
+              {
+                "Week 1": {
+                  "Day 1: Strength and Power Training (Monday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "5", "rest": "90-120 seconds" },
+                    { "exercise": "Dumbbell Bench Press", "sets": 4, "reps": "6", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "8", "rest": "90 seconds" }
+                  ],
+                  "Day 2: Rest or Active Recovery (Tuesday)": [
+                    { "activity": "Stretching Routine", "duration": "15-20 minutes" },
+                    { "activity": "Yoga", "duration": "20 minutes" }
+                  ],
+                  "Day 3: Speed, Agility, and Endurance (Wednesday)": [
+                    { "activity": "Sprint Intervals", "work": "30 seconds", "rest": "90 seconds", "rounds": 6 },
+                    { "activity": "Agility Ladder Drills", "duration": "10 minutes" },
+                    { "activity": "Endurance Run", "duration": "20 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 4: Rest or Active Recovery (Thursday)": [
+                    { "activity": "Low-Intensity Cycling", "duration": "30 minutes" }
+                  ],
+                  "Day 5: Rest (Friday)": [],
+                  "Day 6: Rest or Active Recovery (Saturday)": [
+                    { "activity": "Light Walk", "duration": "30 minutes" }
+                  ],
+                  "Day 7: Rest or Active Recovery (Sunday)": [
+                    { "activity": "Foam Rolling", "duration": "15-20 minutes" }
+                  ]
+                }
+              },
+              {
+                "Week 2": {
+                  "Day 1: Strength and Power Training (Monday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "6", "rest": "90-120 seconds" },
+                    { "exercise": "Dumbbell Bench Press", "sets": 4, "reps": "8", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                  ],
+                  "Day 2: Rest or Active Recovery (Tuesday)": [
+                    { "activity": "Stretching Routine", "duration": "20 minutes" },
+                    { "activity": "Yoga", "duration": "25 minutes" }
+                  ],
+                  "Day 3: Speed, Agility, and Endurance (Wednesday)": [
+                    { "activity": "Sprint Intervals", "work": "45 seconds", "rest": "90 seconds", "rounds": 8 },
+                    { "activity": "Agility Ladder Drills", "duration": "12 minutes" },
+                    { "activity": "Endurance Run", "duration": "25 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 4: Rest or Active Recovery (Thursday)": [
+                    { "activity": "Low-Intensity Cycling", "duration": "35 minutes" }
+                  ],
+                  "Day 5: Rest (Friday)": [],
+                  "Day 6: Rest or Active Recovery (Saturday)": [
+                    { "activity": "Foam Rolling", "duration": "20 minutes" }
+                  ],
+                  "Day 7: Rest or Active Recovery (Sunday)": [
+                    { "activity": "Light Stretching", "duration": "15 minutes" }
+                  ]
+                }
+              },
+              {
+                "Week 3": { "ref": "Week 1" }
+              },
+              {
+                "Week 4": { "ref": "Week 2" }
+              }
+            ]
+          }
+      },
+      {
+        "plan": "Athletic Performance (Advanced, 2 Days a Week)",
+          "tags": ["Strength", "Power", "Speed", "Agility", "Endurance", "Advanced", "2 Days a Week"],
+          "schedule": {
+            "weeks": [
+              {
+                "week 1": {
+                  "day_1: Explosive Power and Strength": [
+                { "exercise": "Single-Leg Romanian Deadlift", "sets": 4, "reps": 6, "rest": "2 minutes" },
+                { "exercise": "Dumbbell Clean and Press", "sets": 4, "reps": 6, "rest": "2 minutes" },
+                { "exercise": "Kettlebell Goblet Squat", "sets": 4, "reps": 8, "rest": "90 seconds" },
+                { "exercise": "Chin-Ups", "sets": 4, "reps": "Max", "rest": "90 seconds" },
+                { "exercise": "Overhead Walking Lunge", "sets": 3, "reps": 10, "rest": "90 seconds" }
+              ],
+              "day_2": [
+                { "activity": "Low-Intensity Cycling", "duration": "30 minutes" }
+              ],
+              "day_3": [
+                { "activity": "Foam Rolling", "duration": "20 minutes" }
+              ],
+              "day_4": [
+                { "activity": "Sprints (100 meters)", "work": "8 rounds", "rest": "2 minutes" },
+                { "activity": "Plyometric Push-Ups", "sets": 4, "reps": 8, "rest": "60 seconds" },
+                { "activity": "Box Jumps", "sets": 4, "reps": 8, "rest": "90 seconds" },
+                { "activity": "Agility Ladder Drills", "duration": "15 minutes" },
+                { "activity": "Foam Rolling", "duration": "20 minutes" }
+              ],
+              "day_5": ["rest"],
+              "day_6": [
+                { "activity": "Stretching Routine", "duration": "20 minutes" }
+              ],
+              "day_7": [
+                { "activity": "Light Walk", "duration": "30 minutes" }
+              ]
+            },
+            "week_2": {
+              "day_1": [
+                { "exercise": "Bulgarian Split Squat", "sets": 4, "reps": 6, "rest": "2 minutes" },
+                { "exercise": "Dumbbell Snatch", "sets": 4, "reps": 6, "rest": "2 minutes" },
+                { "exercise": "Tire Flips", "sets": 4, "reps": 6, "rest": "90 seconds" },
+                { "exercise": "Push Press", "sets": 4, "reps": 5, "rest": "90 seconds" },
+                { "exercise": "Farmer's Walk", "sets": 3, "duration": "30 seconds", "rest": "2 minutes" }
+              ],
+              "day_2": [
+                { "activity": "Low-Intensity Cycling", "duration": "30 minutes" }
+              ],
+              "day_3": [
+                { "activity": "Foam Rolling", "duration": "20 minutes" }
+              ],
+              "day_4": [
+                { "activity": "Hill Sprints", "work": "30 seconds", "rest": "90 seconds", "rounds": 6 },
+                { "activity": "Broad Jumps", "sets": 4, "reps": 8, "rest": "90 seconds" },
+                { "activity": "Medicine Ball Slams", "sets": 4, "reps": 10, "rest": "90 seconds" },
+                { "activity": "Foam Rolling", "duration": "20 minutes" }
+              ],
+              "day_5": [],
+              "day_6": [
+                { "activity": "Stretching Routine", "duration": "20 minutes" }
+              ],
+              "day_7": [
+                { "activity": "Light Walk", "duration": "30 minutes" }
+              ]
+            }
+          },
+          {
+            "Week 3": { "ref": "Week 1" }
+          },
+          {
+            "Week 4": { "ref": "Week 2" }
+          }
+        ]
+       }
+      },                  
+      {
+        "plan": "Athletic Performance (Beginner - 3 Days a Week)",
+          "tags": ["Athletic Performance", "Beginner", "Strength", "Power", "Agility", "Endurance", "3 Days a Week", "Mixed Routine"],
+          "schedule": {
+            "Weeks": [
+              {
+                "Week 1": {
+                  "Day 1: Strength and Power Training (Monday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "4-6", "rest": "90-120 seconds" },
+                    { "exercise": "Push Press", "sets": 4, "reps": "4-6", "rest": "90 seconds" },
+                    { "exercise": "Box Jumps", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                    { "exercise": "Dumbbell Bench Press", "sets": 4, "reps": "6-8", "rest": "90 seconds" }
+                  ],
+                  "Day 2: Rest or Active Recovery (Tuesday)": [
+                    { "activity": "Stretching Routine", "duration": "15-20 minutes" },
+                    { "activity": "Foam Rolling", "duration": "15-20 minutes" }
+                  ],
+                  "Day 3: Speed, Agility, and Endurance (Wednesday)": [
+                    { "activity": "Sprint Intervals", "work": "30 seconds", "rest": "90 seconds", "rounds": 8 },
+                    { "activity": "Agility Ladder Drills", "duration": "10 minutes" },
+                    { "activity": "Cone Drills", "rounds": 4 },
+                    { "activity": "Endurance Run", "duration": "20-30 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 4: Rest or Active Recovery (Thursday)": [
+                    { "activity": "Low-Intensity Cycling", "duration": "30 minutes" }
+                  ],
+                  "Day 5: Rest (Friday)": [],
+                  "Day 6: Rest or Active Recovery (Saturday)": [
+                    { "activity": "Light Walk", "duration": "30 minutes" }
+                  ],
+                  "Day 7: Rest or Active Recovery (Sunday)": [
+                    { "activity": "Yoga", "duration": "20 minutes" }
+                  ]
+                }
+              },
+              {
+                "Week 2": { "ref": "Week 1" }
+              },
+              {
+                "Week 3": { "ref": "Week 1" }
+              },
+              {
+                "Week 4": { "ref": "Week 1" }
+              }
+            ]
+          }
+      },    
+      {
+        "plan": "Athletic Performance (Intermediate - 3 Days a Week)",
+          "tags": ["Intermediate", "Athletic Performance", "Strength", "Power", "Agility", "Endurance", "3 Days a Week", "Mixed Routine"],
+          "schedule": {
+            "Weeks": [
+              {
+                "Week 1": {
+                  "Day 1: Strength and Power Training (Monday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "5", "rest": "90-120 seconds" },
+                    { "exercise": "Pull-ups", "sets": 4, "reps": "6", "rest": "90 seconds" },
+                    { "exercise": "Dumbbell Bench Press", "sets": 4, "reps": "6", "rest": "90 seconds" }
+                  ],
+                  "Day 2: Rest or Active Recovery (Tuesday)": [
+                    { "activity": "Stretching Routine", "duration": "15-20 minutes" },
+                    { "activity": "Yoga", "duration": "20 minutes" }
+                  ],
+                  "Day 3: Speed, Agility, and Endurance (Wednesday)": [
+                    { "activity": "Sprint Intervals", "work": "30 seconds", "rest": "90 seconds", "rounds": 6 },
+                    { "activity": "Agility Ladder Drills", "duration": "10 minutes" },
+                    { "activity": "Endurance Run", "duration": "20 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 4: Rest or Active Recovery (Thursday)": [
+                    { "activity": "Low-Intensity Cycling", "duration": "30 minutes" }
+                  ],
+                  "Day 5: Rest (Friday)": [],
+                  "Day 6: Strength Training (Saturday)": [
+                    { "exercise": "Romanian Deadlift", "sets": 4, "reps": "5", "rest": "90-120 seconds" },
+                    { "exercise": "Barbell Overhead Press", "sets": 4, "reps": "6", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "8", "rest": "90 seconds" }
+                  ],
+                  "Day 7: Rest or Active Recovery (Sunday)": [
+                    { "activity": "Foam Rolling", "duration": "15-20 minutes" }
+                  ]
+                }
+              },
+              {
+                "Week 2": {
+                  "Day 1: Strength and Power Training (Monday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "6", "rest": "90-120 seconds" },
+                    { "exercise": "Pull-ups", "sets": 4, "reps": "8", "rest": "90 seconds" },
+                    { "exercise": "Dumbbell Bench Press", "sets": 4, "reps": "8", "rest": "90 seconds" }
+                  ],
+                  "Day 2: Rest or Active Recovery (Tuesday)": [
+                    { "activity": "Stretching Routine", "duration": "20 minutes" },
+                    { "activity": "Yoga", "duration": "25 minutes" }
+                  ],
+                  "Day 3: Speed, Agility, and Endurance (Wednesday)": [
+                    { "activity": "Sprint Intervals", "work": "45 seconds", "rest": "90 seconds", "rounds": 8 },
+                    { "activity": "Agility Ladder Drills", "duration": "12 minutes" },
+                    { "activity": "Endurance Run", "duration": "25 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 4: Rest or Active Recovery (Thursday)": [
+                    { "activity": "Low-Intensity Cycling", "duration": "35 minutes" }
+                  ],
+                  "Day 5: Rest (Friday)": [],
+                  "Day 6: Strength Training (Saturday)": [
+                    { "exercise": "Romanian Deadlift", "sets": 4, "reps": "6", "rest": "90-120 seconds" },
+                    { "exercise": "Barbell Overhead Press", "sets": 4, "reps": "8", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                  ],
+                  "Day 7: Rest or Active Recovery (Sunday)": [
+                    { "activity": "Foam Rolling", "duration": "20 minutes" }
+                  ]
+                }
+              },
+              {
+                "Week 3": { "ref": "Week 1" }
+              },
+              {
+                "Week 4": { "ref": "Week 2" }
+              }
+            ]
+          }
+      },
+      {
+        "plan": "Athletic Performance (Advanced, 3 Days a Week)",
+        "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "3 Days a Week", "Advanced"],
+        "details": {
+          "week_1": {
+            "day_1": [
+              { "exercise": "Front Squat", "sets": 5, "reps": 4, "rest": "120 seconds" },
+              { "exercise": "Romanian Deadlift", "sets": 4, "reps": 6, "rest": "90 seconds" },
+              { "exercise": "Walking Lunges", "sets": 4, "reps": 12, "rest": "90 seconds" }
+            ],
+            "day_2": [
+              { "activity": "Active Recovery (e.g., yoga, stretching, foam rolling)", "duration": "20-30 minutes" }
+            ],
+            "day_3": [
+              { "exercise": "Push Press", "sets": 5, "reps": 5, "rest": "120 seconds" },
+              { "exercise": "Chin-Ups", "sets": 4, "reps": "Max", "rest": "90 seconds" },
+              { "exercise": "Kettlebell Swings", "sets": 4, "reps": 12, "rest": "90 seconds" }
+            ],
+            "day_4": [
+              { "activity": "Active Recovery (e.g., low-intensity cycling, walking)", "duration": "30 minutes" }
+            ],
+            "day_5": [
+              { "exercise": "Sprints", "work": "30 seconds", "rest": "90 seconds", "rounds": 8 },
+              { "exercise": "Dumbbell Rows", "sets": 4, "reps": 8, "rest": "90 seconds" }
+            ],
+            "day_6": [
+              { "activity": "Active Recovery (e.g., stretching, foam rolling)", "duration": "20 minutes" }
+            ],
+            "day_7": []
+          },
+          "week_2": {
+            "day_1": [
+              { "exercise": "Clean and Press", "sets": 5, "reps": 4, "rest": "120 seconds" },
+              { "exercise": "Bulgarian Split Squat", "sets": 4, "reps": 8, "rest": "90 seconds" },
+              { "exercise": "Dumbbell Snatch", "sets": 4, "reps": 8, "rest": "90 seconds" }
+            ],
+            "day_2": [
+              { "activity": "Active Recovery (e.g., foam rolling, light yoga)", "duration": "20-30 minutes" }
+            ],
+            "day_3": [
+              { "exercise": "Bent-Over Rows", "sets": 4, "reps": 6, "rest": "120 seconds" },
+              { "exercise": "Chin-Ups", "sets": 4, "reps": "Max", "rest": "90 seconds" },
+              { "exercise": "Kettlebell Swings", "sets": 4, "reps": 12, "rest": "90 seconds" }
+            ],
+            "day_4": [
+              { "activity": "Active Recovery (e.g., cycling, stretching)", "duration": "30 minutes" }
+            ],
+            "day_5": [
+              { "exercise": "Sprint Intervals", "work": "30 seconds", "rest": "90 seconds", "rounds": 8 },
+              { "exercise": "Dumbbell Lunges", "sets": 4, "reps": 12, "rest": "90 seconds" }
+            ],
+            "day_6": [
+              { "activity": "Active Recovery (e.g., yoga, foam rolling)", "duration": "20 minutes" }
+            ],
+            "day_7": []
+          },
+          "week_3": {
+            "reference": "week_1"
+          },
+          "week_4": {
+            "reference": "week_2"
+          }
+        }
+      },                  
+      {
+        "plan": "Athletic Performance (Beginner - 4 Days a Week)",
+          "tags": ["Athletic Performance", "Beginner", "Strength", "Power", "Agility", "Endurance", "4 Days a Week", "Mixed Routine"],
+          "schedule": {
+            "Weeks": [
+              {
+                "Week 1": {
+                  "Day 1: Strength and Power Training (Monday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "4-6", "rest": "90-120 seconds" },
+                    { "exercise": "Push Press", "sets": 4, "reps": "4-6", "rest": "90 seconds" },
+                    { "exercise": "Box Jumps", "sets": 3, "reps": "10-12", "rest": "60 seconds" },
+                    { "exercise": "Dumbbell Bench Press", "sets": 4, "reps": "6-8", "rest": "90 seconds" }
+                  ],
+                  "Day 2: Rest or Active Recovery (Tuesday)": [
+                    { "activity": "Stretching Routine", "duration": "15-20 minutes" },
+                    { "activity": "Foam Rolling", "duration": "15-20 minutes" }
+                  ],
+                  "Day 3: Speed, Agility, and Endurance (Wednesday)": [
+                    { "activity": "Sprint Intervals", "work": "30 seconds", "rest": "90 seconds", "rounds": 8 },
+                    { "activity": "Agility Ladder Drills", "duration": "10 minutes" },
+                    { "activity": "Cone Drills", "rounds": 4 },
+                    { "activity": "Endurance Run", "duration": "20-30 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 4: Strength and Power Training (Thursday)": [
+                    { "exercise": "Romanian Deadlift", "sets": 4, "reps": "4-6", "rest": "90-120 seconds" },
+                    { "exercise": "Barbell Overhead Press", "sets": 4, "reps": "4-6", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "8-10", "rest": "90 seconds" }
+                  ],
+                  "Day 5: Rest (Friday)": [],
+                  "Day 6: Rest or Active Recovery (Saturday)": [
+                    { "activity": "Low-Intensity Cycling", "duration": "30 minutes" }
+                  ],
+                  "Day 7: Rest or Active Recovery (Sunday)": [
+                    { "activity": "Yoga", "duration": "20 minutes" }
+                  ]
+                }
+              },
+              {
+                "Week 2": { "ref": "Week 1" }
+              },
+              {
+                "Week 3": { "ref": "Week 1" }
+              },
+              {
+                "Week 4": { "ref": "Week 1" }
+              }
+            ]
+          }
+      },
+      {
+        "plan": "Athletic Performance (Intermediate - 4 Days a Week)",
+          "tags": ["Intermediate", "Athletic Performance", "Strength", "Power", "Agility", "Endurance", "4 Days a Week", "Mixed Routine"],
+          "schedule": {
+            "Weeks": [
+              {
+                "Week 1": {
+                  "Day 1: Strength and Power Training (Monday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "5", "rest": "90-120 seconds" },
+                    { "exercise": "Dumbbell Bench Press", "sets": 4, "reps": "6", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "8", "rest": "90 seconds" }
+                  ],
+                  "Day 2: Speed, Agility, and Endurance (Tuesday)": [
+                    { "activity": "Sprint Intervals", "work": "30 seconds", "rest": "90 seconds", "rounds": 6 },
+                    { "activity": "Agility Ladder Drills", "duration": "10 minutes" },
+                    { "activity": "Endurance Run", "duration": "20 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 3: Strength and Power Training (Wednesday)": [
+                    { "exercise": "Romanian Deadlift", "sets": 4, "reps": "5", "rest": "90-120 seconds" },
+                    { "exercise": "Barbell Overhead Press", "sets": 4, "reps": "6", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "8", "rest": "90 seconds" }
+                  ],
+                  "Day 4: Active Recovery (Thursday)": [
+                    { "activity": "Low-Intensity Cycling", "duration": "30 minutes" }
+                  ],
+                  "Day 5: Strength and Power Training (Friday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "6", "rest": "90-120 seconds" },
+                    { "exercise": "Pull-ups", "sets": 4, "reps": "6", "rest": "90 seconds" }
+                  ],
+                  "Day 6: Rest or Active Recovery (Saturday)": [
+                    { "activity": "Foam Rolling", "duration": "15-20 minutes" }
+                  ],
+                  "Day 7: Rest or Active Recovery (Sunday)": [
+                    { "activity": "Yoga", "duration": "20 minutes" }
+                  ]
+                }
+              },
+              {
+                "Week 2": {
+                  "Day 1: Strength and Power Training (Monday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "6", "rest": "90-120 seconds" },
+                    { "exercise": "Dumbbell Bench Press", "sets": 4, "reps": "8", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                  ],
+                  "Day 2: Speed, Agility, and Endurance (Tuesday)": [
+                    { "activity": "Sprint Intervals", "work": "45 seconds", "rest": "90 seconds", "rounds": 8 },
+                    { "activity": "Agility Ladder Drills", "duration": "12 minutes" },
+                    { "activity": "Endurance Run", "duration": "25 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 3: Strength and Power Training (Wednesday)": [
+                    { "exercise": "Romanian Deadlift", "sets": 4, "reps": "6", "rest": "90-120 seconds" },
+                    { "exercise": "Barbell Overhead Press", "sets": 4, "reps": "8", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                  ],
+                  "Day 4: Active Recovery (Thursday)": [
+                    { "activity": "Low-Intensity Cycling", "duration": "35 minutes" }
+                  ],
+                  "Day 5: Strength and Power Training (Friday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "8", "rest": "90-120 seconds" },
+                    { "exercise": "Pull-ups", "sets": 4, "reps": "8", "rest": "90 seconds" }
+                  ],
+                  "Day 6: Rest or Active Recovery (Saturday)": [
+                    { "activity": "Foam Rolling", "duration": "20 minutes" }
+                  ],
+                  "Day 7: Rest or Active Recovery (Sunday)": [
+                    { "activity": "Light Stretching", "duration": "15 minutes" }
+                  ]
+                }
+              },
+              {
+                "Week 3": { "ref": "Week 1" }
+              },
+              {
+                "Week 4": { "ref": "Week 2" }
+              }
+            ]
+          }
+      },
+      {
+        "plan": "Athletic Performance (Advanced, 4 Days a Week)",
+        "tags": ["Strength", "Endurance", "Cardio", "Flexibility", "4 Days a Week", "Advanced"],
+        "schedule": {
+          "weeks": [
+            {
+              "week 1": {
+                "day 1": [
+                  { "exercise": "Front Squat", "sets": 5, "reps": "6", "rest": "120 seconds" },
+                  { "exercise": "Romanian Deadlift", "sets": 4, "reps": "6", "rest": "90 seconds" },
+                  { "exercise": "Walking Lunges", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                ],
+                "day 2": [
+                  { "exercise": "Push Press", "sets": 5, "reps": "5", "rest": "120 seconds" },
+                  { "exercise": "Chin-Ups", "sets": 4, "reps": "Max", "rest": "90 seconds" },
+                  { "exercise": "Kettlebell Swings", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                ],
+                "day 3": [
+                  { "exercise": "Clean and Press", "sets": 5, "reps": "5", "rest": "120 seconds" },
+                  { "exercise": "Bulgarian Split Squat", "sets": 4, "reps": "8", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Snatch", "sets": 4, "reps": "6", "rest": "90 seconds" }
+                ],
+                "day 4": [
+                  { "exercise": "Bent-Over Rows", "sets": 4, "reps": "6", "rest": "120 seconds" },
+                  { "exercise": "Chin-Ups", "sets": 4, "reps": "Max", "rest": "90 seconds" },
+                  { "exercise": "Kettlebell Swings", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                ],
+                "day 5": [
+                  { "activity": "Active Recovery (e.g., foam rolling, yoga)", "duration": "20-30 minutes" }
+                ],
+                "day 6": [
+                  { "activity": "Active Recovery (e.g., cycling, stretching)", "duration": "30 minutes" }
+                ],
+                "day 7": []
+              }
+            },
+            {
+              "week 2": {
+                "day 1": [
+                  { "exercise": "Front Squat", "sets": 5, "reps": "6", "rest": "120 seconds" },
+                  { "exercise": "Romanian Deadlift", "sets": 4, "reps": "6", "rest": "90 seconds" },
+                  { "exercise": "Walking Lunges", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                ],
+                "day 2": [
+                  { "exercise": "Push Press", "sets": 5, "reps": "5", "rest": "120 seconds" },
+                  { "exercise": "Chin-Ups", "sets": 4, "reps": "Max", "rest": "90 seconds" },
+                  { "exercise": "Kettlebell Swings", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                ],
+                "day 3": [
+                  { "exercise": "Clean and Press", "sets": 5, "reps": "5", "rest": "120 seconds" },
+                  { "exercise": "Bulgarian Split Squat", "sets": 4, "reps": "8", "rest": "90 seconds" },
+                  { "exercise": "Dumbbell Snatch", "sets": 4, "reps": "6", "rest": "90 seconds" }
+                ],
+                "day 4": [
+                  { "exercise": "Bent-Over Rows", "sets": 4, "reps": "6", "rest": "120 seconds" },
+                  { "exercise": "Chin-Ups", "sets": 4, "reps": "Max", "rest": "90 seconds" },
+                  { "exercise": "Kettlebell Swings", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                ],
+                "day 5": [
+                  { "activity": "Active Recovery (e.g., foam rolling, yoga)", "duration": "20-30 minutes" }
+                ],
+                "day 6": [
+                  { "activity": "Active Recovery (e.g., cycling, stretching)", "duration": "30 minutes" }
+                ],
+                "day 7": []
+              }
+            },
+            {
+              "week 3": { "ref": "week 1" }
+            },
+            {
+              "week 4": { "ref": "week 2" }
+            }
+          ]
+        }
+      },            
+      {
+        "plan": "Athletic Performance (Beginner - 5 Days a Week)",
+          "tags": ["Athletic Performance", "beginner", "Strength", "Power", "Agility", "Endurance", "5 Days a Week", "Mixed Routine"],
+          "schedule": {
+            "Weeks": [
+              {
+                "Week 1": {
+                  "Day 1: Strength and Power Training (Monday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "4-6", "rest": "90-120 seconds" },
+                    { "exercise": "Push Press", "sets": 4, "reps": "4-6", "rest": "90 seconds" },
+                    { "exercise": "Box Jumps", "sets": 3, "reps": "10-12", "rest": "60 seconds" }
+                  ],
+                  "Day 2: Rest or Active Recovery (Tuesday)": [
+                    { "activity": "Stretching Routine", "duration": "15-20 minutes" },
+                    { "activity": "Foam Rolling", "duration": "15-20 minutes" }
+                  ],
+                  "Day 3: Speed, Agility, and Endurance (Wednesday)": [
+                    { "activity": "Sprint Intervals", "work": "30 seconds", "rest": "90 seconds", "rounds": 8 },
+                    { "activity": "Agility Ladder Drills", "duration": "10 minutes" },
+                    { "activity": "Cone Drills", "rounds": 4 },
+                    { "activity": "Endurance Run", "duration": "20-30 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 4: Strength and Power Training (Thursday)": [
+                    { "exercise": "Romanian Deadlift", "sets": 4, "reps": "4-6", "rest": "90-120 seconds" },
+                    { "exercise": "Barbell Overhead Press", "sets": 4, "reps": "4-6", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "8-10", "rest": "90 seconds" }
+                  ],
+                  "Day 5: Rest or Active Recovery (Friday)": [
+                    { "activity": "Low-Intensity Cycling", "duration": "30 minutes" }
+                  ],
+                  "Day 6: Strength and Power Training (Saturday)": [
+                    { "exercise": "Barbell Deadlift", "sets": 4, "reps": "4-6", "rest": "90-120 seconds" },
+                    { "exercise": "Pull-ups", "sets": 4, "reps": "6-8", "rest": "90 seconds" }
+                  ],
+                  "Day 7: Rest or Active Recovery (Sunday)": [
+                    { "activity": "Yoga", "duration": "20 minutes" }
+                  ]
+                }
+              },
+              {
+                "Week 2": { "ref": "Week 1" }
+              },
+              {
+                "Week 3": { "ref": "Week 1" }
+              },
+              {
+                "Week 4": { "ref": "Week 1" }
+              }
+            ]
+          }
+      },
+      {
+        "plan": "Athletic Performance (Intermediate - 5 Days a Week)",
+          "tags": ["Intermediate", "Athletic Performance", "Strength", "Power", "Agility", "Endurance", "5 Days a Week", "Mixed Routine"],
+          "schedule": {
+            "Weeks": [
+              {
+                "Week 1": {
+                  "Day 1: Strength and Power Training (Monday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "5", "rest": "90-120 seconds" },
+                    { "exercise": "Dumbbell Bench Press", "sets": 4, "reps": "6", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "8", "rest": "90 seconds" }
+                  ],
+                  "Day 2: Speed, Agility, and Endurance (Tuesday)": [
+                    { "activity": "Sprint Intervals", "work": "30 seconds", "rest": "90 seconds", "rounds": 6 },
+                    { "activity": "Agility Ladder Drills", "duration": "10 minutes" },
+                    { "activity": "Endurance Run", "duration": "20 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 3: Strength and Power Training (Wednesday)": [
+                    { "exercise": "Romanian Deadlift", "sets": 4, "reps": "5", "rest": "90-120 seconds" },
+                    { "exercise": "Barbell Overhead Press", "sets": 4, "reps": "6", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "8", "rest": "90 seconds" }
+                  ],
+                  "Day 4: Speed and Endurance Training (Thursday)": [
+                    { "activity": "Sprint Intervals", "work": "40 seconds", "rest": "90 seconds", "rounds": 7 },
+                    { "activity": "Endurance Run", "duration": "25 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 5: Strength and Power Training (Friday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "6", "rest": "90-120 seconds" },
+                    { "exercise": "Pull-ups", "sets": 4, "reps": "6", "rest": "90 seconds" }
+                  ],
+                  "Day 6: Active Recovery (Saturday)": [
+                    { "activity": "Low-Intensity Cycling", "duration": "30 minutes" }
+                  ],
+                  "Day 7: Rest or Active Recovery (Sunday)": [
+                    { "activity": "Yoga", "duration": "20 minutes" }
+                  ]
+                }
+              },
+              {
+                "Week 2": {
+                  "Day 1: Strength and Power Training (Monday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "6", "rest": "90-120 seconds" },
+                    { "exercise": "Dumbbell Bench Press", "sets": 4, "reps": "8", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                  ],
+                  "Day 2: Speed, Agility, and Endurance (Tuesday)": [
+                    { "activity": "Sprint Intervals", "work": "45 seconds", "rest": "90 seconds", "rounds": 8 },
+                    { "activity": "Agility Ladder Drills", "duration": "12 minutes" },
+                    { "activity": "Endurance Run", "duration": "30 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 3: Strength and Power Training (Wednesday)": [
+                    { "exercise": "Romanian Deadlift", "sets": 4, "reps": "6", "rest": "90-120 seconds" },
+                    { "exercise": "Barbell Overhead Press", "sets": 4, "reps": "8", "rest": "90 seconds" },
+                    { "exercise": "Kettlebell Swings", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                  ],
+                  "Day 4: Speed and Endurance Training (Thursday)": [
+                    { "activity": "Sprint Intervals", "work": "45 seconds", "rest": "90 seconds", "rounds": 9 },
+                    { "activity": "Endurance Run", "duration": "30 minutes", "notes": "Moderate pace" }
+                  ],
+                  "Day 5: Strength and Power Training (Friday)": [
+                    { "exercise": "Barbell Back Squat", "sets": 4, "reps": "8", "rest": "90-120 seconds" },
+                    { "exercise": "Pull-ups", "sets": 4, "reps": "8", "rest": "90 seconds" }
+                  ],
+                  "Day 6: Active Recovery (Saturday)": [
+                    { "activity": "Low-Intensity Cycling", "duration": "35 minutes" }
+                  ],
+                  "Day 7: Rest or Active Recovery (Sunday)": [
+                    { "activity": "Foam Rolling", "duration": "20 minutes" }
+                  ]
+                }
+              },
+              {
+                "Week 3": { "ref": "Week 1" }
+              },
+              {
+                "Week 4": { "ref": "Week 2" }
+              }
+            ]
+          }
+      },
+      {
+        "plan": "In-Season Athletic Performance (5 Days a Week)",
+        "tags": ["Strength", "Conditioning", "Endurance", "Flexibility", "5 Days a Week", "Advanced"],
+        "schedule": {
+          "weeks": [
+            {
+              "week 1": {
+                "day 1: Strength Training - Lower Body (Moderate)": [
+                  { "exercise": "Back Squat", "sets": 4, "reps": "6-8", "rest": "2-3 minutes" },
+                  { "exercise": "Romanian Deadlift", "sets": 4, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Bulgarian Split Squat", "sets": 4, "reps": "8", "rest": "90 seconds" },
+                  { "exercise": "Hip Thrusts", "sets": 3, "reps": "8-10", "rest": "90 seconds" }
+                ],
+                "day 2: Conditioning & Power (Moderate)": [
+                  { "exercise": "Kettlebell Swings", "sets": 4, "reps": "12", "rest": "90 seconds" },
+                  { "exercise": "Box Jumps", "sets": 4, "reps": "8", "rest": "90 seconds" },
+                  { "exercise": "Sled Push", "sets": 4, "distance": "30 meters", "rest": "90 seconds" },
+                  { "exercise": "Medicine Ball Slams", "sets": 4, "reps": "10", "rest": "90 seconds" }
+                ],
+                "day 3: Strength Training - Upper Body (Moderate)": [
+                  { "exercise": "Push Press", "sets": 4, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Pull-Ups", "sets": 4, "reps": "6-8", "rest": "2 minutes" },
+                  { "exercise": "Incline Bench Press", "sets": 4, "reps": "6-8", "rest": "90 seconds" },
+                  { "exercise": "Single-Arm Dumbbell Rows", "sets": 4, "reps": "8", "rest": "90 seconds" }
+                ],
+                "day 4: Conditioning & Mobility": [
+                  { "exercise": "Sprints", "work": "20-30 seconds", "rest": "90 seconds", "rounds": 6 },
+                  { "exercise": "Battle Ropes", "sets": 4, "duration": "30 seconds", "rest": "90 seconds" },
+                  { "activity": "Mobility Work (e.g., hip openers, dynamic stretches)", "duration": "20 minutes" }
+                ],
+                "day 5: Strength Maintenance & Core": [
+                  { "exercise": "Front Squat", "sets": 4, "reps": "5-6", "rest": "2 minutes" },
+                  { "exercise": "Chin-Ups", "sets": 4, "reps": "Max", "rest": "90 seconds" },
+                  { "exercise": "Deadlifts (moderate weight)", "sets": 3, "reps": "5", "rest": "2 minutes" },
+                  { "exercise": "Core Work (Planks, Russian Twists, etc.)", "sets": 3, "duration": "30-45 seconds", "rest": "60 seconds" }
+                ],
+                "day 6: Active Recovery": [
+                  { "activity": "Foam Rolling", "duration": "20 minutes" },
+                  { "activity": "Yoga or Light Stretching", "duration": "30 minutes" }
+                ],
+                "day 7: Active Recovery & Performance Prep": [
+                  { "activity": "Cycling (Light Pace)", "duration": "45 minutes" },
+                  { "activity": "Stretching", "duration": "20 minutes" }
+                ]
+              }
+            },
+            {
+              "Week 2": { "ref": "Week 1" }
+            },
+            {
+              "Week 3": { "ref": "Week 1" }
+            },
+            {
+              "Week 4": { "ref": "Week 1" }
+            }
+          ]
+        }
+      }              
+]
+      
