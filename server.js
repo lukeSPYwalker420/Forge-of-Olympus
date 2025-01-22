@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
@@ -41,9 +40,7 @@ app.use(express.static(path.join(__dirname)));  // Serve from root folder
 
 // MongoDB Schema and Model
 const userSchema = new mongoose.Schema({
-  sessionId: { type: String, unique: true },
-  sessionId: { type: String, index:true},
-  email: { type: String, unique: true, sparse: true }, // Sparse allows null values
+  email: { type: String, unique: true, required: true }, // Email as primary identifier
   workoutPreferences: { type: String },
   dietPreferences: { type: String },
   activityLevel: { type: String },
@@ -57,8 +54,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Add indexing for scalability
-userSchema.index({ sessionId: 1 });  // Index for sessionId field
-userSchema.index({ email: 1 });  // Optional: Index for email field
+userSchema.index({ email: 1 });  // Index for email field
 userSchema.index({ activityLevel: 1 });  // Index for activityLevel field
 userSchema.index({ workoutPreferences: 1 });  // Index for workoutPreferences field
 userSchema.index({ mealFrequency: 1 });  // Index for mealFrequency field
@@ -191,15 +187,15 @@ async function generatePlan(userData) {
 app.post('/api/user/process', async (req, res) => {
   const { step, data } = req.body;
 
-  if (!step || !data || !data.sessionId) {
-    return res.status(400).json({ error: 'Missing step, data, or sessionId' });
+  if (!step || !data || !data.email) {
+    return res.status(400).json({ error: 'Missing step, data, or email' });
   }
 
   try {
-    let user = await User.findOne({ sessionId: data.sessionId });
+    let user = await User.findOne({ email: data.email });
 
     if (!user) {
-      user = new User({ sessionId: data.sessionId, ...data });
+      user = new User({ email: data.email, ...data });
     } else {
       user = Object.assign(user, data);
     }
@@ -216,11 +212,11 @@ app.post('/api/user/process', async (req, res) => {
 
 // Profile completion route
 app.post('/api/user/complete-profile', async (req, res) => {
-  const { sessionId, email, profileData } = req.body;
+  const { email, profileData } = req.body;
 
-  // Check if sessionId or email is missing
-  if (!sessionId || !email) {
-    return res.status(400).json({ error: 'Missing sessionId or email' });
+  // Check if email is missing
+  if (!email) {
+    return res.status(400).json({ error: 'Missing email' });
   }
 
   // Email validation
@@ -229,12 +225,12 @@ app.post('/api/user/complete-profile', async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ sessionId });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    user.email = email; // Update the email
+    user.email = email; // Ensure email is set
     Object.assign(user, profileData); // Merge profile data
     await user.save();
 
@@ -247,13 +243,18 @@ app.post('/api/user/complete-profile', async (req, res) => {
 
 // Plan generation route
 app.post('/api/user/generate-plan', async (req, res) => {
-  const { userData } = req.body;
+  const { email, userData } = req.body;
 
-  if (!userData) {
-    return res.status(400).json({ error: 'Missing user data' });
+  if (!email || !userData) {
+    return res.status(400).json({ error: 'Missing email or user data' });
   }
 
   try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
     const { exercise_plan, diet_plan } = await generatePlan(userData);
     res.json({ exercise_plan, diet_plan });
   } catch (error) {

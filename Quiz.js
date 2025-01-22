@@ -11,7 +11,7 @@ let answers = [];
 const questions = [
     {
         question: "What are your primary fitness goals?",
-        choices: ["Weight loss", "Muscle gain", "Improved endurance", "Flexibility", "Overall health and wellness", "Improved mental health", "Injury rehabilitation", "Athletic performance"],
+        choices: ["Weight loss", "Muscle gain", "Improved endurance", "Flexibility", "Overall health and wellness", "Improved mental health", "Athletic performance"],
         follow_up: {
             "Weight loss": {
                 question: "How much weight are you looking to lose?",
@@ -266,36 +266,38 @@ function isValidEmail(email) {
 function finalizeAndSubmit() {
     const email = document.getElementById('email').value;
 
+    // Validate email
     if (!email || !isValidEmail(email)) {
         alert("Please enter a valid email.");
         return;
     }
 
+    // Prepare the final data to be sent to the server (only email for now)
     const finalData = {
-        sessionId: sessionId,
-        answers: answers,
-        email: email,
+        email: email,  // Only sending the email for now
     };
 
+    // Send the data to the server
     fetch('/api/user/merge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(finalData)
     })
-        .then(response => {
-            if (response.ok) {
-                console.log('Data sent successfully');
-                alert('Your answers have been submitted successfully!');
-                window.location.href = 'paywall.html';
-            } else {
-                console.error('Error sending data:', response.statusText);
-                alert('An error occurred while submitting your data. Please try again.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Unable to connect to the server. Please check your internet connection.');
-        });
+    .then(response => {
+        if (response.ok) {
+            console.log('Email submitted successfully');
+            alert('Your email has been submitted successfully!');
+            // Redirect to the paywall page after successful submission
+            window.location.href = 'paywall.html';
+        } else {
+            console.error('Error sending data:', response.statusText);
+            alert('An error occurred while submitting your data. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Unable to connect to the server. Please check your internet connection.');
+    });
 }
 
 // Initialize the quiz
