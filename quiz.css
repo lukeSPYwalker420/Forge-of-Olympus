@@ -130,6 +130,13 @@
     background: linear-gradient(45deg, crimson, #ffcc33); /* Inverse gradient on hover */
 }
 
+.email-input-container {
+    display: flex;
+    flex-direction: column; /* Stacks elements vertically */
+    gap: 10px; /* Adds space between elements */
+    align-items: flex-start; /* Aligns items to the left */
+}
+
 /* Optional: Smooth Scroll for a Better Experience */
 html {
     scroll-behavior: smooth;
