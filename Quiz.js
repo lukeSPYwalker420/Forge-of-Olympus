@@ -281,23 +281,20 @@ function finalizeAndSubmit() {
     fetch('/api/user/merge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(finalData)
+        body: JSON.stringify(finalData)  // Ensure this has both email and new data
     })
     .then(response => {
-        if (response.ok) {
-            console.log('Email submitted successfully');
-            alert('Your email has been submitted successfully!');
-            // Redirect to the paywall page after successful submission
-            window.location.href = 'paywall.html';
-        } else {
-            console.error('Error sending data:', response.statusText);
-            alert('An error occurred while submitting your data. Please try again.');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
         }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('Unable to connect to the server. Please check your internet connection.');
-    });
+        console.error('Error sending data:', error);
+    });    
 }
 
 // Initialize the quiz
