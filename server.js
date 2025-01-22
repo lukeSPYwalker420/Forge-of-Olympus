@@ -28,24 +28,15 @@ mongoose.connect(dbURI)
 
 // Enable CORS for specific origin (update this with your frontend URL)
 app.use(cors({
-  origin: 'https://forge-of-olympus.onrender.com',
+  origin: 'https://forge-of-olympus.onrender.com',  // Update this if needed
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
 }));
 
-// Middleware for parsing JSON
+// Body parser middleware for JSON data
 app.use(express.json());
 
-// Serve static files from the root folder
-app.use(express.static(path.join(__dirname)));
-
-// Define routes or additional middleware here
-
-// Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app.use(express.static(path.join(__dirname)));  // Serve from root folder
 
 // MongoDB Schema and Model
 const userSchema = new mongoose.Schema({
@@ -104,7 +95,7 @@ const Exercise = mongoose.model('Exercise', exerciseSchema);
 const Meal = mongoose.model('Meal', mealSchema);
 
 // Helper Functions for Plan Generation
-async function getPlan(userData) {
+async function getExercises(userData) {
   const query = {
     tags: { $in: userData.selectedTags },  // Match plans that have tags in user preferences
   };
@@ -138,7 +129,6 @@ async function getPlan(userData) {
   // You can refine further based on complexity or any other attributes
   return availablePlans[0];  // Return the first matching plan, or further refine the logic
 }
-
 function getMeals(userData) {
   // Create a query object for meal filtering
   let query = {
@@ -207,32 +197,23 @@ async function generatePlan(userData) {
 // Routes for processing user data
 
 app.post('/api/user/merge', async (req, res) => {
-  const { email, newData, plan } = req.body;
+  const { email, newData } = req.body;
 
-  // Check if email is provided (newData can be optional)
-  if (!email) {
-    return res.status(400).json({ error: 'Missing email' });
+  // Check if email and newData are provided
+  if (!email || !newData) {
+    return res.status(400).json({ error: 'Missing email or new data' });
   }
 
   try {
     // Find the user by email
     let user = await User.findOne({ email });
 
-    // If user does not exist, create a new one with the email
+    // If user does not exist, create a new one
     if (!user) {
-      user = new User({ email });
-    }
-
-    // If newData is provided, merge it with the existing user data
-    if (newData) {
+      user = new User({ email, ...newData });
+    } else {
+      // Merge the new data into the existing user object
       user = Object.assign(user, newData);
-    }
-
-    // Handle plan assignment based on user preferences (e.g., tags)
-    if (plan) {
-      // Assuming we have a function to find the relevant plan
-      const selectedPlan = await findPlanByTags(user);
-      user.plan = selectedPlan; // Assign the appropriate plan
     }
 
     // Save the updated or newly created user
@@ -330,7 +311,7 @@ app.get('*', (req, res) => {
 });
 
 // Set the port variable
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 // Start the server
 app.listen(port, () => {
