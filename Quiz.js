@@ -11,7 +11,7 @@ let answers = [];
 const questions = [
     {
         question: "What are your primary fitness goals?",
-        choices: ["Weight loss", "Muscle gain", "Improved endurance", "Flexibility", "Overall health and wellness", "Improved mental health", "Athletic performance"],
+        choices: ["Weight loss", "Muscle gain", "Improved endurance", "Overall health and wellness", "Athletic performance"],
         follow_up: {
             "Weight loss": {
                 question: "How much weight are you looking to lose?",
