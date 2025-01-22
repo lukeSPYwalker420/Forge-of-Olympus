@@ -1,15 +1,12 @@
+const app = express();
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
 
-app.use(cors({ origin: 'https://forge-of-olympus.onrender.com/' }));
-
 // Load environment variables from .env file
 dotenv.config();
-
-const app = express();
 
 // MongoDB URI from env variable
 const dbURI = process.env.USER_DB_URI;
@@ -30,15 +27,24 @@ mongoose.connect(dbURI)
 
 // Enable CORS for specific origin (update this with your frontend URL)
 app.use(cors({
-  origin: 'https://forge-of-olympus.onrender.com',  // Update this if needed
+  origin: 'https://forge-of-olympus.onrender.com/',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
 }));
 
-// Body parser middleware for JSON data
+// Middleware for parsing JSON
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname)));  // Serve from root folder
+// Serve static files from the root folder
+app.use(express.static(path.join(__dirname)));
+
+// Define routes or additional middleware here
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 // MongoDB Schema and Model
 const userSchema = new mongoose.Schema({
