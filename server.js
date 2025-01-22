@@ -1,4 +1,3 @@
-const app = express();
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -7,6 +6,8 @@ const path = require('path');
 
 // Load environment variables from .env file
 dotenv.config();
+
+const app = express();
 
 // MongoDB URI from env variable
 const dbURI = process.env.USER_DB_URI;
@@ -27,7 +28,7 @@ mongoose.connect(dbURI)
 
 // Enable CORS for specific origin (update this with your frontend URL)
 app.use(cors({
-  origin: 'https://forge-of-olympus.onrender.com/',
+  origin: 'https://forge-of-olympus.onrender.com',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
 }));
