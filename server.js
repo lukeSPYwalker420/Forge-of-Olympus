@@ -54,7 +54,6 @@ const userSchema = new mongoose.Schema({
 });
 
 // Add indexing for scalability
-userSchema.index({ email: 1 });  // Index for email field
 userSchema.index({ activityLevel: 1 });  // Index for activityLevel field
 userSchema.index({ workoutPreferences: 1 });  // Index for workoutPreferences field
 userSchema.index({ mealFrequency: 1 });  // Index for mealFrequency field
