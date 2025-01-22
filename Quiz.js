@@ -291,6 +291,9 @@ function finalizeAndSubmit() {
     })
     .then(data => {
         console.log('Success:', data);
+        
+        // Redirect to the paywall page after successful submission
+        window.location.href = 'paywall.html';
     })
     .catch(error => {
         console.error('Error sending data:', error);
