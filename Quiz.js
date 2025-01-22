@@ -1,10 +1,3 @@
-// Ensure a unique session ID is stored in localStorage
-let sessionId = localStorage.getItem('sessionId');
-if (!sessionId) {
-    sessionId = uuid.v4();  // Use uuid.v4() to generate a new session ID
-    localStorage.setItem('sessionId', sessionId);
-}
-
 // Initialize data storage for the quiz answers
 let answers = [];
 
@@ -200,6 +193,7 @@ function handleAnswer(choice) {
         return;
     }
 
+    // Manage answers
     const existingAnswer = answers.find(a => a.question === questionData.question);
     if (questionData.is_multiple_choice) {
         if (!existingAnswer) {
@@ -214,6 +208,7 @@ function handleAnswer(choice) {
         }
     }
 
+    // Handle follow-up or move to next question
     if (questionData.follow_up && questionData.follow_up[choice]) {
         currentFollowUp = JSON.parse(JSON.stringify(questionData.follow_up[choice]));
     } else {
@@ -221,6 +216,7 @@ function handleAnswer(choice) {
         currentQuestionIndex++;
     }
 
+    // Render next question or show results
     if (currentQuestionIndex < questions.length || currentFollowUp) {
         renderQuestion();
     } else {
@@ -246,59 +242,86 @@ function showResults() {
 
 function attachEmailInput() {
     const resultContainer = document.getElementById('result-container');
-    const emailInputContainer = document.createElement('div');
+    let emailInputContainer = document.querySelector('.email-input-container');
+    if (emailInputContainer) {
+        console.warn("Email input container already exists.");
+        return;
+    }
+
+    emailInputContainer = document.createElement('div');
     emailInputContainer.classList.add('email-input-container');
 
-    emailInputContainer.innerHTML = `
-        <label for="email">Enter your email to finalize:</label>
-        <input type="email" id="email" name="email" required>
-        <button class="submit-btn" onclick="finalizeAndSubmit()">Submit</button>
-    `;
+    const emailLabel = document.createElement('label');
+    emailLabel.setAttribute('for', 'email');
+    emailLabel.textContent = 'Enter your email to finalize:';
+    emailInputContainer.appendChild(emailLabel);
+
+    const emailInput = document.createElement('input');
+    emailInput.setAttribute('type', 'email');
+    emailInput.setAttribute('id', 'email');
+    emailInput.setAttribute('name', 'email');
+    emailInput.required = true;
+    emailInputContainer.appendChild(emailInput);
+
+    const submitButton = document.createElement('button');
+    submitButton.textContent = 'Submit';
+    submitButton.classList.add('submit-btn');
+
+    // Attach event listener to the button
+    submitButton.addEventListener('click', function(event) {
+        event.preventDefault();  // Prevent default button behavior
+
+        console.log('Submit button clicked');
+        finalizeAndSubmit(event);  // Call the submit function
+    });
+
+    emailInputContainer.appendChild(submitButton);
+
+    // Ensure static submit button is removed before adding dynamic one
+    const staticSubmitButton = document.getElementById('submit-btn');
+    if (staticSubmitButton) {
+        staticSubmitButton.parentElement.removeChild(staticSubmitButton);
+    }
 
     resultContainer.appendChild(emailInputContainer);
 }
 
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-function finalizeAndSubmit() {
+function finalizeAndSubmit(event) {
+    console.log('finalizeAndSubmit called');
     const email = document.getElementById('email').value;
-
-    // Validate email
     if (!email || !isValidEmail(email)) {
         alert("Please enter a valid email.");
         return;
     }
 
-    // Prepare the final data to be sent to the server (only email for now)
-    const finalData = {
-        email: email,  // Only sending the email for now
-    };
+    const finalData = { email };
 
-    // Send the data to the server
     fetch('/api/user/merge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(finalData)  // Ensure this has both email and new data
+        body: JSON.stringify(finalData)
     })
-    .then(response => {
+    .then(async (response) => {
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Error response text:", errorText);
             throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
-        console.log('Success:', data);
-        
-        // Redirect to the paywall page after successful submission
-        window.location.href = 'paywall.html';
+        console.log('Response data:', data);  // Log data to ensure response is handled
+        window.location.href = 'paywall.html';  // Redirect upon success
     })
     .catch(error => {
-        console.error('Error sending data:', error);
-    });    
+        console.error('Error sending data:', error.message);
+        alert('Oops, something went wrong. Please try again later.');
+    });
 }
 
-// Initialize the quiz
+function isValidEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+}
+
 renderQuestion();

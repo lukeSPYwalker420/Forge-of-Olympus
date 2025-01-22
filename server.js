@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
 
+app.use(cors({ origin: 'https://forge-of-olympus.onrender.com/' }));
+
 // Load environment variables from .env file
 dotenv.config();
 
@@ -187,20 +189,22 @@ async function generatePlan(userData) {
 app.post('/api/user/merge', async (req, res) => {
   const { email, newData } = req.body;
 
-  // Check if email and newData are provided
-  if (!email || !newData) {
-    return res.status(400).json({ error: 'Missing email or new data' });
+  // Check if email is provided (newData can be optional)
+  if (!email) {
+    return res.status(400).json({ error: 'Missing email' });
   }
 
   try {
     // Find the user by email
     let user = await User.findOne({ email });
 
-    // If user does not exist, create a new one
+    // If user does not exist, create a new one with the email
     if (!user) {
-      user = new User({ email, ...newData });
-    } else {
-      // Merge the new data into the existing user object
+      user = new User({ email });
+    }
+
+    // If newData is provided, merge it with the existing user data
+    if (newData) {
       user = Object.assign(user, newData);
     }
 
