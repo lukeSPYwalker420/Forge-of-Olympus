@@ -294,7 +294,10 @@ function finalizeAndSubmit(event) {
         return;
     }
 
-    const finalData = { email };
+    const finalData = { 
+        email,
+        newData: answers // Include the answers data here
+    };
 
     fetch('/api/user/merge', {
         method: 'POST',

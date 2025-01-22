@@ -104,28 +104,41 @@ const Exercise = mongoose.model('Exercise', exerciseSchema);
 const Meal = mongoose.model('Meal', mealSchema);
 
 // Helper Functions for Plan Generation
-function getExercises(userData) {
+async function getPlan(userData) {
   const query = {
-    goal: userData.goal,
-    difficulty: { $lte: userData.activity_level }, // Filter by activity level
-    equipment: userData.equipment_preference,
-    environment: userData.workout_environment, // Filter by workout environment
-    type: userData.exercise_type_preference,   // Filter by type of exercise preference
+    tags: { $in: userData.selectedTags },  // Match plans that have tags in user preferences
   };
-  // Avoid exercises that the user needs to skip due to injury or other reasons
+
+  // Optional filtering based on specific preferences
+  if (userData.goal) {
+    query.tags.push(userData.goal);
+  }
+  if (userData.activity_level) {
+    query.tags.push(userData.activity_level);
+  }
+  if (userData.equipment_preference) {
+    query.tags.push(userData.equipment_preference);
+  }
+  if (userData.workout_environment) {
+    query.tags.push(userData.workout_environment);
+  }
+  if (userData.exercise_type_preference) {
+    query.tags.push(userData.exercise_type_preference);
+  }
+
+  // If the user has any injury-avoidance preferences, exclude plans that might cause issues
   if (userData.injury_avoidances && userData.injury_avoidances.length > 0) {
-    query.name = { $nin: userData.injury_avoidances }; // Exclude exercises with specific names
+    // Assuming the injury_avoidances are part of the tags or plan data
+    query.tags = { $nin: userData.injury_avoidances };
   }
-  // If the user has a workout frequency preference, adjust the query to match
-  if (userData.workout_frequency_preference) {
-    query.frequency = userData.workout_frequency_preference;
-  }
-  // New: If the user prefers beginner or advanced exercises, filter based on complexity
-  if (userData.complexity_preference) {
-    query.complexity = userData.complexity_preference; // E.g., "Beginner", "Advanced"
-  }
-  return Exercise.find(query);
+
+  // Find plans that match the query criteria
+  const availablePlans = await Plan.find(query);
+  
+  // You can refine further based on complexity or any other attributes
+  return availablePlans[0];  // Return the first matching plan, or further refine the logic
 }
+
 function getMeals(userData) {
   // Create a query object for meal filtering
   let query = {
@@ -194,7 +207,7 @@ async function generatePlan(userData) {
 // Routes for processing user data
 
 app.post('/api/user/merge', async (req, res) => {
-  const { email, newData } = req.body;
+  const { email, newData, plan } = req.body;
 
   // Check if email is provided (newData can be optional)
   if (!email) {
@@ -213,6 +226,13 @@ app.post('/api/user/merge', async (req, res) => {
     // If newData is provided, merge it with the existing user data
     if (newData) {
       user = Object.assign(user, newData);
+    }
+
+    // Handle plan assignment based on user preferences (e.g., tags)
+    if (plan) {
+      // Assuming we have a function to find the relevant plan
+      const selectedPlan = await findPlanByTags(user);
+      user.plan = selectedPlan; // Assign the appropriate plan
     }
 
     // Save the updated or newly created user
@@ -310,7 +330,7 @@ app.get('*', (req, res) => {
 });
 
 // Set the port variable
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
 // Start the server
 app.listen(port, () => {
