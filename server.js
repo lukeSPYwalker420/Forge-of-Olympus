@@ -40,7 +40,7 @@ app.use(express.static(path.join(__dirname)));  // Serve from root folder
 
 // MongoDB Schema and Model
 const userSchema = new mongoose.Schema({
-  email: { type: String, unique: true, required: true }, // Email as primary identifier
+  email: { type: String, required: true }, // Email as primary identifier
   workoutPreferences: { type: String },
   dietPreferences: { type: String },
   activityLevel: { type: String },
