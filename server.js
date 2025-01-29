@@ -244,6 +244,9 @@ app.post('/api/user/merge', async (req, res) => {
     // Save the updated or newly created user
     await user.save();
 
+    console.log("Received request at /api/user/merge");
+    console.log("Request body:", req.body);
+
     res.json({ success: true, message: 'User data merged successfully', user });
   } catch (error) {
     console.error('Error during data merge:', error);
