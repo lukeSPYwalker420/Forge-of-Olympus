@@ -299,7 +299,7 @@ function finalizeAndSubmit(event) {
         newData: answers // Include the answers data here
     };
 
-    fetch('forge-of-olympus.onrender.com//api/user/merge', {
+    fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(finalData)
