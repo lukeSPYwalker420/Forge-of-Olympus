@@ -95,40 +95,65 @@ const Exercise = mongoose.model('Exercise', exerciseSchema);
 const Meal = mongoose.model('Meal', mealSchema);
 
 // Helper Functions for Plan Generation
+const fs = require('fs');
+
+// Read exercise plans from exercise.json
 async function getExercises(userData) {
-  const query = {
-    tags: { $in: userData.selectedTags },  // Match plans that have tags in user preferences
-  };
+  try {
+    // Read and parse the exercise.json file
+    const filePath = path.join(__dirname, 'exercise.json');
+    const data = fs.readFileSync(filePath, 'utf-8');
+    const exercisePlans = JSON.parse(data);
 
-  // Optional filtering based on specific preferences
-  if (userData.goal) {
-    query.tags.push(userData.goal);
-  }
-  if (userData.activity_level) {
-    query.tags.push(userData.activity_level);
-  }
-  if (userData.equipment_preference) {
-    query.tags.push(userData.equipment_preference);
-  }
-  if (userData.workout_environment) {
-    query.tags.push(userData.workout_environment);
-  }
-  if (userData.exercise_type_preference) {
-    query.tags.push(userData.exercise_type_preference);
-  }
+    // Define a query object based on the user's selected tags
+    const query = {
+      tags: { $in: userData.selectedTags },  // Match plans that have tags in user preferences
+    };
 
-  // If the user has any injury-avoidance preferences, exclude plans that might cause issues
-  if (userData.injury_avoidances && userData.injury_avoidances.length > 0) {
-    // Assuming the injury_avoidances are part of the tags or plan data
-    query.tags = { $nin: userData.injury_avoidances };
-  }
+    // Optional filtering based on specific preferences
+    if (userData.goal) {
+      query.tags.push(userData.goal);
+    }
+    if (userData.activity_level) {
+      query.tags.push(userData.activity_level);
+    }
+    if (userData.equipment_preference) {
+      query.tags.push(userData.equipment_preference);
+    }
+    if (userData.workout_environment) {
+      query.tags.push(userData.workout_environment);
+    }
+    if (userData.exercise_type_preference) {
+      query.tags.push(userData.exercise_type_preference);
+    }
 
-  // Find plans that match the query criteria
-  const availablePlans = await Plan.find(query);
-  
-  // You can refine further based on complexity or any other attributes
-  return availablePlans[0];  // Return the first matching plan, or further refine the logic
+    // If the user has any injury-avoidance preferences, exclude plans that might cause issues
+    if (userData.injury_avoidances && userData.injury_avoidances.length > 0) {
+      query.tags = { $nin: userData.injury_avoidances };
+    }
+
+    // Filter the exercise plans based on the query
+    const availablePlans = exercisePlans.filter(plan => {
+      // Check if the plan's tags match any of the user's preferences
+      return plan.tags.some(tag => query.tags.includes(tag));
+    });
+
+    if (availablePlans.length === 0) {
+      return null; // Return null if no matching plans were found
+    }
+
+    // For simplicity, let's return the first plan that matches the criteria
+    const selectedPlan = availablePlans[0]; 
+
+    // If you want to refine the logic and return plans based on other factors like weekly schedule or activity type, 
+    // you can loop through the schedule and extract the days with relevant exercises/activities.
+    return selectedPlan;
+  } catch (error) {
+    console.error('Error reading or parsing exercise.json:', error);
+    throw new Error('Error fetching exercise plans');
+  }
 }
+
 function getMeals(userData) {
   // Create a query object for meal filtering
   let query = {
