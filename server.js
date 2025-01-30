@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
+const validator = require('validator');
+
 
 // Load environment variables from .env file
 dotenv.config();
@@ -29,7 +31,7 @@ mongoose.connect(dbURI)
 // CORS setup (before route handlers)
 app.use(cors({
   origin: ['https://forge-of-olympus.onrender.com', 'null'],  // Allow only the specified origins
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST',],
   allowedHeaders: ['Content-Type'],
   credentials: true,
 }));
@@ -74,12 +76,9 @@ app.post('/api/user/merge', async (req, res) => {
   }
 });
 
-// Serve static files (like index.html) from the root folder
-app.use(express.static(path.join(__dirname)));
-
 // Catch-all route to serve index.html for any request that doesn't match an API route
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'quiz.html'));
 });
 
 // User Schema with Follow-up Answers as a Map for Dynamic Fields
@@ -97,6 +96,10 @@ const userSchema = new mongoose.Schema({
   measurementPreference: { type: String },
   followUpAnswers: { type: Map, of: String } // For storing dynamic answers
 });
+
+// Compile the User schema into a model
+const User = mongoose.model('User', userSchema);
+
 
 // Exercise Schema with Array for Goals
 const exerciseSchema = new mongoose.Schema({
@@ -144,49 +147,67 @@ async function getExercises(userData) {
     const data = fs.readFileSync(filePath, 'utf-8');
     const exercisePlans = JSON.parse(data);
 
-    // Define a query object based on the user's selected tags
-    const query = {
-      tags: { $in: userData.selectedTags },  // Match plans that have tags in user preferences
-    };
+    // Initialize an empty array to store the tags based on user data
+    let tags = [];
 
-    // Optional filtering based on specific preferences
+    // **Goal Handling**
     if (userData.goal) {
-      query.tags.push(userData.goal);
+      tags.push(userData.goal);  // e.g., "Muscle Gain"
     }
-    if (userData.activity_level) {
-      query.tags.push(userData.activity_level);
+
+    // **Workout Frequency**
+    if (userData.days_per_week) {
+      tags.push(userData.days_per_week);  // e.g., "2 Days a Week"
     }
-    if (userData.equipment_preference) {
-      query.tags.push(userData.equipment_preference);
-    }
-    if (userData.workout_environment) {
-      query.tags.push(userData.workout_environment);
-    }
+
+    // **Exercise Type Preference (Strength, Cardio, etc.)**
     if (userData.exercise_type_preference) {
-      query.tags.push(userData.exercise_type_preference);
+      tags.push(userData.exercise_type_preference);  // e.g., "Weight Training"
     }
 
-    // If the user has any injury-avoidance preferences, exclude plans that might cause issues
-    if (userData.injury_avoidances && userData.injury_avoidances.length > 0) {
-      query.tags = { $nin: userData.injury_avoidances };
+    // **Injury Handling**
+    if (!userData.injury_avoidances || userData.injury_avoidances.length === 0) {
+      tags.push("No Injuries");
+    } else {
+      userData.injury_avoidances.forEach(injury => {
+        tags.push(injury);  // e.g., "Knee Injury"
+      });
     }
 
-    // Filter the exercise plans based on the query
+    // **Fitness Level Handling**
+    if (userData.fitness_level) {
+      tags.push(userData.fitness_level);  // e.g., "Beginner"
+    }
+
+    // **Exercise Environment (Gym/Home Gym)**
+    if (userData.exercise_environment) {
+      tags.push(userData.exercise_environment);  // e.g., "Gym/Home Gym"
+    }
+
+    // **Focus Type**
+    if (userData.focus_type) {
+      tags.push(userData.focus_type);  // e.g., "Strength Focus"
+    }
+
+    // **Dietary Restrictions** (Optional)
+    if (userData.dietary_restrictions && userData.dietary_restrictions !== "None") {
+      tags.push(userData.dietary_restrictions);  // e.g., "Vegan"
+    }
+
+    // **Filter the exercise plans based on the tags**
     const availablePlans = exercisePlans.filter(plan => {
-      // Check if the plan's tags match any of the user's preferences
-      return plan.tags.some(tag => query.tags.includes(tag));
+      // Check if all user tags are present in the plan's tags
+      return tags.every(tag => plan.tags.includes(tag));
     });
 
+    // If no plans match, return null
     if (availablePlans.length === 0) {
-      return null; // Return null if no matching plans were found
+      return null; // No matching plans found
     }
 
-    // For simplicity, let's return the first plan that matches the criteria
-    const selectedPlan = availablePlans[0]; 
+    // Return the first matching plan (or more depending on your needs)
+    return availablePlans[0];
 
-    // If you want to refine the logic and return plans based on other factors like weekly schedule or activity type, 
-    // you can loop through the schedule and extract the days with relevant exercises/activities.
-    return selectedPlan;
   } catch (error) {
     console.error('Error reading or parsing exercise.json:', error);
     throw new Error('Error fetching exercise plans');
