@@ -38,57 +38,52 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname)));  // Serve from root folder
 
-// MongoDB Schema and Model
+// User Schema with Follow-up Answers as a Map for Dynamic Fields
 const userSchema = new mongoose.Schema({
-  email: { type: String, required: true }, // Email as primary identifier
+  email: { type: String, required: true, unique: true },
   workoutPreferences: { type: String },
   dietPreferences: { type: String },
   activityLevel: { type: String },
-  allergies: { type: String },
-  medicalConditions: { type: String },
+  allergies: { type: [String] }, // Multiple allergies
+  medicalConditions: { type: [String] }, // Multiple conditions
   mealFrequency: { type: String },
   cookFrequency: { type: String },
   groceryBudget: { type: String },
   step: { type: String },
   measurementPreference: { type: String },
+  followUpAnswers: { type: Map, of: String } // For storing dynamic answers
 });
 
-// Add indexing for scalability
-userSchema.index({ activityLevel: 1 });  // Index for activityLevel field
-userSchema.index({ workoutPreferences: 1 });  // Index for workoutPreferences field
-userSchema.index({ mealFrequency: 1 });  // Index for mealFrequency field
-userSchema.index({ cookFrequency: 1 });  // Index for cookFrequency field
-userSchema.index({ step: 1 });  // Index for step field
-
-const User = mongoose.model('User', userSchema);
-
-// MongoDB Models for exercises and meals
+// Exercise Schema with Array for Goals
 const exerciseSchema = new mongoose.Schema({
-  name: String,                 // e.g., "Bench Press"
-  muscle_group: String,         // e.g., "Chest"
-  equipment: String,            // e.g., "Barbell"
-  difficulty: String,           // e.g., "Intermediate"
-  goal: [String],               // e.g., ["muscle_gain", "strength"]
-  type: String,                 // e.g., "Strength"
-  sets_reps: String             // e.g., "3x12"
+  name: String,
+  muscle_group: String,
+  equipment: String,
+  difficulty: String,
+  goal: { type: [String] }, // Multiple goals
+  type: String,
+  sets_reps: String
 });
 
+// Meal Schema with Optional Nutrition Fields
 const mealSchema = new mongoose.Schema({
   name: String,
-  ingredients: [String],
+  ingredients: { type: [String], required: true },
   calories: Number,
   macronutrients: {
     protein: Number,
     carbs: Number,
-    fats: Number
+    fats: Number,
+    fiber: { type: Number },
+    sugar: { type: Number }
   },
-  restrictions: [String],
+  restrictions: { type: [String] },
   mealCategory: { 
     type: String, 
-    enum: ['Breakfast', 'Lunch', 'Dinner', 'Snack'], // Define valid categories
-    required: true // Ensure that every meal has a category
+    enum: ['Breakfast', 'Lunch', 'Dinner', 'Snack'], 
+    required: true 
   },
-  type: String, // e.g., "Lunch"
+  type: String
 });
 
 const Exercise = mongoose.model('Exercise', exerciseSchema);
@@ -253,6 +248,7 @@ app.post('/api/user/merge', async (req, res) => {
     res.status(500).json({ error: 'Error merging user data' });
   }
 });
+
 
 app.post('/api/user/process', async (req, res) => {
   const { step, data } = req.body;
