@@ -41,14 +41,19 @@
     </div>
 
     <!-- Results container and submit button -->
-<div id="result-container" class="result" style="display: none;">
-    <h3 class="result-heading">Thank you for your responses!</h3>
-    <pre id="result-summary" class="result-text"></pre>
-    <div class="button-container">
-        <!-- Submit button now triggers the finalizeAndSubmit function -->
-        <button id="submit-btn" class="button-style">Submit</button>
-    </div>
-</div>
+    <div id="result-container" class="result" style="display: none;">
+        <h3 class="result-heading">Thank you for your responses!</h3>
+        <pre id="result-summary" class="result-text"></pre>
+        <div class="email-input-container">
+            <!-- Email input field for submission -->
+            <label for="email">Enter your email to finalize:</label>
+            <input type="email" id="email" name="email" required />
+        </div>
+        <div class="button-container">
+            <!-- Submit button triggers the finalizeAndSubmit function -->
+            <button id="submit-btn" class="button-style">Submit</button>
+        </div>
+    </div>    
 
     <!-- Link to the external JavaScript file -->
     <script src="Quiz.js"></script>

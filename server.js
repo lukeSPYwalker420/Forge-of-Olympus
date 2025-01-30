@@ -216,36 +216,34 @@ async function generatePlan(userData) {
 }
 // Routes for processing user data
 
+// Merging new user data (e.g., answers) into the user's profile
 app.post('/api/user/merge', async (req, res) => {
   const { email, newData } = req.body;
 
   // Check if email and newData are provided
   if (!email || !newData) {
-    return res.status(400).json({ error: 'Missing email or new data' });
+      return res.status(400).json({ error: 'Missing email or new data' });
   }
 
   try {
-    // Find the user by email
-    let user = await User.findOne({ email });
+      // Find the user by email
+      let user = await User.findOne({ email });
 
-    // If user does not exist, create a new one
-    if (!user) {
-      user = new User({ email, ...newData });
-    } else {
-      // Merge the new data into the existing user object
-      user = Object.assign(user, newData);
-    }
+      // If user does not exist, create a new one
+      if (!user) {
+          user = new User({ email, ...newData });
+      } else {
+          // Merge the new data into the existing user object
+          user = Object.assign(user, newData);
+      }
 
-    // Save the updated or newly created user
-    await user.save();
+      // Save the updated or newly created user
+      await user.save();
 
-    console.log("Received request at /api/user/merge");
-    console.log("Request body:", req.body);
-
-    res.json({ success: true, message: 'User data merged successfully', user });
+      res.json({ success: true, message: 'User data merged successfully', user });
   } catch (error) {
-    console.error('Error during data merge:', error);
-    res.status(500).json({ error: 'Error merging user data' });
+      console.error('Error during data merge:', error);
+      res.status(500).json({ error: 'Error merging user data' });
   }
 });
 

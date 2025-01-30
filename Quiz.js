@@ -236,8 +236,6 @@ function showResults() {
 
     resultSummary.textContent = formattedAnswers;
     resultContainer.style.display = "block";
-
-    attachEmailInput();
 }
 
 function attachEmailInput() {
@@ -287,7 +285,6 @@ function attachEmailInput() {
 }
 
 function finalizeAndSubmit(event) {
-    console.log('finalizeAndSubmit called');
     const email = document.getElementById('email').value;
     if (!email || !isValidEmail(email)) {
         alert("Please enter a valid email.");
@@ -313,7 +310,7 @@ function finalizeAndSubmit(event) {
         return response.json();
     })
     .then(data => {
-        console.log('Response data:', data);  // Log data to ensure response is handled
+        console.log('Response data:', data);
         window.location.href = 'paywall.html';  // Redirect upon success
     })
     .catch(error => {
