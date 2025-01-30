@@ -284,8 +284,14 @@ function attachEmailInput() {
     resultContainer.appendChild(emailInputContainer);
 }
 
+// Handle final submission with email and user data
 function finalizeAndSubmit(event) {
+    // Prevent the default form submission behavior
+    event.preventDefault();
+
     const email = document.getElementById('email').value;
+    console.log('Email entered:', email); // Debug log to confirm email value
+
     if (!email || !isValidEmail(email)) {
         alert("Please enter a valid email.");
         return;
@@ -296,6 +302,9 @@ function finalizeAndSubmit(event) {
         newData: answers // Include the answers data here
     };
 
+    console.log('Data being sent:', finalData); // Debug log for the data being sent
+
+    // Send the collected data to the server
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -318,6 +327,12 @@ function finalizeAndSubmit(event) {
         alert('Oops, something went wrong. Please try again later.');
     });
 }
+
+// Listen for submit button click
+document.getElementById('submit-btn').addEventListener('click', function(event) {
+    console.log('Submit button clicked'); // Debug log to confirm button click
+    finalizeAndSubmit(event);
+});
 
 function isValidEmail(email) {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

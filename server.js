@@ -26,17 +26,61 @@ mongoose.connect(dbURI)
     process.exit(1);
   });
 
-// Enable CORS for specific origin (update this with your frontend URL)
+// CORS setup (before route handlers)
 app.use(cors({
-  origin: 'https://forge-of-olympus.onrender.com',  // Update this if needed
+  origin: ['https://forge-of-olympus.onrender.com', 'null'],  // Allow only the specified origins
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
+  credentials: true,
 }));
 
 // Body parser middleware for JSON data
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname)));  // Serve from root folder
+// Log the Origin header to debug
+app.use((req, res, next) => {
+  console.log('Origin:', req.get('Origin'));  // Log the Origin header to debug
+  next();
+});
+
+// API Route for merging user data (must be defined after CORS)
+app.post('/api/user/merge', async (req, res) => {
+  const { email, newData } = req.body;
+
+  // Check if email and newData are provided
+  if (!email || !newData) {
+    return res.status(400).json({ error: 'Missing email or new data' });
+  }
+
+  try {
+    // Find the user by email
+    let user = await User.findOne({ email });
+
+    // If user does not exist, create a new one
+    if (!user) {
+      user = new User({ email, ...newData });
+    } else {
+      // Merge the new data into the existing user object
+      user = Object.assign(user, newData);
+    }
+
+    // Save the updated or newly created user
+    await user.save();
+
+    res.json({ success: true, message: 'User data merged successfully', user });
+  } catch (error) {
+    console.error('Error during data merge:', error);
+    res.status(500).json({ error: 'Error merging user data' });
+  }
+});
+
+// Serve static files (like index.html) from the root folder
+app.use(express.static(path.join(__dirname)));
+
+// Catch-all route to serve index.html for any request that doesn't match an API route
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // User Schema with Follow-up Answers as a Map for Dynamic Fields
 const userSchema = new mongoose.Schema({
@@ -216,35 +260,12 @@ async function generatePlan(userData) {
 }
 // Routes for processing user data
 
-// Merging new user data (e.g., answers) into the user's profile
-app.post('/api/user/merge', async (req, res) => {
-  const { email, newData } = req.body;
+// Serve static files after defining API routes
+app.use(express.static(path.join(__dirname, 'public')));  // Adjust 'public' folder name as needed
 
-  // Check if email and newData are provided
-  if (!email || !newData) {
-      return res.status(400).json({ error: 'Missing email or new data' });
-  }
-
-  try {
-      // Find the user by email
-      let user = await User.findOne({ email });
-
-      // If user does not exist, create a new one
-      if (!user) {
-          user = new User({ email, ...newData });
-      } else {
-          // Merge the new data into the existing user object
-          user = Object.assign(user, newData);
-      }
-
-      // Save the updated or newly created user
-      await user.save();
-
-      res.json({ success: true, message: 'User data merged successfully', user });
-  } catch (error) {
-      console.error('Error during data merge:', error);
-      res.status(500).json({ error: 'Error merging user data' });
-  }
+// Catch-all route for serving the index.html page
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'quiz.html'));  // Adjust the 'public' folder path as needed
 });
 
 
@@ -329,7 +350,7 @@ app.post('/api/user/generate-plan', async (req, res) => {
 
 // Serve the frontend (SPA fallback)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'quiz.html'));
 });
 
 // Set the port variable
