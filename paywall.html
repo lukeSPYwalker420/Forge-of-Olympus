@@ -6,8 +6,6 @@
     <title>Subscription Form - Forge of Olympus</title>
     <link rel="stylesheet" href="common.css">
     <link rel="stylesheet" href="paywall.css">
-
-    <!-- Include Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
@@ -17,41 +15,41 @@
         </div>
     </header>
 
-    <section class="container">
+    <main class="container">
         <!-- Progress Bar -->
         <div class="progress-bar">
             <div id="progress" class="progress"></div>
         </div>
 
+        <!-- Measurement Tabs -->
         <div id="measurement-tabs">
             <button id="metric-tab" class="tab-button active">Metric</button>
             <button id="imperial-tab" class="tab-button">Imperial</button>
         </div>
 
         <!-- Personal Details Section -->
-<section class="step active" id="personal-details">
-    <h2>Personal Details</h2>
-    <!-- Dynamic Questions will be inserted by JavaScript -->
-</section>
+        <section class="step active" id="personal-details">
+            <h2>Personal Details</h2>
+            <!-- Dynamic Questions will be inserted by JavaScript -->
+        </section>
 
-<!-- User Profile Section (Will be inserted dynamically) -->
-<section class="step" id="user-profile-section" style="display:none;">
-    <form id="user-profile-form">
-        <h3>User Profile</h3>
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required />
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required />
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required />
-        <label for="confirm-password">Confirm Password:</label>
-        <input type="password" id="confirm-password" name="confirm-password" required />
-        <button type="submit">Submit</button>
-    </form>
-    <button id="test-submit-btn" type="button">Submit Form Data for Testing</button>
-    <div id="user-id-container">Loading User ID...</div>
-</section>       
-        
+        <!-- User Profile Section -->
+        <section class="step" id="user-profile-section">
+            <form id="user-profile-form">
+                <h3>User Profile</h3>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required />
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required />
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required />
+                <label for="confirm-password">Confirm Password:</label>
+                <input type="password" id="confirm-password" name="confirm-password" required />
+            </form>
+            <div id="user-id-container">Loading User ID...</div>
+        </section>
+
+        <!-- Product Selection Section -->
         <section>
             <div id="product-selection">
                 <label>
@@ -62,16 +60,15 @@
                 </label>
             </div>
         </section>
-        
-        <!-- Updated "Next: Payment Details" button that links to Stripe payment page -->
+
+        <!-- Next Button -->
         <button type="button" id="next-step-btn">Next: Payment Details</button>
-    </section>
+    </main>
 
     <footer>
         <p>&copy; 2025 Forge of Olympus. All rights reserved.</p>
     </footer>
 
-    <!-- External JS file -->
     <script src="paywall.js"></script>
 </body>
 </html>

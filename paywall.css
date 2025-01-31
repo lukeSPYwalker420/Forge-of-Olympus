@@ -9,7 +9,6 @@ body {
     text-align: center;
 }
 
-/* Header */
 header {
     background-color: #111;
     padding: 20px 0;
@@ -22,7 +21,6 @@ header h1 {
     letter-spacing: 2px;
 }
 
-/* Main Container */
 .container {
     width: 90%;
     max-width: 800px;
@@ -30,7 +28,7 @@ header h1 {
     padding: 20px;
 }
 
-/* Progress Bar Styles */
+/* Progress Bar */
 .progress-bar {
     width: 100%;
     height: 12px;
@@ -48,6 +46,7 @@ header h1 {
     transition: width 0.3s ease;
 }
 
+/* Tabs */
 .tab-button {
     padding: 10px;
     cursor: pointer;
@@ -57,10 +56,10 @@ header h1 {
 
 .tab-button.active {
     background-color: #007bff;
-    color: rgb(255, 255, 255);
+    color: #fff;
 }
 
-/* Step Styling */
+/* Steps */
 .step {
     display: none;
     background-color: #222;
@@ -72,33 +71,6 @@ header h1 {
 
 .step.active {
     display: block;
-}
-
-/* Card Info Styling */
-.card-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 20px;
-}
-
-/* Name on Card Styling */
-.card-info .card-name {
-    font-size: 18px;
-    color: #f5f5f5;
-    margin-bottom: 10px;
-    width: 100%;
-    text-align: left;
-}
-
-/* Card Number, Expiry Date, CVC Styling */
-.card-info .card-number,
-.card-info .card-expiry,
-.card-info .card-cvc {
-    font-size: 24px;
-    color: #f5f5f5;
-    margin-bottom: 15px;
-    width: 100%;
 }
 
 /* Input Fields */
@@ -123,12 +95,7 @@ select:focus {
     outline: none;
 }
 
-/* Input Box Styling for Card Number, Expiry Date, CVC */
-input.card-input {
-    margin-bottom: 15px;
-}
-
-/* Button Styling */
+/* Buttons */
 button {
     padding: 12px 24px;
     background-color: #ffcc33;
@@ -144,17 +111,6 @@ button {
 
 button:hover {
     background-color: #e6b329;
-}
-
-/* Review Details */
-#review-details p {
-    margin: 10px 0;
-    font-size: 18px;
-    color: #ccc;
-}
-
-#review-details button {
-    margin-top: 20px;
 }
 
 /* Footer */
@@ -180,14 +136,7 @@ footer {
         padding: 15px;
     }
 
-    .card-info .card-name,
-    .card-info .card-number,
-    .card-info .card-expiry,
-    .card-info .card-cvc {
-        font-size: 18px; /* Adjust input field font size for smaller screens */
-    }
-
     button {
-        font-size: 14px; /* Smaller button text on mobile */
+        font-size: 14px;
     }
 }
