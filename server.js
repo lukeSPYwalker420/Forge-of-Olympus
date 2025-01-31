@@ -28,13 +28,13 @@ mongoose.connect(dbURI)
     process.exit(1);
   });
 
-// CORS setup (before route handlers)
-app.use(cors({
-  origin: ['https://forge-of-olympus.onrender.com', 'null'],  // Allow only the specified origins
-  methods: ['GET', 'POST',],
-  allowedHeaders: ['Content-Type'],
-  credentials: true,
-}));
+  app.use(cors({
+    origin: 'https://forge-of-olympus.onrender.com',  // Allow only the frontend URL
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
+  }));
+  
 
 // Body parser middleware for JSON data
 app.use(express.json());
