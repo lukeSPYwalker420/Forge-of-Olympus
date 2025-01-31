@@ -45,37 +45,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// API Route for merging user data (must be defined after CORS)
-app.post('/api/user/merge', async (req, res) => {
-  const { email, newData } = req.body;
-
-  // Check if email and newData are provided
-  if (!email || !newData) {
-    return res.status(400).json({ error: 'Missing email or new data' });
-  }
-
-  try {
-    // Find the user by email
-    let user = await User.findOne({ email });
-
-    // If user does not exist, create a new one
-    if (!user) {
-      user = new User({ email, ...newData });
-    } else {
-      // Merge the new data into the existing user object
-      user = Object.assign(user, newData);
-    }
-
-    // Save the updated or newly created user
-    await user.save();
-
-    res.json({ success: true, message: 'User data merged successfully', user });
-  } catch (error) {
-    console.error('Error during data merge:', error);
-    res.status(500).json({ error: 'Error merging user data' });
-  }
-});
-
 // Catch-all route to serve index.html for any request that doesn't match an API route
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));  // Serve index.html as the default
@@ -266,7 +235,36 @@ async function generatePlan(userData) {
   
   return { exercise_plan: exercisePlan, diet_plan: mealPlan };
 }
-// Routes for processing user data
+// API Route for merging user data (must be defined after CORS)
+app.post('/api/user/merge', async (req, res) => {
+  const { email, newData } = req.body;
+
+  // Check if email and newData are provided
+  if (!email || !newData) {
+    return res.status(400).json({ error: 'Missing email or new data' });
+  }
+
+  try {
+    // Find the user by email
+    let user = await User.findOne({ email });
+
+    // If user does not exist, create a new one
+    if (!user) {
+      user = new User({ email, ...newData });
+    } else {
+      // Merge the new data into the existing user object
+      user = Object.assign(user, newData);
+    }
+
+    // Save the updated or newly created user
+    await user.save();
+
+    res.json({ success: true, message: 'User data merged successfully', user });
+  } catch (error) {
+    console.error('Error during data merge:', error);
+    res.status(500).json({ error: 'Error merging user data' });
+  }
+});
 
 // Serve static files from the root directory
 app.use(express.static(__dirname));  // Serving from the root directory
