@@ -136,9 +136,6 @@ const mealSchema = new mongoose.Schema({
 const Exercise = mongoose.model('Exercise', exerciseSchema);
 const Meal = mongoose.model('Meal', mealSchema);
 
-// Helper Functions for Plan Generation
-const fs = require('fs');
-
 // Read exercise plans from exercise.json
 const fs = require('fs');
 const path = require('path');
