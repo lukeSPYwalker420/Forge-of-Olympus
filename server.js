@@ -140,6 +140,9 @@ const Meal = mongoose.model('Meal', mealSchema);
 const fs = require('fs');
 
 // Read exercise plans from exercise.json
+const fs = require('fs');
+const path = require('path');
+
 async function getExercises(userData) {
   try {
     // Read and parse the exercise.json file
@@ -147,66 +150,54 @@ async function getExercises(userData) {
     const data = fs.readFileSync(filePath, 'utf-8');
     const exercisePlans = JSON.parse(data);
 
-    // Initialize an empty array to store the tags based on user data
+    // Initialize an empty array to store tags based on user data
     let tags = [];
 
     // **Goal Handling**
-    if (userData.goal) {
-      tags.push(userData.goal);  // e.g., "Muscle Gain"
-    }
+    if (userData.goal) tags.push(userData.goal);
 
     // **Workout Frequency**
-    if (userData.days_per_week) {
-      tags.push(userData.days_per_week);  // e.g., "2 Days a Week"
-    }
+    if (userData.days_per_week) tags.push(userData.days_per_week);
 
-    // **Exercise Type Preference (Strength, Cardio, etc.)**
-    if (userData.exercise_type_preference) {
-      tags.push(userData.exercise_type_preference);  // e.g., "Weight Training"
-    }
+    // **Exercise Type Preference**
+    if (userData.exercise_type_preference) tags.push(userData.exercise_type_preference);
 
     // **Injury Handling**
     if (!userData.injury_avoidances || userData.injury_avoidances.length === 0) {
       tags.push("No Injuries");
     } else {
-      userData.injury_avoidances.forEach(injury => {
-        tags.push(injury);  // e.g., "Knee Injury"
-      });
+      userData.injury_avoidances.forEach(injury => tags.push(injury));
     }
 
     // **Fitness Level Handling**
-    if (userData.fitness_level) {
-      tags.push(userData.fitness_level);  // e.g., "Beginner"
-    }
+    if (userData.fitness_level) tags.push(userData.fitness_level);
 
-    // **Exercise Environment (Gym/Home Gym)**
-    if (userData.exercise_environment) {
-      tags.push(userData.exercise_environment);  // e.g., "Gym/Home Gym"
-    }
+    // **Exercise Environment**
+    if (userData.exercise_environment) tags.push(userData.exercise_environment);
 
     // **Focus Type**
-    if (userData.focus_type) {
-      tags.push(userData.focus_type);  // e.g., "Strength Focus"
-    }
+    if (userData.focus_type) tags.push(userData.focus_type);
 
-    // **Dietary Restrictions** (Optional)
+    // **Dietary Restrictions (Optional)**
     if (userData.dietary_restrictions && userData.dietary_restrictions !== "None") {
-      tags.push(userData.dietary_restrictions);  // e.g., "Vegan"
+      tags.push(userData.dietary_restrictions);
     }
 
-    // **Filter the exercise plans based on the tags**
-    const availablePlans = exercisePlans.filter(plan => {
-      // Check if all user tags are present in the plan's tags
-      return tags.every(tag => plan.tags.includes(tag));
+    // **Find the best-matching plan**
+    let bestMatch = null;
+    let maxMatches = 0;
+
+    exercisePlans.forEach(plan => {
+      const matchCount = plan.tags.filter(tag => tags.includes(tag)).length;
+
+      if (matchCount > maxMatches) {
+        maxMatches = matchCount;
+        bestMatch = plan;
+      }
     });
 
-    // If no plans match, return null
-    if (availablePlans.length === 0) {
-      return null; // No matching plans found
-    }
-
-    // Return the first matching plan (or more depending on your needs)
-    return availablePlans[0];
+    // Return the best-matching plan or null if none found
+    return bestMatch || null;
 
   } catch (error) {
     console.error('Error reading or parsing exercise.json:', error);
