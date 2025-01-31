@@ -52,7 +52,7 @@ app.get('*', (req, res) => {
 
 // User Schema with Follow-up Answers as a Map for Dynamic Fields
 const userSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true},
   workoutPreferences: { type: String },
   dietPreferences: { type: String },
   activityLevel: { type: String },
