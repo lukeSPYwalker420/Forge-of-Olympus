@@ -39,12 +39,6 @@ mongoose.connect(dbURI)
 // Body parser middleware for JSON data
 app.use(express.json());
 
-// Log the Origin header to debug
-app.use((req, res, next) => {
-  console.log('Origin:', req.get('Origin'));  // Log the Origin header to debug
-  next();
-});
-
 // Catch-all route to serve index.html for any request that doesn't match an API route
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname));  // Serve index.html as the default
