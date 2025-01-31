@@ -138,7 +138,6 @@ const Meal = mongoose.model('Meal', mealSchema);
 
 // Read exercise plans from exercise.json
 const fs = require('fs');
-const path = require('path');
 
 async function getExercises(userData) {
   try {
