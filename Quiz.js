@@ -307,7 +307,10 @@ function finalizeAndSubmit(event) {
     // Send the collected data to the server
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Origin': 'https://forge-of-olympus.onrender.com'  // Ensure Origin is correct
+        },
         body: JSON.stringify(finalData)
     })
     .then(async (response) => {
