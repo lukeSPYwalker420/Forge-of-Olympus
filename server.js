@@ -47,7 +47,7 @@ app.use((req, res, next) => {
 
 // Catch-all route to serve index.html for any request that doesn't match an API route
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));  // Serve index.html as the default
+  res.sendFile(path.join(__dirname));  // Serve index.html as the default
 });
 
 // User Schema with Follow-up Answers as a Map for Dynamic Fields
@@ -350,7 +350,7 @@ app.post('/api/user/generate-plan', async (req, res) => {
 
 // Serve the frontend (SPA fallback)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname));
 });
 
 // Set the port variable
