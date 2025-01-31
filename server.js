@@ -268,14 +268,13 @@ async function generatePlan(userData) {
 }
 // Routes for processing user data
 
-// Serve static files after defining API routes
-app.use(express.static(path.join(__dirname, 'public')));  // Adjust 'public' folder name as needed
+// Serve static files from the root directory
+app.use(express.static(__dirname));  // Serving from the root directory
 
-// Catch-all route for serving the index.html page
+// Catch-all route to serve index.html for any request that doesn't match an API route
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'quiz.html'));  // Adjust the 'public' folder path as needed
+  res.sendFile(path.join(__dirname, 'index.html'));  // Serve index.html as the default
 });
-
 
 app.post('/api/user/process', async (req, res) => {
   const { step, data } = req.body;
