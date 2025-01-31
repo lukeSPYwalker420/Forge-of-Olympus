@@ -5,7 +5,6 @@ const cors = require('cors');
 const path = require('path');
 const validator = require('validator');
 
-
 // Load environment variables from .env file
 dotenv.config();
 
@@ -28,13 +27,12 @@ mongoose.connect(dbURI)
     process.exit(1);
   });
 
-  app.use(cors({
-    origin: 'https://forge-of-olympus.onrender.com',  // Allow only the frontend URL
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
-    credentials: true,
-  }));
-  
+app.use(cors({
+  origin: 'https://forge-of-olympus.onrender.com',  // Allow only the frontend URL
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+  credentials: true,
+}));
 
 // Body parser middleware for JSON data
 app.use(express.json());
@@ -78,7 +76,7 @@ app.post('/api/user/merge', async (req, res) => {
 
 // Catch-all route to serve index.html for any request that doesn't match an API route
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'quiz.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));  // Serve index.html as the default
 });
 
 // User Schema with Follow-up Answers as a Map for Dynamic Fields
@@ -99,7 +97,6 @@ const userSchema = new mongoose.Schema({
 
 // Compile the User schema into a model
 const User = mongoose.model('User', userSchema);
-
 
 // Exercise Schema with Array for Goals
 const exerciseSchema = new mongoose.Schema({
@@ -262,108 +259,11 @@ async function generatePlan(userData) {
     snacks: meals.filter(meal => meal.mealCategory === 'Snack')
   };
   // Generate exercise plan, considering the available days and user preferences
-  const exercisePlan = buildExerciseSchedule(exercises, userData.available_days);
+  const exercisePlan = exercises ? exercises.exercises : [];
   
-  return { exercise_plan: exercisePlan, diet_plan: mealPlan };
+  return { exercisePlan, mealPlan };
 }
-// Routes for processing user data
 
-// Serve static files from the root directory
-app.use(express.static(__dirname));  // Serving from the root directory
-
-// Catch-all route to serve index.html for any request that doesn't match an API route
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));  // Serve index.html as the default
+app.listen(process.env.PORT || 3000, () => {
+  console.log('Server is running');
 });
-
-app.post('/api/user/process', async (req, res) => {
-  const { step, data } = req.body;
-
-  if (!step || !data || !data.email) {
-    return res.status(400).json({ error: 'Missing step, data, or email' });
-  }
-
-  try {
-    let user = await User.findOne({ email: data.email });
-
-    if (!user) {
-      user = new User({ email: data.email, ...data });
-    } else {
-      user = Object.assign(user, data);
-    }
-
-    user.step = step; // Save the current step
-    await user.save();
-
-    res.json({ success: true, message: 'Data saved successfully' });
-  } catch (error) {
-    console.error('Error during data save:', error);
-    res.status(500).json({ error: 'Error saving data' });
-  }
-});
-
-// Profile completion route
-app.post('/api/user/complete-profile', async (req, res) => {
-  const { email, profileData } = req.body;
-
-  // Check if email is missing
-  if (!email) {
-    return res.status(400).json({ error: 'Missing email' });
-  }
-
-  // Email validation
-  if (!validator.isEmail(email)) {
-    return res.status(400).json({ error: 'Invalid email format' });
-  }
-
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    user.email = email; // Ensure email is set
-    Object.assign(user, profileData); // Merge profile data
-    await user.save();
-
-    res.json({ success: true, message: 'Profile completed successfully' });
-  } catch (error) {
-    console.error('Error during profile completion:', error);
-    res.status(500).json({ error: 'Error completing profile' });
-  }
-});
-
-// Plan generation route
-app.post('/api/user/generate-plan', async (req, res) => {
-  const { email, userData } = req.body;
-
-  if (!email || !userData) {
-    return res.status(400).json({ error: 'Missing email or user data' });
-  }
-
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const { exercise_plan, diet_plan } = await generatePlan(userData);
-    res.json({ exercise_plan, diet_plan });
-  } catch (error) {
-    console.error('Error generating plan:', error);
-    res.status(500).json({ error: 'Error generating plan' });
-  }
-});
-
-// Serve the frontend (SPA fallback)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'quiz.html'));
-});
-
-// Set the port variable
-const port = process.env.PORT || 5000;
-
-// Start the server
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
