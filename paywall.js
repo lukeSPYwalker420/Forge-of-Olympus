@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Questions for personal details
     const questions = [
-        { label: "What is your sex?", id: "sex", type: "select", options: ["Male", "Female"], required: true },
+        { label: "What is your sex?", id: "sex", type: "select", options: ["select", "Male", "Female"], required: true },
         { label: "What is your age?", id: "age", type: "number", placeholder: "Enter your age", required: true },
         { label: "What is your height?", id: "height", type: "text", placeholder: "Enter your height in cm", required: true },
         { label: "What is your weight?", id: "weight", type: "text", placeholder: "Enter your weight in kg", required: true },
