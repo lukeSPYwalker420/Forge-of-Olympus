@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
 const validator = require('validator');
+const nodemailer = require('nodemailer'); 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // Load environment variables from .env file
