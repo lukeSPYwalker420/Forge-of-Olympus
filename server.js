@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
 const validator = require('validator');
-
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // Load environment variables from .env file
 dotenv.config();
@@ -39,6 +39,96 @@ mongoose.connect(dbURI)
 // Body parser middleware for JSON data
 app.use(express.json());
 
+// Configure email transporter
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+async function sendPlanEmail(email, exercisePlan, dietPlan) {
+  const mailOptions = {
+    from: `Forge of Olympus <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: 'Your Custom Plan is Ready!',
+    html: `
+      <h1>Your Personalized Fitness Plan</h1>
+      <p>Access your dashboard: <a href="https://forge-of-olympus.onrender.com/dashboard">View Plans</a></p>
+      
+      <h2>Sample Exercises</h2>
+      <ul>
+        ${exercisePlan.slice(0, 3).map(ex => `<li>${ex.name}</li>`).join('')}
+      </ul>
+      
+      <h2>Sample Meals</h2>
+      <ul>
+        ${dietPlan.breakfast.slice(0, 2).map(meal => `<li>${meal.name}</li>`).join('')}
+      </ul>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error('Error sending email:', error);
+  }
+}
+
+// Stripe Webhook for payment success
+app.post('/api/stripe/webhook', 
+  express.raw({type: 'application/json'}),
+  async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err) {
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle successful payment
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      
+      try {
+        // Get user email from metadata
+        const userEmail = session.metadata.email;
+        
+        // Find user in database
+        const user = await User.findOne({ email: userEmail });
+        if (!user) throw new Error('User not found');
+
+        // Generate plans
+        const { exercise_plan, diet_plan } = await generatePlan(user.toObject());
+
+        // Save plans to user account
+        user.plans = {
+          exercise: exercise_plan,
+          diet: diet_plan,
+          generatedAt: new Date()
+        };
+        await user.save();
+
+        // Send confirmation email
+        await sendPlanEmail(userEmail, exercise_plan, diet_plan);
+        
+      } catch (error) {
+        console.error('Post-payment processing failed:', error);
+        // Consider implementing retry logic here
+      }
+    }
+
+    res.json({ received: true });
+  }
+);
+
 // Catch-all route to serve index.html for any request that doesn't match an API route
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname));  // Serve index.html as the default
@@ -50,14 +140,25 @@ const userSchema = new mongoose.Schema({
   workoutPreferences: { type: String },
   dietPreferences: { type: String },
   activityLevel: { type: String },
-  allergies: { type: [String] }, // Multiple allergies
+  allergies: { 
+    type: [String], 
+    set: function(allergies) {
+      return allergies.map(allergy => allergy.toLowerCase().trim());
+    }
+  },
   medicalConditions: { type: [String] }, // Multiple conditions
   mealFrequency: { type: String },
   cookFrequency: { type: String },
   groceryBudget: { type: String },
   step: { type: String },
   measurementPreference: { type: String },
-  followUpAnswers: { type: Map, of: String } // For storing dynamic answers
+  followUpAnswers: { type: Map, of: String }, // For storing dynamic answers
+  plans: {
+    exercise: { type: mongoose.Schema.Types.Mixed },
+    diet: { type: mongoose.Schema.Types.Mixed },
+    generatedAt: Date
+  },
+  stripeCustomerId: String 
 });
 
 // Compile the User schema into a model
@@ -75,25 +176,42 @@ const exerciseSchema = new mongoose.Schema({
   sets_reps: String
 });
 
-// Meal Schema with Optional Nutrition Fields
 const mealSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, required: true },
   ingredients: { type: [String], required: true },
-  calories: Number,
+  calories: { type: Number, required: true },
   macronutrients: {
-    protein: Number,
-    carbs: Number,
-    fats: Number,
-    fiber: { type: Number },
-    sugar: { type: Number }
+    protein: { type: Number, required: true },
+    carbs: { type: Number, required: true },
+    fats: { type: Number, required: true },
+    fiber: Number,
+    sugar: Number
   },
-  restrictions: { type: [String] },
+  restrictions: { 
+    type: [String],
+    validate: {
+      validator: function(v) {
+        // Validate all restrictions follow "contains-x" format
+        return v.every(tag => tag.startsWith('contains-'));
+      },
+      message: props => `Invalid restriction format: ${props.value}. Must start with 'contains-'`
+    }
+  },
   mealCategory: { 
     type: String, 
     enum: ['Breakfast', 'Lunch', 'Dinner', 'Snack'], 
     required: true 
   },
-  type: String
+  type: {
+    type: String,
+    enum: ['Vegetarian', 'Vegan', 'Keto', 'Paleo', 'Mediterranean', null],
+    default: null
+  },
+  price: {  // Added for budget filtering
+    type: Number,
+    required: true,
+    min: 0
+  }
 });
 
 const Exercise = mongoose.model('Exercise', exerciseSchema);
@@ -101,6 +219,18 @@ const Meal = mongoose.model('Meal', mealSchema);
 
 // Read exercise plans from exercise.json
 const fs = require('fs');
+
+// Product Configuration (Easy to update)
+const PRODUCTS = {
+  standard: {
+    stripePriceId: 'price_1QjJzPFywsnhFgWfkMFvBVom', 
+    features: ['Exercise and Diet Plans', 'Weekly Structured Workout Routines', 'Basic Meal Plans Based on Calorie Needs']
+  },
+  premium: {
+    stripePriceId: 'price_1QjK0LFywsnhFgWfQWxV1ucp', 
+    features: ['Fully Personalised Exercise and Diet Plans', 'Adjustments Based On Individual Preferences, Progression, and Feedback', 'More Detailed Meal Plans with Macros']
+  }
+};
 
 async function getExercises(userData) {
   try {
@@ -167,17 +297,22 @@ async function getExercises(userData) {
 function getMeals(userData) {
   // Create a query object for meal filtering
   let query = {
-    calories: { $lte: userData.daily_calories },  // Max calorie limit
-    restrictions: { $in: userData.dietary_restrictions },  // Dietary restrictions
-    mealCategory: { $in: userData.mealTimes }  // Meal categories (e.g., Breakfast, Lunch, etc.)
+    calories: { $lte: userData.daily_calories },
+    mealCategory: { $in: userData.mealTimes }
   };
 
-  // Optional: Add budget filter (if user has a grocery budget set)
-  if (userData.groceryBudget) {
-    query.price = { $lte: userData.groceryBudget };  // Assuming you have a price field in your meals collection
+  // Convert allergies to "contains-x" format and exclude matching meals
+  if (userData.dietary_restrictions?.length) {
+    const allergyTags = userData.dietary_restrictions.map(a => `contains-${a.toLowerCase()}`);
+    query.restrictions = { $nin: allergyTags }; // Exclude meals with these tags
   }
 
-  // Optional: Add macronutrient goals (protein, carbs, fats) if available
+  // Optional: Add budget filter
+  if (userData.groceryBudget) {
+    query.price = { $lte: userData.groceryBudget };
+  }
+
+  // Optional: Macronutrient goals
   if (userData.macronutrientGoals) {
     query['macronutrients.protein'] = { $gte: userData.macronutrientGoals.protein };
     query['macronutrients.carbs'] = { $lte: userData.macronutrientGoals.carbs };
@@ -317,6 +452,62 @@ app.post('/api/user/complete-profile', async (req, res) => {
   } catch (error) {
     console.error('Error during profile completion:', error);
     res.status(500).json({ error: 'Error completing profile' });
+  }
+});
+
+app.post('/api/payment-links', async (req, res) => {
+  try {
+    const { productId, userEmail } = req.body;
+    
+    // Validate input
+    if (!productId || !userEmail) {
+      return res.status(400).json({ error: 'Missing product ID or email' });
+    }
+
+    if (!validator.isEmail(userEmail)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Validate product exists
+    const product = PRODUCTS[productId];
+    if (!product) {
+      return res.status(400).json({ 
+        error: 'Invalid product',
+        validProducts: Object.keys(PRODUCTS)
+      });
+    }
+
+    // Create Stripe payment link
+    const paymentLink = await stripe.paymentLinks.create({
+      line_items: [{
+        price: product.stripePriceId,
+        quantity: 1
+      }],
+      metadata: { 
+        userEmail: userEmail.toLowerCase().trim(),
+        productId,
+        tier: product.tier
+      },
+      after_completion: {
+        type: 'redirect',
+        redirect: {
+          url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`
+        }
+      },
+      expires_at: Math.floor(Date.now() / 1000) + 3600 // 1 hour expiration
+    });
+
+    res.json({
+      paymentUrl: paymentLink.url,
+      expiresAt: paymentLink.expires_at
+    });
+    
+  } catch (error) {
+    console.error('Payment link error:', error);
+    res.status(500).json({ 
+      error: 'Payment system error',
+      details: error.message 
+    });
   }
 });
 

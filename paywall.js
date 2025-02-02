@@ -13,29 +13,18 @@ document.addEventListener("DOMContentLoaded", function () {
         { label: "What is your weight?", id: "weight", type: "text", placeholder: "Enter your weight in kg", required: true },
         { label: "What is your body fat percentage?", id: "body-fat", type: "number", placeholder: "Enter as a percentage", required: false },
         { label: "How active are you?", id: "activity-level", type: "select", options: ["Sedentary", "Lightly active", "Moderately active", "Very active", "Super active"], required: true },
-        { label: "Do you have any food allergies?", id: "allergies", type: "select", options: ["None", "Gluten", "Dairy", "Nuts", "Soy", "Eggs", "Shellfish"], required: false },
-        { label: "Do you have any medical conditions?", id: "medical-condition", type: "select", options: ["None", "Diabetes", "High cholesterol", "High blood pressure"], required: false },
+        { label: "Do you have any food allergies?", id: "allergies", type: "select", options: ["None", "Gluten", "Dairy", "Nuts", "Soy", "Eggs", "Shellfish"], required: false, multiple: true },
+        { label: "Do you have any medical conditions?", id: "medical-condition", type: "select", options: ["None", "Diabetes", "High cholesterol", "High blood pressure"], required: false, multiple: true },
         { label: "What is your preferred meal frequency?", id: "meal-frequency", type: "select", options: ["3 meals", "4–5 meals", "6+ meals"], required: true },
         { label: "How often do you cook at home?", id: "cook-frequency", type: "select", options: ["Rarely", "Sometimes", "Frequently"], required: true },
         { label: "What is your budget for groceries?", id: "grocery-budget", type: "select", options: ["<100", "100-150", ">150"], required: true },
-        { label: "Would you prefer metric or imperial?", id: "measurement-preference", type: "select", options: ["Metric", "Imperial"], required: true }
     ];
-
-    // Move to next step
-    const moveToNextStep = () => {
-        steps[currentStep].classList.remove("active");
-        currentStep++;
-        steps[currentStep].classList.add("active");
-
-        const progress = (currentStep / steps.length) * 100;
-        document.getElementById("progress").style.width = `${progress}%`;
-    };
 
     // Validate form data
     const validateForm = (data) => {
         const requiredFields = [
             "username", "email", "password", "confirmPassword", "sex", "age", "height", "weight", "activityLevel",
-            "mealFrequency", "cookFrequency", "groceryBudget", "measurementPreference"
+            "mealFrequency", "cookFrequency", "groceryBudget"
         ];
         return requiredFields.every(field => data[field]);
     };
@@ -55,13 +44,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             let inputElement;
             if (question.type === 'select') {
-                inputElement = document.createElement('select');
-                inputElement.id = question.id;
+                const select = document.createElement('select');
+                select.id = question.id;
+                select.multiple = question.multiple || false; // Enable multi-select
+
                 question.options.forEach(option => {
                     const optionElement = document.createElement('option');
                     optionElement.value = option.toLowerCase().replace(/ /g, "-");
                     optionElement.textContent = option;
-                    inputElement.appendChild(optionElement);
+                    select.appendChild(optionElement);
                 });
 
                 inputElement.addEventListener("change", () => {
@@ -100,48 +91,66 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.email = document.getElementById("email").value;
         formData.password = document.getElementById("password").value;
         formData.confirmPassword = document.getElementById("confirm-password").value;
-
+    
         // Capture selected product
         const selectedProductRadio = document.querySelector('input[name="product"]:checked');
         if (!selectedProductRadio) {
             alert("Please select a plan.");
             return;
         }
-        selectedProduct = selectedProductRadio.value;
-
+        const selectedProduct = selectedProductRadio.value;
+    
         // Validate form data
         if (!validateForm(formData)) {
             alert("Please fill in all required fields.");
             return;
         }
-
-        // Save user details to backend
+    
+        // Capture allergies
+        const allergySelect = document.getElementById('allergies');
+        formData.allergies = Array.from(allergySelect.selectedOptions).map(option => option.value);
+    
         try {
-            const response = await fetch("https://forge-of-olympus.onrender.com/api/user/process", {
+            // 1. Save user data
+            const saveResponse = await fetch("https://forge-of-olympus.onrender.com/api/user/process", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ step: "details", data: formData }),
+                body: JSON.stringify({
+                    step: "details",
+                    data: {
+                        ...formData,
+                        dietary_restrictions: formData.allergies
+                    }
+                }),
             });
-
-            const result = await response.json();
-            if (response.ok) {
-                console.log("Data saved:", result);
-
-                // Redirect to Stripe paywall based on selected product
-                const paymentLinks = {
-                    standard: "https://buy.stripe.com/test_fZe4ircZv6dM0mY000", // Standard plan link
-                    premium: "https://buy.stripe.com/test_14kcOXcZvcCa7Pq4gh", // Premium plan link
-                };
-
-                // Redirect to the appropriate Stripe paywall
-                window.location.href = paymentLinks[selectedProduct];
-            } else {
-                console.error("Error:", result.error);
-                alert("There was an issue saving your data. Please try again.");
+    
+            if (!saveResponse.ok) {
+                const errorResult = await saveResponse.json();
+                throw new Error(errorResult.error || "Failed to save user data");
             }
+    
+            // 2. Get dynamic payment link from backend
+            const paymentResponse = await fetch("https://forge-of-olympus.onrender.com/api/create-payment-link", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    product: selectedProduct,
+                    email: formData.email
+                })
+            });
+    
+            if (!paymentResponse.ok) {
+                const errorResult = await paymentResponse.json();
+                throw new Error(errorResult.error || "Payment initialization failed");
+            }
+    
+            // 3. Redirect to Stripe
+            const { paymentUrl } = await paymentResponse.json();
+            window.location.href = paymentUrl;
+    
         } catch (error) {
-            console.error("Error submitting data:", error);
-            alert("An unexpected error occurred. Please try again.");
+            console.error("Checkout Error:", error);
+            alert(error.message || "An error occurred during checkout");
         }
     });
 

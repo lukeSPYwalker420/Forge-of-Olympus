@@ -1,4 +1,12 @@
 {
+  "name": "forge-of-olympus",
+  "version": "1.0.0",
+  "description": "Diet and fitness plan generator",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -6,13 +14,13 @@
     "joi": "^17.13.3",
     "mongoose": "^8.9.3",
     "stripe": "^17.5.0",
-    "validator": "^13.7.0"
-  },
-  "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "validator": "^13.7.0",
+    "nodemailer": "^6.9.8"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
+  },
+  "engines": {
+    "node": ">=18.x"
   }
 }

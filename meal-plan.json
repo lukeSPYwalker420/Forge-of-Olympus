@@ -1,0 +1,306 @@
+{
+    "meals": {
+      "breakfast": [
+        {
+          "meal_id": "lc_001",
+          "name": "Egg White Scramble with Spinach & Feta",
+          "tags": ["Weight-Loss", "gluten-free", "vegetarian", "high-cholesterol", "quick-prep"],
+          "calories": 320,
+          "macros": { "protein": 38, "carbs": 8, "fats": 14 },
+          "ingredients": ["egg whites", "spinach", "feta cheese", "olive oil"],
+          "instructions": "Sauté spinach in olive oil, add egg whites, cook until done, sprinkle feta on top.",
+          "cost": 3.00
+        },
+        {
+          "meal_id": "lc_002",
+          "name": "Greek Yogurt with Almonds & Cinnamon",
+          "tags": ["Weight-Loss", "gluten-free", "vegetarian", "contains nuts", "quick-prep"],
+          "calories": 350,
+          "macros": { "protein": 32, "carbs": 12, "fats": 18 },
+          "ingredients": ["Greek yogurt", "almonds", "cinnamon"],
+          "instructions": "Mix Greek yogurt with cinnamon, top with crushed almonds.",
+          "cost": 2.80
+        },
+        {
+          "meal_id": "lc_003",
+          "name": "Smoked Salmon & Avocado on Low-Carb Crackers",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free", "nut-free", "quick-prep"],
+          "calories": 380,
+          "macros": { "protein": 36, "carbs": 10, "fats": 20 },
+          "ingredients": ["smoked salmon", "avocado", "Low-Carb crackers", "lemon juice"],
+          "instructions": "Spread avocado on crackers, top with smoked salmon, squeeze lemon juice.",
+          "cost": 4.50
+        },
+        {
+          "meal_id": "lc_004",
+          "name": "Cottage Cheese & Walnuts with Blueberries",
+          "tags": ["Weight-Loss", "gluten-free", "vegetarian", "contains nuts", "quick-prep"],
+          "calories": 390,
+          "macros": { "protein": 34, "carbs": 15, "fats": 16 },
+          "ingredients": ["cottage cheese", "walnuts", "blueberries"],
+          "instructions": "Mix cottage cheese with walnuts and blueberries.",
+          "cost": 3.20
+        },
+        {
+          "meal_id": "lc_005",
+          "name": "Scrambled Eggs with Turkey & Cheese",
+          "tags": ["Weight-Loss", "gluten-free", "nut-free", "high-cholesterol", "quick-prep"],
+          "calories": 370,
+          "macros": { "protein": 40, "carbs": 6, "fats": 18 },
+          "ingredients": ["eggs", "turkey slices", "cheese", "butter"],
+          "instructions": "Scramble eggs with butter, mix in chopped turkey and cheese.",
+          "cost": 3.80
+        },
+        {
+          "meal_id": "lc_006",
+          "name": "Protein Pancakes (Almond Flour & Whey)",
+          "tags": ["Weight-Loss", "gluten-free", "vegetarian", "contains nuts", "medium-prep"],
+          "calories": 390,
+          "macros": { "protein": 38, "carbs": 14, "fats": 17 },
+          "ingredients": ["almond flour", "whey protein", "eggs", "milk"],
+          "instructions": "Mix ingredients into a batter, cook pancakes on a skillet.",
+          "cost": 4.00
+        },
+        {
+          "meal_id": "lc_007",
+          "name": "Tuna & Avocado Lettuce Wraps",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free", "nut-free", "quick-prep"],
+          "calories": 350,
+          "macros": { "protein": 42, "carbs": 9, "fats": 12 },
+          "ingredients": ["tuna", "avocado", "lettuce", "lemon juice"],
+          "instructions": "Mash avocado, mix with tuna, wrap in lettuce leaves.",
+          "cost": 3.50
+        },
+        {
+          "meal_id": "lc_008",
+          "name": "Chicken & Egg Muffins",
+          "tags": ["Weight-Loss", "dairy-free", "high-cholesterol", "medium-prep"],
+          "calories": 370,
+          "macros": { "protein": 39, "carbs": 7, "fats": 16 },
+          "ingredients": ["chicken breast", "eggs", "bell pepper", "onion"],
+          "instructions": "Blend chicken and vegetables, mix with eggs, bake in muffin tin at 180°C for 20 mins.",
+          "cost": 4.20
+        },
+        {
+          "meal_id": "lc_009",
+          "name": "Whey Protein Shake with Peanut Butter",
+          "tags": ["Weight-Loss", "gluten-free", "vegetarian", "contains nuts", "quick-prep"],
+          "calories": 360,
+          "macros": { "protein": 40, "carbs": 10, "fats": 14 },
+          "ingredients": ["whey protein", "almond milk", "peanut butter", "ice"],
+          "instructions": "Blend all ingredients together until smooth.",
+          "cost": 3.00
+        },      
+        {
+          "meal_id": "lc_010",
+          "name": "Omelette with Mushrooms & Parmesan",
+          "tags": ["Weight-Loss", "gluten-free", "vegetarian", "high-cholesterol", "quick-prep"],
+          "calories": 380,
+          "macros": { "protein": 37, "carbs": 9, "fats": 18 },
+          "ingredients": ["eggs", "mushrooms", "parmesan cheese", "butter"],
+          "instructions": "Sauté mushrooms in butter, add beaten eggs, cook, sprinkle parmesan on top.",
+          "cost": 3.60
+        },
+        {
+          "meal_id": "lc_011",
+          "name": "Chicken Sausage & Egg Muffins",
+          "tags": ["Weight-Loss", "gluten-free", "high-cholesterol", "medium-prep"],
+          "calories": 380,
+          "macros": { "protein": 40, "carbs": 6, "fats": 18 },
+          "ingredients": ["chicken sausage", "eggs", "cheddar cheese", "spinach"],
+          "instructions": "Whisk eggs, mix with chopped chicken sausage and spinach, pour into muffin tins, and bake at 180°C for 15-20 minutes.",
+          "cost": 3.50
+        },      
+        {
+          "meal_id": "lc_012",
+          "name": "Cottage Cheese & Almond Butter Bowl",
+          "tags": ["Weight-Loss", "gluten-free", "vegetarian", "contains nuts", "quick-prep"],
+          "calories": 350,
+          "macros": { "protein": 40, "carbs": 10, "fats": 18 },
+          "ingredients": ["cottage cheese", "almond butter", "cinnamon"],
+          "instructions": "Mix cottage cheese with almond butter and sprinkle with cinnamon.",
+          "cost": 2.80
+        },
+        {
+          "meal_id": "lc_013",
+          "name": "Smoked Salmon & Avocado Roll-Ups",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free", "quick-prep"],
+          "calories": 390,
+          "macros": { "protein": 42, "carbs": 8, "fats": 20 },
+          "ingredients": ["smoked salmon", "avocado", "cream cheese", "cucumber"],
+          "instructions": "Spread cream cheese on smoked salmon, add avocado slices, roll up, and enjoy.",
+          "cost": 4.00
+        },
+        {
+          "meal_id": "lc_014",
+          "name": "Greek Yogurt & Chia Seeds",
+          "tags": ["Weight-Loss", "gluten-free", "vegetarian", "quick-prep"],
+          "calories": 370,
+          "macros": { "protein": 42, "carbs": 15, "fats": 10 },
+          "ingredients": ["Greek yogurt", "chia seeds", "vanilla extract"],
+          "instructions": "Mix chia seeds and vanilla into Greek yogurt. Let sit for 5 minutes before eating.",
+          "cost": 3.20
+        },
+        {
+          "meal_id": "lc_015",
+          "name": "Scrambled Tofu with Mushrooms & Peppers",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free", "vegan", "quick-prep"],
+          "calories": 360,
+          "macros": { "protein": 38, "carbs": 12, "fats": 14 },
+          "ingredients": ["firm tofu", "mushrooms", "bell peppers", "turmeric", "olive oil"],
+          "instructions": "Sauté mushrooms and peppers in olive oil, crumble in tofu, season with turmeric, and cook until heated through.",
+          "cost": 3.00
+        },
+        {
+          "meal_id": "lc_016",
+          "name": "Protein Pancakes with Sugar-Free Syrup",
+          "tags": ["Weight-Loss", "gluten-free", "vegetarian", "contains nuts", "medium-prep"],
+          "calories": 390,
+          "macros": { "protein": 45, "carbs": 14, "fats": 10 },
+          "ingredients": ["protein powder", "egg whites", "almond flour", "baking powder", "sugar-free syrup"],
+          "instructions": "Mix ingredients, cook pancakes on a non-stick pan, and serve with sugar-free syrup.",
+          "cost": 3.80
+        },
+        {
+          "meal_id": "lc_017",
+          "name": "Turkey & Spinach Omelette",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free", "high-cholesterol", "quick-prep"],
+          "calories": 380,
+          "macros": { "protein": 46, "carbs": 6, "fats": 15 },
+          "ingredients": ["egg whites", "turkey breast", "spinach", "olive oil"],
+          "instructions": "Cook turkey breast in olive oil, add spinach, then pour in egg whites and cook until set.",
+          "cost": 3.50
+        },
+        {
+          "meal_id": "lc_018",
+          "name": "Salmon & Scrambled Eggs",
+          "tags": ["Weight-Loss", "gluten-free", "high-cholesterol", "quick-prep"],
+          "calories": 390,
+          "macros": { "protein": 42, "carbs": 5, "fats": 18 },
+          "ingredients": ["eggs", "smoked salmon", "butter"],
+          "instructions": "Scramble eggs in butter and serve with smoked salmon.",
+          "cost": 4.00
+        },
+        {
+          "meal_id": "lc_019",
+          "name": "Avocado & Egg Breakfast Bowl",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free", "high-cholesterol", "quick-prep"],
+          "calories": 360,
+          "macros": { "protein": 38, "carbs": 7, "fats": 18 },
+          "ingredients": ["eggs", "avocado", "tomatoes", "olive oil"],
+          "instructions": "Scramble eggs, top with avocado slices, tomatoes, and drizzle with olive oil.",
+          "cost": 3.20
+        },
+        {
+          "meal_id": "lc_020",
+          "name": "Chicken & Asparagus Stir-Fry",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free", "medium-prep"],
+          "calories": 390,
+          "macros": { "protein": 42, "carbs": 10, "fats": 14 },
+          "ingredients": ["chicken breast", "asparagus", "garlic", "soy sauce", "olive oil"],
+          "instructions": "Sauté chicken and asparagus in olive oil, add garlic and soy sauce, and cook until done.",
+          "cost": 4.20
+        },
+        {
+          "meal_id": "lc_021",
+          "name": "Greek Yogurt with Walnuts & Cinnamon",
+          "tags": ["Weight-Loss", "gluten-free", "vegetarian", "contains nuts", "quick-prep"],
+          "calories": 370,
+          "macros": { "protein": 38, "carbs": 10, "fats": 18 },
+          "ingredients": ["Greek yogurt", "walnuts", "cinnamon"],
+          "instructions": "Mix Greek yogurt with walnuts and sprinkle cinnamon on top.",
+          "cost": 3.50
+        },
+        {
+          "meal_id": "lc_022",
+          "name": "Smoked Salmon & Avocado Roll-Ups",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free", "quick-prep"],
+          "calories": 390,
+          "macros": { "protein": 42, "carbs": 8, "fats": 20 },
+          "ingredients": ["smoked salmon", "avocado", "cream cheese", "cucumber"],
+          "instructions": "Spread cream cheese on salmon slices, add avocado slices, roll up, and secure with a toothpick.",
+          "cost": 4.00
+        },
+        {
+          "meal_id": "lc_023",
+          "name": "Egg & Turkey Bacon Wrap (Lettuce Wrap)",
+          "tags": ["Weight-Loss", "gluten-free", "high-cholesterol", "quick-prep"],
+          "calories": 380,
+          "macros": { "protein": 44, "carbs": 6, "fats": 17 },
+          "ingredients": ["eggs", "turkey bacon", "lettuce", "cheese"],
+          "instructions": "Scramble eggs, cook turkey bacon, wrap in large lettuce leaves with cheese, and serve.",
+          "cost": 3.80
+        },
+        {
+          "meal_id": "lc_024",
+          "name": "Protein Chia Pudding",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free", "vegan", "long-prep"],
+          "calories": 350,
+          "macros": { "protein": 36, "carbs": 12, "fats": 14 },
+          "ingredients": ["chia seeds", "almond milk", "protein powder", "stevia"],
+          "instructions": "Mix all ingredients, refrigerate overnight, and serve chilled.",
+          "cost": 2.50
+        },
+        {
+          "meal_id": "lc_025",
+          "name": "Cottage Cheese & Almond Butter Bowl",
+          "tags": ["Weight-Loss", "gluten-free", "vegetarian", "contains nuts", "quick-prep"],
+          "calories": 380,
+          "macros": { "protein": 40, "carbs": 10, "fats": 18 },
+          "ingredients": ["cottage cheese", "almond butter", "cinnamon"],
+          "instructions": "Mix cottage cheese with almond butter and sprinkle cinnamon on top.",
+          "cost": 3.00
+        },
+        {
+          "meal_id": "lc_026",
+          "name": "Scrambled Tofu with Spinach & Mushrooms",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free", "vegan", "quick-prep"],
+          "calories": 370,
+          "macros": { "protein": 38, "carbs": 10, "fats": 16 },
+          "ingredients": ["tofu", "spinach", "mushrooms", "garlic"],
+          "instructions": "Sauté garlic, mushrooms, and spinach, crumble tofu in, cook for 5 minutes, and serve.",
+          "cost": 3.20
+        },
+        {
+          "meal_id": "lc_027",
+          "name": "Chicken & Avocado Breakfast Bowl",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free", "quick-prep"],
+          "calories": 390,
+          "macros": { "protein": 42, "carbs": 9, "fats": 19 },
+          "ingredients": ["grilled chicken", "avocado", "cherry tomatoes", "olive oil"],
+          "instructions": "Dice grilled chicken, mix with sliced avocado, cherry tomatoes, and drizzle with olive oil.",
+          "cost": 4.50
+        },
+        {
+          "meal_id": "lc_028",
+          "name": "Ham & Cheese Egg Cups",
+          "tags": ["Weight-Loss", "gluten-free"],
+          "calories": 380,
+          "macros": { "protein": 40, "carbs": 6, "fats": 17 },
+          "ingredients": ["eggs", "ham", "cheese", "spinach"],
+          "instructions": "Whisk eggs, mix with chopped ham and spinach, pour into muffin tins, and bake at 180°C for 15 minutes.",
+          "cost": 3.50
+        },
+        {
+          "meal_id": "lc_029",
+          "name": "Sardines & Avocado on Cucumber Slices",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free"],
+          "calories": 390,
+          "macros": { "protein": 42, "carbs": 8, "fats": 20 },
+          "ingredients": ["sardines", "avocado", "cucumber", "lemon juice"],
+          "instructions": "Mash avocado with lemon juice, spread on cucumber slices, and top with sardines.",
+          "cost": 3.80
+        },
+        {
+          "meal_id": "lc_030",
+          "name": "Beef & Egg Scramble",
+          "tags": ["Weight-Loss", "gluten-free", "dairy-free"],
+          "calories": 390,
+          "macros": { "protein": 44, "carbs": 7, "fats": 19 },
+          "ingredients": ["lean ground beef", "eggs", "onion", "garlic"],
+          "instructions": "Cook ground beef with onion and garlic, add scrambled eggs, and cook until done.",
+          "cost": 4.00
+        }
+      ]
+    }
+  }
