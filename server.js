@@ -135,33 +135,116 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname));  // Serve index.html as the default
 });
 
-// User Schema with Follow-up Answers as a Map for Dynamic Fields
 const userSchema = new mongoose.Schema({
-  email: { type: String, required: true},
-  workoutPreferences: { type: String },
-  dietPreferences: { type: String },
-  activityLevel: { type: String },
-  allergies: { 
-    type: [String], 
-    set: function(allergies) {
-      return allergies.map(allergy => allergy.toLowerCase().trim());
+  email: { 
+    type: String, 
+    required: [true, 'Email is required'],
+    unique: true,
+    trim: true,
+    lowercase: true,
+    validate: {
+      validator: (v) => validator.isEmail(v),
+      message: props => `${props.value} is not a valid email!`
     }
   },
-  medicalConditions: { type: [String] }, // Multiple conditions
-  mealFrequency: { type: String },
-  cookFrequency: { type: String },
-  groceryBudget: { type: String },
-  step: { type: String },
-  measurementPreference: { type: String },
-  followUpAnswers: { type: Map, of: String }, // For storing dynamic answers
+  workoutPreferences: { 
+    type: String,
+    enum: ['strength', 'cardio', 'flexibility', 'balance', null],
+    default: null
+  },
+  dietPreferences: {
+    type: String,
+    enum: ['vegetarian', 'vegan', 'keto', 'paleo', 'mediterranean', null],
+    default: null
+  },
+  activityLevel: {
+    type: String,
+    enum: ['sedentary', 'light', 'moderate', 'active', 'very_active'],
+    required: [true, 'Activity level is required']
+  },
+  allergies: { 
+    type: [String], 
+    default: [],
+    set: allergies => allergies.map(a => a.toLowerCase().trim())
+  },
+  medicalConditions: {
+    type: [String],
+    default: [],
+    validate: {
+      validator: v => v.length <= 5,
+      message: 'Maximum 5 medical conditions allowed'
+    }
+  },
+  mealFrequency: {
+    type: String,
+    enum: ['3_meals', '4-5_meals', '6+_meals'],
+    required: [true, 'Meal frequency is required']
+  },
+  cookFrequency: {
+    type: String,
+    enum: ['rarely', 'sometimes', 'frequently'],
+    required: [true, 'Cooking frequency is required']
+  },
+  groceryBudget: {
+    type: String,
+    enum: ['<100', '100-150', '>150'],
+    required: [true, 'Grocery budget is required']
+  },
+  measurementPreference: {
+    type: String,
+    enum: ['metric', 'imperial'],
+    default: 'metric'
+  },
+  followUpAnswers: {
+    type: Map,
+    of: String,
+    validate: {
+      validator: map => map.size <= 10,
+      message: 'Maximum 10 follow-up answers allowed'
+    }
+  },
   plans: {
     exercise: { type: mongoose.Schema.Types.Mixed },
     diet: { type: mongoose.Schema.Types.Mixed },
-    generatedAt: Date
+    generatedAt: {
+      type: Date,
+      validate: {
+        validator: v => v <= new Date(),
+        message: 'Plan date cannot be in the future'
+      }
+    }
   },
-  stripeCustomerId: String 
+  stripeCustomerId: {
+    type: String,
+    index: true,
+    sparse: true
+  }
+}, {
+  timestamps: true, // Adds createdAt and updatedAt
+  strict: 'throw', // Prevent unknown fields like 'id'
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
+// Add compound indexes
+userSchema.index({
+  activityLevel: 1,
+  mealFrequency: 1,
+  measurementPreference: 1
+});
+
+// Virtual for formatted display name
+userSchema.virtual('displayName').get(function() {
+  return this.email.split('@')[0];
+});
+
+// Pre-save hook to prevent null IDs
+userSchema.pre('save', function(next) {
+  if (this.isNew && !this.stripeCustomerId) {
+    this.stripeCustomerId = `cust_${Date.now()}`;
+  }
+  next();
+});
 // Compile the User schema into a model
 const User = mongoose.model('User', userSchema);
 
@@ -369,30 +452,34 @@ async function generatePlan(userData) {
 app.post('/api/user/merge', async (req, res) => {
   const { email, newData } = req.body;
 
-  // Check if email and newData are provided
   if (!email || !newData) {
     return res.status(400).json({ error: 'Missing email or new data' });
   }
 
   try {
-    // Find the user by email
-    let user = await User.findOne({ email });
+    // Sanitize input
+    const sanitizedEmail = validator.normalizeEmail(email);
+    const cleanData = _.omit(newData, ['_id', 'id', 'password']);
 
-    // If user does not exist, create a new one
-    if (!user) {
-      user = new User({ email, ...newData });
-    } else {
-      // Merge the new data into the existing user object
-      user = Object.assign(user, newData);
-    }
+    // Update using proper MongoDB operators
+    const user = await User.findOneAndUpdate(
+      { email: sanitizedEmail },
+      { $set: cleanData },
+      { 
+        upsert: true,
+        new: true,
+        runValidators: true,
+        setDefaultsOnInsert: true
+      }
+    );
 
-    // Save the updated or newly created user
-    await user.save();
-
-    res.json({ success: true, message: 'User data merged successfully', user });
+    res.json({ success: true, user });
   } catch (error) {
-    console.error('Error during data merge:', error);
-    res.status(500).json({ error: 'Error merging user data' });
+    console.error('Merge error:', error);
+    res.status(500).json({ 
+      error: 'Data merge failed',
+      details: error.message 
+    });
   }
 });
 
@@ -532,6 +619,27 @@ app.post('/api/user/generate-plan', async (req, res) => {
     console.error('Error generating plan:', error);
     res.status(500).json({ error: 'Error generating plan' });
   }
+});
+
+// Add after your routes
+app.use((err, req, res, next) => {
+  console.error('Global error:', err);
+  
+  if (err.name === 'ValidationError') {
+    return res.status(422).json({
+      error: 'Validation failed',
+      details: Object.values(err.errors).map(e => e.message)
+    });
+  }
+  
+  if (err.code === 11000) {
+    return res.status(409).json({
+      error: 'Duplicate key',
+      details: 'This email is already registered'
+    });
+  }
+
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 // Serve the frontend (SPA fallback)
