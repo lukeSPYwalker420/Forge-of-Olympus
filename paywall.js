@@ -23,11 +23,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // Validate form data
     const validateForm = (data) => {
         const requiredFields = [
-            "username", "email", "password", "confirmPassword", "sex", "age", "height", "weight", "activityLevel",
-            "mealFrequency", "cookFrequency", "groceryBudget"
+          "username", "email", "password", "confirmPassword",
+          "sex", "age", "height", "weight",
+          "activity-level", "meal-frequency",
+          "cook-frequency", "grocery-budget"
         ];
-        return requiredFields.every(field => data[field]);
-    };
+      
+        return requiredFields.every(field => {
+          const isValid = !!data[field];
+          if (!isValid) console.warn(`Missing required field: ${field}`);
+          return isValid;
+        });
+      };
 
     // Create dynamic form elements
     const createQuestionElements = (questions) => {
@@ -46,19 +53,22 @@ document.addEventListener("DOMContentLoaded", function () {
             if (question.type === 'select') {
                 const select = document.createElement('select');
                 select.id = question.id;
-                select.multiple = question.multiple || false; // Enable multi-select
-
+                select.multiple = question.multiple || false;
+              
                 question.options.forEach(option => {
-                    const optionElement = document.createElement('option');
-                    optionElement.value = option.toLowerCase().replace(/ /g, "-");
-                    optionElement.textContent = option;
-                    select.appendChild(optionElement);
+                  const optionElement = document.createElement('option');
+                  optionElement.value = option.toLowerCase().replace(/ /g, "-");
+                  optionElement.textContent = option;
+                  select.appendChild(optionElement);
                 });
-
+              
+                inputElement = select; // 👈 CRUCIAL ASSIGNMENT
+                
                 inputElement.addEventListener("change", () => {
-                    formData[question.id] = inputElement.value;
+                  formData[question.id] = Array.from(select.selectedOptions)
+                    .map(option => option.value);
                 });
-            } else {
+              } else {
                 inputElement = document.createElement('input');
                 inputElement.type = question.type;
                 inputElement.placeholder = question.placeholder;
