@@ -135,9 +135,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname));  // Serve index.html as the default
 });
 
-const mongoose = require('mongoose');
-const validator = require('validator');
-
 const userSchema = new mongoose.Schema({
   email: { 
     type: String, 
