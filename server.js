@@ -443,8 +443,6 @@ async function generatePlan(userData) {
   return { exercise_plan: exercisePlan, diet_plan: mealPlan };
 }
 // API Route for merging user data (must be defined after CORS)
-const User = require('./models/User');  // Assuming you have the User model
-
 // MODIFIED MERGE ENDPOINT
 app.post('/api/user/merge', async (req, res) => {
   try {
