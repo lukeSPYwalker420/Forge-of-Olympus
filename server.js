@@ -139,6 +139,7 @@ const userSchema = new mongoose.Schema({
   email: { 
     type: String, 
     required: [true, 'Email is required'],
+    unique: true,
     trim: true,
     lowercase: true,
     validate: {
@@ -159,7 +160,19 @@ const userSchema = new mongoose.Schema({
   activityLevel: {
     type: String,
     enum: ['sedentary', 'light', 'moderate', 'active', 'very_active'],
-    required: [true, 'Activity level is required']
+    default: 'moderate'
+  },
+  fitnessGoals: {
+    type: [String],
+    enum: ["Weight loss", "Muscle gain", "Improved endurance", "Overall health and wellness", "Athletic performance"]
+  },
+  exerciseFrequency: {
+    type: String,
+    enum: ["1-2 days", "3-4 days", "5-6 days", "Every day"]
+  },
+  exerciseEnvironment: {
+    type: String,
+    enum: ["Gym", "Home", "Outdoor", "No preference"]
   },
   allergies: { 
     type: [String], 
@@ -170,24 +183,24 @@ const userSchema = new mongoose.Schema({
     type: [String],
     default: [],
     validate: {
-      validator: v => v.length <= 5,
-      message: 'Maximum 5 medical conditions allowed'
+      validator: v => v.length <= 10,
+      message: 'Maximum 10 medical conditions allowed'
     }
   },
   mealFrequency: {
     type: String,
     enum: ['3_meals', '4-5_meals', '6+_meals'],
-    required: [true, 'Meal frequency is required']
+    required: false
   },
   cookFrequency: {
     type: String,
     enum: ['rarely', 'sometimes', 'frequently'],
-    required: [true, 'Cooking frequency is required']
+    required: false
   },
   groceryBudget: {
     type: String,
     enum: ['<100', '100-150', '>150'],
-    required: [true, 'Grocery budget is required']
+    required: false
   },
   step: { type: String },  
   measurementPreference: {
@@ -197,13 +210,10 @@ const userSchema = new mongoose.Schema({
   },
   followUpAnswers: {
     type: Map,
-    of: String,
+    of: mongoose.Schema.Types.Mixed,
     validate: {
-      validator: map => {
-        if (!(map instanceof Map)) return false;
-        return Array.from(map.keys()).every(key => isNaN(key)) && map.size <= 10;
-      },
-      message: 'Follow-up answers must have non-numeric keys and a maximum of 10 entries'
+      validator: map => map.size <= 20,
+      message: 'Maximum 20 follow-up answers allowed'
     }
   },
   plans: {
@@ -223,42 +233,10 @@ const userSchema = new mongoose.Schema({
     sparse: true
   }
 }, {
-  timestamps: true, // Adds createdAt and updatedAt
-  strict: 'throw', // Prevents unknown fields
+  timestamps: true,
+  strict: false,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
-});
-
-// Add compound indexes for efficient queries
-userSchema.index({
-  activityLevel: 1,
-  mealFrequency: 1,
-  measurementPreference: 1
-});
-
-// Virtual property for username display
-userSchema.virtual('displayName').get(function() {
-  return this.email.split('@')[0];
-});
-
-// Pre-save hook to prevent null IDs
-userSchema.pre('save', function(next) {
-  if (this.isNew && !this.stripeCustomerId) {
-    this.stripeCustomerId = `cust_${Date.now()}`;
-  }
-  next();
-});
-
-// Middleware to clean followUpAnswers and prevent numeric keys
-userSchema.pre('validate', function(next) {
-  if (this.followUpAnswers instanceof Map) {
-    for (let key of this.followUpAnswers.keys()) {
-      if (!isNaN(key)) {
-        this.followUpAnswers.delete(key);
-      }
-    }
-  }
-  next();
 });
 
 // Compile the model
@@ -465,31 +443,33 @@ async function generatePlan(userData) {
   return { exercise_plan: exercisePlan, diet_plan: mealPlan };
 }
 // API Route for merging user data (must be defined after CORS)
+const User = require('./models/User');  // Assuming you have the User model
+
+// MODIFIED MERGE ENDPOINT
 app.post('/api/user/merge', async (req, res) => {
-  const { email, newData } = req.body;
-
-  if (!email || !newData || typeof newData !== 'object') {
-    return res.status(400).json({ error: 'Missing or invalid email/newData' });
-  }
-
   try {
-    // Sanitize input
+    const { email, newData } = req.body;
     const sanitizedEmail = validator.normalizeEmail(email);
 
-    // Remove unwanted fields using native destructuring
-    const { _id, id, password, ...cleanData } = newData;
-
-    // Ensure strings are trimmed (optional but useful)
-    Object.keys(cleanData).forEach(key => {
-      if (typeof cleanData[key] === 'string') {
-        cleanData[key] = cleanData[key].trim();
-      }
+    // Schema-compatible data transformation
+    const transformForSchema = (data) => ({
+      workoutPreferences: data.workoutPreferences,
+      dietPreferences: data.dietPreferences?.replace(' ', '_'),
+      activityLevel: data.activityLevel,
+      medicalConditions: data.medicalConditions,
+      mealFrequency: data.mealFrequency,
+      cookFrequency: data.cookFrequency,
+      groceryBudget: data.groceryBudget,
+      followUpAnswers: data.followUpAnswers instanceof Map 
+        ? data.followUpAnswers 
+        : new Map(Object.entries(data.followUpAnswers || {}))
     });
 
-    // Update user with proper MongoDB operators
+    const updateData = transformForSchema(newData);
+
     const user = await User.findOneAndUpdate(
       { email: sanitizedEmail },
-      { $set: cleanData },
+      { $set: updateData },
       { 
         upsert: true,
         new: true,
@@ -500,10 +480,14 @@ app.post('/api/user/merge', async (req, res) => {
 
     res.json({ success: true, user });
   } catch (error) {
-    console.error('Merge error:', error);
-    res.status(500).json({ 
-      error: 'Data merge failed',
-      details: error.message 
+    console.error('Merge Error:', {
+      input: req.body,
+      error: error.message
+    });
+    res.status(500).json({
+      error: 'Merge failed',
+      details: error.message,
+      requiredFields: ['workoutPreferences', 'activityLevel', 'dietPreferences']
     });
   }
 });

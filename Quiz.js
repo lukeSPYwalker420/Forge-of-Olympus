@@ -267,10 +267,10 @@ function attachEmailInput() {
 
     // Attach event listener to the button
     submitButton.addEventListener('click', function(event) {
-        event.preventDefault();  // Prevent default button behavior
-
+        event.preventDefault();
+        submitButton.disabled = true;  // Disable the button to prevent multiple submissions
+        finalizeAndSubmit(event);
         console.log('Submit button clicked');
-        finalizeAndSubmit(event);  // Call the submit function
     });
 
     emailInputContainer.appendChild(submitButton);
@@ -285,51 +285,83 @@ function attachEmailInput() {
 }
 
 // Handle final submission with email and user data
+// MODIFIED FINALIZE AND SUBMIT FUNCTION
 function finalizeAndSubmit(event) {
-    // Prevent the default form submission behavior
     event.preventDefault();
-
     const email = document.getElementById('email').value;
-    console.log('Email entered:', email); // Debug log to confirm email value
-
+  
     if (!email || !isValidEmail(email)) {
-        alert("Please enter a valid email.");
-        return;
+      alert("Please enter a valid email.");
+      return;
     }
-
-    const finalData = { 
-        email,
-        newData: answers // Include the answers data here
+  
+    // Transform answers to match backend schema
+    const transformAnswers = (rawAnswers) => {
+      const transformed = {
+        // Map exercise preferences
+        workoutPreferences: {
+          "Strength training": "strength",
+          "Cardio": "cardio",
+          "Yoga/Pilates": "flexibility",
+          "Mixed routine": "balance"
+        }[rawAnswers.find(a => a.question === "What type of exercise do you prefer?")?.answer] || null,
+  
+        // Map diet preferences
+        dietPreferences: rawAnswers.find(a => a.question === "Do you have any dietary restrictions or preferences?")?.answer
+          ?.toLowerCase().replace('-free', '') || null,
+  
+        // Map activity level
+        activityLevel: {
+          "Beginner": "light",
+          "Intermediate": "moderate",
+          "Advanced": "active"
+        }[rawAnswers.find(a => a.question === "What is your current fitness level?")?.answer] || "moderate",
+  
+        // Medical conditions (limit to 5)
+        medicalConditions: rawAnswers
+          .find(a => a.question === "Please select any medical conditions you have:")?.answer
+          ?.slice(0,5).map(c => c.toLowerCase()) || [],
+  
+        // Add temporary defaults for required fields
+        mealFrequency: "3_meals",
+        cookFrequency: "sometimes",
+        groceryBudget: "100-150"
+      };
+  
+      // Add nested follow-up answers
+      const followUpMap = new Map();
+      rawAnswers.forEach(answer => {
+        if (answer.question.includes("details about")) {
+          followUpMap.set(answer.question.split("details about ")[1], answer.answer);
+        }
+      });
+      
+      transformed.followUpAnswers = followUpMap;
+  
+      return transformed;
     };
-
-    console.log('Data being sent:', finalData); // Debug log for the data being sent
-
-    // Send the collected data to the server
+  
+    const cleanBackendData = transformAnswers(answers);
+    
+    const finalData = { 
+      email: email.toLowerCase().trim(),
+      newData: cleanBackendData
+    };
+  
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Origin': 'https://forge-of-olympus.onrender.com'  // Ensure Origin is correct
-        },
-        body: JSON.stringify(finalData)
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(finalData)
     })
     .then(async (response) => {
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Error response text:", errorText);
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Response data:', data);
-        window.location.href = 'paywall.html';  // Redirect upon success
+      if (!response.ok) throw new Error(await response.text());
+      window.location.href = 'paywall.html';
     })
     .catch(error => {
-        console.error('Error sending data:', error.message);
-        alert('Oops, something went wrong. Please try again later.');
+      console.error('Error:', error);
+      alert(`Merge failed: ${error.message}`);
     });
-}
+  }
 
 // Listen for submit button click
 document.getElementById('submit-btn').addEventListener('click', function(event) {
