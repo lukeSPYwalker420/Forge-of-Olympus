@@ -135,6 +135,9 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname));  // Serve index.html as the default
 });
 
+const mongoose = require('mongoose');
+const validator = require('validator');
+
 const userSchema = new mongoose.Schema({
   email: { 
     type: String, 
@@ -263,6 +266,7 @@ userSchema.pre('validate', function(next) {
 
 // Compile the model
 const User = mongoose.model('User', userSchema);
+module.exports = User;
 
 // Exercise Schema with Array for Goals
 const exerciseSchema = new mongoose.Schema({
