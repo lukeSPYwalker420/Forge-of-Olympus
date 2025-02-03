@@ -6,7 +6,6 @@ const path = require('path');
 const validator = require('validator');
 const nodemailer = require('nodemailer'); 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const _ = require('lodash');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -454,16 +453,25 @@ async function generatePlan(userData) {
 app.post('/api/user/merge', async (req, res) => {
   const { email, newData } = req.body;
 
-  if (!email || !newData) {
-    return res.status(400).json({ error: 'Missing email or new data' });
+  if (!email || !newData || typeof newData !== 'object') {
+    return res.status(400).json({ error: 'Missing or invalid email/newData' });
   }
 
   try {
     // Sanitize input
     const sanitizedEmail = validator.normalizeEmail(email);
-    const cleanData = _.omit(newData, ['_id', 'id', 'password']);
 
-    // Update using proper MongoDB operators
+    // Remove unwanted fields using native destructuring
+    const { _id, id, password, ...cleanData } = newData;
+
+    // Ensure strings are trimmed (optional but useful)
+    Object.keys(cleanData).forEach(key => {
+      if (typeof cleanData[key] === 'string') {
+        cleanData[key] = cleanData[key].trim();
+      }
+    });
+
+    // Update user with proper MongoDB operators
     const user = await User.findOneAndUpdate(
       { email: sanitizedEmail },
       { $set: cleanData },
