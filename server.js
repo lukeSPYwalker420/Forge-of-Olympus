@@ -190,7 +190,7 @@ const userSchema = new mongoose.Schema({
     enum: ['<100', '100-150', '>150'],
     required: [true, 'Grocery budget is required']
   },
-  step: { type: String },  // Keeping this if necessary
+  step: { type: String },  
   measurementPreference: {
     type: String,
     enum: ['metric', 'imperial'],
@@ -200,8 +200,11 @@ const userSchema = new mongoose.Schema({
     type: Map,
     of: String,
     validate: {
-      validator: map => map.size <= 10,
-      message: 'Maximum 10 follow-up answers allowed'
+      validator: map => {
+        if (!(map instanceof Map)) return false;
+        return Array.from(map.keys()).every(key => isNaN(key)) && map.size <= 10;
+      },
+      message: 'Follow-up answers must have non-numeric keys and a maximum of 10 entries'
     }
   },
   plans: {
@@ -239,9 +242,6 @@ userSchema.virtual('displayName').get(function() {
   return this.email.split('@')[0];
 });
 
-// Compile the model
-const User = mongoose.model('User', userSchema);
-
 // Pre-save hook to prevent null IDs
 userSchema.pre('save', function(next) {
   if (this.isNew && !this.stripeCustomerId) {
@@ -249,6 +249,21 @@ userSchema.pre('save', function(next) {
   }
   next();
 });
+
+// Middleware to clean followUpAnswers and prevent numeric keys
+userSchema.pre('validate', function(next) {
+  if (this.followUpAnswers instanceof Map) {
+    for (let key of this.followUpAnswers.keys()) {
+      if (!isNaN(key)) {
+        this.followUpAnswers.delete(key);
+      }
+    }
+  }
+  next();
+});
+
+// Compile the model
+const User = mongoose.model('User', userSchema);
 
 // Exercise Schema with Array for Goals
 const exerciseSchema = new mongoose.Schema({
