@@ -6,6 +6,7 @@ const path = require('path');
 const validator = require('validator');
 const nodemailer = require('nodemailer'); 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const _ = require('lodash');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -190,6 +191,7 @@ const userSchema = new mongoose.Schema({
     enum: ['<100', '100-150', '>150'],
     required: [true, 'Grocery budget is required']
   },
+  step: { type: String },  // Keeping this if necessary
   measurementPreference: {
     type: String,
     enum: ['metric', 'imperial'],
@@ -221,22 +223,25 @@ const userSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true, // Adds createdAt and updatedAt
-  strict: 'throw', // Prevent unknown fields like 'id'
+  strict: 'throw', // Prevents unknown fields
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
 
-// Add compound indexes
+// Add compound indexes for efficient queries
 userSchema.index({
   activityLevel: 1,
   mealFrequency: 1,
   measurementPreference: 1
 });
 
-// Virtual for formatted display name
+// Virtual property for username display
 userSchema.virtual('displayName').get(function() {
   return this.email.split('@')[0];
 });
+
+// Compile the model
+const User = mongoose.model('User', userSchema);
 
 // Pre-save hook to prevent null IDs
 userSchema.pre('save', function(next) {
@@ -245,9 +250,6 @@ userSchema.pre('save', function(next) {
   }
   next();
 });
-// Compile the User schema into a model
-const User = mongoose.model('User', userSchema);
-
 
 // Exercise Schema with Array for Goals
 const exerciseSchema = new mongoose.Schema({
