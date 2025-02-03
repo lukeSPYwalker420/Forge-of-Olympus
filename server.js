@@ -149,12 +149,12 @@ const userSchema = new mongoose.Schema({
   },
   workoutPreferences: { 
     type: String,
-    enum: ['strength', 'cardio', 'flexibility', 'balance', null],
+    enum: ['strength training', 'cardio', 'Yoga/Pilates', 'Mixed routine', null],
     default: null
   },
   dietPreferences: {
     type: String,
-    enum: ['vegetarian', 'vegan', 'keto', 'paleo', 'mediterranean', null],
+    enum: ['vegetarian', 'vegan', 'keto', 'paleo', 'None'],
     default: null
   },
   activityLevel: {
