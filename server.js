@@ -4,138 +4,49 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
 const validator = require('validator');
-const nodemailer = require('nodemailer'); 
+const Joi = require('joi');
+const nodemailer = require('nodemailer');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// Load environment variables from .env file
+// ======================
+// INITIAL CONFIGURATION
+// ======================
 dotenv.config();
-
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// MongoDB URI from env variable
-const dbURI = process.env.USER_DB_URI;
-if (!dbURI) {
-  console.error('MongoDB URI is not defined!');
-  process.exit(1); 
-}
+// ======================
+// DATABASE CONNECTION
+// ======================
+mongoose.connect(process.env.USER_DB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  poolSize: 10,
+  connectTimeoutMS: 5000
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => {
+  console.error('MongoDB connection error:', err);
+  process.exit(1);
+});
 
-// Database Connection
-mongoose.connect(dbURI)
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
-  });
+// ======================
+// MIDDLEWARE
+// ======================
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'https://forge-of-olympus.onrender.com',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+  credentials: true
+}));
 
-  app.use(cors({
-    origin: 'https://forge-of-olympus.onrender.com',  // Allow only the frontend URL
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
-    credentials: true,
-  }));
-  
-
-// Body parser middleware for JSON data
 app.use(express.json());
+app.use(express.static(__dirname));
 
-// Configure email transporter
-const transporter = nodemailer.createTransport({
-  service: 'Gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
-
-async function sendPlanEmail(email, exercisePlan, dietPlan) {
-  const mailOptions = {
-    from: `Forge of Olympus <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: 'Your Custom Plan is Ready!',
-    html: `
-      <h1>Your Personalized Fitness Plan</h1>
-      <p>Access your dashboard: <a href="https://forge-of-olympus.onrender.com/dashboard">View Plans</a></p>
-      
-      <h2>Sample Exercises</h2>
-      <ul>
-        ${exercisePlan.slice(0, 3).map(ex => `<li>${ex.name}</li>`).join('')}
-      </ul>
-      
-      <h2>Sample Meals</h2>
-      <ul>
-        ${dietPlan.breakfast.slice(0, 2).map(meal => `<li>${meal.name}</li>`).join('')}
-      </ul>
-    `
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.error('Error sending email:', error);
-  }
-}
-
-// Stripe Webhook for payment success
-app.post('/api/stripe/webhook', 
-  express.raw({type: 'application/json'}),
-  async (req, res) => {
-    const sig = req.headers['stripe-signature'];
-    let event;
-
-    try {
-      event = stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-    } catch (err) {
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-
-    // Handle successful payment
-    if (event.type === 'checkout.session.completed') {
-      const session = event.data.object;
-      
-      try {
-        // Get user email from metadata
-        const userEmail = session.metadata.email;
-        
-        // Find user in database
-        const user = await User.findOne({ email: userEmail });
-        if (!user) throw new Error('User not found');
-
-        // Generate plans
-        const { exercise_plan, diet_plan } = await generatePlan(user.toObject());
-
-        // Save plans to user account
-        user.plans = {
-          exercise: exercise_plan,
-          diet: diet_plan,
-          generatedAt: new Date()
-        };
-        await user.save();
-
-        // Send confirmation email
-        await sendPlanEmail(userEmail, exercise_plan, diet_plan);
-        
-      } catch (error) {
-        console.error('Post-payment processing failed:', error);
-        // Consider implementing retry logic here
-      }
-    }
-
-    res.json({ received: true });
-  }
-);
-
-// Catch-all route to serve index.html for any request that doesn't match an API route
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname));  // Serve index.html as the default
-});
-
-const userSchema = new mongoose.Schema({
+// ======================
+// SCHEMAS & MODELS
+// ======================
+const UserSchema = new mongoose.Schema({
   email: { 
     type: String, 
     required: [true, 'Email is required'],
@@ -143,18 +54,19 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
     validate: {
-      validator: (v) => validator.isEmail(v),
+      validator: v => validator.isEmail(v),
       message: props => `${props.value} is not a valid email!`
     }
   },
   workoutPreferences: { 
     type: String,
-    enum: ['strength training', 'cardio', 'Yoga/Pilates', 'Mixed routine', null],
+    enum: ['strength', 'cardio', 'flexibility', 'balance', null],
     default: null
   },
   dietPreferences: {
     type: String,
-    enum: ['vegetarian', 'vegan', 'keto', 'paleo', 'None'],
+    enum: ['none', 'vegetarian', 'vegan', 'gluten', 'paleo', 'keto', null],
+    set: v => v?.replace(/-free$/, '') || null,
     default: null
   },
   activityLevel: {
@@ -162,51 +74,38 @@ const userSchema = new mongoose.Schema({
     enum: ['sedentary', 'light', 'moderate', 'active', 'very_active'],
     default: 'moderate'
   },
-  fitnessGoals: {
-    type: [String],
-    enum: ["Weight loss", "Muscle gain", "Improved endurance", "Overall health and wellness", "Athletic performance"]
+  fitnessLevel: {
+    type: String,
+    enum: ["Beginner", "Intermediate", "Advanced"],
+    required: true
   },
   exerciseFrequency: {
     type: String,
-    enum: ["1-2 days", "3-4 days", "5-6 days", "Every day"]
-  },
-  exerciseEnvironment: {
-    type: String,
-    enum: ["Gym", "Home", "Outdoor", "No preference"]
-  },
-  allergies: { 
-    type: [String], 
-    default: [],
-    set: allergies => allergies.map(a => a.toLowerCase().trim())
+    enum: ["1-2 days", "3-4 days", "5-6 days", "Every day"],
+    required: true
   },
   medicalConditions: {
     type: [String],
     default: [],
     validate: {
-      validator: v => v.length <= 10,
-      message: 'Maximum 10 medical conditions allowed'
+      validator: v => v.length <= 5,
+      message: 'Maximum 5 medical conditions allowed'
     }
   },
   mealFrequency: {
     type: String,
     enum: ['3_meals', '4-5_meals', '6+_meals'],
-    required: false
+    required: true
   },
   cookFrequency: {
     type: String,
     enum: ['rarely', 'sometimes', 'frequently'],
-    required: false
+    required: true
   },
   groceryBudget: {
     type: String,
     enum: ['<100', '100-150', '>150'],
-    required: false
-  },
-  step: { type: String },  
-  measurementPreference: {
-    type: String,
-    enum: ['metric', 'imperial'],
-    default: 'metric'
+    required: true
   },
   followUpAnswers: {
     type: Map,
@@ -221,94 +120,154 @@ const userSchema = new mongoose.Schema({
     diet: { type: mongoose.Schema.Types.Mixed },
     generatedAt: {
       type: Date,
+      default: Date.now,
       validate: {
-        validator: v => v <= new Date(),
+        validator: v => v <= Date.now(),
         message: 'Plan date cannot be in the future'
       }
     }
   },
-  stripeCustomerId: {
-    type: String,
-    index: true,
-    sparse: true
-  }
+  stripeCustomerId: String
 }, {
   timestamps: true,
-  strict: false,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
 
-// Compile the model
-const User = mongoose.model('User', userSchema);
-module.exports = User;
+const User = mongoose.model('User', UserSchema);
 
-// Exercise Schema with Array for Goals
-const exerciseSchema = new mongoose.Schema({
-  name: String,
-  muscle_group: String,
-  equipment: String,
-  difficulty: String,
-  goal: { type: [String] }, // Multiple goals
-  type: String,
-  sets_reps: String
+// ======================
+// VALIDATION SCHEMAS
+// ======================
+const mergeSchema = Joi.object({
+  email: Joi.string().email().required(),
+  newData: Joi.object({
+    workoutPreferences: Joi.string().valid('strength', 'cardio', 'flexibility', 'balance'),
+    dietPreferences: Joi.string().valid('none', 'vegetarian', 'vegan', 'gluten', 'paleo', 'keto'),
+    activityLevel: Joi.string().valid('sedentary', 'light', 'moderate', 'active', 'very_active'),
+    medicalConditions: Joi.array().items(Joi.string()).max(5)
+  }).required()
 });
 
-const mealSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  ingredients: { type: [String], required: true },
-  calories: { type: Number, required: true },
-  macronutrients: {
-    protein: { type: Number, required: true },
-    carbs: { type: Number, required: true },
-    fats: { type: Number, required: true },
-    fiber: Number,
-    sugar: Number
-  },
-  restrictions: { 
-    type: [String],
-    validate: {
-      validator: function(v) {
-        // Validate all restrictions follow "contains-x" format
-        return v.every(tag => tag.startsWith('contains-'));
-      },
-      message: props => `Invalid restriction format: ${props.value}. Must start with 'contains-'`
-    }
-  },
-  mealCategory: { 
-    type: String, 
-    enum: ['Breakfast', 'Lunch', 'Dinner', 'Snack'], 
-    required: true 
-  },
-  type: {
-    type: String,
-    enum: ['Vegetarian', 'Vegan', 'Keto', 'Paleo', 'Mediterranean', null],
-    default: null
-  },
-  price: {  // Added for budget filtering
-    type: Number,
-    required: true,
-    min: 0
+// ======================
+// EMAIL SERVICE
+// ======================
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
 
-const Exercise = mongoose.model('Exercise', exerciseSchema);
-const Meal = mongoose.model('Meal', mealSchema);
+async function sendPlanEmail(email, exercisePlan, dietPlan) {
+  try {
+    await transporter.sendMail({
+      from: `Forge of Olympus <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Your Custom Plan is Ready!',
+      html: generateEmailContent(exercisePlan, dietPlan)
+    });
+  } catch (error) {
+    console.error('Email send failed:', error);
+  }
+}
 
-// Read exercise plans from exercise.json
-const fs = require('fs');
-
-// Product Configuration (Easy to update)
+// ======================
+// STRIPE INTEGRATION
+// ======================
 const PRODUCTS = {
-  standard: {
-    stripePriceId: 'price_1QjJzPFywsnhFgWfkMFvBVom', 
-    features: ['Exercise and Diet Plans', 'Weekly Structured Workout Routines', 'Basic Meal Plans Based on Calorie Needs']
-  },
-  premium: {
-    stripePriceId: 'price_1QjK0LFywsnhFgWfQWxV1ucp', 
-    features: ['Fully Personalised Exercise and Diet Plans', 'Adjustments Based On Individual Preferences, Progression, and Feedback', 'More Detailed Meal Plans with Macros']
-  }
+  standard: { priceId: 'price_1QjJzPFywsnhFgWfkMFvBVom' },
+  premium: { priceId: 'price_1QjK0LFywsnhFgWfQWxV1ucp' }
 };
+
+async function createStripeSession(userEmail, priceId) {
+  return stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: [{ price: priceId, quantity: 1 }],
+    mode: 'payment',
+    success_url: `${process.env.FRONTEND_URL}/success`,
+    cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+    metadata: { userEmail }
+  });
+}
+
+// ======================
+// CORE FUNCTIONALITY
+// ======================
+app.post('/api/user/merge', async (req, res) => {
+  try {
+    // Validation
+    const { error } = mergeSchema.validate(req.body);
+    if (error) return res.status(400).json({ error: error.details[0].message });
+
+    const { email, newData } = req.body;
+    const sanitizedEmail = validator.normalizeEmail(email);
+
+    // Database operation
+    const user = await User.findOneAndUpdate(
+      { email: sanitizedEmail },
+      { $set: newData },
+      { new: true, upsert: true, runValidators: true }
+    );
+
+    res.json({ success: true, user });
+  } catch (error) {
+    handleServerError(res, error, 'Merge failed');
+  }
+});
+
+app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  
+  try {
+    const event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      const user = await User.findOne({ email: session.metadata.userEmail });
+      
+      if (!user) throw new Error('User not found');
+      
+      const plans = await generatePlan(user.toObject());
+      user.plans = plans;
+      await user.save();
+      
+      await sendPlanEmail(user.email, plans.exercise_plan, plans.diet_plan);
+    }
+
+    res.json({ received: true });
+  } catch (error) {
+    handleServerError(res, error, 'Webhook processing failed');
+  }
+});
+
+// ======================
+// HELPER FUNCTIONS
+// ======================
+function handleServerError(res, error, context) {
+  console.error(`${context}:`, error);
+  const status = error.statusCode || 500;
+  res.status(status).json({ 
+    error: context,
+    details: error.message 
+  });
+}
+
+function generateEmailContent(exercisePlan, dietPlan) {
+  return `
+    <h1>Your Personalized Fitness Plan</h1>
+    <p>Access your dashboard: <a href="${process.env.FRONTEND_URL}/dashboard">View Plans</a></p>
+    <h2>Sample Exercises</h2>
+    <ul>${exercisePlan.slice(0, 3).map(ex => `<li>${ex.name}</li>`).join('')}</ul>
+    <h2>Sample Meals</h2>
+    <ul>${dietPlan.breakfast.slice(0, 2).map(meal => `<li>${meal.name}</li>`).join('')}</ul>
+  `;
+}
 
 async function getExercises(userData) {
   try {
@@ -427,20 +386,98 @@ function calculateTDEE(weight, height, age, activityLevel, bodyFatPercentage = n
 }
 
 async function generatePlan(userData) {
-  // Fetch exercises based on user data with the new conditions
-  const exercises = await getExercises(userData); 
-  const meals = await getMeals(userData);
-  // Group meals by their mealCategory
-  const mealPlan = {
-    breakfast: meals.filter(meal => meal.mealCategory === 'Breakfast'),
-    lunch: meals.filter(meal => meal.mealCategory === 'Lunch'),
-    dinner: meals.filter(meal => meal.mealCategory === 'Dinner'),
-    snacks: meals.filter(meal => meal.mealCategory === 'Snack')
+  // Validate core user data
+  if (!userData || !userData.activityLevel || !userData.fitnessLevel) {
+    throw new Error('Invalid user data for plan generation');
+  }
+
+  // Calculate nutritional needs
+  const tdee = calculateTDEE(
+    userData.weight,
+    userData.height,
+    userData.age,
+    userData.activityLevel,
+    userData.bodyFatPercentage
+  );
+
+  // Get filtered exercises with injury considerations
+  const exercises = await getExercises({
+    goals: userData.fitnessGoals,
+    equipmentAvailability: userData.exerciseEnvironment === 'Home' ? 'bodyweight' : 'full',
+    injuryAvoidance: Array.from(userData.followUpAnswers?.values() || []),
+    daysAvailable: userData.exerciseFrequency.match(/\d+/)?.[0] || 3,
+    fitnessLevel: userData.fitnessLevel
+  });
+
+  // Generate periodized workout schedule
+  const exercisePlan = createPeriodizedPlan(
+    exercises,
+    userData.exerciseFrequency,
+    userData.workoutPreferences
+  );
+
+  // Get dietary-appropriate meals
+  const meals = await getMeals({
+    dietaryRestrictions: userData.dietPreferences,
+    allergies: userData.allergies,
+    calories: tdee,
+    budget: userData.groceryBudget,
+    cookFrequency: userData.cookFrequency
+  });
+
+  // Structure meal plan according to preferences
+  const mealPlan = buildMealSchedule({
+    meals,
+    mealFrequency: userData.mealFrequency,
+    cookingTime: userData.cookFrequency === 'frequently' ? 'high' : 'low',
+    calorieTarget: tdee
+  });
+
+  return {
+    exercise_plan: {
+      schedule: exercisePlan,
+      progression: createProgressionStrategy(userData.fitnessLevel),
+      recoveryTips: generateRecoveryTips(userData.medicalConditions)
+    },
+    diet_plan: {
+      meals: mealPlan,
+      nutritionalSummary: calculateMacronutrients(mealPlan),
+      shoppingList: generateShoppingList(mealPlan, userData.groceryBudget)
+    }
   };
-  // Generate exercise plan, considering the available days and user preferences
-  const exercisePlan = buildExerciseSchedule(exercises, userData.available_days);
+}
+
+// Helper function for workout periodization
+function createPeriodizedPlan(exercises, frequency, preferences) {
+  const daysPerWeek = parseInt(frequency.match(/\d+/)[0]) || 3;
+  const splitType = getSplitType(daysPerWeek, preferences);
   
-  return { exercise_plan: exercisePlan, diet_plan: mealPlan };
+  return Array.from({length: daysPerWeek}, (_, i) => ({
+    day: i + 1,
+    focus: splitType[i % splitType.length],
+    exercises: exercises
+      .filter(ex => ex.goal.includes(splitType[i % splitType.length]))
+      .sort((a,b) => a.difficulty - b.difficulty)
+      .slice(0, 5)
+  }));
+}
+
+// Meal schedule builder with portion control
+function buildMealSchedule({ meals, mealFrequency, cookingTime, calorieTarget }) {
+  const mealCategories = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+  const mealsPerDay = parseInt(mealFrequency.charAt(0));
+
+  return Array.from({length: 7}, () => ({
+    day: new Date().getDay(),
+    meals: mealCategories.slice(0, mealsPerDay).map(category => ({
+      category,
+      options: meals
+        .filter(m => m.mealCategory === category)
+        .filter(m => cookingTime === 'high' ? m.prepTime <= 30 : m.prepTime <= 15)
+        .slice(0, 3)
+    })),
+    calorieTotal: Math.floor(calorieTarget / mealsPerDay)
+  }));
 }
 // API Route for merging user data (must be defined after CORS)
 // MODIFIED MERGE ENDPOINT

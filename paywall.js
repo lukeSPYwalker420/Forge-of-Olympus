@@ -20,21 +20,47 @@ document.addEventListener("DOMContentLoaded", function () {
         { label: "What is your budget for groceries?", id: "grocery-budget", type: "select", options: ["<100", "100-150", ">150"], required: true },
     ];
 
-    // Validate form data
-    const validateForm = (data) => {
-        const requiredFields = [
-          "username", "email", "password", "confirmPassword",
-          "sex", "age", "height", "weight",
-          "activity-level", "meal-frequency",
-          "cook-frequency", "grocery-budget"
-        ];
-      
-        return requiredFields.every(field => {
-          const isValid = !!data[field];
-          if (!isValid) console.warn(`Missing required field: ${field}`);
-          return isValid;
-        });
+    const measurementSystem = {
+        type: "metric",
+        setType(type) {
+          this.type = type;
+          updatePlaceholders();
+        },
+        convertWeight(value) {
+          return this.type === "metric" ? value : value * 0.453592;
+        },
+        convertHeight(value) {
+          return this.type === "metric" ? value : value * 2.54;
+        }
       };
+      
+      function updatePlaceholders() {
+        document.getElementById('height').placeholder = measurementSystem.type === "metric" 
+          ? "Enter your height in cm" 
+          : "Enter your height in inches";
+        
+        document.getElementById('weight').placeholder = measurementSystem.type === "metric" 
+          ? "Enter your weight in kg" 
+          : "Enter your weight in lbs";
+      }
+
+    // Validate form data
+    function validateForm() {
+        const requiredFields = ['height', 'weight', 'age', 'activity-level'];
+        const errors = [];
+      
+        requiredFields.forEach(field => {
+          const value = document.getElementById(field).value;
+          if (!value) errors.push(`${field.replace('-', ' ')} is required`);
+        });
+      
+        if (errors.length > 0) {
+          alert(`Please fix the following errors:\n${errors.join('\n')}`);
+          return false;
+        }
+      
+        return true;
+      }
 
     // Create dynamic form elements
     const createQuestionElements = (questions) => {

@@ -152,77 +152,83 @@ let currentQuestionIndex = 0;
 let currentFollowUp = null;
 
 function renderQuestion() {
-    const questionContainer = document.getElementById('question-container');
-    const questionData = currentFollowUp || questions[currentQuestionIndex];
+    const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
+    const errorMessage = quizState.validationErrors[questionData.question];
+  
+    questionContainer.innerHTML = `
+      <div class="question-content">
+        <h2 class="question">${questionData.question}</h2>
+        ${errorMessage ? `<div class="error">${errorMessage}</div>` : ''}
+        <div id="goal-buttons" class="goal-buttons">
+          ${questionData.choices.map(choice => `
+            <button class="goal-btn" onclick="handleAnswer('${choice}')">${choice}</button>
+          `).join('')}
+        </div>
+        ${quizState.history.length > 0 ? `<button class="back-btn" onclick="goBack()">← Back</button>` : ''}
+      </div>
+    `;
+  }
 
-    if (!questionData) {
-        console.error("No question data available!");
-        return;
+const quizState = {
+    currentQuestionIndex: 0,
+    currentFollowUp: null,
+    answers: [],
+    history: [], // Track user navigation
+    validationErrors: {} // Track validation issues
+  };
+
+  function handleAnswer(choice) {
+    const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
+  
+    // Validate answer
+    if (!validateAnswer(questionData, choice)) {
+      quizState.validationErrors[questionData.question] = "Invalid selection";
+      renderQuestion();
+      return;
     }
-
-    questionContainer.classList.remove('fade-in');
-    questionContainer.classList.add('fade-out');
-
-    setTimeout(() => {
-        questionContainer.innerHTML = `
-            <div class="question-content">
-                <h2 class="question">${questionData.question}</h2>
-                <div id="goal-buttons" class="goal-buttons"></div>
-            </div>
-        `;
-
-        const goalButtons = document.getElementById('goal-buttons');
-        questionData.choices.forEach(choice => {
-            const button = document.createElement('button');
-            button.classList.add('goal-btn');
-            button.textContent = choice;
-            button.onclick = () => handleAnswer(choice);
-            goalButtons.appendChild(button);
-        });
-
-        questionContainer.classList.remove('fade-out');
-        questionContainer.classList.add('fade-in');
-    }, 500);
-}
-
-function handleAnswer(choice) {
-    const questionData = currentFollowUp ? currentFollowUp : questions[currentQuestionIndex];
-
-    if (!questionData) {
-        console.error("No question data available!");
-        return;
-    }
-
-    // Manage answers
-    const existingAnswer = answers.find(a => a.question === questionData.question);
+  
+    // Save answer
+    const existingAnswer = quizState.answers.find(a => a.question === questionData.question);
     if (questionData.is_multiple_choice) {
-        if (!existingAnswer) {
-            answers.push({ question: questionData.question, answer: [] });
-        }
-        answers.find(a => a.question === questionData.question).answer.push(choice);
+      if (!existingAnswer) {
+        quizState.answers.push({ question: questionData.question, answer: [choice] });
+      } else {
+        existingAnswer.answer.push(choice);
+      }
     } else {
-        if (existingAnswer) {
-            existingAnswer.answer = choice;
-        } else {
-            answers.push({ question: questionData.question, answer: choice });
-        }
+      if (existingAnswer) {
+        existingAnswer.answer = choice;
+      } else {
+        quizState.answers.push({ question: questionData.question, answer: choice });
+      }
     }
-
-    // Handle follow-up or move to next question
+  
+    // Handle follow-ups
     if (questionData.follow_up && questionData.follow_up[choice]) {
-        currentFollowUp = JSON.parse(JSON.stringify(questionData.follow_up[choice]));
+      quizState.history.push({ index: quizState.currentQuestionIndex, followUp: quizState.currentFollowUp });
+      quizState.currentFollowUp = JSON.parse(JSON.stringify(questionData.follow_up[choice]));
     } else {
-        currentFollowUp = null;
-        currentQuestionIndex++;
+      quizState.currentFollowUp = null;
+      quizState.currentQuestionIndex++;
     }
-
-    // Render next question or show results
-    if (currentQuestionIndex < questions.length || currentFollowUp) {
-        renderQuestion();
+  
+    // Render next question or results
+    if (quizState.currentQuestionIndex < questions.length || quizState.currentFollowUp) {
+      renderQuestion();
     } else {
-        showResults();
+      showResults();
     }
-}
+  }
+  
+  // 3. Add Back Navigation
+  function goBack() {
+    if (quizState.history.length > 0) {
+      const prevState = quizState.history.pop();
+      quizState.currentQuestionIndex = prevState.index;
+      quizState.currentFollowUp = prevState.followUp;
+      renderQuestion();
+    }
+  }
 
 function showResults() {
     const resultContainer = document.getElementById("result-container");
@@ -308,14 +314,19 @@ function finalizeAndSubmit(event) {
   
         // Map diet preferences
         dietPreferences: rawAnswers.find(a => a.question === "Do you have any dietary restrictions or preferences?")?.answer
-          ?.toLowerCase().replace('-free', '') || null,
+        ?.toLowerCase().replace(/-free$/gi, '') || null, // ✅ "Gluten-free" → "gluten"
   
         // Map activity level
         activityLevel: {
-          "Beginner": "light",
-          "Intermediate": "moderate",
-          "Advanced": "active"
-        }[rawAnswers.find(a => a.question === "What is your current fitness level?")?.answer] || "moderate",
+            "Beginner": "light",
+            "Intermediate": "moderate",
+            "Advanced": "active"
+          }[fitnessLevelAnswer] || "moderate",
+          
+          // Explicitly populate fitnessGoals
+          fitnessGoals: rawAnswers
+            .filter(a => a.question.includes("fitness goals"))
+            .map(a => a.answer),
   
         // Medical conditions (limit to 5)
         medicalConditions: rawAnswers
@@ -362,6 +373,7 @@ function finalizeAndSubmit(event) {
       alert(`Merge failed: ${error.message}`);
     });
   }
+
 
 // Listen for submit button click
 document.getElementById('submit-btn').addEventListener('click', function(event) {
