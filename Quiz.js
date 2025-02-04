@@ -332,6 +332,8 @@ function finalizeAndSubmit(event) {
     // Transform answers to match backend schema
     const transformAnswers = (rawAnswers) => {
         const fitnessLevelAnswer = rawAnswers.find(a => a.question === "How would you describe your fitness level?")?.answer || "Intermediate";
+        console.log("Raw Exercise Preference:", rawAnswers.find(a => a.question === "What type of exercise do you prefer?")?.answer);
+        console.log("Transformed workoutPreferences:", transformed.workoutPreferences);        
 
       const transformed = {
         // Map exercise preferences
@@ -389,6 +391,7 @@ function finalizeAndSubmit(event) {
       newData: cleanBackendData
     };
 
+    console.log("Clean Backend Data:", cleanBackendData);
     console.log("Final Data Sent:", finalData);
   
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
