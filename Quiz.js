@@ -151,6 +151,9 @@ const questions = [
 let currentQuestionIndex = 0;
 let currentFollowUp = null;
 
+
+const questionContainer = document.getElementById("question-container");
+
 document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", (event) => {
         if (event.target.classList.contains("goal-btn")) {
@@ -159,9 +162,16 @@ document.addEventListener("DOMContentLoaded", () => {
             goBack();
         }
     });
+
+    renderQuestion(); // Call renderQuestion after DOM is fully loaded
 });
 
 function renderQuestion() {
+    if (!questionContainer) {
+        console.error("Error: questionContainer is not defined!");
+        return;
+    }
+
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
     const errorMessage = quizState.validationErrors[questionData.question];
 
