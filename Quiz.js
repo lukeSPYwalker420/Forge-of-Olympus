@@ -336,8 +336,8 @@ function finalizeAndSubmit(event) {
       const transformed = {
         // Map exercise preferences
         workoutPreferences: {
-          "Strength training": "strength",
-          "Cardio": "cardio",
+          "Strength training": "Strength training",
+          "Cardio": "Cardio",
           "Yoga/Pilates": "Yoga/Pilates",
           "Mixed routine": "Mixed routine"
         }[rawAnswers.find(a => a.question === "What type of exercise do you prefer?")?.answer] || null,

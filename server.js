@@ -57,7 +57,7 @@ const UserSchema = new mongoose.Schema({
   },
   workoutPreferences: { 
     type: String,
-    enum: ['strength', 'cardio', 'Yoga/Pilates', 'Mixed routine', null],
+    enum: ['Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine', null],
     default: null
   },
   dietPreferences: {
@@ -139,7 +139,7 @@ const User = mongoose.model('User', UserSchema);
 const mergeSchema = Joi.object({
   email: Joi.string().email().required(),
   newData: Joi.object({
-    workoutPreferences: Joi.string().valid('strength', 'cardio', 'Yoga/Pilates', 'Mixed routine'),
+    workoutPreferences: Joi.string().valid('Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine'),
     dietPreferences: Joi.string().valid('none', 'vegetarian', 'vegan', 'gluten', 'paleo', 'keto'),
     activityLevel: Joi.string().valid('sedentary', 'light', 'moderate', 'active', 'very_active'),
     medicalConditions: Joi.array().items(Joi.string()).max(5)
