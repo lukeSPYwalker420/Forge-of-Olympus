@@ -151,23 +151,33 @@ const questions = [
 let currentQuestionIndex = 0;
 let currentFollowUp = null;
 
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener("click", (event) => {
+        if (event.target.classList.contains("goal-btn")) {
+            handleAnswer(event.target.textContent);
+        } else if (event.target.classList.contains("back-btn")) {
+            goBack();
+        }
+    });
+});
+
 function renderQuestion() {
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
     const errorMessage = quizState.validationErrors[questionData.question];
-  
+
     questionContainer.innerHTML = `
       <div class="question-content">
         <h2 class="question">${questionData.question}</h2>
         ${errorMessage ? `<div class="error">${errorMessage}</div>` : ''}
         <div id="goal-buttons" class="goal-buttons">
           ${questionData.choices.map(choice => `
-            <button class="goal-btn" onclick="handleAnswer('${choice}')">${choice}</button>
+            <button class="goal-btn">${choice}</button>
           `).join('')}
         </div>
-        ${quizState.history.length > 0 ? `<button class="back-btn" onclick="goBack()">← Back</button>` : ''}
+        ${quizState.history.length > 0 ? `<button class="back-btn">← Back</button>` : ''}
       </div>
     `;
-  }
+}
 
 const quizState = {
     currentQuestionIndex: 0,
