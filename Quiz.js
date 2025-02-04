@@ -331,10 +331,13 @@ function finalizeAndSubmit(event) {
   
     // Transform answers to match backend schema
     const transformAnswers = (rawAnswers) => {
+        console.log("Raw Answers before transformation:", rawAnswers); // Add this log
+        
         const fitnessLevelAnswer = rawAnswers.find(a => a.question === "How would you describe your fitness level?")?.answer || "Intermediate";
         
-        // Debugging logs
-        console.log("Raw Exercise Preference:", rawAnswers.find(a => a.question === "What type of exercise do you prefer?")?.answer);
+        // Debug the exercise preference before transforming it
+        const exercisePreference = rawAnswers.find(a => a.question === "What type of exercise do you prefer?");
+        console.log("Exercise Preference Answer:", exercisePreference); // Check if the question is present and the answer is correct
     
         const transformed = {
             // Map exercise preferences
@@ -343,7 +346,7 @@ function finalizeAndSubmit(event) {
                 "Cardio": "Cardio",
                 "Yoga/Pilates": "Yoga/Pilates",
                 "Mixed routine": "Mixed routine"
-            }[rawAnswers.find(a => a.question === "What type of exercise do you prefer?")?.answer] || null,
+            }[exercisePreference?.answer] || null, // Check if the answer exists before mapping
     
             // Map diet preferences
             dietPreferences: rawAnswers.find(a => a.question === "Do you have any dietary restrictions or preferences?")?.answer
@@ -372,8 +375,7 @@ function finalizeAndSubmit(event) {
             groceryBudget: "100-150"
         };
     
-        // Debugging log after transformation
-        console.log("Transformed workoutPreferences:", transformed.workoutPreferences);
+        console.log("Transformed workoutPreferences:", transformed.workoutPreferences); // Add this log
         
         // Add nested follow-up answers
         const followUpMap = new Map();
@@ -386,7 +388,7 @@ function finalizeAndSubmit(event) {
         transformed.followUpAnswers = followUpMap;
     
         return transformed;
-    };    
+    };        
   
     const cleanBackendData = transformAnswers(answers);
     
