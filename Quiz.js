@@ -238,8 +238,16 @@ const quizState = {
     } else {
       showResults();
     }
+}
+
+// Example validateAnswer function
+function validateAnswer(questionData, choice) {
+  if (questionData.is_multiple_choice) {
+    return questionData.choices.includes(choice);  // Check if choice is valid
   }
-  
+  return choice.trim() !== "";  // For non-multiple choice questions, ensure it's not empty
+}
+
   // 3. Add Back Navigation
   function goBack() {
     if (quizState.history.length > 0) {
