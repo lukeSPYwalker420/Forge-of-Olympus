@@ -338,8 +338,8 @@ function finalizeAndSubmit(event) {
         workoutPreferences: {
           "Strength training": "strength",
           "Cardio": "cardio",
-          "Yoga/Pilates": "flexibility",
-          "Mixed routine": "balance"
+          "Yoga/Pilates": "Yoga/Pilates",
+          "Mixed routine": "Mixed routine"
         }[rawAnswers.find(a => a.question === "What type of exercise do you prefer?")?.answer] || null,
   
         // Map diet preferences
