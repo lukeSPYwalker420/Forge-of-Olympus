@@ -332,57 +332,61 @@ function finalizeAndSubmit(event) {
     // Transform answers to match backend schema
     const transformAnswers = (rawAnswers) => {
         const fitnessLevelAnswer = rawAnswers.find(a => a.question === "How would you describe your fitness level?")?.answer || "Intermediate";
+        
+        // Debugging logs
         console.log("Raw Exercise Preference:", rawAnswers.find(a => a.question === "What type of exercise do you prefer?")?.answer);
-        console.log("Transformed workoutPreferences:", transformed.workoutPreferences);        
-
-      const transformed = {
-        // Map exercise preferences
-        workoutPreferences: {
-          "Strength training": "Strength training",
-          "Cardio": "Cardio",
-          "Yoga/Pilates": "Yoga/Pilates",
-          "Mixed routine": "Mixed routine"
-        }[rawAnswers.find(a => a.question === "What type of exercise do you prefer?")?.answer] || null,
-  
-        // Map diet preferences
-        dietPreferences: rawAnswers.find(a => a.question === "Do you have any dietary restrictions or preferences?")?.answer
-        ?.toLowerCase().replace(/-free$/gi, '') || null, // ✅ "Gluten-free" → "gluten"
-  
-        // Map activity level
-        activityLevel: {
-            "Beginner": "light",
-            "Intermediate": "moderate",
-            "Advanced": "active"
-          }[fitnessLevelAnswer] || "moderate",
-          
-          // Explicitly populate fitnessGoals
-          fitnessGoals: rawAnswers
-            .filter(a => a.question.includes("fitness goals"))
-            .map(a => a.answer),
-  
-        // Medical conditions (limit to 5)
-        medicalConditions: rawAnswers
-          .find(a => a.question === "Please select any medical conditions you have:")?.answer
-          ?.slice(0,5).map(c => c.toLowerCase()) || [],
-  
-        // Add temporary defaults for required fields
-        mealFrequency: "3_meals",
-        cookFrequency: "sometimes",
-        groceryBudget: "100-150"
-      };
-  
-      // Add nested follow-up answers
-      const followUpMap = new Map();
-      rawAnswers.forEach(answer => {
-        if (answer.question.includes("details about")) {
-          followUpMap.set(answer.question.split("details about ")[1], answer.answer);
-        }
-      });
-      
-      transformed.followUpAnswers = followUpMap;
-  
-      return transformed;
-    };
+    
+        const transformed = {
+            // Map exercise preferences
+            workoutPreferences: {
+                "Strength training": "Strength training",
+                "Cardio": "Cardio",
+                "Yoga/Pilates": "Yoga/Pilates",
+                "Mixed routine": "Mixed routine"
+            }[rawAnswers.find(a => a.question === "What type of exercise do you prefer?")?.answer] || null,
+    
+            // Map diet preferences
+            dietPreferences: rawAnswers.find(a => a.question === "Do you have any dietary restrictions or preferences?")?.answer
+            ?.toLowerCase().replace(/-free$/gi, '') || null, // ✅ "Gluten-free" → "gluten"
+    
+            // Map activity level
+            activityLevel: {
+                "Beginner": "light",
+                "Intermediate": "moderate",
+                "Advanced": "active"
+            }[fitnessLevelAnswer] || "moderate",
+            
+            // Explicitly populate fitnessGoals
+            fitnessGoals: rawAnswers
+                .filter(a => a.question.includes("fitness goals"))
+                .map(a => a.answer),
+    
+            // Medical conditions (limit to 5)
+            medicalConditions: rawAnswers
+                .find(a => a.question === "Please select any medical conditions you have:")?.answer
+                ?.slice(0,5).map(c => c.toLowerCase()) || [],
+    
+            // Add temporary defaults for required fields
+            mealFrequency: "3_meals",
+            cookFrequency: "sometimes",
+            groceryBudget: "100-150"
+        };
+    
+        // Debugging log after transformation
+        console.log("Transformed workoutPreferences:", transformed.workoutPreferences);
+        
+        // Add nested follow-up answers
+        const followUpMap = new Map();
+        rawAnswers.forEach(answer => {
+            if (answer.question.includes("details about")) {
+                followUpMap.set(answer.question.split("details about ")[1], answer.answer);
+            }
+        });
+    
+        transformed.followUpAnswers = followUpMap;
+    
+        return transformed;
+    };    
   
     const cleanBackendData = transformAnswers(answers);
     
