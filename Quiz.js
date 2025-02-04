@@ -388,6 +388,8 @@ function finalizeAndSubmit(event) {
       email: email.toLowerCase().trim(),
       newData: cleanBackendData
     };
+
+    console.log("Final Data Sent:", finalData);
   
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
       method: 'POST',
