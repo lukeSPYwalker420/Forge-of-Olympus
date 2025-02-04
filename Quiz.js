@@ -331,6 +331,8 @@ function finalizeAndSubmit(event) {
   
     // Transform answers to match backend schema
     const transformAnswers = (rawAnswers) => {
+        const fitnessLevelAnswer = rawAnswers.find(a => a.question === "How would you describe your fitness level?")?.answer || "Intermediate";
+
       const transformed = {
         // Map exercise preferences
         workoutPreferences: {
