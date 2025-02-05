@@ -173,7 +173,6 @@ function renderQuestion() {
 
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
     const errorMessage = quizState.validationErrors[questionData.question];
-    const questionContainer = document.getElementById('question-container');
 
     questionContainer.innerHTML = `
       <div class="question-content">
