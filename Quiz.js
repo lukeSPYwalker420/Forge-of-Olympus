@@ -150,6 +150,7 @@ const questions = [
 let currentQuestionIndex = 0;
 let currentFollowUp = null;
 
+
 const questionContainer = document.getElementById("question-container");
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -161,16 +162,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    renderQuestion(); // Ensure renderQuestion is called after DOM is fully loaded
+    renderQuestion(); // Call renderQuestion after DOM is fully loaded
 });
-
-const quizState = {
-    currentQuestionIndex: 0,
-    currentFollowUp: null,
-    answers: [],
-    history: [], // Track user navigation
-    validationErrors: {} // Track validation issues
-};
 
 function renderQuestion() {
     if (!questionContainer) {
@@ -195,7 +188,14 @@ function renderQuestion() {
     `;
 }
 
-function handleAnswer(choice) {
+const quizState = {
+    currentQuestionIndex: 0,
+    currentFollowUp: null,
+    answers: [],
+    history: [], // Track user navigation
+    validationErrors: {} // Track validation issues
+  };
+  function handleAnswer(choice) {
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
 
     if (!validateAnswer(questionData, choice)) {
@@ -218,6 +218,7 @@ function handleAnswer(choice) {
         } else {
             quizState.answers.push({ question: questionData.question, answer: choice });
         }
+        console.log(quizState.answers);
     }
 
     // Handle follow-ups correctly
@@ -241,25 +242,24 @@ function validateAnswer(questionData, choice) {
     if (questionData.question === "Email") {
         return typeof choice === "string" && isValidEmail(choice);
     }
-
-    if (questionData.is_multiple_choice) {
-        return Array.isArray(questionData.choices) && questionData.choices.some(c => c === choice || c.value === choice);
+        if (questionData.is_multiple_choice) {
+            return Array.isArray(questionData.choices) && questionData.choices.some(c => c === choice || c.value === choice);
+        }
+        return true; // No further checks for non-multiple-choice questions
     }
+    
 
-    return true; // No further checks for non-multiple-choice questions
-}
-
-// Add back navigation
-function goBack() {
+  // 3. Add Back Navigation
+  function goBack() {
     if (quizState.history.length > 0) {
-        const prevState = quizState.history.pop();
-        quizState.currentQuestionIndex = prevState.index;
-        quizState.currentFollowUp = prevState.followUp;
-        renderQuestion();
+      const prevState = quizState.history.pop();
+      quizState.currentQuestionIndex = prevState.index;
+      quizState.currentFollowUp = prevState.followUp;
+      renderQuestion();
     }
-}
+  }
 
-function showResults() {
+  function showResults() {
     const resultContainer = document.getElementById("result-container");
     const resultSummary = document.getElementById("result-summary");
 
@@ -273,7 +273,7 @@ function showResults() {
     resultContainer.style.display = "block";
 }
 
-// Function to attach the email input for final submission
+
 function attachEmailInput() {
     const resultContainer = document.getElementById('result-container');
     let emailInputContainer = document.querySelector('.email-input-container');
@@ -306,6 +306,7 @@ function attachEmailInput() {
         event.preventDefault();
         submitButton.disabled = true;  // Disable the button to prevent multiple submissions
         finalizeAndSubmit(event);
+        console.log('Submit button clicked');
     });
 
     emailInputContainer.appendChild(submitButton);
@@ -320,6 +321,7 @@ function attachEmailInput() {
 }
 
 // Handle final submission with email and user data
+// MODIFIED FINALIZE AND SUBMIT FUNCTION
 function finalizeAndSubmit(event) {
     event.preventDefault();
     
@@ -331,14 +333,16 @@ function finalizeAndSubmit(event) {
         alert("Please enter a valid email.");
         return;
     }
-
-    // Gather and validate quiz data
+    
+    // --- Gather Quiz Answers ---
     const fitnessGoals = document.getElementById('fitnessGoals')?.value || "";
     const fitnessGoalDetails = document.getElementById('fitnessGoalDetails')?.value || "";
     const exercisePreference = document.getElementById('exercisePreference')?.value || "";
     const workoutFrequency = document.getElementById('workoutFrequency')?.value || "";
     const fitnessLevel = document.getElementById('fitnessLevel')?.value || "";
     const dietaryPreferences = document.getElementById('dietaryPreferences')?.value || "";
+    
+    // --- Handle injuries and medical conditions ---
     const injuries = Array.from(document.querySelectorAll('input[name="injuries"]:checked'))
                           .map(checkbox => checkbox.value);
     let injuryDetails = {};
@@ -347,6 +351,7 @@ function finalizeAndSubmit(event) {
     } catch (e) {
         console.warn("Injury details JSON parse error, defaulting to empty object");
     }
+    
     const medicalConditions = Array.from(document.querySelectorAll('input[name="medicalConditions"]:checked'))
                                    .map(checkbox => checkbox.value);
     let medicalConditionDetails = {};
@@ -355,15 +360,19 @@ function finalizeAndSubmit(event) {
     } catch (e) {
         console.warn("Medical condition details JSON parse error, defaulting to empty object");
     }
+    
+    // --- Handle other user data ---
     const exerciseEnvironment = document.getElementById('exerciseEnvironment')?.value || "";
     const sleepRecovery = document.getElementById('sleepRecovery')?.value || "";
     const motivationLevel = document.getElementById('motivationLevel')?.value || "";
 
+    // --- Validate required fields for the quiz stage ---
     if (!fitnessGoals || !exercisePreference || !workoutFrequency || !fitnessLevel || !dietaryPreferences) {
         alert("Please fill in all required fields.");
         return;
     }
 
+    // --- Build the finalData object ---
     const finalData = {
         email: email,
         newData: {
@@ -372,7 +381,7 @@ function finalizeAndSubmit(event) {
             exercisePreference: exercisePreference,
             workoutFrequency: workoutFrequency,
             fitnessLevel: fitnessLevel,
-            dietaryPreferences: dietaryPreferences,
+            dietaryPreferences: dietaryPreferences,  // Dietary preferences as part of data
             injuries: injuries,
             injuryDetails: injuryDetails,
             medicalConditions: medicalConditions,
@@ -383,9 +392,10 @@ function finalizeAndSubmit(event) {
         }
     };
 
+    // Log the final data for debugging
     console.log("Final Data Sent:", finalData);
-
-    // Send the data to the backend
+    
+    // --- Send data to the backend ---
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -401,9 +411,16 @@ function finalizeAndSubmit(event) {
     });
 }
 
+
+// Listen for submit button click
+document.getElementById('submit-btn').addEventListener('click', function(event) {
+    console.log('Submit button clicked'); // Debug log to confirm button click
+    finalizeAndSubmit(event);
+});
+
 function isValidEmail(email) {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return regex.test(email);
 }
 
-renderQuestion(); // Ensure the quiz initializes properly with the first question
+renderQuestion();
