@@ -397,56 +397,42 @@ function finalizeAndSubmit(event) {
     }
     
     // --- Build the finalData object exactly as specified ---
-    // Build the finalData object exactly as specified
-const finalData = {
-    email: email,
-    newData: {
-        fitnessGoals: fitnessGoals,
-        fitnessGoalDetails: fitnessGoalDetails,
-        exercisePreference: exercisePreference,
-        workoutFrequency: workoutFrequency,
-        fitnessLevel: fitnessLevel,
-        dietaryPreferences: dietaryPreferences,
-        injuries: injuries,
-        injuryDetails: injuryDetails,
-        medicalConditions: medicalConditions,
-        medicalConditionDetails: medicalConditionDetails,
-        exerciseEnvironment: exerciseEnvironment,
-        sleepRecovery: sleepRecovery,
-        motivationLevel: motivationLevel
-    }
-};
-
-// Validation for missing required fields
-const missingFields = [];
-if (!fitnessGoals) missingFields.push("Fitness Goals");
-if (!exercisePreference) missingFields.push("Exercise Preference");
-if (!workoutFrequency) missingFields.push("Workout Frequency");
-if (!fitnessLevel) missingFields.push("Fitness Level");
-if (!dietaryPreferences) missingFields.push("Dietary Preferences");
-
-if (missingFields.length > 0) {
-    alert("Please fill in the following fields:\n" + missingFields.join("\n"));
-    return;
-}
-
-// Log the final data for debugging
-console.log("Final Data Sent:", finalData);
-
-// --- Send data to the backend ---
-fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(finalData)
-})
-.then(async (response) => {
-    if (!response.ok) throw new Error(await response.text());
-    window.location.href = 'paywall.html';
-})
-.catch(error => {
-    console.error('Error:', error);
-    alert(`Merge failed: ${error.message}`);
-});
+    const finalData = {
+        email: email,
+        newData: {
+            fitnessGoals: fitnessGoals,
+            fitnessGoalDetails: fitnessGoalDetails,
+            exercisePreference: exercisePreference,
+            workoutFrequency: workoutFrequency,
+            fitnessLevel: fitnessLevel,
+            dietaryPreferences: dietaryPreferences,
+            injuries: injuries,
+            injuryDetails: injuryDetails,
+            medicalConditions: medicalConditions,
+            medicalConditionDetails: medicalConditionDetails,
+            exerciseEnvironment: exerciseEnvironment,
+            sleepRecovery: sleepRecovery,
+            motivationLevel: motivationLevel
+        }
+    };
+    
+    // Log the final data for debugging
+    console.log("Final Data Sent:", finalData);
+    
+    // --- Send data to the backend ---
+    fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(finalData)
+    })
+    .then(async (response) => {
+        if (!response.ok) throw new Error(await response.text());
+        window.location.href = 'paywall.html';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert(`Merge failed: ${error.message}`);
+    });
 }
 
 // Listen for submit button click
