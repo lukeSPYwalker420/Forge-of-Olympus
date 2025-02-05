@@ -325,57 +325,100 @@ function finalizeAndSubmit(event) {
     event.preventDefault();
     
     // Get the email input
-    const email = document.getElementById('email').value;
+    const email = document.getElementById('email')?.value;
     
     // Check if the email is valid
     if (!email || !isValidEmail(email)) {
         alert("Please enter a valid email.");
         return;
     }
-  
-    // Get other form values
-    const workoutPreferences = document.getElementById('workoutPreferences').value;
-    const dietPreferences = document.getElementById('dietPreferences').value;
-    const activityLevel = document.getElementById('activityLevel').value;
+    
+    // --- Gather Quiz Answers ---
+    // Primary fitness goals
+    const fitnessGoals = document.getElementById('fitnessGoals')?.value || "";
+    
+    // Follow-up details for fitness goals
+    const fitnessGoalDetails = document.getElementById('fitnessGoalDetails')?.value || "";
+    
+    // Preferred type of exercise
+    const exercisePreference = document.getElementById('exercisePreference')?.value || "";
+    
+    // Workout frequency (e.g., "3-4 days")
+    const workoutFrequency = document.getElementById('workoutFrequency')?.value || "";
+    
+    // Current fitness level
+    const fitnessLevel = document.getElementById('fitnessLevel')?.value || "";
+    
+    // Dietary restrictions/preferences
+    const dietaryPreferences = document.getElementById('dietaryPreferences')?.value || "";
+    
+    // Injuries: collect all checked values from checkboxes with name "injuries"
+    const injuries = Array.from(document.querySelectorAll('input[name="injuries"]:checked'))
+                          .map(checkbox => checkbox.value);
+    
+    // Injury details: expect a JSON string in a textarea with ID "injuryDetails"
+    let injuryDetails = {};
+    try {
+        injuryDetails = JSON.parse(document.getElementById('injuryDetails')?.value || "{}");
+    } catch (e) {
+        console.warn("Injury details JSON parse error, defaulting to empty object");
+    }
+    
+    // Medical conditions: collect all checked values from checkboxes with name "medicalConditions"
     const medicalConditions = Array.from(document.querySelectorAll('input[name="medicalConditions"]:checked'))
-                                    .map(checkbox => checkbox.value);
-    const mealFrequency = document.getElementById('mealFrequency').value;
-    const cookFrequency = document.getElementById('cookFrequency').value;
-    const groceryBudget = document.getElementById('groceryBudget').value;
-
-    // Validate the form fields
-    if (!workoutPreferences || !dietPreferences || !activityLevel || !mealFrequency || !cookFrequency || !groceryBudget) {
+                                   .map(checkbox => checkbox.value);
+    
+    // Medical condition details: expect a JSON string in a textarea with ID "medicalConditionDetails"
+    let medicalConditionDetails = {};
+    try {
+        medicalConditionDetails = JSON.parse(document.getElementById('medicalConditionDetails')?.value || "{}");
+    } catch (e) {
+        console.warn("Medical condition details JSON parse error, defaulting to empty object");
+    }
+    
+    // Preferred exercise environment
+    const exerciseEnvironment = document.getElementById('exerciseEnvironment')?.value || "";
+    
+    // Sleep and recovery management
+    const sleepRecovery = document.getElementById('sleepRecovery')?.value || "";
+    
+    // Motivation level
+    const motivationLevel = document.getElementById('motivationLevel')?.value || "";
+    
+    // --- Validate required fields for the quiz stage ---
+    // (Adjust this list if some fields are optional on the quiz page.)
+    if (!fitnessGoals || !exercisePreference || !workoutFrequency || !fitnessLevel || !dietaryPreferences) {
         alert("Please fill in all required fields.");
         return;
     }
-
-    // Optionally, validate medicalConditions if they exist (can be empty)
-    if (medicalConditions.length === 0) {
-        console.warn("No medical conditions selected.");
-    }
-
-    // Prepare finalData object
+    
+    // --- Build the finalData object exactly as specified ---
     const finalData = {
         email: email,
         newData: {
-            workoutPreferences: workoutPreferences,
-            dietPreferences: dietPreferences,
-            activityLevel: activityLevel,
+            fitnessGoals: fitnessGoals,
+            fitnessGoalDetails: fitnessGoalDetails,
+            exercisePreference: exercisePreference,
+            workoutFrequency: workoutFrequency,
+            fitnessLevel: fitnessLevel,
+            dietaryPreferences: dietaryPreferences,
+            injuries: injuries,
+            injuryDetails: injuryDetails,
             medicalConditions: medicalConditions,
-            mealFrequency: mealFrequency,
-            cookFrequency: cookFrequency,
-            groceryBudget: groceryBudget,
-            followUpAnswers: {} // Add follow-up answers here if needed
+            medicalConditionDetails: medicalConditionDetails,
+            exerciseEnvironment: exerciseEnvironment,
+            sleepRecovery: sleepRecovery,
+            motivationLevel: motivationLevel
         }
     };
-
-    // Log finalData to check it's being populated
-    console.log('finalData:', finalData);
-
-    // Send data to the backend
+    
+    // Log the final data for debugging
+    console.log("Final Data Sent:", finalData);
+    
+    // --- Send data to the backend ---
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(finalData)
     })
     .then(async (response) => {
