@@ -322,13 +322,34 @@ function attachEmailInput() {
 // MODIFIED FINALIZE AND SUBMIT FUNCTION
 function finalizeAndSubmit(event) {
     event.preventDefault();
+    
+    // Get the email input
     const email = document.getElementById('email').value;
-  
+    
+    // Check if the email is valid
     if (!email || !isValidEmail(email)) {
       alert("Please enter a valid email.");
       return;
     }
   
+    // Prepare finalData object
+    const finalData = {
+      email: email,
+      newData: {
+        // Assuming you gather other form data like workoutPreferences, dietPreferences, etc.
+        workoutPreferences: document.getElementById('workoutPreferences').value,
+        dietPreferences: document.getElementById('dietPreferences').value,
+        activityLevel: document.getElementById('activityLevel').value,
+        medicalConditions: Array.from(document.querySelectorAll('input[name="medicalConditions"]:checked'))
+          .map(checkbox => checkbox.value),
+        mealFrequency: document.getElementById('mealFrequency').value,
+        cookFrequency: document.getElementById('cookFrequency').value,
+        groceryBudget: document.getElementById('groceryBudget').value,
+        followUpAnswers: {}  // Add logic to gather follow-up answers if needed
+      }
+    };
+  
+    // Send data to the backend
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -343,6 +364,7 @@ function finalizeAndSubmit(event) {
       alert(`Merge failed: ${error.message}`);
     });
   }
+  
 
 
 // Listen for submit button click
