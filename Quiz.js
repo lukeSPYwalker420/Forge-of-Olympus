@@ -332,11 +332,13 @@ function finalizeAndSubmit(event) {
       return;
     }
   
+    // Log email to check it's being captured
+    console.log('Email:', email);
+  
     // Prepare finalData object
     const finalData = {
       email: email,
       newData: {
-        // Assuming you gather other form data like workoutPreferences, dietPreferences, etc.
         workoutPreferences: document.getElementById('workoutPreferences').value,
         dietPreferences: document.getElementById('dietPreferences').value,
         activityLevel: document.getElementById('activityLevel').value,
@@ -348,6 +350,9 @@ function finalizeAndSubmit(event) {
         followUpAnswers: {}  // Add logic to gather follow-up answers if needed
       }
     };
+  
+    // Log finalData to check it's being populated
+    console.log('finalData:', finalData);
   
     // Send data to the backend
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
@@ -364,8 +369,6 @@ function finalizeAndSubmit(event) {
       alert(`Merge failed: ${error.message}`);
     });
   }
-  
-
 
 // Listen for submit button click
 document.getElementById('submit-btn').addEventListener('click', function(event) {
