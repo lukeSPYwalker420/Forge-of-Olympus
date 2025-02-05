@@ -198,6 +198,7 @@ const quizState = {
   function handleAnswer(choice) {
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
 
+    // Validate the answer before proceeding
     if (!validateAnswer(questionData, choice)) {
         quizState.validationErrors[questionData.question] = "Invalid selection";
         renderQuestion();
@@ -206,34 +207,40 @@ const quizState = {
 
     // Find existing answer entry
     let existingAnswer = quizState.answers.find(a => a.question === questionData.question);
+
+    // If it's a multiple-choice question, handle array of choices
     if (questionData.is_multiple_choice) {
         if (!existingAnswer) {
             quizState.answers.push({ question: questionData.question, answer: [choice] });
         } else if (!existingAnswer.answer.includes(choice)) {
+            // Avoid duplicates in the answer array
             existingAnswer.answer.push(choice);
         }
     } else {
         if (existingAnswer) {
+            // Update the existing answer
             existingAnswer.answer = choice;
         } else {
+            // Otherwise, add a new answer entry
             quizState.answers.push({ question: questionData.question, answer: choice });
         }
-        console.log(quizState.answers);
     }
 
-    // Handle follow-ups correctly
+    // Handle follow-ups
     if (questionData.follow_up && questionData.follow_up[choice]) {
         quizState.history.push({ index: quizState.currentQuestionIndex, followUp: quizState.currentFollowUp });
         quizState.currentFollowUp = JSON.parse(JSON.stringify(questionData.follow_up[choice]));
     } else {
+        // No follow-up or no follow-up for this choice, move to the next question
         quizState.currentFollowUp = null;
         quizState.currentQuestionIndex++;
     }
 
+    // Continue the quiz or show results if it's finished
     if (quizState.currentQuestionIndex < questions.length || quizState.currentFollowUp) {
         renderQuestion();
     } else {
-        showResults();
+        finalizeAndSubmit(); // Finalize and submit the quiz when it's done
     }
 }
 
@@ -410,7 +417,6 @@ function finalizeAndSubmit(event) {
         alert(`Merge failed: ${error.message}`);
     });
 }
-
 
 // Listen for submit button click
 document.getElementById('submit-btn').addEventListener('click', function(event) {
