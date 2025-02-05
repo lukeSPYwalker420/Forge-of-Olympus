@@ -173,6 +173,7 @@ function renderQuestion() {
 
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
     const errorMessage = quizState.validationErrors[questionData.question];
+    const questionContainer = document.getElementById('question-container');
 
     questionContainer.innerHTML = `
       <div class="question-content">
@@ -218,6 +219,7 @@ const quizState = {
         } else {
             quizState.answers.push({ question: questionData.question, answer: choice });
         }
+        console.log(quizState.answers);
     }
 
     // Handle follow-ups correctly
@@ -236,17 +238,17 @@ const quizState = {
     }
 }
 
-// Example validateAnswer function
 function validateAnswer(questionData, choice) {
-    if (questionData.is_multiple_choice) {
-      // Ensure choices exist and check if the selected choice is valid
-      return Array.isArray(questionData.choices) &&
-             questionData.choices.some(c => c === choice || c.value === choice);
+    // If the question is for email, validate the email format
+    if (questionData.question === "Email") {
+        return typeof choice === "string" && isValidEmail(choice);
     }
-  
-    // For open-ended responses, ensure non-empty trimmed input
-    return typeof choice === "string" && choice.trim().length > 0;
-  }  
+        if (questionData.is_multiple_choice) {
+            return Array.isArray(questionData.choices) && questionData.choices.some(c => c === choice || c.value === choice);
+        }
+        return true; // No further checks for non-multiple-choice questions
+    }
+    
 
   // 3. Add Back Navigation
   function goBack() {
@@ -385,6 +387,8 @@ function finalizeAndSubmit(event) {
     // Motivation level
     const motivationLevel = document.getElementById('motivationLevel')?.value || "";
     
+    console.log(fitnessGoals, exercisePreference, workoutFrequency, fitnessLevel, dietaryPreferences);
+
     // --- Validate required fields for the quiz stage ---
     // (Adjust this list if some fields are optional on the quiz page.)
     if (!fitnessGoals || !exercisePreference || !workoutFrequency || !fitnessLevel || !dietaryPreferences) {
@@ -393,42 +397,56 @@ function finalizeAndSubmit(event) {
     }
     
     // --- Build the finalData object exactly as specified ---
-    const finalData = {
-        email: email,
-        newData: {
-            fitnessGoals: fitnessGoals,
-            fitnessGoalDetails: fitnessGoalDetails,
-            exercisePreference: exercisePreference,
-            workoutFrequency: workoutFrequency,
-            fitnessLevel: fitnessLevel,
-            dietaryPreferences: dietaryPreferences,
-            injuries: injuries,
-            injuryDetails: injuryDetails,
-            medicalConditions: medicalConditions,
-            medicalConditionDetails: medicalConditionDetails,
-            exerciseEnvironment: exerciseEnvironment,
-            sleepRecovery: sleepRecovery,
-            motivationLevel: motivationLevel
-        }
-    };
-    
-    // Log the final data for debugging
-    console.log("Final Data Sent:", finalData);
-    
-    // --- Send data to the backend ---
-    fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(finalData)
-    })
-    .then(async (response) => {
-        if (!response.ok) throw new Error(await response.text());
-        window.location.href = 'paywall.html';
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert(`Merge failed: ${error.message}`);
-    });
+    // Build the finalData object exactly as specified
+const finalData = {
+    email: email,
+    newData: {
+        fitnessGoals: fitnessGoals,
+        fitnessGoalDetails: fitnessGoalDetails,
+        exercisePreference: exercisePreference,
+        workoutFrequency: workoutFrequency,
+        fitnessLevel: fitnessLevel,
+        dietaryPreferences: dietaryPreferences,
+        injuries: injuries,
+        injuryDetails: injuryDetails,
+        medicalConditions: medicalConditions,
+        medicalConditionDetails: medicalConditionDetails,
+        exerciseEnvironment: exerciseEnvironment,
+        sleepRecovery: sleepRecovery,
+        motivationLevel: motivationLevel
+    }
+};
+
+// Validation for missing required fields
+const missingFields = [];
+if (!fitnessGoals) missingFields.push("Fitness Goals");
+if (!exercisePreference) missingFields.push("Exercise Preference");
+if (!workoutFrequency) missingFields.push("Workout Frequency");
+if (!fitnessLevel) missingFields.push("Fitness Level");
+if (!dietaryPreferences) missingFields.push("Dietary Preferences");
+
+if (missingFields.length > 0) {
+    alert("Please fill in the following fields:\n" + missingFields.join("\n"));
+    return;
+}
+
+// Log the final data for debugging
+console.log("Final Data Sent:", finalData);
+
+// --- Send data to the backend ---
+fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(finalData)
+})
+.then(async (response) => {
+    if (!response.ok) throw new Error(await response.text());
+    window.location.href = 'paywall.html';
+})
+.catch(error => {
+    console.error('Error:', error);
+    alert(`Merge failed: ${error.message}`);
+});
 }
 
 // Listen for submit button click
