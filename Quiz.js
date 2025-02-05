@@ -150,250 +150,260 @@ const questions = [
 let currentQuestionIndex = 0;
 let currentFollowUp = null;
 
+const questionContainer = document.getElementById("question-container");
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener("click", (event) => {
+        if (event.target.classList.contains("goal-btn")) {
+            handleAnswer(event.target.textContent);
+        } else if (event.target.classList.contains("back-btn")) {
+            goBack();
+        }
+    });
+
+    renderQuestion(); // Ensure renderQuestion is called after DOM is fully loaded
+});
+
 const quizState = {
     currentQuestionIndex: 0,
     currentFollowUp: null,
     answers: [],
     history: [], // Track user navigation
-    validationErrors: {}, // Track validation issues
-  };
-  
-  const questionContainer = document.getElementById("question-container");
-  const resultContainer = document.getElementById("result-container");
-  const resultSummary = document.getElementById("result-summary");
-  
-  document.addEventListener("DOMContentLoaded", () => {
-    document.body.addEventListener("click", handleButtonClick);
-    renderQuestion();
-  });
-  
-  function handleButtonClick(event) {
-    if (event.target.classList.contains("goal-btn")) {
-      handleAnswer(event.target.textContent);
-    } else if (event.target.classList.contains("back-btn")) {
-      goBack();
+    validationErrors: {} // Track validation issues
+};
+
+function renderQuestion() {
+    if (!questionContainer) {
+        console.error("Error: questionContainer is not defined!");
+        return;
     }
-  }
-  
-  function renderQuestion() {
+
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
     const errorMessage = quizState.validationErrors[questionData.question];
-  
-    if (!questionContainer) {
-      console.error("Error: questionContainer is not defined!");
-      return;
-    }
-  
+
     questionContainer.innerHTML = `
       <div class="question-content">
         <h2 class="question">${questionData.question}</h2>
         ${errorMessage ? `<div class="error">${errorMessage}</div>` : ''}
         <div id="goal-buttons" class="goal-buttons">
-          ${questionData.choices.map(choice => `<button class="goal-btn">${choice}</button>`).join('')}
+          ${questionData.choices.map(choice => `
+            <button class="goal-btn">${choice}</button>
+          `).join('')}
         </div>
         ${quizState.history.length > 0 ? `<button class="back-btn">← Back</button>` : ''}
       </div>
     `;
-  }
-  
-  function handleAnswer(choice) {
+}
+
+function handleAnswer(choice) {
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
-  
+
     if (!validateAnswer(questionData, choice)) {
-      quizState.validationErrors[questionData.question] = "Invalid selection";
-      renderQuestion();
-      return;
+        quizState.validationErrors[questionData.question] = "Invalid selection";
+        renderQuestion();
+        return;
     }
-  
-    saveAnswer(questionData, choice);
-    navigateToNextQuestionOrFollowUp(questionData, choice);
-  }
-  
-  function saveAnswer(questionData, choice) {
+
+    // Find existing answer entry
     let existingAnswer = quizState.answers.find(a => a.question === questionData.question);
     if (questionData.is_multiple_choice) {
-      if (!existingAnswer) {
-        quizState.answers.push({ question: questionData.question, answer: [choice] });
-      } else if (!existingAnswer.answer.includes(choice)) {
-        existingAnswer.answer.push(choice);
-      }
+        if (!existingAnswer) {
+            quizState.answers.push({ question: questionData.question, answer: [choice] });
+        } else if (!existingAnswer.answer.includes(choice)) {
+            existingAnswer.answer.push(choice);
+        }
     } else {
-      if (existingAnswer) {
-        existingAnswer.answer = choice;
-      } else {
-        quizState.answers.push({ question: questionData.question, answer: choice });
-      }
+        if (existingAnswer) {
+            existingAnswer.answer = choice;
+        } else {
+            quizState.answers.push({ question: questionData.question, answer: choice });
+        }
     }
-  }
-  
-  function navigateToNextQuestionOrFollowUp(questionData, choice) {
+
+    // Handle follow-ups correctly
     if (questionData.follow_up && questionData.follow_up[choice]) {
-      quizState.history.push({ index: quizState.currentQuestionIndex, followUp: quizState.currentFollowUp });
-      quizState.currentFollowUp = { ...questionData.follow_up[choice] }; // Create a shallow copy
+        quizState.history.push({ index: quizState.currentQuestionIndex, followUp: quizState.currentFollowUp });
+        quizState.currentFollowUp = JSON.parse(JSON.stringify(questionData.follow_up[choice]));
     } else {
-      quizState.currentFollowUp = null;
-      quizState.currentQuestionIndex++;
+        quizState.currentFollowUp = null;
+        quizState.currentQuestionIndex++;
     }
-  
+
     if (quizState.currentQuestionIndex < questions.length || quizState.currentFollowUp) {
-      renderQuestion();
+        renderQuestion();
     } else {
-      showResults();
+        showResults();
     }
-  }
-  
-  function validateAnswer(questionData, choice) {
+}
+
+function validateAnswer(questionData, choice) {
+    // If the question is for email, validate the email format
     if (questionData.question === "Email") {
-      return isValidEmail(choice);
+        return typeof choice === "string" && isValidEmail(choice);
     }
+
     if (questionData.is_multiple_choice) {
-      return Array.isArray(questionData.choices) && questionData.choices.includes(choice);
+        return Array.isArray(questionData.choices) && questionData.choices.some(c => c === choice || c.value === choice);
     }
-    return true;
-  }
-  
-  function goBack() {
+
+    return true; // No further checks for non-multiple-choice questions
+}
+
+// Add back navigation
+function goBack() {
     if (quizState.history.length > 0) {
-      const prevState = quizState.history.pop();
-      quizState.currentQuestionIndex = prevState.index;
-      quizState.currentFollowUp = prevState.followUp;
-      renderQuestion();
+        const prevState = quizState.history.pop();
+        quizState.currentQuestionIndex = prevState.index;
+        quizState.currentFollowUp = prevState.followUp;
+        renderQuestion();
     }
-  }
-  
-  function showResults() {
+}
+
+function showResults() {
+    const resultContainer = document.getElementById("result-container");
+    const resultSummary = document.getElementById("result-summary");
+
     document.querySelector(".question-container").style.display = "none";
-  
+
     const formattedAnswers = quizState.answers
-      .map(answer => `${answer.question}: ${Array.isArray(answer.answer) ? answer.answer.join(", ") : answer.answer}`)
-      .join("\n");
-  
+        .map(answer => `${answer.question}: ${Array.isArray(answer.answer) ? answer.answer.join(", ") : answer.answer}`)
+        .join("\n");
+
     resultSummary.textContent = formattedAnswers;
     resultContainer.style.display = "block";
-  }
-  
-  function attachEmailInput() {
-    const emailInputContainer = document.querySelector('.email-input-container') || createEmailInputContainer();
-    resultContainer.appendChild(emailInputContainer);
-  }
-  
-  function createEmailInputContainer() {
-    const emailInputContainer = document.createElement('div');
+}
+
+// Function to attach the email input for final submission
+function attachEmailInput() {
+    const resultContainer = document.getElementById('result-container');
+    let emailInputContainer = document.querySelector('.email-input-container');
+    if (emailInputContainer) {
+        console.warn("Email input container already exists.");
+        return;
+    }
+
+    emailInputContainer = document.createElement('div');
     emailInputContainer.classList.add('email-input-container');
-  
+
     const emailLabel = document.createElement('label');
     emailLabel.setAttribute('for', 'email');
     emailLabel.textContent = 'Enter your email to finalize:';
     emailInputContainer.appendChild(emailLabel);
-  
+
     const emailInput = document.createElement('input');
     emailInput.setAttribute('type', 'email');
     emailInput.setAttribute('id', 'email');
     emailInput.setAttribute('name', 'email');
     emailInput.required = true;
     emailInputContainer.appendChild(emailInput);
-  
-    const submitButton = createSubmitButton();
-    emailInputContainer.appendChild(submitButton);
-  
-    return emailInputContainer;
-  }
-  
-  function createSubmitButton() {
+
     const submitButton = document.createElement('button');
     submitButton.textContent = 'Submit';
     submitButton.classList.add('submit-btn');
-    submitButton.addEventListener('click', finalizeAndSubmit);
-    return submitButton;
-  }
-  
-  function finalizeAndSubmit(event) {
+
+    // Attach event listener to the button
+    submitButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        submitButton.disabled = true;  // Disable the button to prevent multiple submissions
+        finalizeAndSubmit(event);
+    });
+
+    emailInputContainer.appendChild(submitButton);
+
+    // Ensure static submit button is removed before adding dynamic one
+    const staticSubmitButton = document.getElementById('submit-btn');
+    if (staticSubmitButton) {
+        staticSubmitButton.parentElement.removeChild(staticSubmitButton);
+    }
+
+    resultContainer.appendChild(emailInputContainer);
+}
+
+// Handle final submission with email and user data
+function finalizeAndSubmit(event) {
     event.preventDefault();
-  
+    
+    // Get the email input
     const email = document.getElementById('email')?.value;
+    
+    // Check if the email is valid
     if (!email || !isValidEmail(email)) {
-      alert("Please enter a valid email.");
-      return;
+        alert("Please enter a valid email.");
+        return;
     }
-  
-    const finalData = gatherFinalData(email);
-    if (Object.values(finalData.newData).some(value => !value)) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-  
-    submitData(finalData);
-  }
-  
-  function gatherFinalData(email) {
+
+    // Gather and validate quiz data
     const fitnessGoals = document.getElementById('fitnessGoals')?.value || "";
     const fitnessGoalDetails = document.getElementById('fitnessGoalDetails')?.value || "";
     const exercisePreference = document.getElementById('exercisePreference')?.value || "";
     const workoutFrequency = document.getElementById('workoutFrequency')?.value || "";
     const fitnessLevel = document.getElementById('fitnessLevel')?.value || "";
     const dietaryPreferences = document.getElementById('dietaryPreferences')?.value || "";
-  
-    const injuries = getCheckedValues('injuries');
-    const injuryDetails = parseJson('injuryDetails');
-    const medicalConditions = getCheckedValues('medicalConditions');
-    const medicalConditionDetails = parseJson('medicalConditionDetails');
-  
+    const injuries = Array.from(document.querySelectorAll('input[name="injuries"]:checked'))
+                          .map(checkbox => checkbox.value);
+    let injuryDetails = {};
+    try {
+        injuryDetails = JSON.parse(document.getElementById('injuryDetails')?.value || "{}");
+    } catch (e) {
+        console.warn("Injury details JSON parse error, defaulting to empty object");
+    }
+    const medicalConditions = Array.from(document.querySelectorAll('input[name="medicalConditions"]:checked'))
+                                   .map(checkbox => checkbox.value);
+    let medicalConditionDetails = {};
+    try {
+        medicalConditionDetails = JSON.parse(document.getElementById('medicalConditionDetails')?.value || "{}");
+    } catch (e) {
+        console.warn("Medical condition details JSON parse error, defaulting to empty object");
+    }
     const exerciseEnvironment = document.getElementById('exerciseEnvironment')?.value || "";
     const sleepRecovery = document.getElementById('sleepRecovery')?.value || "";
     const motivationLevel = document.getElementById('motivationLevel')?.value || "";
-  
-    return {
-      email,
-      newData: {
-        fitnessGoals,
-        fitnessGoalDetails,
-        exercisePreference,
-        workoutFrequency,
-        fitnessLevel,
-        dietaryPreferences,
-        injuries,
-        injuryDetails,
-        medicalConditions,
-        medicalConditionDetails,
-        exerciseEnvironment,
-        sleepRecovery,
-        motivationLevel
-      }
-    };
-  }
-  
-  function getCheckedValues(name) {
-    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(checkbox => checkbox.value);
-  }
-  
-  function parseJson(id) {
-    try {
-      return JSON.parse(document.getElementById(id)?.value || "{}");
-    } catch (e) {
-      console.warn(`${id} JSON parse error, defaulting to empty object`);
-      return {};
+
+    if (!fitnessGoals || !exercisePreference || !workoutFrequency || !fitnessLevel || !dietaryPreferences) {
+        alert("Please fill in all required fields.");
+        return;
     }
-  }
-  
-  function submitData(finalData) {
+
+    const finalData = {
+        email: email,
+        newData: {
+            fitnessGoals: fitnessGoals,
+            fitnessGoalDetails: fitnessGoalDetails,
+            exercisePreference: exercisePreference,
+            workoutFrequency: workoutFrequency,
+            fitnessLevel: fitnessLevel,
+            dietaryPreferences: dietaryPreferences,
+            injuries: injuries,
+            injuryDetails: injuryDetails,
+            medicalConditions: medicalConditions,
+            medicalConditionDetails: medicalConditionDetails,
+            exerciseEnvironment: exerciseEnvironment,
+            sleepRecovery: sleepRecovery,
+            motivationLevel: motivationLevel
+        }
+    };
+
+    console.log("Final Data Sent:", finalData);
+
+    // Send the data to the backend
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(finalData)
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(finalData)
     })
     .then(async (response) => {
-      if (!response.ok) throw new Error(await response.text());
-      window.location.href = 'paywall.html';
+        if (!response.ok) throw new Error(await response.text());
+        window.location.href = 'paywall.html';
     })
     .catch(error => {
-      console.error('Error:', error);
-      alert(`Merge failed: ${error.message}`);
+        console.error('Error:', error);
+        alert(`Merge failed: ${error.message}`);
     });
-  }
-  
-  function isValidEmail(email) {
+}
+
+function isValidEmail(email) {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return regex.test(email);
-  }  
+}
 
-renderQuestion();
+renderQuestion(); // Ensure the quiz initializes properly with the first question
