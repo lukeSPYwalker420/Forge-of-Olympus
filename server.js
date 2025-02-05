@@ -113,8 +113,26 @@ const UserSchema = new mongoose.Schema({
     }
   },
   plans: {
-    exercise: { type: mongoose.Schema.Types.Mixed },
-    diet: { type: mongoose.Schema.Types.Mixed },
+    exercise: {
+      type: mongoose.Schema.Types.Mixed, 
+      validate: {
+        validator: (v) => {
+          // Example validation, adjust as needed based on your plan structure
+          return v && Array.isArray(v.schedule) && v.schedule.length > 0;
+        },
+        message: 'Invalid exercise plan structure'
+      }
+    },
+    diet: {
+      type: mongoose.Schema.Types.Mixed, 
+      validate: {
+        validator: (v) => {
+          // Example validation for diet plan (check if it's an object or has necessary fields)
+          return v && typeof v === 'object';
+        },
+        message: 'Invalid diet plan structure'
+      }
+    },
     generatedAt: {
       type: Date,
       default: Date.now,
@@ -124,7 +142,10 @@ const UserSchema = new mongoose.Schema({
       }
     }
   },
-  stripeCustomerId: String
+  stripeCustomerId: {
+    type: String,
+    index: true  // Optional: Add index if Stripe customer ID is queried often
+  }
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
@@ -476,53 +497,6 @@ function buildMealSchedule({ meals, mealFrequency, cookingTime, calorieTarget })
     calorieTotal: Math.floor(calorieTarget / mealsPerDay)
   }));
 }
-// API Route for merging user data (must be defined after CORS)
-// MODIFIED MERGE ENDPOINT
-app.post('/api/user/merge', async (req, res) => {
-  try {
-    const { email, newData } = req.body;
-    const sanitizedEmail = validator.normalizeEmail(email);
-
-    // Schema-compatible data transformation
-    const transformForSchema = (data) => ({
-      workoutPreferences: data.workoutPreferences,
-      dietPreferences: data.dietPreferences?.replace(' ', '_'),
-      activityLevel: data.activityLevel,
-      medicalConditions: data.medicalConditions,
-      mealFrequency: data.mealFrequency,
-      cookFrequency: data.cookFrequency,
-      groceryBudget: data.groceryBudget,
-      followUpAnswers: data.followUpAnswers instanceof Map 
-        ? data.followUpAnswers 
-        : new Map(Object.entries(data.followUpAnswers || {}))
-    });
-
-    const updateData = transformForSchema(newData);
-
-    const user = await User.findOneAndUpdate(
-      { email: sanitizedEmail },
-      { $set: updateData },
-      { 
-        upsert: true,
-        new: true,
-        runValidators: true,
-        setDefaultsOnInsert: true
-      }
-    );
-
-    res.json({ success: true, user });
-  } catch (error) {
-    console.error('Merge Error:', {
-      input: req.body,
-      error: error.message
-    });
-    res.status(500).json({
-      error: 'Merge failed',
-      details: error.message,
-      requiredFields: ['workoutPreferences', 'activityLevel', 'dietPreferences']
-    });
-  }
-});
 
 // Serve static files from the root directory
 app.use(express.static(__dirname));  // Serving from the root directory
