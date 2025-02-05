@@ -28,16 +28,18 @@
     <div id="result-container" class="result" style="display: none;">
         <h3 class="result-heading">Thank you for your responses!</h3>
         <pre id="result-summary" class="result-text"></pre>
-
-        <div class="email-input-container">
-            <label for="email">Enter your email to finalize:</label>
-            <input type="email" id="email" name="email" required />
-        </div>
-
-        <div class="button-container">
-            <button id="submit-btn" class="button-style">Submit</button>
-        </div>
-    </div>
+    
+        <form id="quiz-form" onsubmit="finalizeAndSubmit(event)">  <!-- Attach onsubmit event -->
+            <div class="email-input-container">
+                <label for="email">Enter your email to finalize:</label>
+                <input type="email" id="email" name="email" required />
+            </div>
+    
+            <div class="button-container">
+                <button id="submit-btn" class="button-style" type="submit">Submit</button>
+            </div>
+        </form>
+    </div>    
 
     <!-- Hidden input fields to store quiz data -->
     <input type="hidden" id="fitnessGoals">
