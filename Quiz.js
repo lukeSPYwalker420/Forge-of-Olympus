@@ -1,3 +1,5 @@
+let answers = []; // Store user answers
+
 const questions = [
     {
         question: "What are your primary fitness goals?",
