@@ -195,7 +195,7 @@ const quizState = {
     history: [], // Track user navigation
     validationErrors: {} // Track validation issues
   };
-  function handleAnswer(choice) {
+  function handleAnswer(event, choice) {
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
 
     if (!questionData) {
@@ -241,7 +241,7 @@ const quizState = {
     if (quizState.currentQuestionIndex < questions.length || quizState.currentFollowUp) {
         renderQuestion();
     } else {
-        finalizeAndSubmit(); // Finalize and submit the quiz when it's done
+        finalizeAndSubmit(event); // Pass the event here
     }
 }
 
@@ -331,8 +331,8 @@ function attachEmailInput() {
 // Handle final submission with email and user data
 // MODIFIED FINALIZE AND SUBMIT FUNCTION
 function finalizeAndSubmit(event) {
-    event.preventDefault();
-    
+    event.preventDefault(); // Prevent default behavior of form submission
+
     // Get the email input
     const email = document.getElementById('email')?.value;
     
@@ -341,7 +341,7 @@ function finalizeAndSubmit(event) {
         alert("Please enter a valid email.");
         return;
     }
-    
+
     // --- Gather Quiz Answers ---
     const fitnessGoals = document.getElementById('fitnessGoals')?.value || "";
     const fitnessGoalDetails = document.getElementById('fitnessGoalDetails')?.value || "";
@@ -349,7 +349,7 @@ function finalizeAndSubmit(event) {
     const workoutFrequency = document.getElementById('workoutFrequency')?.value || "";
     const fitnessLevel = document.getElementById('fitnessLevel')?.value || "";
     const dietaryPreferences = document.getElementById('dietaryPreferences')?.value || "";
-    
+
     // --- Handle injuries and medical conditions ---
     const injuries = Array.from(document.querySelectorAll('input[name="injuries"]:checked'))
                           .map(checkbox => checkbox.value);
@@ -359,7 +359,7 @@ function finalizeAndSubmit(event) {
     } catch (e) {
         console.warn("Injury details JSON parse error, defaulting to empty object");
     }
-    
+
     const medicalConditions = Array.from(document.querySelectorAll('input[name="medicalConditions"]:checked'))
                                    .map(checkbox => checkbox.value);
     let medicalConditionDetails = {};
@@ -368,7 +368,7 @@ function finalizeAndSubmit(event) {
     } catch (e) {
         console.warn("Medical condition details JSON parse error, defaulting to empty object");
     }
-    
+
     // --- Handle other user data ---
     const exerciseEnvironment = document.getElementById('exerciseEnvironment')?.value || "";
     const sleepRecovery = document.getElementById('sleepRecovery')?.value || "";
@@ -402,7 +402,7 @@ function finalizeAndSubmit(event) {
 
     // Log the final data for debugging
     console.log("Final Data Sent:", finalData);
-    
+
     // --- Send data to the backend ---
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
         method: 'POST',
