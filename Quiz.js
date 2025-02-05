@@ -1,6 +1,3 @@
-// Initialize data storage for the quiz answers
-let answers = [];
-
 const questions = [
     {
         question: "What are your primary fitness goals?",
@@ -196,23 +193,21 @@ const quizState = {
     history: [], // Track user navigation
     validationErrors: {} // Track validation issues
   };
-
   function handleAnswer(choice) {
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
   
-    // Validate answer
     if (!validateAnswer(questionData, choice)) {
       quizState.validationErrors[questionData.question] = "Invalid selection";
       renderQuestion();
       return;
     }
   
-    // Save answer
-    const existingAnswer = quizState.answers.find(a => a.question === questionData.question);
+    // Find existing answer entry
+    let existingAnswer = quizState.answers.find(a => a.question === questionData.question);
     if (questionData.is_multiple_choice) {
       if (!existingAnswer) {
         quizState.answers.push({ question: questionData.question, answer: [choice] });
-      } else {
+      } else if (!existingAnswer.answer.includes(choice)) {
         existingAnswer.answer.push(choice);
       }
     } else {
@@ -223,7 +218,7 @@ const quizState = {
       }
     }
   
-    // Handle follow-ups
+    // Handle follow-ups correctly
     if (questionData.follow_up && questionData.follow_up[choice]) {
       quizState.history.push({ index: quizState.currentQuestionIndex, followUp: quizState.currentFollowUp });
       quizState.currentFollowUp = JSON.parse(JSON.stringify(questionData.follow_up[choice]));
@@ -232,21 +227,24 @@ const quizState = {
       quizState.currentQuestionIndex++;
     }
   
-    // Render next question or results
     if (quizState.currentQuestionIndex < questions.length || quizState.currentFollowUp) {
       renderQuestion();
     } else {
       showResults();
     }
-}
+  }  
 
 // Example validateAnswer function
 function validateAnswer(questionData, choice) {
-  if (questionData.is_multiple_choice) {
-    return questionData.choices.includes(choice);  // Check if choice is valid
-  }
-  return choice.trim() !== "";  // For non-multiple choice questions, ensure it's not empty
-}
+    if (questionData.is_multiple_choice) {
+      // Ensure choices exist and check if the selected choice is valid
+      return Array.isArray(questionData.choices) &&
+             questionData.choices.some(c => c === choice || c.value === choice);
+    }
+  
+    // For open-ended responses, ensure non-empty trimmed input
+    return typeof choice === "string" && choice.trim().length > 0;
+  }  
 
   // 3. Add Back Navigation
   function goBack() {
