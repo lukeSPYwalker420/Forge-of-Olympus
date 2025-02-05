@@ -197,44 +197,44 @@ const quizState = {
   };
   function handleAnswer(choice) {
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
-  
+
     if (!validateAnswer(questionData, choice)) {
-      quizState.validationErrors[questionData.question] = "Invalid selection";
-      renderQuestion();
-      return;
+        quizState.validationErrors[questionData.question] = "Invalid selection";
+        renderQuestion();
+        return;
     }
-  
+
     // Find existing answer entry
     let existingAnswer = quizState.answers.find(a => a.question === questionData.question);
     if (questionData.is_multiple_choice) {
-      if (!existingAnswer) {
-        quizState.answers.push({ question: questionData.question, answer: [choice] });
-      } else if (!existingAnswer.answer.includes(choice)) {
-        existingAnswer.answer.push(choice);
-      }
+        if (!existingAnswer) {
+            quizState.answers.push({ question: questionData.question, answer: [choice] });
+        } else if (!existingAnswer.answer.includes(choice)) {
+            existingAnswer.answer.push(choice);
+        }
     } else {
-      if (existingAnswer) {
-        existingAnswer.answer = choice;
-      } else {
-        quizState.answers.push({ question: questionData.question, answer: choice });
-      }
+        if (existingAnswer) {
+            existingAnswer.answer = choice;
+        } else {
+            quizState.answers.push({ question: questionData.question, answer: choice });
+        }
     }
-  
+
     // Handle follow-ups correctly
     if (questionData.follow_up && questionData.follow_up[choice]) {
-      quizState.history.push({ index: quizState.currentQuestionIndex, followUp: quizState.currentFollowUp });
-      quizState.currentFollowUp = JSON.parse(JSON.stringify(questionData.follow_up[choice]));
+        quizState.history.push({ index: quizState.currentQuestionIndex, followUp: quizState.currentFollowUp });
+        quizState.currentFollowUp = JSON.parse(JSON.stringify(questionData.follow_up[choice]));
     } else {
-      quizState.currentFollowUp = null;
-      quizState.currentQuestionIndex++;
+        quizState.currentFollowUp = null;
+        quizState.currentQuestionIndex++;
     }
-  
+
     if (quizState.currentQuestionIndex < questions.length || quizState.currentFollowUp) {
-      renderQuestion();
+        renderQuestion();
     } else {
-      showResults();
+        showResults();
     }
-  }  
+}
 
 // Example validateAnswer function
 function validateAnswer(questionData, choice) {
@@ -258,19 +258,20 @@ function validateAnswer(questionData, choice) {
     }
   }
 
-function showResults() {
+  function showResults() {
     const resultContainer = document.getElementById("result-container");
     const resultSummary = document.getElementById("result-summary");
 
     document.querySelector(".question-container").style.display = "none";
 
-    const formattedAnswers = answers
+    const formattedAnswers = quizState.answers
         .map(answer => `${answer.question}: ${Array.isArray(answer.answer) ? answer.answer.join(", ") : answer.answer}`)
         .join("\n");
 
     resultSummary.textContent = formattedAnswers;
     resultContainer.style.display = "block";
 }
+
 
 function attachEmailInput() {
     const resultContainer = document.getElementById('result-container');
@@ -328,47 +329,64 @@ function finalizeAndSubmit(event) {
     
     // Check if the email is valid
     if (!email || !isValidEmail(email)) {
-      alert("Please enter a valid email.");
-      return;
+        alert("Please enter a valid email.");
+        return;
     }
   
-    // Log email to check it's being captured
-    console.log('Email:', email);
-  
+    // Get other form values
+    const workoutPreferences = document.getElementById('workoutPreferences').value;
+    const dietPreferences = document.getElementById('dietPreferences').value;
+    const activityLevel = document.getElementById('activityLevel').value;
+    const medicalConditions = Array.from(document.querySelectorAll('input[name="medicalConditions"]:checked'))
+                                    .map(checkbox => checkbox.value);
+    const mealFrequency = document.getElementById('mealFrequency').value;
+    const cookFrequency = document.getElementById('cookFrequency').value;
+    const groceryBudget = document.getElementById('groceryBudget').value;
+
+    // Validate the form fields
+    if (!workoutPreferences || !dietPreferences || !activityLevel || !mealFrequency || !cookFrequency || !groceryBudget) {
+        alert("Please fill in all required fields.");
+        return;
+    }
+
+    // Optionally, validate medicalConditions if they exist (can be empty)
+    if (medicalConditions.length === 0) {
+        console.warn("No medical conditions selected.");
+    }
+
     // Prepare finalData object
     const finalData = {
-      email: email,
-      newData: {
-        workoutPreferences: document.getElementById('workoutPreferences').value,
-        dietPreferences: document.getElementById('dietPreferences').value,
-        activityLevel: document.getElementById('activityLevel').value,
-        medicalConditions: Array.from(document.querySelectorAll('input[name="medicalConditions"]:checked'))
-          .map(checkbox => checkbox.value),
-        mealFrequency: document.getElementById('mealFrequency').value,
-        cookFrequency: document.getElementById('cookFrequency').value,
-        groceryBudget: document.getElementById('groceryBudget').value,
-        followUpAnswers: {}  // Add logic to gather follow-up answers if needed
-      }
+        email: email,
+        newData: {
+            workoutPreferences: workoutPreferences,
+            dietPreferences: dietPreferences,
+            activityLevel: activityLevel,
+            medicalConditions: medicalConditions,
+            mealFrequency: mealFrequency,
+            cookFrequency: cookFrequency,
+            groceryBudget: groceryBudget,
+            followUpAnswers: {} // Add follow-up answers here if needed
+        }
     };
-  
+
     // Log finalData to check it's being populated
     console.log('finalData:', finalData);
-  
+
     // Send data to the backend
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(finalData)
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(finalData)
     })
     .then(async (response) => {
-      if (!response.ok) throw new Error(await response.text());
-      window.location.href = 'paywall.html';
+        if (!response.ok) throw new Error(await response.text());
+        window.location.href = 'paywall.html';
     })
     .catch(error => {
-      console.error('Error:', error);
-      alert(`Merge failed: ${error.message}`);
+        console.error('Error:', error);
+        alert(`Merge failed: ${error.message}`);
     });
-  }
+}
 
 // Listen for submit button click
 document.getElementById('submit-btn').addEventListener('click', function(event) {
@@ -377,7 +395,7 @@ document.getElementById('submit-btn').addEventListener('click', function(event) 
 });
 
 function isValidEmail(email) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return regex.test(email);
 }
 
