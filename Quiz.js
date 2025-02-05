@@ -150,106 +150,108 @@ const questions = [
 let currentQuestionIndex = 0;
 let currentFollowUp = null;
 
-
-const questionContainer = document.getElementById("question-container");
-
-document.addEventListener("DOMContentLoaded", () => {
-    document.body.addEventListener("click", (event) => {
-        if (event.target.classList.contains("goal-btn")) {
-            handleAnswer(event.target.textContent);
-        } else if (event.target.classList.contains("back-btn")) {
-            goBack();
-        }
-    });
-
-    renderQuestion(); // Call renderQuestion after DOM is fully loaded
-});
-
-function renderQuestion() {
-    if (!questionContainer) {
-        console.error("Error: questionContainer is not defined!");
-        return;
-    }
-
-    const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
-    const errorMessage = quizState.validationErrors[questionData.question];
-
-    questionContainer.innerHTML = `
-      <div class="question-content">
-        <h2 class="question">${questionData.question}</h2>
-        ${errorMessage ? `<div class="error">${errorMessage}</div>` : ''}
-        <div id="goal-buttons" class="goal-buttons">
-          ${questionData.choices.map(choice => `
-            <button class="goal-btn">${choice}</button>
-          `).join('')}
-        </div>
-        ${quizState.history.length > 0 ? `<button class="back-btn">← Back</button>` : ''}
-      </div>
-    `;
-}
-
 const quizState = {
     currentQuestionIndex: 0,
     currentFollowUp: null,
     answers: [],
     history: [], // Track user navigation
-    validationErrors: {} // Track validation issues
+    validationErrors: {}, // Track validation issues
   };
+  
+  const questionContainer = document.getElementById("question-container");
+  const resultContainer = document.getElementById("result-container");
+  const resultSummary = document.getElementById("result-summary");
+  
+  document.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener("click", handleButtonClick);
+    renderQuestion();
+  });
+  
+  function handleButtonClick(event) {
+    if (event.target.classList.contains("goal-btn")) {
+      handleAnswer(event.target.textContent);
+    } else if (event.target.classList.contains("back-btn")) {
+      goBack();
+    }
+  }
+  
+  function renderQuestion() {
+    const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
+    const errorMessage = quizState.validationErrors[questionData.question];
+  
+    if (!questionContainer) {
+      console.error("Error: questionContainer is not defined!");
+      return;
+    }
+  
+    questionContainer.innerHTML = `
+      <div class="question-content">
+        <h2 class="question">${questionData.question}</h2>
+        ${errorMessage ? `<div class="error">${errorMessage}</div>` : ''}
+        <div id="goal-buttons" class="goal-buttons">
+          ${questionData.choices.map(choice => `<button class="goal-btn">${choice}</button>`).join('')}
+        </div>
+        ${quizState.history.length > 0 ? `<button class="back-btn">← Back</button>` : ''}
+      </div>
+    `;
+  }
+  
   function handleAnswer(choice) {
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
-
+  
     if (!validateAnswer(questionData, choice)) {
-        quizState.validationErrors[questionData.question] = "Invalid selection";
-        renderQuestion();
-        return;
+      quizState.validationErrors[questionData.question] = "Invalid selection";
+      renderQuestion();
+      return;
     }
-
-    // Find existing answer entry
+  
+    saveAnswer(questionData, choice);
+    navigateToNextQuestionOrFollowUp(questionData, choice);
+  }
+  
+  function saveAnswer(questionData, choice) {
     let existingAnswer = quizState.answers.find(a => a.question === questionData.question);
     if (questionData.is_multiple_choice) {
-        if (!existingAnswer) {
-            quizState.answers.push({ question: questionData.question, answer: [choice] });
-        } else if (!existingAnswer.answer.includes(choice)) {
-            existingAnswer.answer.push(choice);
-        }
+      if (!existingAnswer) {
+        quizState.answers.push({ question: questionData.question, answer: [choice] });
+      } else if (!existingAnswer.answer.includes(choice)) {
+        existingAnswer.answer.push(choice);
+      }
     } else {
-        if (existingAnswer) {
-            existingAnswer.answer = choice;
-        } else {
-            quizState.answers.push({ question: questionData.question, answer: choice });
-        }
-        console.log(quizState.answers);
+      if (existingAnswer) {
+        existingAnswer.answer = choice;
+      } else {
+        quizState.answers.push({ question: questionData.question, answer: choice });
+      }
     }
-
-    // Handle follow-ups correctly
+  }
+  
+  function navigateToNextQuestionOrFollowUp(questionData, choice) {
     if (questionData.follow_up && questionData.follow_up[choice]) {
-        quizState.history.push({ index: quizState.currentQuestionIndex, followUp: quizState.currentFollowUp });
-        quizState.currentFollowUp = JSON.parse(JSON.stringify(questionData.follow_up[choice]));
+      quizState.history.push({ index: quizState.currentQuestionIndex, followUp: quizState.currentFollowUp });
+      quizState.currentFollowUp = { ...questionData.follow_up[choice] }; // Create a shallow copy
     } else {
-        quizState.currentFollowUp = null;
-        quizState.currentQuestionIndex++;
+      quizState.currentFollowUp = null;
+      quizState.currentQuestionIndex++;
     }
-
+  
     if (quizState.currentQuestionIndex < questions.length || quizState.currentFollowUp) {
-        renderQuestion();
+      renderQuestion();
     } else {
-        showResults();
+      showResults();
     }
-}
-
-function validateAnswer(questionData, choice) {
-    // If the question is for email, validate the email format
+  }
+  
+  function validateAnswer(questionData, choice) {
     if (questionData.question === "Email") {
-        return typeof choice === "string" && isValidEmail(choice);
+      return isValidEmail(choice);
     }
-        if (questionData.is_multiple_choice) {
-            return Array.isArray(questionData.choices) && questionData.choices.some(c => c === choice || c.value === choice);
-        }
-        return true; // No further checks for non-multiple-choice questions
+    if (questionData.is_multiple_choice) {
+      return Array.isArray(questionData.choices) && questionData.choices.includes(choice);
     }
-    
-
-  // 3. Add Back Navigation
+    return true;
+  }
+  
   function goBack() {
     if (quizState.history.length > 0) {
       const prevState = quizState.history.pop();
@@ -258,191 +260,140 @@ function validateAnswer(questionData, choice) {
       renderQuestion();
     }
   }
-
+  
   function showResults() {
-    const resultContainer = document.getElementById("result-container");
-    const resultSummary = document.getElementById("result-summary");
-
     document.querySelector(".question-container").style.display = "none";
-
+  
     const formattedAnswers = quizState.answers
-        .map(answer => `${answer.question}: ${Array.isArray(answer.answer) ? answer.answer.join(", ") : answer.answer}`)
-        .join("\n");
-
+      .map(answer => `${answer.question}: ${Array.isArray(answer.answer) ? answer.answer.join(", ") : answer.answer}`)
+      .join("\n");
+  
     resultSummary.textContent = formattedAnswers;
     resultContainer.style.display = "block";
-}
-
-
-function attachEmailInput() {
-    const resultContainer = document.getElementById('result-container');
-    let emailInputContainer = document.querySelector('.email-input-container');
-    if (emailInputContainer) {
-        console.warn("Email input container already exists.");
-        return;
-    }
-
-    emailInputContainer = document.createElement('div');
+  }
+  
+  function attachEmailInput() {
+    const emailInputContainer = document.querySelector('.email-input-container') || createEmailInputContainer();
+    resultContainer.appendChild(emailInputContainer);
+  }
+  
+  function createEmailInputContainer() {
+    const emailInputContainer = document.createElement('div');
     emailInputContainer.classList.add('email-input-container');
-
+  
     const emailLabel = document.createElement('label');
     emailLabel.setAttribute('for', 'email');
     emailLabel.textContent = 'Enter your email to finalize:';
     emailInputContainer.appendChild(emailLabel);
-
+  
     const emailInput = document.createElement('input');
     emailInput.setAttribute('type', 'email');
     emailInput.setAttribute('id', 'email');
     emailInput.setAttribute('name', 'email');
     emailInput.required = true;
     emailInputContainer.appendChild(emailInput);
-
+  
+    const submitButton = createSubmitButton();
+    emailInputContainer.appendChild(submitButton);
+  
+    return emailInputContainer;
+  }
+  
+  function createSubmitButton() {
     const submitButton = document.createElement('button');
     submitButton.textContent = 'Submit';
     submitButton.classList.add('submit-btn');
-
-    // Attach event listener to the button
-    submitButton.addEventListener('click', function(event) {
-        event.preventDefault();
-        submitButton.disabled = true;  // Disable the button to prevent multiple submissions
-        finalizeAndSubmit(event);
-        console.log('Submit button clicked');
-    });
-
-    emailInputContainer.appendChild(submitButton);
-
-    // Ensure static submit button is removed before adding dynamic one
-    const staticSubmitButton = document.getElementById('submit-btn');
-    if (staticSubmitButton) {
-        staticSubmitButton.parentElement.removeChild(staticSubmitButton);
-    }
-
-    resultContainer.appendChild(emailInputContainer);
-}
-
-// Handle final submission with email and user data
-// MODIFIED FINALIZE AND SUBMIT FUNCTION
-function finalizeAndSubmit(event) {
+    submitButton.addEventListener('click', finalizeAndSubmit);
+    return submitButton;
+  }
+  
+  function finalizeAndSubmit(event) {
     event.preventDefault();
-    
-    // Get the email input
+  
     const email = document.getElementById('email')?.value;
-    
-    // Check if the email is valid
     if (!email || !isValidEmail(email)) {
-        alert("Please enter a valid email.");
-        return;
+      alert("Please enter a valid email.");
+      return;
     }
-    
-    // --- Gather Quiz Answers ---
-    // Primary fitness goals
+  
+    const finalData = gatherFinalData(email);
+    if (Object.values(finalData.newData).some(value => !value)) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+  
+    submitData(finalData);
+  }
+  
+  function gatherFinalData(email) {
     const fitnessGoals = document.getElementById('fitnessGoals')?.value || "";
-    
-    // Follow-up details for fitness goals
     const fitnessGoalDetails = document.getElementById('fitnessGoalDetails')?.value || "";
-    
-    // Preferred type of exercise
     const exercisePreference = document.getElementById('exercisePreference')?.value || "";
-    
-    // Workout frequency (e.g., "3-4 days")
     const workoutFrequency = document.getElementById('workoutFrequency')?.value || "";
-    
-    // Current fitness level
     const fitnessLevel = document.getElementById('fitnessLevel')?.value || "";
-    
-    // Dietary restrictions/preferences
     const dietaryPreferences = document.getElementById('dietaryPreferences')?.value || "";
-    
-    // Injuries: collect all checked values from checkboxes with name "injuries"
-    const injuries = Array.from(document.querySelectorAll('input[name="injuries"]:checked'))
-                          .map(checkbox => checkbox.value);
-    
-    // Injury details: expect a JSON string in a textarea with ID "injuryDetails"
-    let injuryDetails = {};
-    try {
-        injuryDetails = JSON.parse(document.getElementById('injuryDetails')?.value || "{}");
-    } catch (e) {
-        console.warn("Injury details JSON parse error, defaulting to empty object");
-    }
-    
-    // Medical conditions: collect all checked values from checkboxes with name "medicalConditions"
-    const medicalConditions = Array.from(document.querySelectorAll('input[name="medicalConditions"]:checked'))
-                                   .map(checkbox => checkbox.value);
-    
-    // Medical condition details: expect a JSON string in a textarea with ID "medicalConditionDetails"
-    let medicalConditionDetails = {};
-    try {
-        medicalConditionDetails = JSON.parse(document.getElementById('medicalConditionDetails')?.value || "{}");
-    } catch (e) {
-        console.warn("Medical condition details JSON parse error, defaulting to empty object");
-    }
-    
-    // Preferred exercise environment
+  
+    const injuries = getCheckedValues('injuries');
+    const injuryDetails = parseJson('injuryDetails');
+    const medicalConditions = getCheckedValues('medicalConditions');
+    const medicalConditionDetails = parseJson('medicalConditionDetails');
+  
     const exerciseEnvironment = document.getElementById('exerciseEnvironment')?.value || "";
-    
-    // Sleep and recovery management
     const sleepRecovery = document.getElementById('sleepRecovery')?.value || "";
-    
-    // Motivation level
     const motivationLevel = document.getElementById('motivationLevel')?.value || "";
-    
-    console.log(fitnessGoals, exercisePreference, workoutFrequency, fitnessLevel, dietaryPreferences);
-
-    // --- Validate required fields for the quiz stage ---
-    // (Adjust this list if some fields are optional on the quiz page.)
-    if (!fitnessGoals || !exercisePreference || !workoutFrequency || !fitnessLevel || !dietaryPreferences) {
-        alert("Please fill in all required fields.");
-        return;
-    }
-    
-    // --- Build the finalData object exactly as specified ---
-    const finalData = {
-        email: email,
-        newData: {
-            fitnessGoals: fitnessGoals,
-            fitnessGoalDetails: fitnessGoalDetails,
-            exercisePreference: exercisePreference,
-            workoutFrequency: workoutFrequency,
-            fitnessLevel: fitnessLevel,
-            dietaryPreferences: dietaryPreferences,
-            injuries: injuries,
-            injuryDetails: injuryDetails,
-            medicalConditions: medicalConditions,
-            medicalConditionDetails: medicalConditionDetails,
-            exerciseEnvironment: exerciseEnvironment,
-            sleepRecovery: sleepRecovery,
-            motivationLevel: motivationLevel
-        }
+  
+    return {
+      email,
+      newData: {
+        fitnessGoals,
+        fitnessGoalDetails,
+        exercisePreference,
+        workoutFrequency,
+        fitnessLevel,
+        dietaryPreferences,
+        injuries,
+        injuryDetails,
+        medicalConditions,
+        medicalConditionDetails,
+        exerciseEnvironment,
+        sleepRecovery,
+        motivationLevel
+      }
     };
-    
-    // Log the final data for debugging
-    console.log("Final Data Sent:", finalData);
-    
-    // --- Send data to the backend ---
+  }
+  
+  function getCheckedValues(name) {
+    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(checkbox => checkbox.value);
+  }
+  
+  function parseJson(id) {
+    try {
+      return JSON.parse(document.getElementById(id)?.value || "{}");
+    } catch (e) {
+      console.warn(`${id} JSON parse error, defaulting to empty object`);
+      return {};
+    }
+  }
+  
+  function submitData(finalData) {
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(finalData)
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(finalData)
     })
     .then(async (response) => {
-        if (!response.ok) throw new Error(await response.text());
-        window.location.href = 'paywall.html';
+      if (!response.ok) throw new Error(await response.text());
+      window.location.href = 'paywall.html';
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert(`Merge failed: ${error.message}`);
+      console.error('Error:', error);
+      alert(`Merge failed: ${error.message}`);
     });
-}
-
-// Listen for submit button click
-document.getElementById('submit-btn').addEventListener('click', function(event) {
-    console.log('Submit button clicked'); // Debug log to confirm button click
-    finalizeAndSubmit(event);
-});
-
-function isValidEmail(email) {
+  }
+  
+  function isValidEmail(email) {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return regex.test(email);
-}
+  }  
 
 renderQuestion();
