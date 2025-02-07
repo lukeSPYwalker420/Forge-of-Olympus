@@ -202,7 +202,14 @@ const quizState = {
     validationErrors: {} // Track validation issues
   };
   function handleAnswer(event) {
-    const choice = event.target.dataset.choice;
+    const button = event.target.closest("[data-choice]"); // Find the nearest parent with data-choice
+
+    if (!button) {
+        console.error("Error: Clicked element has no data-choice", event.target);
+        return;
+    }
+
+    const choice = button.dataset.choice;
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
 
     if (!questionData) {
@@ -244,7 +251,7 @@ const quizState = {
     if (quizState.currentQuestionIndex < questions.length || quizState.currentFollowUp) {
         renderQuestion();
     } else {
-        attachEmailInput(); // Ensure email input is added
+        attachEmailInput();
         finalizeAndSubmit(event);
     }
 }
