@@ -329,7 +329,7 @@ function finalizeAndSubmit(event) {
     const finalData = {
         email: email,
         newData: {
-            fitnessGoalsDetails: fitnessGoals,
+            fitnessGoalDetails: fitnessGoals,
             fitnessGoalDetails: fitnessGoalDetails,
             exercisePreference: exercisePreference,
             workoutFrequency: workoutFrequency,

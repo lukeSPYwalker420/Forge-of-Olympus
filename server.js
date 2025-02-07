@@ -55,7 +55,7 @@ const UserSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid email!`
     }
   },
-  fitnessGoalsDetails: {
+  fitnessGoalDetails: {
     type: String,
     enum: ["Weight loss", "Muscle gain", "Improved endurance", "Overall health and wellness", "Athletic performance"],
     default: 'Weight loss'
@@ -165,7 +165,7 @@ const User = mongoose.model('User', UserSchema);
 const mergeSchema = Joi.object({
   email: Joi.string().email().required(),
   newData: Joi.object({
-    fitnessGoalsDetails: Joi.string().valid(
+    fitnessGoalDetails: Joi.string().valid(
       "Weight loss", "Muscle gain", "Improved endurance", "Overall health and wellness", "Athletic performance"),
     workoutPreferences: Joi.string().valid('Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine'),
     dietPreferences: Joi.string().valid('none', 'vegetarian', 'vegan', 'gluten', 'paleo', 'keto'),
