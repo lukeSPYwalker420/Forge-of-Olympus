@@ -283,45 +283,47 @@ function showResults() {
     resultContainer.style.display = "block";
 }
 
+function getAnswerFor(questionText) {
+    const answerObj = quizState.answers.find(a => a.question === questionText);
+    if (!answerObj) return "";
+    return Array.isArray(answerObj.answer) ? answerObj.answer.join(", ") : answerObj.answer;
+}
+
 // --- Finalize and Submit ---
 function finalizeAndSubmit(event) {
     if (event && event.preventDefault) {
         event.preventDefault();
     }
+    
+    // Get the email input from your static HTML form
     const email = document.getElementById('email')?.value;
     if (!email || !isValidEmail(email)) {
         alert("Please enter a valid email.");
         return;
     }
-    const fitnessGoals = document.getElementById('fitnessGoals')?.value || "";
-    const fitnessGoalDetails = document.getElementById('fitnessGoalDetails')?.value || "";
-    const exercisePreference = document.getElementById('exercisePreference')?.value || "";
-    const workoutFrequency = document.getElementById('workoutFrequency')?.value || "";
-    const fitnessLevel = document.getElementById('fitnessLevel')?.value || "";
-    const dietaryPreferences = document.getElementById('dietaryPreferences')?.value || "";
-    const injuries = Array.from(document.querySelectorAll('input[name="injuries"]:checked'))
-                          .map(checkbox => checkbox.value);
-    let injuryDetails = {};
-    try {
-        injuryDetails = JSON.parse(document.getElementById('injuryDetails')?.value || "{}");
-    } catch (e) {
-        console.warn("Injury details JSON parse error, defaulting to empty object");
-    }
-    const medicalConditions = Array.from(document.querySelectorAll('input[name="medicalConditions"]:checked'))
-                                   .map(checkbox => checkbox.value);
-    let medicalConditionDetails = {};
-    try {
-        medicalConditionDetails = JSON.parse(document.getElementById('medicalConditionDetails')?.value || "{}");
-    } catch (e) {
-        console.warn("Medical condition details JSON parse error, defaulting to empty object");
-    }
-    const exerciseEnvironment = document.getElementById('exerciseEnvironment')?.value || "";
-    const sleepRecovery = document.getElementById('sleepRecovery')?.value || "";
-    const motivationLevel = document.getElementById('motivationLevel')?.value || "";
+    
+    // Build final data from quizState.answers using the helper function
+    const fitnessGoals = getAnswerFor("What are your primary fitness goals?");
+    const fitnessGoalDetails = getAnswerFor("How much muscle are you looking to gain?");
+    const exercisePreference = getAnswerFor("What type of exercise do you prefer?");
+    const workoutFrequency = getAnswerFor("How many days a week are you able to commit to working out?");
+    const fitnessLevel = getAnswerFor("What is your current fitness level?");
+    const dietaryPreferences = getAnswerFor("Do you have any dietary restrictions or preferences?");
+    
+    // Validate that required answers are present
     if (!fitnessGoals || !exercisePreference || !workoutFrequency || !fitnessLevel || !dietaryPreferences) {
         alert("Please fill in all required fields.");
         return;
     }
+    
+    // Optionally, get additional answers if needed
+    const injuries = getAnswerFor("Do you have any injuries that need to be considered when planning your exercises?");
+    const medicalConditions = getAnswerFor("Do you have any medical conditions that may affect your ability to exercise?");
+    const exerciseEnvironment = getAnswerFor("What is your preferred exercise environment?");
+    const sleepRecovery = getAnswerFor("How well do you manage sleep and recovery?");
+    const motivationLevel = getAnswerFor("How motivated are you to achieve your fitness goals?");
+    
+    // Build the final data object
     const finalData = {
         email: email,
         newData: {
@@ -332,15 +334,16 @@ function finalizeAndSubmit(event) {
             fitnessLevel: fitnessLevel,
             dietaryPreferences: dietaryPreferences,
             injuries: injuries,
-            injuryDetails: injuryDetails,
             medicalConditions: medicalConditions,
-            medicalConditionDetails: medicalConditionDetails,
             exerciseEnvironment: exerciseEnvironment,
             sleepRecovery: sleepRecovery,
             motivationLevel: motivationLevel
         }
     };
+    
     console.log("Final Data Sent:", finalData);
+    
+    // Send data to the backend
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
