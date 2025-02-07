@@ -290,57 +290,76 @@ function finalizeAndSubmit(event) {
     if (event && event.preventDefault) {
         event.preventDefault();
     }
-    
+
     // Get the email input from the static form element
     const email = document.getElementById('email')?.value;
     if (!email || !isValidEmail(email)) {
         alert("Please enter a valid email.");
         return;
     }
-    
+
     // Build final data using quizState.answers via the helper function
     const fitnessGoals = getAnswerFor("What are your primary fitness goals?");
-    const fitnessGoalDetails = getAnswerFor("How much muscle are you looking to gain?");
     const exercisePreference = getAnswerFor("What type of exercise do you prefer?");
     const workoutFrequency = getAnswerFor("How many days a week are you able to commit to working out?");
     const fitnessLevel = getAnswerFor("What is your current fitness level?");
     const dietaryPreferences = getAnswerFor("Do you have any dietary restrictions or preferences?");
-    
+
     // Validate that required answers are present
     if (!fitnessGoals || !exercisePreference || !workoutFrequency || !fitnessLevel || !dietaryPreferences) {
         alert("Please fill in all required fields.");
         return;
     }
-    
+
+    // Get the fitnessGoalDetails dynamically based on the primary fitness goal choice
+    let fitnessGoalDetails = "";
+    if (fitnessGoals === "Muscle gain") {
+        fitnessGoalDetails = getAnswerFor("How much muscle are you looking to gain?");
+    } else if (fitnessGoals === "Weight loss") {
+        fitnessGoalDetails = getAnswerFor("How much weight are you looking to lose?");
+    } else if (fitnessGoals === "Improved endurance") {
+        fitnessGoalDetails = getAnswerFor("How much endurance are you looking to improve?");
+    } else if (fitnessGoals === "Athletic performance") {
+        fitnessGoalDetails = getAnswerFor("What type of athletic performance are you aiming for?");
+    } else if (fitnessGoals === "Overall health and wellness") {
+        fitnessGoalDetails = getAnswerFor("What aspect of health and wellness are you focusing on?");
+    }
+
+    // If fitnessGoalDetails is required for the selected goal, validate it
+    if (!fitnessGoalDetails) {
+        alert("Please provide details for your fitness goal.");
+        return;
+    }
+
     // For fields that the server expects as arrays, use the asArray flag
     const injuries = getAnswerFor("Do you have any injuries that need to be considered when planning your exercises?", true);
     const medicalConditions = getAnswerFor("Do you have any medical conditions that may affect your ability to exercise?", true);
-    
+
     // For the remaining fields, assume string output
     const exerciseEnvironment = getAnswerFor("What is your preferred exercise environment?");
     const sleepRecovery = getAnswerFor("How well do you manage sleep and recovery?");
     const motivationLevel = getAnswerFor("How motivated are you to achieve your fitness goals?");
-    
+
     // Build the finalData object
     const finalData = {
         email: email,
         newData: {
-            fitnessGoalDetails: fitnessGoals,
             fitnessGoalDetails: fitnessGoalDetails,
+            fitnessGoals: fitnessGoals, // You still need the primary fitness goal here
             exercisePreference: exercisePreference,
             workoutFrequency: workoutFrequency,
             fitnessLevel: fitnessLevel,
             dietaryPreferences: dietaryPreferences,
-            injuries: injuries, // This will be an array (or empty array)
-            medicalConditions: medicalConditions, // This will be an array, as required by the server
+            injuries: injuries,
+            medicalConditions: medicalConditions,
             exerciseEnvironment: exerciseEnvironment,
             sleepRecovery: sleepRecovery,
             motivationLevel: motivationLevel
         }
     };
-    
+
     console.log("Final Data Sent:", finalData);
-    
+
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
