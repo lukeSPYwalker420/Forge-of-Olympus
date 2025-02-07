@@ -172,6 +172,12 @@ function renderQuestion() {
     }
 
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
+
+    if (!questionData) {
+        console.error("Error: No question data found for index:", quizState.currentQuestionIndex);
+        return;
+    }
+
     const errorMessage = quizState.validationErrors[questionData.question];
 
     questionContainer.innerHTML = `
@@ -179,9 +185,9 @@ function renderQuestion() {
         <h2 class="question">${questionData.question}</h2>
         ${errorMessage ? `<div class="error">${errorMessage}</div>` : ''}
         <div id="goal-buttons" class="goal-buttons">
-          ${questionData.choices.map(choice => `
-            <button class="goal-btn">${choice}</button>
-          `).join('')}
+          ${questionData.choices?.map(choice => `
+            <button class="goal-btn" data-choice="${choice}">${choice}</button>
+          `).join('') || ''}
         </div>
         ${quizState.history.length > 0 ? `<button class="back-btn">← Back</button>` : ''}
       </div>
@@ -195,7 +201,8 @@ const quizState = {
     history: [], // Track user navigation
     validationErrors: {} // Track validation issues
   };
-  function handleAnswer(event, choice) {
+  function handleAnswer(event) {
+    const choice = event.target.dataset.choice;
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
 
     if (!questionData) {
@@ -203,10 +210,6 @@ const quizState = {
         return;
     }
 
-    // Log the current question to help debug
-    console.log("Current Question:", questionData.question);
-
-    // Validate the answer before proceeding
     if (!validateAnswer(questionData, choice)) {
         quizState.validationErrors[questionData.question] = "Invalid selection";
         renderQuestion();
@@ -241,7 +244,8 @@ const quizState = {
     if (quizState.currentQuestionIndex < questions.length || quizState.currentFollowUp) {
         renderQuestion();
     } else {
-        finalizeAndSubmit(event); // Pass the event here
+        attachEmailInput(); // Ensure email input is added
+        finalizeAndSubmit(event);
     }
 }
 
@@ -308,23 +312,14 @@ function attachEmailInput() {
     const submitButton = document.createElement('button');
     submitButton.textContent = 'Submit';
     submitButton.classList.add('submit-btn');
+    submitButton.id = 'submit-btn'; // Ensure it has an ID
 
-    // Attach event listener to the button
     submitButton.addEventListener('click', function(event) {
         event.preventDefault();
-        submitButton.disabled = true;  // Disable the button to prevent multiple submissions
         finalizeAndSubmit(event);
-        console.log('Submit button clicked');
     });
 
     emailInputContainer.appendChild(submitButton);
-
-    // Ensure static submit button is removed before adding dynamic one
-    const staticSubmitButton = document.getElementById('submit-btn');
-    if (staticSubmitButton) {
-        staticSubmitButton.parentElement.removeChild(staticSubmitButton);
-    }
-
     resultContainer.appendChild(emailInputContainer);
 }
 
