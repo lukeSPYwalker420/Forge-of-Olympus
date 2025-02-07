@@ -331,7 +331,9 @@ function attachEmailInput() {
 // Handle final submission with email and user data
 // MODIFIED FINALIZE AND SUBMIT FUNCTION
 function finalizeAndSubmit(event) {
-    event.preventDefault(); // Prevent default behavior of form submission
+    if (event && event.preventDefault) {
+        event.preventDefault();
+    }  // <-- Closing bracket should be here
 
     // Get the email input
     const email = document.getElementById('email')?.value;
