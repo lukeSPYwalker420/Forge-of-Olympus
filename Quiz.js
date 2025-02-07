@@ -283,10 +283,14 @@ function showResults() {
     resultContainer.style.display = "block";
 }
 
-function getAnswerFor(questionText) {
+function getAnswerFor(questionText, asArray = false) {
     const answerObj = quizState.answers.find(a => a.question === questionText);
-    if (!answerObj) return "";
-    return Array.isArray(answerObj.answer) ? answerObj.answer.join(", ") : answerObj.answer;
+    if (!answerObj) return asArray ? [] : "";
+    if (Array.isArray(answerObj.answer)) {
+        return asArray ? answerObj.answer : answerObj.answer.join(", ");
+    } else {
+        return asArray ? [answerObj.answer] : answerObj.answer;
+    }
 }
 
 // --- Finalize and Submit ---
@@ -295,14 +299,14 @@ function finalizeAndSubmit(event) {
         event.preventDefault();
     }
     
-    // Get the email input from your static HTML form
+    // Get the email input from the static form element
     const email = document.getElementById('email')?.value;
     if (!email || !isValidEmail(email)) {
         alert("Please enter a valid email.");
         return;
     }
     
-    // Build final data from quizState.answers using the helper function
+    // Build final data using quizState.answers via the helper function
     const fitnessGoals = getAnswerFor("What are your primary fitness goals?");
     const fitnessGoalDetails = getAnswerFor("How much muscle are you looking to gain?");
     const exercisePreference = getAnswerFor("What type of exercise do you prefer?");
@@ -316,14 +320,16 @@ function finalizeAndSubmit(event) {
         return;
     }
     
-    // Optionally, get additional answers if needed
-    const injuries = getAnswerFor("Do you have any injuries that need to be considered when planning your exercises?");
-    const medicalConditions = getAnswerFor("Do you have any medical conditions that may affect your ability to exercise?");
+    // For fields that the server expects as arrays, use the asArray flag
+    const injuries = getAnswerFor("Do you have any injuries that need to be considered when planning your exercises?", true);
+    const medicalConditions = getAnswerFor("Do you have any medical conditions that may affect your ability to exercise?", true);
+    
+    // For the remaining fields, assume string output
     const exerciseEnvironment = getAnswerFor("What is your preferred exercise environment?");
     const sleepRecovery = getAnswerFor("How well do you manage sleep and recovery?");
     const motivationLevel = getAnswerFor("How motivated are you to achieve your fitness goals?");
     
-    // Build the final data object
+    // Build the finalData object
     const finalData = {
         email: email,
         newData: {
@@ -333,8 +339,8 @@ function finalizeAndSubmit(event) {
             workoutFrequency: workoutFrequency,
             fitnessLevel: fitnessLevel,
             dietaryPreferences: dietaryPreferences,
-            injuries: injuries,
-            medicalConditions: medicalConditions,
+            injuries: injuries, // This will be an array (or empty array)
+            medicalConditions: medicalConditions, // This will be an array, as required by the server
             exerciseEnvironment: exerciseEnvironment,
             sleepRecovery: sleepRecovery,
             motivationLevel: motivationLevel
@@ -343,7 +349,6 @@ function finalizeAndSubmit(event) {
     
     console.log("Final Data Sent:", finalData);
     
-    // Send data to the backend
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
