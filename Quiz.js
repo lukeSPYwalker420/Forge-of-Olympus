@@ -344,8 +344,7 @@ function finalizeAndSubmit(event) {
     const finalData = {
         email: email,
         newData: {
-            fitnessGoalDetails: fitnessGoalDetails,
-            fitnessGoals: fitnessGoals, // You still need the primary fitness goal here
+            fitnessGoalDetails: fitnessGoals, // Send the primary goal (not the follow-up detail) as fitnessGoalDetails
             exercisePreference: exercisePreference,
             workoutFrequency: workoutFrequency,
             fitnessLevel: fitnessLevel,
@@ -374,6 +373,7 @@ function finalizeAndSubmit(event) {
         alert(`Merge failed: ${error.message}`);
     });
 }
+
 
 // --- Submit Button Listener ---
 document.getElementById('submit-btn').addEventListener('click', function(event) {
