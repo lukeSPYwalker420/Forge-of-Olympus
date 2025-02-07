@@ -24,10 +24,6 @@ const questions = [
                 question: "Are there any specific health conditions you're managing?",
                 choices: ["Yes", "No", "Prefer not to say"]
             },
-            "Improved mental health": {
-                question: "What mental health improvements are you aiming for?",
-                choices: ["Reduced stress", "Improved focus", "Better sleep", "Increased mood"]
-            },
             "Athletic performance": {
                 question: "Which area of athletic performance are you aiming to improve?",
                 choices: ["Speed", "Strength", "Endurance", "Agility", "Flexibility"]

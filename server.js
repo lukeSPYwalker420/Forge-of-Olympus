@@ -57,8 +57,8 @@ const UserSchema = new mongoose.Schema({
   },
   fitnessGoals: {
     type: String,
-    enum: ["Muscle Gain", "Fat Loss", "Improved Endurance", "Strength Gain", "Overall Health and Wellness", "Flexibility and Mobility", "Sport-Specific Training"],
-    default: null
+    enum: ["Weight loss", "Muscle gain", "Improved endurance", "Overall health and wellness", "Athletic performance"],
+    default: 'Weight loss'
   },
   workoutPreferences: { 
     type: String,
@@ -166,7 +166,7 @@ const mergeSchema = Joi.object({
   email: Joi.string().email().required(),
   newData: Joi.object({
     fitnessGoals: Joi.string().valid(
-      "Muscle Gain", "Fat Loss", "Improved Endurance", "Strength Gain", "Overall Health and Wellness", "Flexibility and Mobility", "Sport-Specific Training"),
+      "Weight loss", "Muscle gain", "Improved endurance", "Overall health and wellness", "Athletic performance"),
     workoutPreferences: Joi.string().valid('Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine'),
     dietPreferences: Joi.string().valid('none', 'vegetarian', 'vegan', 'gluten', 'paleo', 'keto'),
     activityLevel: Joi.string().valid('sedentary', 'light', 'moderate', 'active', 'very_active'),
