@@ -16,10 +16,6 @@ const questions = [
                 question: "What areas of endurance are you focusing on?",
                 choices: ["Cardiovascular fitness", "Muscular endurance", "Mix of both"]
             },
-            "Flexibility": {
-                question: "What areas of flexibility are you working on?",
-                choices: ["Leg flexibility", "Back flexibility", "Full-body flexibility", "Shoulder Flexibility", "Hip flexibility", "overall flexibility"]
-            },
             "Overall health and wellness": {
                 question: "Are there any specific health conditions you're managing?",
                 choices: ["Yes", "No", "Prefer not to say"]
