@@ -222,22 +222,29 @@ async function createStripeSession(userEmail, priceId) {
 // ======================
 app.post('/api/user/merge', async (req, res) => {
   try {
-    // Validation
+    console.log("Received merge request:", JSON.stringify(req.body, null, 2)); // Debug log
+
+    // Validate request body
     const { error } = mergeSchema.validate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
 
     const { email, newData } = req.body;
     const sanitizedEmail = validator.normalizeEmail(email);
 
-    // Database operation
+    if (!newData || Object.keys(newData).length === 0) {
+      return res.status(400).json({ error: "No valid data provided for update" });
+    }
+
+    // Database update
     const user = await User.findOneAndUpdate(
       { email: sanitizedEmail },
-      { $set: newData },
+      { $set: newData }, // Ensures merging data properly
       { new: true, upsert: true, runValidators: true }
     );
 
     res.json({ success: true, user });
   } catch (error) {
+    console.error("Merge error:", error); // Debugging
     handleServerError(res, error, 'Merge failed');
   }
 });
