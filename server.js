@@ -55,16 +55,21 @@ const UserSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid email!`
     }
   },
+  fitnessGoals: {
+    type: String,
+    enum: ["Muscle Gain", "Fat Loss", "Improved Endurance", "Strength Gain", "Overall Health and Wellness", "Flexibility and Mobility", "Sport-Specific Training"],
+    default: null
+  },
   workoutPreferences: { 
     type: String,
     enum: ['Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine', null],
-    default: null
+    default: 'Mixed routine'
   },
   dietPreferences: {
     type: String,
     enum: ['none', 'vegetarian', 'vegan', 'gluten', 'paleo', 'keto', null],
     set: v => v?.replace(/-free$/, '') || null,
-    default: null
+    default: 'none'
   },
   activityLevel: {
     type: String,
@@ -74,12 +79,12 @@ const UserSchema = new mongoose.Schema({
   fitnessLevel: {
     type: String,
     enum: ["Beginner", "Intermediate", "Advanced"],
-    required: true
+    default: 'Beginner'
   },
   exerciseFrequency: {
     type: String,
     enum: ["1-2 days", "3-4 days", "5-6 days", "Every day"],
-    required: true
+    default: '3-4 days'
   },
   medicalConditions: {
     type: [String],
@@ -160,6 +165,8 @@ const User = mongoose.model('User', UserSchema);
 const mergeSchema = Joi.object({
   email: Joi.string().email().required(),
   newData: Joi.object({
+    fitnessGoals: Joi.string().valid(
+      "Muscle Gain", "Fat Loss", "Improved Endurance", "Strength Gain", "Overall Health and Wellness", "Flexibility and Mobility", "Sport-Specific Training"),
     workoutPreferences: Joi.string().valid('Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine'),
     dietPreferences: Joi.string().valid('none', 'vegetarian', 'vegan', 'gluten', 'paleo', 'keto'),
     activityLevel: Joi.string().valid('sedentary', 'light', 'moderate', 'active', 'very_active'),
