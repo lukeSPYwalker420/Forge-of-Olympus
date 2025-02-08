@@ -150,6 +150,8 @@ const quizState = {
     validationErrors: {}
 };
 
+console.log(quizState.fitnessGoal);
+
 const questionContainer = document.getElementById("question-container");
 
 // --- Event Listeners ---
@@ -162,6 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
             goBack();
         }
     });
+
+    console.log("handleAnswer triggered for:", choice);
 
     renderQuestion();
 });
@@ -216,8 +220,9 @@ function handleAnswer(event) {
 
     // Store the selected fitness goal
     if (questionData.question === "What are your primary fitness goals?") {
+        console.log("Storing fitnessGoal:", choice);
         quizState.fitnessGoal = choice;
-    }
+    }    
 
     let existingAnswer = quizState.answers.find(a => a.question === questionData.question);
     if (questionData.is_multiple_choice) {
