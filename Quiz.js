@@ -204,22 +204,11 @@ function handleAnswer(event) {
 
     if (!questionData) return;
 
-    if (questionData.question === "What are your primary fitness goals?") {
-        console.log("Storing fitnessGoal:", choice);
-        quizState.fitnessGoal = choice; // Ensure it's stored correctly
-    }    
-
-    if (!validateAnswer(questionData, choice)) {
-        quizState.validationErrors[questionData.question] = "Invalid selection";
-        renderQuestion();
-        return;
-    }
-
-    // Store the selected fitness goal
+    // Store the selected fitness goal if it's the primary question
     if (questionData.question === "What are your primary fitness goals?") {
         console.log("Storing fitnessGoal:", choice);
         quizState.fitnessGoal = choice;
-    }    
+    }
 
     let existingAnswer = quizState.answers.find(a => a.question === questionData.question);
     if (questionData.is_multiple_choice) {
@@ -236,19 +225,20 @@ function handleAnswer(event) {
         }
     }
 
-    // Handle follow-up questions based on goal
+    // Handle follow-up questions based on the selected answer
     if (questionData.follow_up && questionData.follow_up[choice]) {
         quizState.history.push({ index: quizState.currentQuestionIndex, followUp: quizState.currentFollowUp });
         quizState.currentFollowUp = JSON.parse(JSON.stringify(questionData.follow_up[choice]));
+        quizState.currentQuestionIndex = 0;  // Reset to first question in the follow-up
     } else {
         quizState.currentFollowUp = null;
         quizState.currentQuestionIndex++;
     }
 
+    // Render the next question or show results if the quiz is complete
     if (quizState.currentQuestionIndex < questions.length || quizState.currentFollowUp) {
         renderQuestion();
     } else {
-        // Quiz is complete; show results
         showResults();
     }
 }
