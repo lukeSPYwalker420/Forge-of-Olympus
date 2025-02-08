@@ -164,8 +164,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    console.log("handleAnswer triggered for:", choice);
-
     renderQuestion();
 });
 
@@ -196,12 +194,12 @@ function renderQuestion() {
 }
 
 // --- Handle Answer ---
-// --- Handle Answer ---
 function handleAnswer(event) {
     const button = event.target.closest("[data-choice]");
     if (!button) return;
 
     const choice = button.dataset.choice;
+    console.log("handleAnswer triggered for:", choice);
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
 
     if (!questionData) return;
