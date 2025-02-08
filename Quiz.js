@@ -156,7 +156,6 @@ const questionContainer = document.getElementById("question-container");
 
 // --- Event Listeners ---
 document.addEventListener("DOMContentLoaded", () => {
-    // Use event delegation on the body
     document.body.addEventListener("click", (event) => {
         if (event.target.classList.contains("goal-btn")) {
             handleAnswer(event);
@@ -200,17 +199,17 @@ function renderQuestion() {
 // --- Handle Answer ---
 function handleAnswer(event) {
     const button = event.target.closest("[data-choice]");
-    if (!button) {
-        console.error("Error: Clicked element has no data-choice", event.target);
-        return;
-    }
+    if (!button) return;
+
     const choice = button.dataset.choice;
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
 
-    if (!questionData) {
-        console.error("Error: questionData is undefined");
-        return;
-    }
+    if (!questionData) return;
+
+    if (questionData.question === "What are your primary fitness goals?") {
+        console.log("Storing fitnessGoal:", choice);
+        quizState.fitnessGoal = choice; // Ensure it's stored correctly
+    }    
 
     if (!validateAnswer(questionData, choice)) {
         quizState.validationErrors[questionData.question] = "Invalid selection";
@@ -375,7 +374,13 @@ function finalizeAndSubmit(event) {
         }
     };
 
-    console.log("Final Data Sent:", finalData);
+    console.log("Final Data Sent:", {
+        email: userEmail,
+        newData: {
+            fitnessGoal: quizState.fitnessGoal, // Ensure it's included
+            ...otherData
+        }
+    });    
 
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
         method: 'POST',
