@@ -193,8 +193,8 @@ function renderQuestion() {
 }
 
 // --- Handle Answer ---
+// --- Handle Answer ---
 function handleAnswer(event) {
-    // Get the button element that was clicked (or its closest parent with data-choice)
     const button = event.target.closest("[data-choice]");
     if (!button) {
         console.error("Error: Clicked element has no data-choice", event.target);
@@ -202,15 +202,23 @@ function handleAnswer(event) {
     }
     const choice = button.dataset.choice;
     const questionData = quizState.currentFollowUp || questions[quizState.currentQuestionIndex];
+
     if (!questionData) {
         console.error("Error: questionData is undefined");
         return;
     }
+
     if (!validateAnswer(questionData, choice)) {
         quizState.validationErrors[questionData.question] = "Invalid selection";
         renderQuestion();
         return;
     }
+
+    // Store the selected fitness goal
+    if (questionData.question === "What are your primary fitness goals?") {
+        quizState.fitnessGoal = choice;
+    }
+
     let existingAnswer = quizState.answers.find(a => a.question === questionData.question);
     if (questionData.is_multiple_choice) {
         if (!existingAnswer) {
@@ -225,7 +233,8 @@ function handleAnswer(event) {
             quizState.answers.push({ question: questionData.question, answer: choice });
         }
     }
-    // Handle follow-up questions
+
+    // Handle follow-up questions based on goal
     if (questionData.follow_up && questionData.follow_up[choice]) {
         quizState.history.push({ index: quizState.currentQuestionIndex, followUp: quizState.currentFollowUp });
         quizState.currentFollowUp = JSON.parse(JSON.stringify(questionData.follow_up[choice]));
@@ -233,10 +242,11 @@ function handleAnswer(event) {
         quizState.currentFollowUp = null;
         quizState.currentQuestionIndex++;
     }
+
     if (quizState.currentQuestionIndex < questions.length || quizState.currentFollowUp) {
         renderQuestion();
     } else {
-        // Quiz is complete; show results (static HTML already has the email input & submit button)
+        // Quiz is complete; show results
         showResults();
     }
 }
@@ -268,10 +278,13 @@ function showResults() {
     const resultContainer = document.getElementById("result-container");
     const resultSummary = document.getElementById("result-summary");
     document.querySelector(".question-container").style.display = "none";
+
+    const fitnessGoal = quizState.fitnessGoal || "Not specified"; // Default if goal is not selected
     const formattedAnswers = quizState.answers
         .map(answer => `${answer.question}: ${Array.isArray(answer.answer) ? answer.answer.join(", ") : answer.answer}`)
         .join("\n");
-    resultSummary.textContent = formattedAnswers;
+
+    resultSummary.textContent = `Fitness Goal: ${fitnessGoal}\n${formattedAnswers}`;
     resultContainer.style.display = "block";
 }
 

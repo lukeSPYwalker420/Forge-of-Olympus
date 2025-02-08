@@ -55,10 +55,38 @@ const UserSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid email!`
     }
   },
+  fitnessGoal: {
+    type: String,
+    enum: [
+      'Weight loss', 
+      'Muscle gain', 
+      'Improved endurance', 
+      'Overall health and wellness', 
+      'Athletic performance'
+    ],
+    required: true
+  },
   fitnessGoalDetails: {
     type: String,
-    enum: ["Weight loss", "Muscle gain", "Improved endurance", "Overall health and wellness", "Athletic performance"],
-    default: 'Weight loss'
+    required: true,
+    validate: {
+      validator: function(value) {
+        switch (this.fitnessGoal) {
+          case 'Weight loss':
+          case 'Muscle gain':
+            return ['Less than 5 kg', '5-10 kg', '10-20 kg', 'More than 20 kg'].includes(value);
+          case 'Improved endurance':
+            return ['Cardiovascular fitness', 'Muscular endurance', 'Mix of both'].includes(value);
+          case 'Overall health and wellness':
+            return ['Yes', 'No', 'Prefer not to say'].includes(value);
+          case 'Athletic performance':
+            return ['Speed', 'Strength', 'Endurance', 'Agility', 'Flexibility'].includes(value);
+          default:
+            return false;
+        }
+      },
+      message: 'Invalid fitness goal details based on selected fitness goal'
+    }
   },
   workoutPreferences: { 
     type: String,
@@ -109,14 +137,6 @@ const UserSchema = new mongoose.Schema({
     enum: ['<100', '100-150', '>150'],
     required: true
   },
-  followUpAnswers: {
-    type: Map,
-    of: mongoose.Schema.Types.Mixed,
-    validate: {
-      validator: map => map.size <= 20,
-      message: 'Maximum 20 follow-up answers allowed'
-    }
-  },
   plans: {
     exercise: {
       type: mongoose.Schema.Types.Mixed, 
@@ -165,12 +185,46 @@ const User = mongoose.model('User', UserSchema);
 const mergeSchema = Joi.object({
   email: Joi.string().email().required(),
   newData: Joi.object({
-    fitnessGoalDetails: Joi.string().valid(
-      "Weight loss", "Muscle gain", "Improved endurance", "Overall health and wellness", "Athletic performance"),
-    workoutPreferences: Joi.string().valid('Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine'),
-    dietPreferences: Joi.string().valid('none', 'vegetarian', 'vegan', 'gluten', 'paleo', 'keto'),
-    activityLevel: Joi.string().valid('sedentary', 'light', 'moderate', 'active', 'very_active'),
-    medicalConditions: Joi.array().items(Joi.string()).max(5)
+    fitnessGoal: Joi.string().valid(
+      'Weight loss', 
+      'Muscle gain', 
+      'Improved endurance', 
+      'Overall health and wellness', 
+      'Athletic performance'
+    ).required(),
+    fitnessGoalDetails: Joi.alternatives().conditional('fitnessGoal', {
+      is: 'Weight loss',
+      then: Joi.string().valid('Less than 5 kg', '5-10 kg', '10-20 kg', 'More than 20 kg').required(),
+      otherwise: Joi.alternatives().conditional('fitnessGoal', {
+        is: 'Muscle gain',
+        then: Joi.string().valid('Less than 5 kg', '5-10 kg', '10-20 kg', 'More than 20 kg').required(),
+        otherwise: Joi.alternatives().conditional('fitnessGoal', {
+          is: 'Improved endurance',
+          then: Joi.string().valid('Cardiovascular fitness', 'Muscular endurance', 'Mix of both').required(),
+          otherwise: Joi.alternatives().conditional('fitnessGoal', {
+            is: 'Overall health and wellness',
+            then: Joi.string().valid('Yes', 'No', 'Prefer not to say').required(),
+            otherwise: Joi.alternatives().conditional('fitnessGoal', {
+              is: 'Athletic performance',
+              then: Joi.string().valid('Speed', 'Strength', 'Endurance', 'Agility', 'Flexibility').required()
+            })
+          })
+        })
+      })
+    }),
+    injuryDetails: Joi.object().optional(), // For injuries follow-up
+    medicalConditions: Joi.object().optional(), // For medical conditions follow-up
+    preferences: Joi.object({
+      exerciseType: Joi.string().valid('Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine').required(),
+      workoutFrequency: Joi.string().valid('1-2 days', '3-4 days', '5-6 days', 'Every day').required(),
+      fitnessLevel: Joi.string().valid('Beginner', 'Intermediate', 'Advanced').required(),
+      dietaryRestrictions: Joi.string().valid('None', 'Vegetarian', 'Vegan', 'Gluten-free', 'Paleo', 'Keto').required(),
+      injuryConsiderations: Joi.string().valid('Yes', 'No').required(),
+      medicalConditionsConsiderations: Joi.string().valid('Yes', 'No', 'Prefer not to say').required(),
+      preferredExerciseEnvironment: Joi.string().valid('Gym', 'Home', 'Outdoor', 'No preference').required(),
+      sleepRecovery: Joi.string().valid('Very well', 'Moderately well', 'Not well', 'I struggle with sleep and recovery').required(),
+      motivationLevel: Joi.string().valid('Highly motivated', 'Moderately motivated', 'Not very motivated', 'I\'m just getting started').required()
+    }).required()
   }).required()
 });
 
