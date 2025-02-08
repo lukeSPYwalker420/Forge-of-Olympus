@@ -208,6 +208,20 @@ function handleAnswer(event) {
     if (questionData.question === "What are your primary fitness goals?") {
         console.log("Storing fitnessGoal:", choice);
         quizState.fitnessGoal = choice;
+    } 
+
+    // Store fitnessGoalDetails if this is a follow-up to the primary fitness goal
+    if (questionData.follow_up) {
+        const fitnessGoalDetails = quizState.fitnessGoalDetails || {};
+        fitnessGoalDetails[quizState.fitnessGoal] = fitnessGoalDetails[quizState.fitnessGoal] || {};
+        
+        if (!fitnessGoalDetails[quizState.fitnessGoal][questionData.question]) {
+            fitnessGoalDetails[quizState.fitnessGoal][questionData.question] = choice;
+        } else {
+            fitnessGoalDetails[quizState.fitnessGoal][questionData.question] = choice;
+        }
+
+        quizState.fitnessGoalDetails = fitnessGoalDetails;
     }
 
     let existingAnswer = quizState.answers.find(a => a.question === questionData.question);
@@ -240,28 +254,6 @@ function handleAnswer(event) {
         renderQuestion();
     } else {
         showResults();
-    }
-}
-
-// --- Validate Answer ---
-function validateAnswer(questionData, choice) {
-    if (questionData.question === "Email") {
-        return typeof choice === "string" && isValidEmail(choice);
-    }
-    if (questionData.is_multiple_choice) {
-        return Array.isArray(questionData.choices) &&
-               questionData.choices.some(c => c === choice || c.value === choice);
-    }
-    return true;
-}
-
-// --- Back Navigation ---
-function goBack() {
-    if (quizState.history.length > 0) {
-        const prevState = quizState.history.pop();
-        quizState.currentQuestionIndex = prevState.index;
-        quizState.currentFollowUp = prevState.followUp;
-        renderQuestion();
     }
 }
 
