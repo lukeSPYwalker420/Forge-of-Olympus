@@ -341,7 +341,9 @@ function finalizeAndSubmit(event) {
     const finalData = {
         email: email,
         newData: {
-            fitnessGoalDetails: fitnessGoals, // Send the primary goal (not the follow-up detail) as fitnessGoalDetails
+            // Here you send the primary goal under "fitnessGoalDetails"
+            // (or you can change the key if your backend expects "fitnessGoal")
+            fitnessGoalDetails: fitnessGoals,
             exercisePreference: exercisePreference,
             workoutFrequency: workoutFrequency,
             fitnessLevel: fitnessLevel,
@@ -354,13 +356,8 @@ function finalizeAndSubmit(event) {
         }
     };
 
-    console.log("Final Data Sent:", {
-        email: userEmail,
-        newData: {
-            fitnessGoal: quizState.fitnessGoal, // Ensure it's included
-            ...otherData
-        }
-    });    
+    // Corrected console log using 'email' and 'finalData.newData'
+    console.log("Final Data Sent:", finalData);
 
     fetch('https://forge-of-olympus.onrender.com/api/user/merge', {
         method: 'POST',
