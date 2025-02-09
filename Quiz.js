@@ -338,23 +338,30 @@ function finalizeAndSubmit(event) {
     const motivationLevel = getAnswerFor("How motivated are you to achieve your fitness goals?");
 
     // Build the finalData object
-    const finalData = {
-        email: email,
-        newData: {
-            // Here you send the primary goal under "fitnessGoalDetails"
-            // (or you can change the key if your backend expects "fitnessGoal")
-            fitnessGoalDetails: fitnessGoals,
-            exercisePreference: exercisePreference,
-            workoutFrequency: workoutFrequency,
-            fitnessLevel: fitnessLevel,
-            dietaryPreferences: dietaryPreferences,
-            injuries: injuries,
-            medicalConditions: medicalConditions,
-            exerciseEnvironment: exerciseEnvironment,
-            sleepRecovery: sleepRecovery,
-            motivationLevel: motivationLevel
-        }
-    };
+    // In finalizeAndSubmit function:
+const finalData = {
+    email: email,
+    newData: {
+        // Primary fitness goal (required by backend)
+        fitnessGoal: quizState.fitnessGoal, // This comes from the first question
+        
+        // Follow-up details for the specific goal
+        fitnessGoalDetails: getAnswerFor(
+            questions[0].follow_up[quizState.fitnessGoal].question
+        ),
+        
+        // Rest of the data
+        exercisePreference: getAnswerFor("What type of exercise do you prefer?"),
+        workoutFrequency: getAnswerFor("How many days a week are you able to commit to working out?"),
+        fitnessLevel: getAnswerFor("What is your current fitness level?"),
+        dietaryPreferences: getAnswerFor("Do you have any dietary restrictions or preferences?"),
+        injuries: getAnswerFor("Do you have any injuries that need to be considered when planning your exercises?", true),
+        medicalConditions: getAnswerFor("Do you have any medical conditions that may affect your ability to exercise?", true),
+        exerciseEnvironment: getAnswerFor("What is your preferred exercise environment?"),
+        sleepRecovery: getAnswerFor("How well do you manage sleep and recovery?"),
+        motivationLevel: getAnswerFor("How motivated are you to achieve your fitness goals?")
+    }
+};
 
     // Corrected console log using 'email' and 'finalData.newData'
     console.log("Final Data Sent:", finalData);
