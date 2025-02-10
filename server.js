@@ -256,7 +256,7 @@ const mergeSchema = Joi.object({
       )
       .when('hasConditions', { 
         is: true, 
-        then: Joi.required().min(1), 
+        then: Joi.array().min(1).required(), 
         otherwise: Joi.optional()
       })
     }).optional(),
