@@ -342,27 +342,23 @@ function finalizeAndSubmit(event) {
     const finalData = {
         email: email,
         newData: {
-          // Top-level fields
-          fitnessGoal: quizState.fitnessGoal,
+          // 1. Fitness goal and details (top level)
+          fitnessGoal: quizState.fitnessGoal, // From first question
           fitnessGoalDetails: getAnswerFor(
             questions[0].follow_up[quizState.fitnessGoal].question
-          ),
+          ), // Follow-up answer
       
-          // Optional follow-up details (top level)
+          // 2. Injuries/medical conditions (objects, not arrays!)
           injuryDetails: {
-            hasInjuries: getAnswerFor("Do you have any injuries...") === "Yes",
-            details: Array.isArray(getAnswerFor("Please select any injuries...", true))
-              ? getAnswerFor("Please select any injuries...", true)
-              : []
+            hasInjuries: getAnswerFor("Do you have any injuries that need to be considered when planning your exercises?") === "Yes", // Boolean
+            details: getAnswerFor("Please select any injuries you have:", true) || [] // Array of strings
           },
           medicalConditions: {
-            hasConditions: getAnswerFor("Do you have any medical conditions...") === "Yes",
-            conditions: Array.isArray(getAnswerFor("Please select any medical conditions...", true))
-              ? getAnswerFor("Please select any medical conditions...", true)
-              : []
+            hasConditions: getAnswerFor("Do you have any medical conditions that may affect your ability to exercise?") === "Yes", // Boolean
+            conditions: getAnswerFor("Please select any medical conditions you have:", true) || [] // Array of strings
           },
       
-          // Nested preferences object (required)
+          // 3. Preferences object (all required)
           preferences: {
             exerciseType: getAnswerFor("What type of exercise do you prefer?"),
             workoutFrequency: getAnswerFor("How many days a week are you able to commit to working out?"),
