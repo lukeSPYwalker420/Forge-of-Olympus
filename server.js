@@ -185,7 +185,6 @@ const User = mongoose.model('User', UserSchema);
 const mergeSchema = Joi.object({
   email: Joi.string().email().required(),
   newData: Joi.object({
-    // 1. Fitness goal and its details (follow‑up)
     fitnessGoal: Joi.string().valid(
       'Weight loss', 
       'Muscle gain', 
@@ -216,10 +215,10 @@ const mergeSchema = Joi.object({
           then: Joi.string().valid('Speed', 'Strength', 'Endurance', 'Agility', 'Flexibility').required()
         }
       ],
-      otherwise: Joi.forbidden() // In case fitnessGoal does not match any option
+      otherwise: Joi.forbidden()
     }),
-
-    // 2. Injuries (if applicable)
+    
+    // Update the injuryDetails schema:
     injuryDetails: Joi.object({
       hasInjuries: Joi.boolean().required(),
       details: Joi.array().items(
@@ -233,11 +232,14 @@ const mergeSchema = Joi.object({
           'Ankle injury'
         )
       )
-      // If hasInjuries is true, we expect a non-empty array.
-      .when('hasInjuries', { is: true, then: Joi.required(), otherwise: Joi.forbidden() })
+      .when('hasInjuries', { 
+        is: true, 
+        then: Joi.required().min(1), // Require at least one injury if true
+        otherwise: Joi.optional() // Allow it to be empty or even omitted if false
+      })
     }).optional(),
-
-    // 3. Medical conditions (if applicable)
+    
+    // Similarly, update the medicalConditions schema if needed:
     medicalConditions: Joi.object({
       hasConditions: Joi.boolean().required(),
       conditions: Joi.array().items(
@@ -252,16 +254,18 @@ const mergeSchema = Joi.object({
           'Thyroid disorder'
         )
       )
-      .when('hasConditions', { is: true, then: Joi.required(), otherwise: Joi.forbidden() })
+      .when('hasConditions', { 
+        is: true, 
+        then: Joi.required().min(1), 
+        otherwise: Joi.optional()
+      })
     }).optional(),
-
-    // 4. Preferences
+    
     preferences: Joi.object({
       exerciseType: Joi.string().valid('Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine').required(),
       workoutFrequency: Joi.string().valid('1-2 days', '3-4 days', '5-6 days', 'Every day').required(),
       fitnessLevel: Joi.string().valid('Beginner', 'Intermediate', 'Advanced').required(),
       dietaryRestrictions: Joi.string().valid('None', 'Vegetarian', 'Vegan', 'Gluten-free', 'Paleo', 'Keto').required(),
-      // These two fields repeat the yes/no answers already used to build the injuryDetails/medicalConditions objects.
       injuryConsiderations: Joi.string().valid('Yes', 'No').required(),
       medicalConditionsConsiderations: Joi.string().valid('Yes', 'No', 'Prefer not to say').required(),
       preferredExerciseEnvironment: Joi.string().valid('Gym', 'Home', 'Outdoor', 'No preference').required(),
