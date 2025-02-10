@@ -355,8 +355,15 @@ const finalData = {
         workoutFrequency: getAnswerFor("How many days a week are you able to commit to working out?"),
         fitnessLevel: getAnswerFor("What is your current fitness level?"),
         dietaryPreferences: getAnswerFor("Do you have any dietary restrictions or preferences?"),
-        injuries: getAnswerFor("Do you have any injuries that need to be considered when planning your exercises?", true),
-        medicalConditions: getAnswerFor("Do you have any medical conditions that may affect your ability to exercise?", true),
+    
+        injuries: {
+            hasInjuries: getAnswerFor("Do you have any injuries...") === "Yes",
+            details: getAnswerFor("Please select any injuries...", true) || []
+          },
+          medicalConditions: {
+            hasConditions: getAnswerFor("Do you have any medical conditions...") === "Yes",
+            conditions: getAnswerFor("Please select any medical conditions...", true) || []
+          },
         exerciseEnvironment: getAnswerFor("What is your preferred exercise environment?"),
         sleepRecovery: getAnswerFor("How well do you manage sleep and recovery?"),
         motivationLevel: getAnswerFor("How motivated are you to achieve your fitness goals?")
@@ -380,7 +387,6 @@ const finalData = {
         alert(`Merge failed: ${error.message}`);
     });
 }
-
 
 // --- Submit Button Listener ---
 document.getElementById('submit-btn').addEventListener('click', function(event) {
