@@ -339,36 +339,39 @@ function finalizeAndSubmit(event) {
 
     // Build the finalData object
     // In finalizeAndSubmit function:
-const finalData = {
-    email: email,
-    newData: {
-        // Primary fitness goal (required by backend)
-        fitnessGoal: quizState.fitnessGoal, // This comes from the first question
-        
-        // Follow-up details for the specific goal
-        fitnessGoalDetails: getAnswerFor(
+    const finalData = {
+        email: email,
+        newData: {
+          // Top-level fields
+          fitnessGoal: quizState.fitnessGoal, // Must be one of the 5 valid options
+          fitnessGoalDetails: getAnswerFor(
             questions[0].follow_up[quizState.fitnessGoal].question
-        ),
-        
-        // Rest of the data
-        exercisePreference: getAnswerFor("What type of exercise do you prefer?"),
-        workoutFrequency: getAnswerFor("How many days a week are you able to commit to working out?"),
-        fitnessLevel: getAnswerFor("What is your current fitness level?"),
-        dietaryPreferences: getAnswerFor("Do you have any dietary restrictions or preferences?"),
-    
-        injuries: {
+          ), // Must match conditional validation
+      
+          // Optional follow-up details (top level)
+          injuryDetails: { // Changed from 'injuries'
             hasInjuries: getAnswerFor("Do you have any injuries...") === "Yes",
             details: getAnswerFor("Please select any injuries...", true) || []
           },
-          medicalConditions: {
+          medicalConditions: { // Matches schema
             hasConditions: getAnswerFor("Do you have any medical conditions...") === "Yes",
             conditions: getAnswerFor("Please select any medical conditions...", true) || []
           },
-        exerciseEnvironment: getAnswerFor("What is your preferred exercise environment?"),
-        sleepRecovery: getAnswerFor("How well do you manage sleep and recovery?"),
-        motivationLevel: getAnswerFor("How motivated are you to achieve your fitness goals?")
-    }
-};
+      
+          // Nested preferences object (required)
+          preferences: {
+            exerciseType: getAnswerFor("What type of exercise do you prefer?"), // Changed from 'exercisePreference'
+            workoutFrequency: getAnswerFor("How many days a week are you able to commit to working out?"),
+            fitnessLevel: getAnswerFor("What is your current fitness level?"),
+            dietaryRestrictions: getAnswerFor("Do you have any dietary restrictions or preferences?"), // Changed from 'dietaryPreferences'
+            injuryConsiderations: getAnswerFor("Do you have any injuries that need to be considered when planning your exercises?"),
+            medicalConditionsConsiderations: getAnswerFor("Do you have any medical conditions that may affect your ability to exercise?"),
+            preferredExerciseEnvironment: getAnswerFor("What is your preferred exercise environment?"), // Changed from 'exerciseEnvironment'
+            sleepRecovery: getAnswerFor("How well do you manage sleep and recovery?"),
+            motivationLevel: getAnswerFor("How motivated are you to achieve your fitness goals?")
+          }
+        }
+      };
 
     // Corrected console log using 'email' and 'finalData.newData'
     console.log("Final Data Sent:", finalData);
