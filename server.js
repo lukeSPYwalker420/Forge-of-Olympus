@@ -234,7 +234,7 @@ const mergeSchema = Joi.object({
       )
       .when('hasInjuries', { 
         is: true, 
-        then: Joi.required().min(1), // Require at least one injury if true
+        then: Joi.array().min(1).required(),
         otherwise: Joi.optional() // Allow it to be empty or even omitted if false
       })
     }).optional(),
