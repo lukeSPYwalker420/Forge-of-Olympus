@@ -182,9 +182,12 @@ const User = mongoose.model('User', UserSchema);
 // ======================
 // VALIDATION SCHEMAS
 // ======================
+const Joi = require('joi');
+
 const mergeSchema = Joi.object({
   email: Joi.string().email().required(),
   newData: Joi.object({
+    // 1. Fitness goal and its details (follow‑up)
     fitnessGoal: Joi.string().valid(
       'Weight loss', 
       'Muscle gain', 
@@ -193,37 +196,79 @@ const mergeSchema = Joi.object({
       'Athletic performance'
     ).required(),
     fitnessGoalDetails: Joi.alternatives().conditional('fitnessGoal', {
-      is: 'Weight loss',
-      then: Joi.string().valid('Less than 5 kg', '5-10 kg', '10-20 kg', 'More than 20 kg').required(),
-      otherwise: Joi.alternatives().conditional('fitnessGoal', {
-        is: 'Muscle gain',
-        then: Joi.string().valid('Less than 5 kg', '5-10 kg', '10-20 kg', 'More than 20 kg').required(),
-        otherwise: Joi.alternatives().conditional('fitnessGoal', {
+      switch: [
+        {
+          is: 'Weight loss',
+          then: Joi.string().valid('Less than 5 kg', '5-10 kg', '10-20 kg', 'More than 20 kg').required()
+        },
+        {
+          is: 'Muscle gain',
+          then: Joi.string().valid('Less than 5 kg', '5-10 kg', '10-20 kg', 'More than 20 kg').required()
+        },
+        {
           is: 'Improved endurance',
-          then: Joi.string().valid('Cardiovascular fitness', 'Muscular endurance', 'Mix of both').required(),
-          otherwise: Joi.alternatives().conditional('fitnessGoal', {
-            is: 'Overall health and wellness',
-            then: Joi.string().valid('Yes', 'No', 'Prefer not to say').required(),
-            otherwise: Joi.alternatives().conditional('fitnessGoal', {
-              is: 'Athletic performance',
-              then: Joi.string().valid('Speed', 'Strength', 'Endurance', 'Agility', 'Flexibility').required()
-            })
-          })
-        })
-      })
+          then: Joi.string().valid('Cardiovascular fitness', 'Muscular endurance', 'Mix of both').required()
+        },
+        {
+          is: 'Overall health and wellness',
+          then: Joi.string().valid('Yes', 'No', 'Prefer not to say').required()
+        },
+        {
+          is: 'Athletic performance',
+          then: Joi.string().valid('Speed', 'Strength', 'Endurance', 'Agility', 'Flexibility').required()
+        }
+      ],
+      otherwise: Joi.forbidden() // In case fitnessGoal does not match any option
     }),
-    injuryDetails: Joi.object().optional(), // For injuries follow-up
-    medicalConditions: Joi.object().optional(), // For medical conditions follow-up
+
+    // 2. Injuries (if applicable)
+    injuryDetails: Joi.object({
+      hasInjuries: Joi.boolean().required(),
+      details: Joi.array().items(
+        Joi.string().valid(
+          'Back injury', 
+          'Knee injury', 
+          'Shoulder injury', 
+          'Elbow injury', 
+          'Wrist injury', 
+          'Hip injury', 
+          'Ankle injury'
+        )
+      )
+      // If hasInjuries is true, we expect a non-empty array.
+      .when('hasInjuries', { is: true, then: Joi.required(), otherwise: Joi.forbidden() })
+    }).optional(),
+
+    // 3. Medical conditions (if applicable)
+    medicalConditions: Joi.object({
+      hasConditions: Joi.boolean().required(),
+      conditions: Joi.array().items(
+        Joi.string().valid(
+          'High blood pressure', 
+          'Diabetes', 
+          'Asthma', 
+          'Arthritis', 
+          'Heart disease', 
+          'Depression', 
+          'Anxiety', 
+          'Thyroid disorder'
+        )
+      )
+      .when('hasConditions', { is: true, then: Joi.required(), otherwise: Joi.forbidden() })
+    }).optional(),
+
+    // 4. Preferences
     preferences: Joi.object({
       exerciseType: Joi.string().valid('Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine').required(),
       workoutFrequency: Joi.string().valid('1-2 days', '3-4 days', '5-6 days', 'Every day').required(),
       fitnessLevel: Joi.string().valid('Beginner', 'Intermediate', 'Advanced').required(),
       dietaryRestrictions: Joi.string().valid('None', 'Vegetarian', 'Vegan', 'Gluten-free', 'Paleo', 'Keto').required(),
+      // These two fields repeat the yes/no answers already used to build the injuryDetails/medicalConditions objects.
       injuryConsiderations: Joi.string().valid('Yes', 'No').required(),
       medicalConditionsConsiderations: Joi.string().valid('Yes', 'No', 'Prefer not to say').required(),
       preferredExerciseEnvironment: Joi.string().valid('Gym', 'Home', 'Outdoor', 'No preference').required(),
       sleepRecovery: Joi.string().valid('Very well', 'Moderately well', 'Not well', 'I struggle with sleep and recovery').required(),
-      motivationLevel: Joi.string().valid('Highly motivated', 'Moderately motivated', 'Not very motivated', 'I\'m just getting started').required()
+      motivationLevel: Joi.string().valid('Highly motivated', 'Moderately motivated', 'Not very motivated', "I'm just getting started").required()
     }).required()
   }).required()
 });
