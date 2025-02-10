@@ -182,8 +182,6 @@ const User = mongoose.model('User', UserSchema);
 // ======================
 // VALIDATION SCHEMAS
 // ======================
-const Joi = require('joi');
-
 const mergeSchema = Joi.object({
   email: Joi.string().email().required(),
   newData: Joi.object({
