@@ -115,12 +115,12 @@ const UserSchema = new mongoose.Schema({
     default: '3-4 days'
   },
   medicalConditions: {
-    type: [String],
-    default: [],
-    validate: {
-      validator: v => v.length <= 5,
-      message: 'Maximum 5 medical conditions allowed'
-    }
+    hasConditions: { type: Boolean, required: true },
+    conditions: { type: [String], default: [] } // an array of strings
+  },
+  injuryDetails: {
+    hasInjuries: { type: Boolean, required: true },
+    details: { type: [String], default: [] }
   },
   mealFrequency: {
     type: String,
