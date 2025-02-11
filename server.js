@@ -71,7 +71,24 @@ const UserSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: function(value) {
-        switch (this.fitnessGoal) {
+        // In update operations, "this" is not the document but the query context.
+        // Try to extract the updated fitnessGoal from the update payload.
+        let fitnessGoal;
+        if (this.getUpdate && typeof this.getUpdate === 'function') {
+          const update = this.getUpdate();
+          // If the update uses $set, extract from there:
+          if (update.$set && update.$set.fitnessGoal) {
+            fitnessGoal = update.$set.fitnessGoal;
+          } else if (update.fitnessGoal) {
+            fitnessGoal = update.fitnessGoal;
+          }
+        }
+        // Fallback to the current document's value:
+        if (!fitnessGoal) {
+          fitnessGoal = this.fitnessGoal;
+        }
+    
+        switch (fitnessGoal) {
           case 'Weight loss':
           case 'Muscle gain':
             return ['Less than 5 kg', '5-10 kg', '10-20 kg', 'More than 20 kg'].includes(value);
@@ -86,7 +103,7 @@ const UserSchema = new mongoose.Schema({
         }
       },
       message: 'Invalid fitness goal details based on selected fitness goal'
-    }
+    }    
   },
   workoutPreferences: { 
     type: String,
