@@ -339,9 +339,9 @@ app.post('/api/user/merge', async (req, res) => {
     // Database update
     const user = await User.findOneAndUpdate(
       { email: sanitizedEmail },
-      { $set: newData }, // Ensures merging data properly
-      { new: true, upsert: true, runValidators: true }
-    );
+      { $set: newData },
+      { new: true, upsert: true, runValidators: true, context: 'query' }
+    );    
 
     res.json({ success: true, user });
   } catch (error) {
