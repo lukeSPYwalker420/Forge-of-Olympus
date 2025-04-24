@@ -44,6 +44,12 @@ app.use(express.static(__dirname));
 // SCHEMAS & MODELS
 // ======================
 const UserSchema = new mongoose.Schema({
+  sex: { type: String, enum: ['male', 'female'], required: true },
+  age: { type: Number, required: true },
+  height: { type: Number, required: true },
+  weight: { type: Number, required: true },
+  bodyFat: { type: Number }, // Optional, if provided
+  allergies: { type: [String], default: [] },
   email: { 
     type: String, 
     required: [true, 'Email is required'],
@@ -158,21 +164,15 @@ const UserSchema = new mongoose.Schema({
     exercise: {
       type: mongoose.Schema.Types.Mixed, 
       validate: {
-        validator: (v) => {
-          // Example validation, adjust as needed based on your plan structure
-          return v && Array.isArray(v.schedule) && v.schedule.length > 0;
-        },
+        validator: (v) => v && Array.isArray(v.schedule) && v.schedule.length > 0,
         message: 'Invalid exercise plan structure'
       }
     },
-    diet: {
+    meals: { // Renamed from 'diet' to 'meals' for clarity
       type: mongoose.Schema.Types.Mixed, 
       validate: {
-        validator: (v) => {
-          // Example validation for diet plan (check if it's an object or has necessary fields)
-          return v && typeof v === 'object';
-        },
-        message: 'Invalid diet plan structure'
+        validator: (v) => v && typeof v === 'object',
+        message: 'Invalid meal plan structure'
       }
     },
     generatedAt: {
@@ -183,7 +183,7 @@ const UserSchema = new mongoose.Schema({
         message: 'Plan date cannot be in the future'
       }
     }
-  },
+  },  
   stripeCustomerId: {
     type: String,
     index: true  // Optional: Add index if Stripe customer ID is queried often
@@ -202,6 +202,7 @@ const User = mongoose.model('User', UserSchema);
 const mergeSchema = Joi.object({
   email: Joi.string().email().required(),
   newData: Joi.object({
+    // === Quiz Data Fields ===
     fitnessGoal: Joi.string().valid(
       'Weight loss', 
       'Muscle gain', 
@@ -234,8 +235,6 @@ const mergeSchema = Joi.object({
       ],
       otherwise: Joi.forbidden()
     }),
-    
-    // Update the injuryDetails schema:
     injuryDetails: Joi.object({
       hasInjuries: Joi.boolean().required(),
       details: Joi.array().items(
@@ -252,11 +251,9 @@ const mergeSchema = Joi.object({
       .when('hasInjuries', { 
         is: true, 
         then: Joi.array().min(1).required(),
-        otherwise: Joi.optional() // Allow it to be empty or even omitted if false
+        otherwise: Joi.optional()
       })
     }).optional(),
-    
-    // Similarly, update the medicalConditions schema if needed:
     medicalConditions: Joi.object({
       hasConditions: Joi.boolean().required(),
       conditions: Joi.array().items(
@@ -277,18 +274,56 @@ const mergeSchema = Joi.object({
         otherwise: Joi.optional()
       })
     }).optional(),
+    workoutPreferences: Joi.string().valid('Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine').required(),
+    dietPreferences: Joi.string().valid('none', 'vegetarian', 'vegan', 'gluten', 'paleo', 'keto').required(),
+    activityLevel: Joi.string().valid('sedentary', 'light', 'moderate', 'active', 'very_active').required(),
+    fitnessLevel: Joi.string().valid('Beginner', 'Intermediate', 'Advanced').required(),
+    exerciseFrequency: Joi.string().valid('1-2 days', '3-4 days', '5-6 days', 'Every day').required(),
+
+    // === Paywall (Personal Details) Fields ===
+    sex: Joi.string().valid('male', 'female').required(),
+    age: Joi.number().integer().min(0).required(),
+    height: Joi.number().required(),
+    weight: Joi.number().required(),
+    bodyFat: Joi.number().optional(), // body fat percentage (optional)
+    allergies: Joi.array().items(Joi.string()).optional(), // food allergies
     
-    preferences: Joi.object({
-      exerciseType: Joi.string().valid('Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine').required(),
-      workoutFrequency: Joi.string().valid('1-2 days', '3-4 days', '5-6 days', 'Every day').required(),
-      fitnessLevel: Joi.string().valid('Beginner', 'Intermediate', 'Advanced').required(),
-      dietaryRestrictions: Joi.string().valid('None', 'Vegetarian', 'Vegan', 'Gluten-free', 'Paleo', 'Keto').required(),
-      injuryConsiderations: Joi.string().valid('Yes', 'No').required(),
-      medicalConditionsConsiderations: Joi.string().valid('Yes', 'No', 'Prefer not to say').required(),
-      preferredExerciseEnvironment: Joi.string().valid('Gym', 'Home', 'Outdoor', 'No preference').required(),
-      sleepRecovery: Joi.string().valid('Very well', 'Moderately well', 'Not well', 'I struggle with sleep and recovery').required(),
-      motivationLevel: Joi.string().valid('Highly motivated', 'Moderately motivated', 'Not very motivated', "I'm just getting started").required()
-    }).required()
+    // === Paywall (Meal & Grocery) Fields ===
+    mealFrequency: Joi.string().valid('3_meals', '4-5_meals', '6+_meals').required(),
+    cookFrequency: Joi.string().valid('rarely', 'sometimes', 'frequently').required(),
+    groceryBudget: Joi.string().valid('<100', '100-150', '>150').required(),
+
+    // === Plans Field (Including Meal Plan) ===
+    plans: Joi.object({
+      exercise: Joi.object().required(),
+      diet: Joi.object().required(),
+      // Optional meals field based on your JSON example:
+      meals: Joi.object({
+        breakfast: Joi.array().items(
+          Joi.object({
+            meal_id: Joi.string().required(),
+            name: Joi.string().required(),
+            tags: Joi.array().items(Joi.string()).optional(),
+            calories: Joi.number().required(),
+            macros: Joi.object({
+              protein: Joi.number().required(),
+              carbs: Joi.number().required(),
+              fats: Joi.number().required()
+            }).required(),
+            ingredients: Joi.array().items(Joi.string()).required(),
+            instructions: Joi.string().required(),
+            cost: Joi.number().required()
+          })
+        ).required(),
+        lunch: Joi.array().items(Joi.object()).optional(),
+        dinner: Joi.array().items(Joi.object()).optional(),
+        snacks: Joi.array().items(Joi.object()).optional()
+      }).optional(),
+      generatedAt: Joi.date().max('now').required()
+    }).required(),
+
+    stripeCustomerId: Joi.string().optional()
+
   }).required()
 });
 
@@ -387,7 +422,7 @@ app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), async (
       user.plans = plans;
       await user.save();
       
-      await sendPlanEmail(user.email, plans.exercise_plan, plans.diet_plan);
+      await sendPlanEmail(user.email, plans.exercise_plan, plans.meal_plan);
     }
 
     res.json({ received: true });
