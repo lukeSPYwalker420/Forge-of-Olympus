@@ -1,7 +1,7 @@
 [   
     {
       "plan": "Beginner Muscle Gain (Weight Training Only - 2 Days a Week)",
-      "tags": ["Beginner", "Muscle Gain", "Weight Training", "2 Days a Week", "Gym/Home Gym", "No Injuries", "Strength Focus"],
+      "tags": ["Beginner", "Muscle Gain", "Weight Training", "2 Days a Week", "Gym", "Home", "No Injuries", "Strength Focus"],
       "schedule": {
         "Weeks": [
           {
@@ -55,7 +55,7 @@
     },
     {
       "plan": "Intermediate Muscle Gain (2 Days a Week)",
-      "tags": ["Muscle Gain", "2 Days a Week", "Intermediate", "Gym/Home Gym", "No Injuries"],
+      "tags": ["Muscle Gain", "2 Days a Week", "Intermediate", "Gym", "Home", "No Injuries"],
       "schedule": {
         "Weeks": [
           {
@@ -105,7 +105,7 @@
     },
     {
       "plan": "Advanced Muscle Gain (2 Days a Week)",
-      "tags": ["Muscle Gain", "2 Days a Week", "Advanced", "Gym/Home Gym", "No Injuries"],
+      "tags": ["Muscle Gain", "2 Days a Week", "Advanced", "Gym", "Home", "No Injuries"],
       "schedule": {
         "Weeks": [
           {
@@ -155,7 +155,7 @@
     },            
     {
         "plan": "Beginner Muscle Gain (3 Days a Week)",
-        "tags": ["Beginner", "Muscle Gain", "Weight Training", "3 Days a Week", "Gym/Home Gym", "No Injuries", "Strength Focus"],
+        "tags": ["Beginner", "Muscle Gain", "3 Days a Week", "Gym", "Home", "No Injuries", "Strength training"],
         "schedule": {
           "Weeks": [
             {
@@ -214,7 +214,7 @@
       },
       {
         "plan": "Intermediate Muscle Gain (3 Days a Week)",
-        "tags": ["Muscle Gain", "3 Days a Week", "Intermediate", "Gym/Home Gym", "No Injuries"],
+        "tags": ["Muscle Gain", "3 Days a Week", "Intermediate", "Gym", "Home", "No Injuries"],
         "schedule": {
           "Weeks": [
             {
@@ -268,7 +268,7 @@
       },      
       {
         "plan": "Intermediate Muscle Gain (3 Days a Week)",
-        "tags": ["Muscle Gain", "3 Days a Week", "Intermediate", "Gym/Home Gym", "No Injuries"],
+        "tags": ["Muscle Gain", "3 Days a Week", "Intermediate", "Gym", "Home", "No Injuries"],
         "schedule": {
           "Weeks": [
             {
@@ -322,7 +322,7 @@
       },                  
       {
         "plan": "Beginner Muscle Gain (Weight Training Only - 4 Days a Week)",
-        "tags": ["Beginner", "Muscle Gain", "Weight Training", "4 Days a Week", "Gym/Home Gym", "No Injuries", "Strength Focus"],
+        "tags": ["Beginner", "Muscle Gain", "Weight Training", "4 Days a Week", "Gym", "Home", "No Injuries", "Strength Focus"],
         "schedule": {
           "Weeks": [
             {
@@ -382,7 +382,7 @@
       },
       {
         "plan": "Intermediate Muscle Gain (4 Days a Week)",
-        "tags": ["Muscle Gain", "4 Days a Week", "Intermediate", "Gym/Home Gym", "No Injuries"],
+        "tags": ["Muscle Gain", "4 Days a Week", "Intermediate", "Gym", "Home", "No Injuries"],
         "schedule": {
           "Weeks": [
             {
@@ -442,7 +442,7 @@
       },
       {
         "plan": "Advanced Muscle Gain (4 Days a Week)",
-        "tags": ["Muscle Gain", "4 Days a Week", "Advanced", "Gym/Home Gym", "No Injuries"],
+        "tags": ["Muscle Gain", "4 Days a Week", "Advanced", "Gym", "Home", "No Injuries"],
         "schedule": {
           "Weeks": [
             {
@@ -492,7 +492,7 @@
       },                  
       {
         "plan": "Beginner Muscle Gain (Weight Training Only - 5 Days a Week)",
-        "tags": ["Beginner", "Muscle Gain", "Weight Training", "5 Days a Week", "Gym/Home Gym", "No Injuries", "Strength Focus"],
+        "tags": ["Beginner", "Muscle Gain", "Weight Training", "5 Days a Week", "Gym", "Home", "No Injuries", "Strength Focus"],
         "schedule": {
           "Weeks": [
             {
@@ -555,7 +555,7 @@
       },
       {
         "plan": "Intermediate Muscle Gain (5 Days a Week)",
-        "tags": ["Muscle Gain", "5 Days a Week", "Intermediate", "Gym/Home Gym", "No Injuries"],
+        "tags": ["Muscle Gain", "5 Days a Week", "Intermediate", "Gym", "Home", "No Injuries"],
         "schedule": {
           "Weeks": [
             {
@@ -615,7 +615,7 @@
       },
       {
         "plan": "Advanced Muscle Gain (5 Days a Week)",
-        "tags": ["Muscle Gain", "5 Days a Week", "Advanced", "Gym/Home Gym", "No Injuries"],
+        "tags": ["Muscle Gain", "5 Days a Week", "Advanced", "Gym", "Home", "No Injuries"],
         "schedule": {
           "Weeks": [
             {
@@ -666,7 +666,7 @@
       },                  
       {
         "plan": "Beginner Strength Training (2 Days a Week - Full Body Focus)",
-        "tags": ["Strength", "Beginner", "2 Days a Week", "Full Body", "Gym/Home Gym", "Strength Focus"],
+        "tags": ["Strength", "Beginner", "2 Days a Week", "Full Body", "Gym", "Home", "Strength Focus"],
         "schedule": {
           "Weeks": [
             {
@@ -712,7 +712,7 @@
       },      
       {
         "plan": "Strength Focus (Full Body - 2 Days a Week)",
-        "tags": ["Strength", "2 Days a Week", "Full Body", "Gym/Home Gym", "No Injuries", "Strength Focus", "Intermediate"],
+        "tags": ["Strength", "2 Days a Week", "Full Body", "Gym", "Home", "No Injuries", "Strength Focus", "Intermediate"],
         "schedule": {
           "Weeks": [
             {
@@ -764,7 +764,7 @@
       },
       {
         "plan": "Advanced Strength Training (2 Days a Week - Full Body Focus)",
-        "tags": ["Strength", "Advanced", "2 Days a Week", "Full Body", "Gym/Home Gym", "Strength Focus"],
+        "tags": ["Strength", "Advanced", "2 Days a Week", "Full Body", "Gym", "Home", "Strength Focus"],
         "schedule": {
           "Weeks": [
             {
@@ -811,7 +811,7 @@
       },
       {
         "plan": "Beginner Strength Training (3 Days a Week - Full Body Focus)",
-        "tags": ["Strength", "Beginner", "3 Days a Week", "Full Body", "Gym/Home Gym", "Strength Focus"],
+        "tags": ["Strength", "Beginner", "3 Days a Week", "Full Body", "Gym", "Home", "Strength Focus"],
         "schedule": {
           "Weeks": [
             {
@@ -866,7 +866,7 @@
       },                 
       {
         "plan": "Strength Focus (3 Days a Week)",
-        "tags": ["Strength", "3 Days a Week", "Full Body", "Gym/Home Gym", "No Injuries", "Strength Focus", "Intermediate"],
+        "tags": ["Strength", "3 Days a Week", "Full Body", "Gym", "Home", "No Injuries", "Strength Focus", "Intermediate"],
         "schedule": {
           "Weeks": [
             {
@@ -919,7 +919,7 @@
       },
       {
         "plan": "Advanced Strength Training (3 Days a Week - Full Body Focus)",
-        "tags": ["Strength", "Advanced", "3 Days a Week", "Full Body", "Gym/Home Gym", "Strength Focus"],
+        "tags": ["Strength", "Advanced", "3 Days a Week", "Full Body", "Gym", "Home", "Strength Focus"],
         "schedule": {
           "Weeks": [
             {
@@ -971,7 +971,7 @@
       },      
       {
         "plan": "Beginner Strength Training (4 Days a Week - Upper/Lower Split)",
-        "tags": ["Strength", "Beginner", "4 Days a Week", "Upper/Lower Split", "Gym/Home Gym", "No Injuries"],
+        "tags": ["Strength", "Beginner", "4 Days a Week", "Upper/Lower Split", "Gym", "Home", "No Injuries"],
         "schedule": {
           "Weeks": [
             {
@@ -1025,7 +1025,7 @@
       },                  
       {
         "plan": "Strength Focus (4 Days a Week - Upper/Lower Split)",
-        "tags": ["Strength", "4 Days a Week", "Upper/Lower Split", "Gym/Home Gym", "No Injuries", "Strength Focus", "Intermediate"],
+        "tags": ["Strength", "4 Days a Week", "Upper/Lower Split", "Gym", "Home", "No Injuries", "Strength Focus", "Intermediate"],
         "schedule": {
           "Weeks": [
             {
@@ -1084,7 +1084,7 @@
       },
       {
         "plan": "Strength Focus (4 Days a Week - Upper/Lower Split - Advanced)",
-        "tags": ["Strength", "4 Days a Week", "Upper/Lower Split", "Gym/Home Gym", "No Injuries", "Strength Focus", "Advanced"],
+        "tags": ["Strength", "4 Days a Week", "Upper/Lower Split", "Gym", "Home", "No Injuries", "Strength Focus", "Advanced"],
         "schedule": {
           "Weeks": [
             {
@@ -1182,7 +1182,7 @@
       },      
       {
         "plan": "Beginner Muscle Gain (5 Days a Week)",
-        "tags": ["Beginner", "Muscle Gain", "5 Days a Week", "Gym/Home Gym", "No Injuries"],
+        "tags": ["Beginner", "Muscle Gain", "5 Days a Week", "Gym", "Home", "No Injuries"],
         "schedule": {
           "Weeks": [
             {
@@ -1240,7 +1240,7 @@
       },            
       {
         "plan": "Strength Focus (5 Days a Week - Push/Pull/Legs, Upper/Lower Split)",
-        "tags": ["Strength", "5 Days a Week", "Push/Pull/Legs", "Upper/Lower", "Gym/Home Gym", "No Injuries", "Strength Focus", "Intermediate"],
+        "tags": ["Strength", "5 Days a Week", "Push/Pull/Legs", "Upper/Lower", "Gym", "Home", "No Injuries", "Strength Focus", "Intermediate"],
         "schedule": {
           "Weeks": [
             {
