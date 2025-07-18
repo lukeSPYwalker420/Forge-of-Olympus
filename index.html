@@ -3,115 +3,826 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forge of Olympus - Forge Your Strength</title>
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="common.css">
+    <title>Forge of Olympus - Training Programs</title>
     <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Your CSS preserved exactly as provided */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Eczar', serif;
+            background-color: #1a1a1a;
+            color: #f5f5f5;
+            line-height: 1.6;
+            margin: 0;
+            text-align: center;
+        }
+
+        #company-name {
+            font-size: 4rem;
+            font-weight: 700;
+            font-family: Eczar, serif;
+            color: #ffcc33;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+            border-bottom: 2px solid crimson;
+            padding-bottom: 10px;
+            width: fit-content;
+            margin-inline: auto;
+        }
+
+        .hero-section {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            position: relative;
+            width: 100%;
+            min-height: 70vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1534367507871-8a21c2a1da4c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80') 
+                        no-repeat center center/cover;
+            border-bottom: 5px solid #8b0000;
+        }
+
+        .hero-content {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 100%;
+            margin-bottom: 20px;
+            padding: 20px;
+            color: white;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.8);
+            z-index: 2;
+            font-family: Eczar, serif;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .hero-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: crimson;
+            text-align: center;
+            padding: 20px;
+            z-index: 2;
+            font-family: Eczar, serif;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        .hero-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, crimson, #ffcc33);
+            border: none;
+            color: #fff;
+            font-family: Eczar, serif;
+            font-size: 1.2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            z-index: 2;
+            text-transform: uppercase;
+        }
+
+        .hero-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #ffcc33, crimson);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-family: Eczar, serif;
+            font-weight: bold;
+            text-align: center;
+            color: #fff;
+            background-color: #8b0000;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            text-transform: uppercase;
+            border: 2px solid #8b0000;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            background-color: #a40000;
+            transform: scale(1.05);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+        }
+
+        .footer {
+            background-color: #8b0000;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        .footer-links {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .footer-links li {
+            font-size: 1rem;
+        }
+
+        .footer-links a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        a {
+            color: #ffcc33;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: crimson;
+        }
+
+        button {
+            background: linear-gradient(45deg, crimson, #ffcc33);
+            border: none;
+            color: #f5f5f5;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #ffcc33, crimson);
+        }
+
+        h1, h2, h3, h4 {
+            color: #ffcc33;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #111;
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* New styles for training programs */
+        .programs-section {
+            padding: 60px 20px;
+            background: linear-gradient(rgba(26, 26, 26, 0.9), rgba(26, 26, 26, 0.9)), 
+                        url('https://images.unsplash.com/photo-1549060279-7e168fce7090?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            border-bottom: 5px solid #8b0000;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            color: #ffcc33;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(45deg, crimson, #ffcc33);
+        }
+        
+        .programs-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .program-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+            border: 2px solid rgba(139, 0, 0, 0.3);
+        }
+        
+        .program-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(139, 0, 0, 0.7);
+        }
+        
+        .program-header {
+            padding: 25px;
+            background: linear-gradient(45deg, rgba(139, 0, 0, 0.7), rgba(255, 204, 51, 0.4));
+            text-align: center;
+        }
+        
+        .program-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ffcc33;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+        
+        .program-subtitle {
+            font-size: 1.1rem;
+            color: #f5f5f5;
+            opacity: 0.9;
+        }
+        
+        .program-content {
+            padding: 25px;
+        }
+        
+        .phase {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border-left: 3px solid #ffcc33;
+        }
+        
+        .phase-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ffcc33;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .phase-title i {
+            color: crimson;
+        }
+        
+        .phase-items {
+            text-align: left;
+            padding-left: 25px;
+        }
+        
+        .phase-items li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 10px;
+        }
+        
+        .phase-items li::before {
+            content: "•";
+            color: #ffcc33;
+            position: absolute;
+            left: 0;
+        }
+        
+        .delivery-options {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-top: 1px solid rgba(255, 204, 51, 0.2);
+            text-align: center;
+        }
+        
+        .delivery-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #ffcc33;
+        }
+        
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .option {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.3s;
+            cursor: pointer;
+            border: 1px solid rgba(255, 204, 51, 0.3);
+        }
+        
+        .option.selected {
+            background: linear-gradient(45deg, rgba(139, 0, 0, 0.7), rgba(255, 204, 51, 0.4));
+            border-color: #ffcc33;
+        }
+        
+        .option:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .contact-section {
+            padding: 60px 20px;
+            background: #1a1a1a;
+            border-top: 5px solid #8b0000;
+        }
+        
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(139, 0, 0, 0.3);
+        }
+        
+        .form-title {
+            font-size: 1.8rem;
+            color: #ffcc33;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ffcc33;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ffcc33;
+            font-size: 1.2rem;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 204, 51, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: 'Eczar', serif;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ffcc33;
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, crimson, #ffcc33);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Eczar', serif;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.4);
+        }
+        
+        .hidden-content {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            #company-name {
+                font-size: 2.5rem;
+            }
+            
+            .hero-content {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .programs-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1 id="company-name">FORGE OF OLYMPUS</h1>
-    <!-- Hero Section -->
-<section id="hero" class="hero-section" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center;">
-    <div class="hero-content">
-        <h1 id="heading">Forge Your Strength. Unleash Your Inner God.</h1>
-        <p id="blurb">Get your tailored fitness and nutrition plan today. Built for you. Backed by science.</p>
-        <a href="quiz.html" class="hero-button">Begin Your Journey</a>
-    </div>
-    <div class="hero-image">
-        <img src="HeroImage.jpg" alt="A symbol of strength: Olympus forging might and resilience" />
-    </div>
-</section>
-
-
-   <!-- Steps Section -->
-<section id="steps" class="steps-section" style="display: flex; gap: 20px; justify-content: space-between; margin: 40px 0;">
-    <div class="step-box" style="flex: 1; text-align: center; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
-        <h3>Step 1</h3>
-        <p>Complete the questionnaire to set your goals.</p>
-    </div>
-    <div class="step-box" style="flex: 1; text-align: center; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
-        <h3>Step 2</h3>
-        <p>Receive your customized plan crafted by experts.</p>
-    </div>
-    <div class="step-box" style="flex: 1; text-align: center; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
-        <h3>Step 3</h3>
-        <p>Achieve your goals with ongoing support and guidance.</p>
-    </div>
-</section>
-
-
-    <!-- Features Section -->
-    <section id="features" class="features">
-        <h2>Features</h2>
-        <ul>
-            <li>Dynamic workout and meal plans tailored to you.</li>
-            <li>Monthly updates to prevent plateaus.</li>
-            <li>Convenient app delivery with tracking and print-off options.</li>
-        </ul>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="testimonials">
-        <h2>What Our Clients Say</h2>
-        <blockquote>
-            <p>"From zero to warrior—my journey started here!"</p>
-            <cite>- Alex T.</cite>
-        </blockquote>
-        <blockquote>
-            <p>"This program transformed my life. I’ve never felt stronger."</p>
-            <cite>- Jamie L.</cite>
-        </blockquote>
-    </section>
-
-    <!-- Call-to-Action Banner -->
-    <section id="cta-banner" class="cta-banner">
-        <h4>Your transformation awaits. Begin forging your strength today!</h4>
-        <a href="quiz.html" class="cta-button">Get Started</a>
-    </section>
-
-    <!-- Pricing Section -->
-    <section id="pricing" class="pricing">
-        <h2>Choose Your Plan</h2>
-        <div class="pricing-options">
-            <div class="plan">
-                <h3>Basic Plan</h3>
-                <div style="height: 45px;"></div> <!-- Empty row -->
-                <p>Monthly workout and meal plan updates.</p>
-                <p>£19.99/month</p>
+    <div class="container">
+        <h1 id="company-name">FORGE OF OLYMPUS</h1>
+        
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="overlay"></div>
+            <div class="hero-content">
+                <h1>Transform Your Body</h1>
+                <p>Specialized 12-week programs for Core, Shoulders & Pelvis</p>
+                <a href="#programs" class="hero-button">Explore Programs</a>
             </div>
-            <div class="plan premium">
-                <h3>Premium Plan</h3>
-                <p>Additional features like personalized video coaching and advanced analytics.</p>
-                <p>£34.99/month</p>
+        </section>
+        
+        <!-- Training Programs Section -->
+        <section id="programs" class="programs-section">
+            <h2 class="section-title">Training Programs</h2>
+            <p style="max-width: 800px; margin: 0 auto 40px; font-size: 1.2rem;">
+                Each 12-week program is divided into three 4-week phases that build upon each other. 
+                You can purchase the full 12-week program or individual 4-week modules.
+            </p>
+            
+            <div class="programs-container">
+                <!-- Core Program -->
+                <div class="program-card">
+                    <div class="program-header">
+                        <h3 class="program-title">Core Program</h3>
+                        <p class="program-subtitle">12-Week Comprehensive Transformation</p>
+                    </div>
+                    <div class="program-content">
+                        <div class="phase">
+                            <h4 class="phase-title"><i class="fas fa-brain"></i> Phase 1 - Reconnection</h4>
+                            <ul class="phase-items">
+                                <li>Trunk bracing</li>
+                                <li>TVA & oblique activation</li>
+                                <li>Diaphragmatic IAP</li>
+                            </ul>
+                        </div>
+                        <div class="phase">
+                            <h4 class="phase-title"><i class="fas fa-cubes"></i> Phase 2 - Rebuilding</h4>
+                            <ul class="phase-items">
+                                <li>Anti-extension & anti-rotation</li>
+                                <li>Under dynamic load</li>
+                            </ul>
+                        </div>
+                        <div class="phase">
+                            <h4 class="phase-title"><i class="fas fa-bolt"></i> Phase 3 - Performance</h4>
+                            <ul class="phase-items">
+                                <li>Bracing in rotation</li>
+                                <li>Calisthenics integration</li>
+                                <li>Gait application</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="delivery-options">
+                        <p class="delivery-title">Delivery Options</p>
+                        <div class="options">
+                            <div class="option selected">12-Week Program</div>
+                            <div class="option">4-Week Modules</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Shoulders Program -->
+                <div class="program-card">
+                    <div class="program-header">
+                        <h3 class="program-title">Shoulders Program</h3>
+                        <p class="program-subtitle">12-Week Comprehensive Transformation</p>
+                    </div>
+                    <div class="program-content">
+                        <div class="phase">
+                            <h4 class="phase-title"><i class="fas fa-brain"></i> Phase 1 - Reconnection</h4>
+                            <ul class="phase-items">
+                                <li>Scapular retraction/depression</li>
+                                <li>Serratus engagement</li>
+                                <li>Rotator cuff isolation</li>
+                            </ul>
+                        </div>
+                        <div class="phase">
+                            <h4 class="phase-title"><i class="fas fa-cubes"></i> Phase 2 - Rebuilding</h4>
+                            <ul class="phase-items">
+                                <li>Stable vertical & horizontal pressing/pulling</li>
+                                <li>Scap load tolerance</li>
+                            </ul>
+                        </div>
+                        <div class="phase">
+                            <h4 class="phase-title"><i class="fas fa-bolt"></i> Phase 3 - Performance</h4>
+                            <ul class="phase-items">
+                                <li>Ring work</li>
+                                <li>Overhead loading</li>
+                                <li>Dynamic shoulder stability</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="delivery-options">
+                        <p class="delivery-title">Delivery Options</p>
+                        <div class="options">
+                            <div class="option selected">12-Week Program</div>
+                            <div class="option">4-Week Modules</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pelvis Program -->
+                <div class="program-card">
+                    <div class="program-header">
+                        <h3 class="program-title">Pelvis Program</h3>
+                        <p class="program-subtitle">12-Week Comprehensive Transformation</p>
+                    </div>
+                    <div class="program-content">
+                        <div class="phase">
+                            <h4 class="phase-title"><i class="fas fa-brain"></i> Phase 1 - Reconnection</h4>
+                            <ul class="phase-items">
+                                <li>Posterior pelvic tilt</li>
+                                <li>Glute/hamstring differentiation</li>
+                                <li>Adductor control</li>
+                            </ul>
+                        </div>
+                        <div class="phase">
+                            <h4 class="phase-title"><i class="fas fa-cubes"></i> Phase 2 - Rebuilding</h4>
+                            <ul class="phase-items">
+                                <li>Bilateral hip thrusts</li>
+                                <li>Hinge mechanics</li>
+                                <li>Single-leg glute development</li>
+                            </ul>
+                        </div>
+                        <div class="phase">
+                            <h4 class="phase-title"><i class="fas fa-bolt"></i> Phase 3 - Performance</h4>
+                            <ul class="phase-items">
+                                <li>Sprint prep</li>
+                                <li>Deep squat control</li>
+                                <li>Power transfer in sport-like mechanics</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="delivery-options">
+                        <p class="delivery-title">Delivery Options</p>
+                        <div class="options">
+                            <div class="option selected">12-Week Program</div>
+                            <div class="option">4-Week Modules</div>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </section>
+        
+        <!-- Contact Section -->
+        <section class="contact-section">
+            <div class="contact-container">
+                <h3 class="form-title">Get Started Today</h3>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="email">Email Address (For Delivery)</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="whatsapp">WhatsApp Number (For Ongoing Support)</label>
+                        <div class="input-with-icon">
+                            <i class="fab fa-whatsapp"></i>
+                            <input type="tel" id="whatsapp" name="whatsapp" placeholder="Enter your WhatsApp number" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="program">Select Your Program</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                            <select id="program" name="program" required>
+                                <option value="">Choose a training program</option>
+                                <option value="core">Core Program (12 Weeks)</option>
+                                <option value="shoulders">Shoulders Program (12 Weeks)</option>
+                                <option value="pelvis">Pelvis Program (12 Weeks)</option>
+                                <option value="all">All Three Programs (Complete Transformation)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="delivery">Delivery Option</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-box"></i>
+                            <select id="delivery" name="delivery" required>
+                                <option value="">Select delivery option</option>
+                                <option value="full">12-Week Full Program</option>
+                                <option value="module">4-Week Phased Modules</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-container">
+                        <button type="submit" class="btn">
+                            <i class="fas fa-shopping-cart"></i> Proceed to Checkout
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        
+        <!-- Hidden Content (Preserved for later use) -->
+        <div class="hidden-content">
+            <!-- Steps Section -->
+            <section id="steps" class="steps-section" style="display: flex; gap: 20px; justify-content: space-between; margin: 40px 0;">
+                <div class="step-box" style="flex: 1; text-align: center; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+                    <h3>Step 1</h3>
+                    <p>Complete the questionnaire to set your goals.</p>
+                </div>
+                <div class="step-box" style="flex: 1; text-align: center; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+                    <h3>Step 2</h3>
+                    <p>Receive your customized plan crafted by experts.</p>
+                </div>
+                <div class="step-box" style="flex: 1; text-align: center; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+                    <h3>Step 3</h3>
+                    <p>Achieve your goals with ongoing support and guidance.</p>
+                </div>
+            </section>
+            
+            <!-- Features Section -->
+            <section id="features" class="features">
+                <h2>Features</h2>
+                <ul>
+                    <li>Dynamic workout and meal plans tailored to you.</li>
+                    <li>Monthly updates to prevent plateaus.</li>
+                    <li>Convenient app delivery with tracking and print-off options.</li>
+                </ul>
+            </section>
+            
+            <!-- Testimonials Section -->
+            <section id="testimonials" class="testimonials">
+                <h2>What Our Clients Say</h2>
+                <blockquote>
+                    <p>"From zero to warrior—my journey started here!"</p>
+                    <cite>- Alex T.</cite>
+                </blockquote>
+                <blockquote>
+                    <p>"This program transformed my life. I’ve never felt stronger."</p>
+                    <cite>- Jamie L.</cite>
+                </blockquote>
+            </section>
+            
+            <!-- Call-to-Action Banner -->
+            <section id="cta-banner" class="cta-banner">
+                <h4>Your transformation awaits. Begin forging your strength today!</h4>
+                <a href="quiz.html" class="cta-button">Get Started</a>
+            </section>
+            
+            <!-- Pricing Section -->
+            <section id="pricing" class="pricing">
+                <h2>Choose Your Plan</h2>
+                <div class="pricing-options">
+                    <div class="plan">
+                        <h3>Basic Plan</h3>
+                        <div style="height: 45px;"></div> <!-- Empty row -->
+                        <p>Monthly workout and meal plan updates.</p>
+                        <p>£19.99/month</p>
+                    </div>
+                    <div class="plan premium">
+                        <h3>Premium Plan</h3>
+                        <p>Additional features like personalized video coaching and advanced analytics.</p>
+                        <p>£34.99/month</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- FAQ Section -->
+            <section id="faq" class="faq">
+                <h2>Frequently Asked Questions</h2>
+                <div class="faq-item">
+                    <h3>What if I don’t want to download the app?</h3>
+                    <p>We offer a print-off option for those who prefer not to use the app.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>How are the plans customized?</h3>
+                    <p>Plans are based on your fitness goals, experience level, dietary preferences, and lifestyle.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Can I cancel anytime?</h3>
+                    <p>Yes, you can cancel your subscription at any time without any penalties.</p>
+                </div>
+            </section>
         </div>
-    </section>
-
-    <!-- FAQ Section -->
-    <section id="faq" class="faq">
-        <h2>Frequently Asked Questions</h2>
-        <div class="faq-item">
-            <h3>What if I don’t want to download the app?</h3>
-            <p>We offer a print-off option for those who prefer not to use the app.</p>
-        </div>
-        <div class="faq-item">
-            <h3>How are the plans customized?</h3>
-            <p>Plans are based on your fitness goals, experience level, dietary preferences, and lifestyle.</p>
-        </div>
-        <div class="faq-item">
-            <h3>Can I cancel anytime?</h3>
-            <p>Yes, you can cancel your subscription at any time without any penalties.</p>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2025 Forge of Olympus. All rights reserved.</p>
-        <ul class="footer-links">
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Contact</a></li>
-        </ul>
-    </footer>
+        
+        <footer class="footer">
+            <p>&copy; 2025 Forge of Olympus. All rights reserved.</p>
+            <ul class="footer-links">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </footer>
+    </div>
+    
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        // Handle option selection
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options in this group
+                this.parentNode.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+            });
+        });
+        
+        // Form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const email = document.getElementById('email').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+            const program = document.getElementById('program').value;
+            const delivery = document.getElementById('delivery').value;
+            
+            // Get program name for display
+            const programName = document.getElementById('program').options[document.getElementById('program').selectedIndex].text;
+            const deliveryType = document.getElementById('delivery').options[document.getElementById('delivery').selectedIndex].text;
+            
+            // In a real implementation, you would send this data to your server
+            // For this demo, we'll just show a confirmation message
+            alert(`Thank you for your order!\n\nEmail: ${email}\nWhatsApp: ${whatsapp}\nProgram: ${programName}\nDelivery: ${deliveryType}\n\nYou will be redirected to checkout.`);
+            
+            // Redirect to checkout (simulated)
+            setTimeout(() => {
+                window.location.href = "#";
+            }, 2000);
+        });
+    </script>
 </body>
 </html>
