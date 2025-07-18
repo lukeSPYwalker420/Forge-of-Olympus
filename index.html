@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forge of Olympus - Training Programs</title>
-    <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="common.css">
+    <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         /* Your CSS preserved exactly as provided */
         * {
@@ -41,7 +41,6 @@
             margin-inline: auto;
         }
 
-        /* FIXED HERO SECTION - using HeroImage.jpg */
         .hero-section {
             display: flex;
             justify-content: center;
@@ -49,7 +48,8 @@
             position: relative;
             width: 100%;
             min-height: 70vh;
-            background: url('HeroImage.jpg') no-repeat center center/cover;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
+                        url('HeroImage.jpg') no-repeat center center/cover;
             border-bottom: 5px solid #8b0000;
         }
 
@@ -67,19 +67,6 @@
             font-family: Eczar, serif;
             font-size: 2rem;
             text-align: center;
-        }
-
-        .hero-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: crimson;
-            text-align: center;
-            padding: 20px;
-            z-index: 2;
-            font-family: Eczar, serif;
-            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.8);
         }
 
         .hero-button {
@@ -132,7 +119,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.3);
             z-index: 1;
         }
 
@@ -214,13 +201,10 @@
             font-size: 14px;
         }
 
-        /* New styles for training programs */
+        /* Training Programs Section */
         .programs-section {
             padding: 60px 20px;
-            background: linear-gradient(rgba(26, 26, 26, 0.9), rgba(26, 26, 26, 0.9)), 
-                        url('https://images.unsplash.com/photo-1549060279-7e168fce7090?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
+            background: linear-gradient(rgba(26, 26, 26, 0.9), rgba(26, 26, 26, 0.9));
             border-bottom: 5px solid #8b0000;
         }
         
@@ -472,6 +456,26 @@
             display: none;
         }
         
+        .message {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .success {
+            background-color: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            color: #28a745;
+        }
+        
+        .error {
+            background-color: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            color: #dc3545;
+        }
+        
         @media (max-width: 768px) {
             #company-name {
                 font-size: 2.5rem;
@@ -495,7 +499,7 @@
     <div class="container">
         <h1 id="company-name">FORGE OF OLYMPUS</h1>
         
-        <!-- Hero Section with fixed image -->
+        <!-- Hero Section with fixed image visibility -->
         <section class="hero-section">
             <div class="overlay"></div>
             <div class="hero-content">
@@ -548,8 +552,8 @@
                     <div class="delivery-options">
                         <p class="delivery-title">Delivery Options</p>
                         <div class="options">
-                            <div class="option selected">12-Week Program</div>
-                            <div class="option">4-Week Modules</div>
+                            <div class="option selected" data-program="core" data-type="full">12-Week Program</div>
+                            <div class="option" data-program="core" data-type="module">4-Week Modules</div>
                         </div>
                     </div>
                 </div>
@@ -588,8 +592,8 @@
                     <div class="delivery-options">
                         <p class="delivery-title">Delivery Options</p>
                         <div class="options">
-                            <div class="option selected">12-Week Program</div>
-                            <div class="option">4-Week Modules</div>
+                            <div class="option selected" data-program="shoulders" data-type="full">12-Week Program</div>
+                            <div class="option" data-program="shoulders" data-type="module">4-Week Modules</div>
                         </div>
                     </div>
                 </div>
@@ -629,8 +633,8 @@
                     <div class="delivery-options">
                         <p class="delivery-title">Delivery Options</p>
                         <div class="options">
-                            <div class="option selected">12-Week Program</div>
-                            <div class="option">4-Week Modules</div>
+                            <div class="option selected" data-program="pelvis" data-type="full">12-Week Program</div>
+                            <div class="option" data-program="pelvis" data-type="module">4-Week Modules</div>
                         </div>
                     </div>
                 </div>
@@ -642,6 +646,8 @@
             <div class="contact-container">
                 <h3 class="form-title">Get Started Today</h3>
                 <form id="contactForm">
+                    <div id="formMessages"></div>
+                    
                     <div class="form-group">
                         <label for="email">Email Address (For Delivery)</label>
                         <div class="input-with-icon">
@@ -797,12 +803,25 @@
                 
                 // Add selected class to clicked option
                 this.classList.add('selected');
+                
+                // Update form selections
+                const program = this.getAttribute('data-program');
+                const delivery = this.getAttribute('data-type');
+                
+                document.getElementById('program').value = program;
+                document.getElementById('delivery').value = delivery;
             });
         });
         
         // Form submission
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            submitBtn.disabled = true;
             
             // Get form values
             const email = document.getElementById('email').value;
@@ -810,18 +829,56 @@
             const program = document.getElementById('program').value;
             const delivery = document.getElementById('delivery').value;
             
-            // Get program name for display
-            const programName = document.getElementById('program').options[document.getElementById('program').selectedIndex].text;
-            const deliveryType = document.getElementById('delivery').options[document.getElementById('delivery').selectedIndex].text;
+            // Clear previous messages
+            const formMessages = document.getElementById('formMessages');
+            formMessages.innerHTML = '';
             
-            // In a real implementation, you would send this data to your server
-            // For this demo, we'll just show a confirmation message
-            alert(`Thank you for your order!\n\nEmail: ${email}\nWhatsApp: ${whatsapp}\nProgram: ${programName}\nDelivery: ${deliveryType}\n\nYou will be redirected to checkout.`);
+            // Simple validation
+            if (!email || !whatsapp || !program || !delivery) {
+                formMessages.innerHTML = `
+                    <div class="message error">
+                        <i class="fas fa-exclamation-circle"></i> Please fill in all fields
+                    </div>
+                `;
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+                return;
+            }
             
-            // Redirect to checkout (simulated)
-            setTimeout(() => {
-                window.location.href = "#";
-            }, 2000);
+            try {
+                // Send data to server
+                const response = await fetch('/api/payment-links', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userEmail: email,
+                        program: program,
+                        delivery: delivery,
+                        whatsapp: whatsapp
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Redirect to Stripe checkout
+                    window.location.href = data.paymentUrl;
+                } else {
+                    throw new Error(data.error || 'Failed to create payment link');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                formMessages.innerHTML = `
+                    <div class="message error">
+                        <i class="fas fa-exclamation-circle"></i> ${error.message || 'An error occurred. Please try again.'}
+                    </div>
+                `;
+            } finally {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            }
         });
     </script>
 </body>
