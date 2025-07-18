@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forge of Olympus - Training Programs</title>
     <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Your CSS preserved exactly as provided */
         * {
@@ -39,6 +40,7 @@
             margin-inline: auto;
         }
 
+        /* FIXED HERO SECTION - using HeroImage.jpg */
         .hero-section {
             display: flex;
             justify-content: center;
@@ -47,8 +49,7 @@
             width: 100%;
             min-height: 70vh;
             background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                        url('https://images.unsplash.com/photo-1534367507871-8a21c2a1da4c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80') 
-                        no-repeat center center/cover;
+                        url('HeroImage.jpg') no-repeat center center/cover;
             border-bottom: 5px solid #8b0000;
         }
 
@@ -494,7 +495,7 @@
     <div class="container">
         <h1 id="company-name">FORGE OF OLYMPUS</h1>
         
-        <!-- Hero Section -->
+        <!-- Hero Section with fixed image -->
         <section class="hero-section">
             <div class="overlay"></div>
             <div class="hero-content">
@@ -785,7 +786,6 @@
         </footer>
     </div>
     
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
         // Handle option selection
         document.querySelectorAll('.option').forEach(option => {
