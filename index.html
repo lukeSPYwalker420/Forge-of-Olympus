@@ -40,7 +40,7 @@
             margin-inline: auto;
         }
 
-        /* FIXED HERO SECTION - using HeroImage.jpg */
+        /* FIXED HERO SECTION - reduced overlay darkness */
         .hero-section {
             display: flex;
             justify-content: center;
@@ -48,8 +48,10 @@
             position: relative;
             width: 100%;
             min-height: 70vh;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                        url('HeroImage.jpg') no-repeat center center/cover;
+            background: 
+                linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                url('https://images.unsplash.com/photo-1534367507871-8a21c2a1da4c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80') 
+                no-repeat center center/cover;
             border-bottom: 5px solid #8b0000;
         }
 
@@ -126,13 +128,14 @@
             transform: scale(1.05);
         }
 
+        /* Reduced overlay darkness */
         .overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.4); /* Reduced from 0.7 */
             z-index: 1;
         }
 
@@ -495,7 +498,7 @@
     <div class="container">
         <h1 id="company-name">FORGE OF OLYMPUS</h1>
         
-        <!-- Hero Section with fixed image -->
+        <!-- Hero Section with fixed image visibility -->
         <section class="hero-section">
             <div class="overlay"></div>
             <div class="hero-content">
