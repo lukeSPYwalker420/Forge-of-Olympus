@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Updated CSS with enhancements */
+        /* Enhanced CSS with UK currency and hero image */
         * {
             margin: 0;
             padding: 0;
@@ -60,23 +60,8 @@
             width: 100%;
             min-height: 70vh;
             background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
-                        radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%),
-                        linear-gradient(45deg, #8b0000, #1a1a1a);
+                        url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
             border-bottom: 5px solid #8b0000;
-            animation: gradientShift 15s ease infinite;
-            background-size: 400% 400%;
-        }
-
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
         }
 
         .hero-content {
@@ -534,14 +519,14 @@
             color: #dc3545;
         }
         
-        .payment-section {
+        .confirmation-section {
             padding: 60px 20px;
             background: #1a1a1a;
             border-top: 5px solid #8b0000;
             display: none;
         }
         
-        .payment-container {
+        .confirmation-container {
             max-width: 600px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.05);
@@ -549,31 +534,39 @@
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             border: 2px solid rgba(139, 0, 0, 0.3);
+            text-align: center;
         }
         
-        .payment-title {
+        .confirmation-title {
             font-size: 2rem;
             color: #ffcc33;
             margin-bottom: 20px;
             text-transform: uppercase;
         }
         
-        .order-summary {
+        .confirmation-icon {
+            font-size: 4rem;
+            color: #ffcc33;
+            margin-bottom: 20px;
+        }
+        
+        .order-details {
             background: rgba(0, 0, 0, 0.2);
             padding: 20px;
             border-radius: 8px;
-            margin-bottom: 30px;
+            margin: 30px 0;
             text-align: left;
         }
         
-        .order-summary h4 {
+        .order-details h4 {
             color: #ffcc33;
             margin-bottom: 15px;
             border-bottom: 1px solid #ffcc33;
             padding-bottom: 10px;
+            text-transform: uppercase;
         }
         
-        .summary-item {
+        .detail-item {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
@@ -581,64 +574,27 @@
             border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
         }
         
-        .payment-methods {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 30px 0;
-        }
-        
-        .payment-method {
-            background: rgba(255, 255, 255, 0.08);
-            border: 2px solid transparent;
-            border-radius: 8px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            width: 150px;
-        }
-        
-        .payment-method.selected {
-            border-color: #ffcc33;
-            background: rgba(255, 204, 51, 0.1);
-        }
-        
-        .payment-method i {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #ffcc33;
-        }
-        
-        .payment-method:hover {
-            transform: translateY(-5px);
-        }
-        
-        .pay-now-btn {
-            background: linear-gradient(45deg, #28a745, #218838);
-            color: white;
-            border: none;
+        .stripe-link {
+            display: inline-block;
+            margin-top: 30px;
             padding: 16px 40px;
+            background: linear-gradient(45deg, #635bff, #0a2540);
+            color: white;
             font-size: 1.1rem;
             font-weight: 600;
             border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(99, 91, 255, 0.3);
             text-transform: uppercase;
             letter-spacing: 1px;
             font-family: 'Eczar', serif;
-            margin-top: 20px;
-            width: 100%;
         }
         
-        .pay-now-btn:hover {
+        .stripe-link:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            box-shadow: 0 6px 20px rgba(99, 91, 255, 0.4);
+            background: linear-gradient(45deg, #0a2540, #635bff);
         }
         
         @media (max-width: 768px) {
@@ -657,11 +613,6 @@
             .programs-container {
                 grid-template-columns: 1fr;
             }
-            
-            .payment-methods {
-                flex-direction: column;
-                align-items: center;
-            }
         }
     </style>
 </head>
@@ -669,7 +620,7 @@
     <div class="container">
         <h1 id="company-name">FORGE OF OLYMPUS</h1>
         
-        <!-- Hero Section with fixed image visibility -->
+        <!-- Hero Section with image -->
         <section class="hero-section">
             <div class="overlay"></div>
             <div class="hero-content">
@@ -690,7 +641,7 @@
             <div class="programs-container">
                 <!-- Core Program -->
                 <div class="program-card">
-                    <div class="program-price">$149</div>
+                    <div class="program-price">£149</div>
                     <div class="program-header">
                         <h3 class="program-title">Core Program</h3>
                         <p class="program-subtitle">12-Week Comprehensive Transformation</p>
@@ -731,7 +682,7 @@
                 
                 <!-- Shoulders Program -->
                 <div class="program-card">
-                    <div class="program-price">$149</div>
+                    <div class="program-price">£149</div>
                     <div class="program-header">
                         <h3 class="program-title">Shoulders Program</h3>
                         <p class="program-subtitle">12-Week Comprehensive Transformation</p>
@@ -772,7 +723,7 @@
                 
                 <!-- Pelvis Program -->
                 <div class="program-card">
-                    <div class="program-price">$149</div>
+                    <div class="program-price">£149</div>
                     <div class="program-header">
                         <h3 class="program-title">Pelvis Program</h3>
                         <p class="program-subtitle">12-Week Comprehensive Transformation</p>
@@ -872,62 +823,53 @@
             </div>
         </section>
         
-        <!-- Payment Section -->
-        <section id="paymentSection" class="payment-section">
-            <div class="payment-container">
-                <h3 class="payment-title">Complete Your Purchase</h3>
-                <div class="order-summary">
+        <!-- Confirmation Section -->
+        <section id="confirmationSection" class="confirmation-section">
+            <div class="confirmation-container">
+                <div class="confirmation-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h3 class="confirmation-title">Confirm Your Order</h3>
+                
+                <div class="order-details">
                     <h4>Order Summary</h4>
-                    <div class="summary-item">
+                    <div class="detail-item">
+                        <span>Program:</span>
                         <span id="summaryProgram">Core Program - 12 Weeks</span>
-                        <span id="summaryPrice">$149.00</span>
                     </div>
-                    <div class="summary-item">
-                        <span>Tax</span>
-                        <span>$14.90</span>
+                    <div class="detail-item">
+                        <span>Price:</span>
+                        <span id="summaryPrice">£149.00</span>
                     </div>
-                    <div class="summary-item" style="font-weight: bold; border-bottom: none;">
-                        <span>Total</span>
-                        <span id="summaryTotal">$163.90</span>
+                    <div class="detail-item">
+                        <span>Tax:</span>
+                        <span>£0.00 (VAT exempt)</span>
                     </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="cardName">Cardholder Name</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="cardName" placeholder="Name on card" required>
+                    <div class="detail-item" style="font-weight: bold; border-bottom: none;">
+                        <span>Total:</span>
+                        <span id="summaryTotal">£149.00</span>
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="cardNumber">Card Number</label>
-                    <div class="input-with-icon">
-                        <i class="fas fa-credit-card"></i>
-                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required maxlength="19">
+                <div class="order-details">
+                    <h4>Delivery Information</h4>
+                    <div class="detail-item">
+                        <span>Email:</span>
+                        <span id="summaryEmail">customer@example.com</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>WhatsApp:</span>
+                        <span id="summaryWhatsapp">+44 1234 567890</span>
                     </div>
                 </div>
                 
-                <div style="display: flex; gap: 20px;">
-                    <div class="form-group" style="flex: 1;">
-                        <label for="expiryDate">Expiry Date</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-calendar"></i>
-                            <input type="text" id="expiryDate" placeholder="MM/YY" required maxlength="5">
-                        </div>
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label for="cvv">CVV</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-lock"></i>
-                            <input type="text" id="cvv" placeholder="123" required maxlength="3">
-                        </div>
-                    </div>
-                </div>
+                <a id="stripeLink" class="stripe-link" href="#" target="_blank">
+                    <i class="fab fa-stripe"></i> Complete Payment with Stripe
+                </a>
                 
-                <button id="payNowBtn" class="pay-now-btn">
-                    <i class="fas fa-lock"></i> Pay Now
-                </button>
+                <p style="margin-top: 30px; font-size: 0.9rem; opacity: 0.8;">
+                    You'll be redirected to Stripe's secure payment portal to complete your purchase
+                </p>
             </div>
         </section>
         
@@ -942,6 +884,25 @@
     </div>
     
     <script>
+        // Define Stripe payment links (replace with your actual links)
+        const stripeLinks = {
+            core: {
+                full: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk",
+                module: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk"
+            },
+            shoulders: {
+                full: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk",
+                module: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk"
+            },
+            pelvis: {
+                full: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk",
+                module: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk"
+            },
+            all: {
+                full: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk"
+            }
+        };
+        
         // Smooth scrolling for hero button
         document.querySelector('.hero-button').addEventListener('click', function(e) {
             e.preventDefault();
@@ -1014,11 +975,9 @@
             // If "All Three Programs" is selected, adjust price
             if (program === 'all') {
                 price = 399;
+                // For "all", only full program is available
+                delivery = 'full';
             }
-            
-            // Calculate tax and total
-            const tax = price * 0.1;
-            const total = price + tax;
             
             // Set the program name for summary
             let programName;
@@ -1042,92 +1001,44 @@
             // Add delivery type to program name
             const deliveryType = delivery === 'full' ? ' - 12 Weeks' : ' - 4-Week Module';
             
-            // Update payment summary
+            // Update confirmation details
             document.getElementById('summaryProgram').textContent = programName + deliveryType;
-            document.getElementById('summaryPrice').textContent = '$' + price.toFixed(2);
-            document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
+            document.getElementById('summaryPrice').textContent = '£' + price.toFixed(2);
+            document.getElementById('summaryTotal').textContent = '£' + price.toFixed(2);
+            document.getElementById('summaryEmail').textContent = email;
+            document.getElementById('summaryWhatsapp').textContent = whatsapp;
             
-            // Hide the contact form and show the payment section
+            // Set the correct Stripe link
+            let stripeUrl;
+            if (program === 'all') {
+                stripeUrl = stripeLinks.all.full;
+            } else {
+                stripeUrl = stripeLinks[program][delivery];
+            }
+            
+            document.getElementById('stripeLink').href = stripeUrl;
+            
+            // Hide the contact form and show the confirmation section
             document.querySelector('.contact-section').style.display = 'none';
-            document.getElementById('paymentSection').style.display = 'block';
+            document.getElementById('confirmationSection').style.display = 'block';
             
-            // Scroll to payment section
-            document.getElementById('paymentSection').scrollIntoView({ behavior: 'smooth' });
+            // Scroll to confirmation section
+            document.getElementById('confirmationSection').scrollIntoView({ behavior: 'smooth' });
             
             // Reset form button
             submitBtn.innerHTML = originalBtnText;
             submitBtn.disabled = false;
         });
         
-        // Payment processing
-        document.getElementById('payNowBtn').addEventListener('click', function() {
-            const cardName = document.getElementById('cardName').value;
-            const cardNumber = document.getElementById('cardNumber').value;
-            const expiryDate = document.getElementById('expiryDate').value;
-            const cvv = document.getElementById('cvv').value;
-            
-            if (!cardName || !cardNumber || !expiryDate || !cvv) {
-                alert('Please fill in all payment details');
-                return;
+        // Handle program change to disable delivery for "All Programs"
+        document.getElementById('program').addEventListener('change', function() {
+            const deliverySelect = document.getElementById('delivery');
+            if (this.value === 'all') {
+                deliverySelect.value = 'full';
+                deliverySelect.disabled = true;
+            } else {
+                deliverySelect.disabled = false;
             }
-            
-            // Show processing state
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Payment...';
-            this.disabled = true;
-            
-            // Simulate payment processing
-            setTimeout(() => {
-                // Show success message
-                const paymentContainer = document.querySelector('.payment-container');
-                paymentContainer.innerHTML = `
-                    <div style="text-align: center; padding: 40px;">
-                        <i class="fas fa-check-circle" style="font-size: 4rem; color: #28a745; margin-bottom: 20px;"></i>
-                        <h3 class="payment-title">Payment Successful!</h3>
-                        <p style="font-size: 1.2rem; margin-bottom: 30px;">
-                            Thank you for your purchase! Your program details will be sent to your email.
-                        </p>
-                        <p style="margin-bottom: 20px;">
-                            <i class="fas fa-envelope"></i> Sent to: ${document.getElementById('email').value}
-                        </p>
-                        <button id="backToPrograms" class="btn" style="margin-top: 20px;">
-                            <i class="fas fa-arrow-left"></i> Back to Programs
-                        </button>
-                    </div>
-                `;
-                
-                // Add event listener to the new button
-                document.getElementById('backToPrograms').addEventListener('click', function() {
-                    location.reload();
-                });
-            }, 2000);
-        });
-        
-        // Format card number
-        document.getElementById('cardNumber').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 16) value = value.substr(0, 16);
-            
-            let formatted = '';
-            for (let i = 0; i < value.length; i++) {
-                if (i > 0 && i % 4 === 0) formatted += ' ';
-                formatted += value[i];
-            }
-            
-            e.target.value = formatted;
-        });
-        
-        // Format expiry date
-        document.getElementById('expiryDate').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 4) value = value.substr(0, 4);
-            
-            let formatted = '';
-            for (let i = 0; i < value.length; i++) {
-                if (i === 2) formatted += '/';
-                formatted += value[i];
-            }
-            
-            e.target.value = formatted;
         });
     </script>
 </body>
