@@ -7,237 +7,135 @@
     <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Enhanced CSS with UK currency and hero image */
+        /* Modern, professional styling */
+        :root {
+            --gold: #ffcc33;
+            --crimson: #8b0000;
+            --dark-bg: #1a1a1a;
+            --darker-bg: #0d0d0d;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-light: #f5f5f5;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Eczar', serif;
-            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
-            color: #f5f5f5;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+            color: var(--text-light);
             line-height: 1.6;
-            margin: 0;
             text-align: center;
             min-height: 100vh;
         }
-
-        #company-name {
-            font-size: 4rem;
-            font-weight: 700;
-            font-family: Eczar, serif;
-            color: #ffcc33;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            text-align: center;
-            margin-top: 30px;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-            border-bottom: 2px solid crimson;
-            padding-bottom: 10px;
-            width: fit-content;
-            margin-inline: auto;
-            position: relative;
-        }
-
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 5px #ffcc33, 0 0 10px #ffcc33;
-            }
-            to {
-                text-shadow: 0 0 10px #ffcc33, 0 0 20px #ffcc33, 0 0 30px #ff9900;
-            }
-        }
-
-        .hero-section {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            position: relative;
-            width: 100%;
-            min-height: 70vh;
-            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
-                        url('HeroImage.jpg') no-repeat center center/cover;
-            border-bottom: 5px solid #8b0000;
-        }
-
-        .hero-content {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            max-width: 100%;
-            margin-bottom: 20px;
-            padding: 20px;
-            color: white;
-            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.8);
-            z-index: 2;
-            font-family: Eczar, serif;
-            font-size: 2rem;
-            text-align: center;
-        }
-
-        .hero-button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 24px;
-            background: linear-gradient(45deg, crimson, #ffcc33);
-            border: none;
-            color: #fff;
-            font-family: Eczar, serif;
-            font-size: 1.2rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-            border-radius: 5px;
-            cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.3s ease;
-            z-index: 2;
-            text-transform: uppercase;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.7);
-            }
-            70% {
-                transform: scale(1.05);
-                box-shadow: 0 0 0 10px rgba(255, 51, 51, 0);
-            }
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(255, 51, 51, 0);
-            }
-        }
-
-        .hero-button:hover {
-            transform: scale(1.05);
-            background: linear-gradient(45deg, #ffcc33, crimson);
-            animation: none;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            font-family: Eczar, serif;
-            font-weight: bold;
-            text-align: center;
-            color: #fff;
-            background-color: #8b0000;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.3s;
-            text-transform: uppercase;
-            border: 2px solid #8b0000;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .cta-button:hover {
-            background-color: #a40000;
-            transform: scale(1.05);
-        }
-
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 1;
-        }
-
-        .footer {
-            background-color: #8b0000;
-            color: #fff;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .footer p {
-            margin-bottom: 10px;
-        }
-
-        .footer-links {
-            list-style-type: none;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .footer-links li {
-            font-size: 1rem;
-        }
-
-        .footer-links a {
-            color: #fff;
-            text-decoration: none;
-        }
-
-        .footer-links a:hover {
-            text-decoration: underline;
-        }
-
-        a {
-            color: #ffcc33;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        a:hover {
-            color: crimson;
-        }
-
-        button {
-            background: linear-gradient(45deg, crimson, #ffcc33);
-            border: none;
-            color: #f5f5f5;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.3s ease;
-        }
-
-        button:hover {
-            transform: scale(1.05);
-            background: linear-gradient(45deg, #ffcc33, crimson);
-        }
-
-        h1, h2, h3, h4 {
-            color: #ffcc33;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
+        
         .container {
             width: 90%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-
-        footer {
-            text-align: center;
-            padding: 10px;
-            background-color: #111;
-            color: #888;
-            font-size: 14px;
+        
+        /* Header & Hero */
+        header {
+            padding: 20px 0;
         }
-
-        /* Training Programs Section */
+        
+        #company-name {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+            border-bottom: 2px solid var(--crimson);
+            padding-bottom: 10px;
+            width: fit-content;
+            margin: 0 auto;
+            position: relative;
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 5px var(--gold), 0 0 10px var(--gold); }
+            to { text-shadow: 0 0 15px var(--gold), 0 0 25px var(--gold); }
+        }
+        
+        .hero-section {
+            position: relative;
+            width: 100%;
+            min-height: 70vh;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url('HeroImage.jpg') no-repeat center center/cover;
+            border-bottom: 5px solid var(--crimson);
+            margin-bottom: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            position: relative;
+            padding: 40px 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            z-index: 2;
+            max-width: 800px;
+        }
+        
+        .hero-content h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .hero-content p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .hero-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, var(--crimson), var(--gold));
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.4);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 51, 51, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); }
+        }
+        
+        .hero-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(139, 0, 0, 0.6);
+            animation: none;
+        }
+        
+        /* Programs Section */
         .programs-section {
-            padding: 60px 20px;
-            background: linear-gradient(rgba(26, 26, 26, 0.9), rgba(26, 26, 26, 0.9));
-            border-bottom: 5px solid #8b0000;
+            padding: 60px 0;
         }
         
         .section-title {
             font-size: 2.5rem;
-            color: #ffcc33;
+            color: var(--gold);
             margin-bottom: 40px;
             text-transform: uppercase;
             letter-spacing: 3px;
@@ -253,7 +151,7 @@
             transform: translateX(-50%);
             width: 100px;
             height: 3px;
-            background: linear-gradient(45deg, crimson, #ffcc33);
+            background: linear-gradient(45deg, var(--crimson), var(--gold));
         }
         
         .programs-container {
@@ -264,32 +162,37 @@
         }
         
         .program-card {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--card-bg);
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
+            transition: all 0.3s;
             border: 2px solid rgba(139, 0, 0, 0.3);
             position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         
         .program-card:hover {
             transform: translateY(-10px);
             border-color: rgba(139, 0, 0, 0.7);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
         }
         
         .program-price {
             position: absolute;
-            top: -10px;
-            right: -10px;
-            background: linear-gradient(45deg, crimson, #ff9900);
+            top: -15px;
+            right: -15px;
+            background: linear-gradient(45deg, var(--crimson), var(--gold));
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 30px;
             font-weight: bold;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             z-index: 10;
+            transform: rotate(5deg);
         }
         
         .program-header {
@@ -302,40 +205,35 @@
             font-size: 1.8rem;
             font-weight: 700;
             margin-bottom: 10px;
-            color: #ffcc33;
+            color: var(--gold);
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-        }
-        
-        .program-subtitle {
-            font-size: 1.1rem;
-            color: #f5f5f5;
-            opacity: 0.9;
         }
         
         .program-content {
             padding: 25px;
+            flex: 1;
         }
         
         .phase {
             margin-bottom: 25px;
-            padding: 15px;
+            padding: 20px;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 8px;
-            border-left: 3px solid #ffcc33;
+            border-left: 3px solid var(--gold);
         }
         
         .phase-title {
             font-size: 1.3rem;
             font-weight: 600;
             margin-bottom: 15px;
-            color: #ffcc33;
+            color: var(--gold);
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
         .phase-title i {
-            color: crimson;
+            color: var(--crimson);
         }
         
         .phase-items {
@@ -351,9 +249,10 @@
         
         .phase-items li::before {
             content: "•";
-            color: #ffcc33;
+            color: var(--gold);
             position: absolute;
             left: 0;
+            font-weight: bold;
         }
         
         .delivery-options {
@@ -367,7 +266,7 @@
             font-size: 1.1rem;
             margin-bottom: 15px;
             font-weight: 600;
-            color: #ffcc33;
+            color: var(--gold);
         }
         
         .options {
@@ -375,208 +274,32 @@
             justify-content: center;
             gap: 15px;
             flex-wrap: wrap;
+            margin-bottom: 20px;
         }
         
         .option {
             background: rgba(255, 255, 255, 0.1);
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 6px;
             font-weight: 500;
-            transition: background 0.3s;
+            transition: all 0.3s;
             cursor: pointer;
             border: 1px solid rgba(255, 204, 51, 0.3);
         }
         
         .option.selected {
             background: linear-gradient(45deg, rgba(139, 0, 0, 0.7), rgba(255, 204, 51, 0.4));
-            border-color: #ffcc33;
+            border-color: var(--gold);
         }
         
         .option:hover {
             background: rgba(255, 255, 255, 0.2);
         }
         
-        .contact-section {
-            padding: 60px 20px;
-            background: #1a1a1a;
-            border-top: 5px solid #8b0000;
-        }
-        
-        .contact-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(139, 0, 0, 0.3);
-        }
-        
-        .form-title {
-            font-size: 1.8rem;
-            color: #ffcc33;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-        }
-        
-        .form-group {
-            margin-bottom: 25px;
-            text-align: left;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #ffcc33;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .input-with-icon {
-            position: relative;
-        }
-        
-        .input-with-icon i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #ffcc33;
-            font-size: 1.2rem;
-        }
-        
-        input, select {
-            width: 100%;
-            padding: 15px 15px 15px 50px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 204, 51, 0.3);
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-            font-family: 'Eczar', serif;
-        }
-        
-        input:focus, select:focus {
-            outline: none;
-            border-color: #ffcc33;
-        }
-        
-        .btn-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
-        }
-        
-        .btn {
-            background: linear-gradient(45deg, crimson, #ffcc33);
-            color: white;
-            border: none;
-            padding: 16px 40px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: 'Eczar', serif;
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255, 106, 0, 0.4);
-        }
-        
-        .hidden-content {
-            display: none;
-        }
-        
-        .message {
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 1.1rem;
-        }
-        
-        .success {
-            background-color: rgba(40, 167, 69, 0.2);
-            border: 1px solid #28a745;
-            color: #28a745;
-        }
-        
-        .error {
-            background-color: rgba(220, 53, 69, 0.2);
-            border: 1px solid #dc3545;
-            color: #dc3545;
-        }
-        
-        .confirmation-section {
-            padding: 60px 20px;
-            background: #1a1a1a;
-            border-top: 5px solid #8b0000;
-            display: none;
-        }
-        
-        .confirmation-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(139, 0, 0, 0.3);
-            text-align: center;
-        }
-        
-        .confirmation-title {
-            font-size: 2rem;
-            color: #ffcc33;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-        
-        .confirmation-icon {
-            font-size: 4rem;
-            color: #ffcc33;
-            margin-bottom: 20px;
-        }
-        
-        .order-details {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            border-radius: 8px;
-            margin: 30px 0;
-            text-align: left;
-        }
-        
-        .order-details h4 {
-            color: #ffcc33;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #ffcc33;
-            padding-bottom: 10px;
-            text-transform: uppercase;
-        }
-        
-        .detail-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-        }
-        
-        .stripe-link {
+        .stripe-button {
             display: inline-block;
-            margin-top: 30px;
-            padding: 16px 40px;
+            width: 100%;
+            padding: 16px;
             background: linear-gradient(45deg, #635bff, #0a2540);
             color: white;
             font-size: 1.1rem;
@@ -588,12 +311,84 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             font-family: 'Eczar', serif;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         
-        .stripe-link:hover {
+        .stripe-button:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(99, 91, 255, 0.4);
             background: linear-gradient(45deg, #0a2540, #635bff);
+        }
+        
+        .stripe-button i {
+            font-size: 1.5rem;
+        }
+        
+        .stripe-price {
+            font-size: 1.3rem;
+            margin-left: 5px;
+            font-weight: 700;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--crimson);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: 60px;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 300px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .footer-section h3 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--gold);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
         }
         
         @media (max-width: 768px) {
@@ -601,8 +396,12 @@
                 font-size: 2.5rem;
             }
             
-            .hero-content {
-                font-size: 1.5rem;
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-content p {
+                font-size: 1.2rem;
             }
             
             .section-title {
@@ -617,11 +416,11 @@
 </head>
 <body>
     <div class="container">
-        <h1 id="company-name">FORGE OF OLYMPUS</h1>
+        <header>
+            <h1 id="company-name">FORGE OF OLYMPUS</h1>
+        </header>
         
-        <!-- Hero Section with image -->
         <section class="hero-section">
-            <div class="overlay"></div>
             <div class="hero-content">
                 <h1>Transform Your Body</h1>
                 <p>Specialized 12-week programs for Core, Shoulders & Pelvis</p>
@@ -629,12 +428,10 @@
             </div>
         </section>
         
-        <!-- Training Programs Section -->
         <section id="programs" class="programs-section">
             <h2 class="section-title">Training Programs</h2>
             <p style="max-width: 800px; margin: 0 auto 40px; font-size: 1.2rem;">
-                Each 12-week program is divided into three 4-week phases that build upon each other. 
-                You can purchase the full 12-week program or individual 4-week modules.
+                Each 12-week program is divided into three 4-week phases. Select your preferred delivery option and complete your purchase with Stripe.
             </p>
             
             <div class="programs-container">
@@ -643,7 +440,7 @@
                     <div class="program-price">£149</div>
                     <div class="program-header">
                         <h3 class="program-title">Core Program</h3>
-                        <p class="program-subtitle">12-Week Comprehensive Transformation</p>
+                        <p>12-Week Comprehensive Transformation</p>
                     </div>
                     <div class="program-content">
                         <div class="phase">
@@ -673,9 +470,14 @@
                     <div class="delivery-options">
                         <p class="delivery-title">Delivery Options</p>
                         <div class="options">
-                            <div class="option selected" data-program="core" data-type="full" data-price="149">12-Week Program</div>
-                            <div class="option" data-program="core" data-type="module" data-price="59">4-Week Modules</div>
+                            <div class="option selected" data-program="core" data-type="full">Full Program</div>
+                            <div class="option" data-program="core" data-type="module">Phased Modules</div>
                         </div>
+                        
+                        <button class="stripe-button" id="core-button">
+                            <i class="fab fa-stripe"></i> Complete Payment: 
+                            <span class="stripe-price">£149</span>
+                        </button>
                     </div>
                 </div>
                 
@@ -684,7 +486,7 @@
                     <div class="program-price">£149</div>
                     <div class="program-header">
                         <h3 class="program-title">Shoulders Program</h3>
-                        <p class="program-subtitle">12-Week Comprehensive Transformation</p>
+                        <p>12-Week Comprehensive Transformation</p>
                     </div>
                     <div class="program-content">
                         <div class="phase">
@@ -714,9 +516,14 @@
                     <div class="delivery-options">
                         <p class="delivery-title">Delivery Options</p>
                         <div class="options">
-                            <div class="option selected" data-program="shoulders" data-type="full" data-price="149">12-Week Program</div>
-                            <div class="option" data-program="shoulders" data-type="module" data-price="59">4-Week Modules</div>
+                            <div class="option selected" data-program="shoulders" data-type="full">Full Program</div>
+                            <div class="option" data-program="shoulders" data-type="module">Phased Modules</div>
                         </div>
+                        
+                        <button class="stripe-button" id="shoulders-button">
+                            <i class="fab fa-stripe"></i> Complete Payment: 
+                            <span class="stripe-price">£149</span>
+                        </button>
                     </div>
                 </div>
                 
@@ -725,7 +532,7 @@
                     <div class="program-price">£149</div>
                     <div class="program-header">
                         <h3 class="program-title">Pelvis Program</h3>
-                        <p class="program-subtitle">12-Week Comprehensive Transformation</p>
+                        <p>12-Week Comprehensive Transformation</p>
                     </div>
                     <div class="program-content">
                         <div class="phase">
@@ -756,129 +563,49 @@
                     <div class="delivery-options">
                         <p class="delivery-title">Delivery Options</p>
                         <div class="options">
-                            <div class="option selected" data-program="pelvis" data-type="full" data-price="149">12-Week Program</div>
-                            <div class="option" data-program="pelvis" data-type="module" data-price="59">4-Week Modules</div>
+                            <div class="option selected" data-program="pelvis" data-type="full">Full Program</div>
+                            <div class="option" data-program="pelvis" data-type="module">Phased Modules</div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Contact Section -->
-        <section class="contact-section">
-            <div class="contact-container">
-                <h3 class="form-title">Get Started Today</h3>
-                <form id="contactForm">
-                    <div id="formMessages"></div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email Address (For Delivery)</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" id="email" name="email" placeholder="Enter your email" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="whatsapp">WhatsApp Number (For Ongoing Support)</label>
-                        <div class="input-with-icon">
-                            <i class="fab fa-whatsapp"></i>
-                            <input type="tel" id="whatsapp" name="whatsapp" placeholder="Enter your WhatsApp number" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="program">Select Your Program</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-clipboard-list"></i>
-                            <select id="program" name="program" required>
-                                <option value="">Choose a training program</option>
-                                <option value="core">Core Program (12 Weeks)</option>
-                                <option value="shoulders">Shoulders Program (12 Weeks)</option>
-                                <option value="pelvis">Pelvis Program (12 Weeks)</option>
-                                <option value="all">All Three Programs (Complete Transformation)</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="delivery">Delivery Option</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-box"></i>
-                            <select id="delivery" name="delivery" required>
-                                <option value="">Select delivery option</option>
-                                <option value="full">12-Week Full Program</option>
-                                <option value="module">4-Week Phased Modules</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="btn-container">
-                        <button type="submit" class="btn">
-                            <i class="fas fa-shopping-cart"></i> Proceed to Checkout
+                        
+                        <button class="stripe-button" id="pelvis-button">
+                            <i class="fab fa-stripe"></i> Complete Payment: 
+                            <span class="stripe-price">£149</span>
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </section>
         
-        <!-- Confirmation Section -->
-        <section id="confirmationSection" class="confirmation-section">
-            <div class="confirmation-container">
-                <div class="confirmation-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <h3 class="confirmation-title">Confirm Your Order</h3>
-                
-                <div class="order-details">
-                    <h4>Order Summary</h4>
-                    <div class="detail-item">
-                        <span>Program:</span>
-                        <span id="summaryProgram">Core Program - 12 Weeks</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Price:</span>
-                        <span id="summaryPrice">£149.00</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Tax:</span>
-                        <span>£0.00 (VAT exempt)</span>
-                    </div>
-                    <div class="detail-item" style="font-weight: bold; border-bottom: none;">
-                        <span>Total:</span>
-                        <span id="summaryTotal">£149.00</span>
-                    </div>
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Forge of Olympus</h3>
+                    <p>Specialized training programs designed to transform your body and enhance performance.</p>
                 </div>
                 
-                <div class="order-details">
-                    <h4>Delivery Information</h4>
-                    <div class="detail-item">
-                        <span>Email:</span>
-                        <span id="summaryEmail">customer@example.com</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>WhatsApp:</span>
-                        <span id="summaryWhatsapp">+44 1234 567890</span>
-                    </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#programs">Programs</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
                 </div>
                 
-                <a id="stripeLink" class="stripe-link" href="#" target="_blank">
-                    <i class="fab fa-stripe"></i> Complete Payment with Stripe
-                </a>
-                
-                <p style="margin-top: 30px; font-size: 0.9rem; opacity: 0.8;">
-                    You'll be redirected to Stripe's secure payment portal to complete your purchase
-                </p>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                    </ul>
+                </div>
             </div>
-        </section>
-        
-        <footer class="footer">
-            <p>&copy; 2025 Forge of Olympus. All rights reserved.</p>
-            <ul class="footer-links">
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
+            
+            <div class="copyright">
+                <p>&copy; 2025 Forge of Olympus. All rights reserved.</p>
+            </div>
         </footer>
     </div>
     
@@ -896,24 +623,32 @@
             pelvis: {
                 full: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk",
                 module: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk"
-            },
-            all: {
-                full: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk"
             }
         };
         
-        // Smooth scrolling for hero button
-        document.querySelector('.hero-button').addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector('#programs');
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
+        // Prices for each option
+        const prices = {
+            full: 149,
+            module: 59
+        };
+        
+        // Initialize program selections
+        const programSelections = {
+            core: 'full',
+            shoulders: 'full',
+            pelvis: 'full'
+        };
         
         // Handle option selection
         document.querySelectorAll('.option').forEach(option => {
             option.addEventListener('click', function() {
+                const program = this.getAttribute('data-program');
+                const deliveryType = this.getAttribute('data-type');
+                
+                // Update selection
+                programSelections[program] = deliveryType;
+                
+                // Update UI
                 // Remove selected class from all options in this group
                 this.parentNode.querySelectorAll('.option').forEach(opt => {
                     opt.classList.remove('selected');
@@ -922,122 +657,37 @@
                 // Add selected class to clicked option
                 this.classList.add('selected');
                 
-                // Update form selections
-                const program = this.getAttribute('data-program');
-                const delivery = this.getAttribute('data-type');
-                const price = parseFloat(this.getAttribute('data-price'));
+                // Update button
+                const button = document.getElementById(`${program}-button`);
+                const priceSpan = button.querySelector('.stripe-price');
                 
-                document.getElementById('program').value = program;
-                document.getElementById('delivery').value = delivery;
+                // Update price
+                priceSpan.textContent = `£${prices[deliveryType]}`;
             });
         });
         
-        // Form submission
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Show loading state
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            submitBtn.disabled = true;
-            
-            // Get form values
-            const email = document.getElementById('email').value;
-            const whatsapp = document.getElementById('whatsapp').value;
-            const program = document.getElementById('program').value;
-            const delivery = document.getElementById('delivery').value;
-            
-            // Clear previous messages
-            const formMessages = document.getElementById('formMessages');
-            formMessages.innerHTML = '';
-            
-            // Simple validation
-            if (!email || !whatsapp || !program || !delivery) {
-                formMessages.innerHTML = `
-                    <div class="message error">
-                        <i class="fas fa-exclamation-circle"></i> Please fill in all fields
-                    </div>
-                `;
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-                return;
-            }
-            
-            // Get the selected program card option to determine price
-            let price = 149; // Default price
-            const selectedOption = document.querySelector('.option.selected');
-            if (selectedOption) {
-                price = parseFloat(selectedOption.getAttribute('data-price'));
-            }
-            
-            // If "All Three Programs" is selected, adjust price
-            if (program === 'all') {
-                price = 399;
-                // For "all", only full program is available
-                delivery = 'full';
-            }
-            
-            // Set the program name for summary
-            let programName;
-            switch(program) {
-                case 'core':
-                    programName = 'Core Program';
-                    break;
-                case 'shoulders':
-                    programName = 'Shoulders Program';
-                    break;
-                case 'pelvis':
-                    programName = 'Pelvis Program';
-                    break;
-                case 'all':
-                    programName = 'All Three Programs';
-                    break;
-                default:
-                    programName = 'Training Program';
-            }
-            
-            // Add delivery type to program name
-            const deliveryType = delivery === 'full' ? ' - 12 Weeks' : ' - 4-Week Module';
-            
-            // Update confirmation details
-            document.getElementById('summaryProgram').textContent = programName + deliveryType;
-            document.getElementById('summaryPrice').textContent = '£' + price.toFixed(2);
-            document.getElementById('summaryTotal').textContent = '£' + price.toFixed(2);
-            document.getElementById('summaryEmail').textContent = email;
-            document.getElementById('summaryWhatsapp').textContent = whatsapp;
-            
-            // Set the correct Stripe link
-            let stripeUrl;
-            if (program === 'all') {
-                stripeUrl = stripeLinks.all.full;
-            } else {
-                stripeUrl = stripeLinks[program][delivery];
-            }
-            
-            document.getElementById('stripeLink').href = stripeUrl;
-            
-            // Hide the contact form and show the confirmation section
-            document.querySelector('.contact-section').style.display = 'none';
-            document.getElementById('confirmationSection').style.display = 'block';
-            
-            // Scroll to confirmation section
-            document.getElementById('confirmationSection').scrollIntoView({ behavior: 'smooth' });
-            
-            // Reset form button
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
+        // Handle Stripe button clicks
+        document.getElementById('core-button').addEventListener('click', function() {
+            const deliveryType = programSelections.core;
+            window.location.href = stripeLinks.core[deliveryType];
         });
         
-        // Handle program change to disable delivery for "All Programs"
-        document.getElementById('program').addEventListener('change', function() {
-            const deliverySelect = document.getElementById('delivery');
-            if (this.value === 'all') {
-                deliverySelect.value = 'full';
-                deliverySelect.disabled = true;
-            } else {
-                deliverySelect.disabled = false;
-            }
+        document.getElementById('shoulders-button').addEventListener('click', function() {
+            const deliveryType = programSelections.shoulders;
+            window.location.href = stripeLinks.shoulders[deliveryType];
+        });
+        
+        document.getElementById('pelvis-button').addEventListener('click', function() {
+            const deliveryType = programSelections.pelvis;
+            window.location.href = stripeLinks.pelvis[deliveryType];
+        });
+        
+        // Smooth scrolling
+        document.querySelector('.hero-button').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector('#programs').scrollIntoView({
+                behavior: 'smooth'
+            });
         });
     </script>
 </body>
