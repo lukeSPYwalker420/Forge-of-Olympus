@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forge of Olympus - Training Programs</title>
-    <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Forge of Olympus - Premium Training Programs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Modern, professional styling */
         :root {
-            --gold: #ffcc33;
-            --crimson: #8b0000;
-            --dark-bg: #1a1a1a;
-            --darker-bg: #0d0d0d;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --text-light: #f5f5f5;
+            --primary: #1a1d24;
+            --secondary: #2c3039;
+            --accent: #d4af37;
+            --accent-dark: #b08c2a;
+            --text-light: #f5f5f7;
+            --text-gray: #a1a1aa;
+            --success: #10b981;
+            --card-bg: #232732;
+            --border: rgba(255, 255, 255, 0.08);
         }
         
         * {
@@ -24,12 +26,11 @@
         }
         
         body {
-            font-family: 'Eczar', serif;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--primary);
             color: var(--text-light);
             line-height: 1.6;
-            text-align: center;
-            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
         
         .container {
@@ -41,27 +42,28 @@
         
         /* Header & Hero */
         header {
-            padding: 20px 0;
+            padding: 30px 0;
+            border-bottom: 1px solid var(--border);
         }
         
         #company-name {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-            border-bottom: 2px solid var(--crimson);
-            padding-bottom: 10px;
-            width: fit-content;
-            margin: 0 auto;
-            position: relative;
-            animation: glow 2s infinite alternate;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 1px;
+            text-align: center;
+            margin-bottom: 10px;
         }
         
-        @keyframes glow {
-            from { text-shadow: 0 0 5px var(--gold), 0 0 10px var(--gold); }
-            to { text-shadow: 0 0 15px var(--gold), 0 0 25px var(--gold); }
+        .tagline {
+            text-align: center;
+            color: var(--text-gray);
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin-bottom: 40px;
         }
         
         .hero-section {
@@ -69,76 +71,77 @@
             width: 100%;
             min-height: 70vh;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
                         url('HeroImage.jpg') no-repeat center center/cover;
-            border-bottom: 5px solid var(--crimson);
-            margin-bottom: 40px;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
+            margin-bottom: 60px;
         }
         
         .hero-content {
             position: relative;
-            padding: 40px 20px;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-            z-index: 2;
+            padding: 40px;
+            text-align: center;
             max-width: 800px;
+            z-index: 2;
         }
         
         .hero-content h1 {
-            font-size: 3rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 3.2rem;
+            font-weight: 800;
             margin-bottom: 20px;
-            color: white;
+            line-height: 1.2;
         }
         
         .hero-content p {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
+            font-size: 1.3rem;
+            margin-bottom: 35px;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .hero-button {
             display: inline-block;
-            padding: 15px 30px;
-            background: linear-gradient(45deg, var(--crimson), var(--gold));
+            padding: 16px 40px;
+            background: var(--accent);
             border: none;
-            color: white;
-            font-size: 1.2rem;
+            color: var(--primary);
+            font-size: 1.1rem;
             font-weight: 600;
             text-transform: uppercase;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-decoration: none;
-            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.4);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 51, 51, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); }
+            letter-spacing: 1px;
         }
         
         .hero-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(139, 0, 0, 0.6);
-            animation: none;
+            background: var(--accent-dark);
+            transform: translateY(-2px);
         }
         
         /* Programs Section */
         .programs-section {
-            padding: 60px 0;
+            padding: 20px 0 60px;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
         }
         
         .section-title {
-            font-size: 2.5rem;
-            color: var(--gold);
-            margin-bottom: 40px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.6rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--text-light);
             position: relative;
             display: inline-block;
         }
@@ -146,28 +149,36 @@
         .section-title::after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -15px;
             left: 50%;
             transform: translateX(-50%);
-            width: 100px;
+            width: 80px;
             height: 3px;
-            background: linear-gradient(45deg, var(--crimson), var(--gold));
+            background: var(--accent);
+        }
+        
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            max-width: 700px;
+            margin: 30px auto 0;
+            line-height: 1.7;
         }
         
         .programs-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 30px;
-            margin-top: 40px;
+            margin-top: 50px;
         }
         
         .program-card {
             background: var(--card-bg);
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s;
-            border: 2px solid rgba(139, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
             position: relative;
             display: flex;
             flex-direction: column;
@@ -176,194 +187,256 @@
         
         .program-card:hover {
             transform: translateY(-10px);
-            border-color: rgba(139, 0, 0, 0.7);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
         
         .program-price {
             position: absolute;
-            top: -15px;
-            right: -15px;
-            background: linear-gradient(45deg, var(--crimson), var(--gold));
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
             z-index: 10;
-            transform: rotate(5deg);
         }
         
         .program-header {
-            padding: 25px;
-            background: linear-gradient(45deg, rgba(139, 0, 0, 0.7), rgba(255, 204, 51, 0.4));
+            padding: 40px 30px 30px;
             text-align: center;
+            border-bottom: 1px solid var(--border);
         }
         
         .program-title {
+            font-family: 'Playfair Display', serif;
             font-size: 1.8rem;
             font-weight: 700;
             margin-bottom: 10px;
-            color: var(--gold);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+            color: var(--text-light);
+        }
+        
+        .program-subtitle {
+            color: var(--text-gray);
+            font-size: 1rem;
         }
         
         .program-content {
-            padding: 25px;
+            padding: 30px;
             flex: 1;
         }
         
         .phase {
             margin-bottom: 25px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            border-left: 3px solid var(--gold);
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .phase:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
         }
         
         .phase-title {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--gold);
+            margin-bottom: 18px;
+            color: var(--accent);
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
         .phase-title i {
-            color: var(--crimson);
+            font-size: 1.1rem;
+            width: 30px;
+            height: 30px;
+            background: rgba(212, 175, 55, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .phase-items {
-            text-align: left;
-            padding-left: 25px;
+            padding-left: 40px;
         }
         
         .phase-items li {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             position: relative;
-            padding-left: 10px;
+            color: var(--text-gray);
+            line-height: 1.5;
         }
         
         .phase-items li::before {
             content: "•";
-            color: var(--gold);
+            color: var(--accent);
             position: absolute;
-            left: 0;
+            left: -20px;
             font-weight: bold;
+            font-size: 1.2rem;
         }
         
         .delivery-options {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            border-top: 1px solid rgba(255, 204, 51, 0.2);
-            text-align: center;
+            padding: 25px 30px;
+            background: rgba(0, 0, 0, 0.15);
+            border-top: 1px solid var(--border);
         }
         
         .delivery-title {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
+            font-size: 1rem;
+            margin-bottom: 18px;
             font-weight: 600;
-            color: var(--gold);
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .options {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .option {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             padding: 12px 24px;
             border-radius: 6px;
             font-weight: 500;
             transition: all 0.3s;
             cursor: pointer;
-            border: 1px solid rgba(255, 204, 51, 0.3);
+            border: 1px solid var(--border);
+            font-size: 0.95rem;
         }
         
         .option.selected {
-            background: linear-gradient(45deg, rgba(139, 0, 0, 0.7), rgba(255, 204, 51, 0.4));
-            border-color: var(--gold);
-        }
-        
-        .option:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--accent);
+            color: var(--accent);
         }
         
         .stripe-button {
-            display: inline-block;
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(45deg, #635bff, #0a2540);
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(99, 91, 255, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: 'Eczar', serif;
-            border: none;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 100%;
+            padding: 16px;
+            background: var(--secondary);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Montserrat', sans-serif;
+            border: none;
+            cursor: pointer;
             gap: 10px;
         }
         
         .stripe-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(99, 91, 255, 0.4);
-            background: linear-gradient(45deg, #0a2540, #635bff);
-        }
-        
-        .stripe-button i {
-            font-size: 1.5rem;
+            background: #363b47;
         }
         
         .stripe-price {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             margin-left: 5px;
             font-weight: 700;
+            color: var(--accent);
+        }
+        
+        /* Testimonials */
+        .testimonials-section {
+            padding: 80px 0;
+            background: var(--secondary);
+            border-radius: 12px;
+            margin: 60px 0;
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 30px;
+            border: 1px solid var(--border);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 25px;
+            line-height: 1.7;
+            color: var(--text-gray);
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .author-info h4 {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .author-info p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
         }
         
         /* Footer */
         footer {
-            background-color: var(--crimson);
+            background-color: var(--secondary);
             color: white;
-            padding: 40px 0 20px;
-            margin-top: 60px;
-            border-radius: 10px 10px 0 0;
+            padding: 60px 0 30px;
+            border-radius: 12px 12px 0 0;
         }
         
         .footer-content {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
         
-        .footer-section {
-            flex: 1;
-            min-width: 300px;
-            margin-bottom: 30px;
-            text-align: left;
+        .footer-section h3 {
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
         }
         
-        .footer-section h3 {
-            color: var(--gold);
+        .footer-section p {
+            color: var(--text-gray);
+            line-height: 1.7;
             margin-bottom: 20px;
-            font-size: 1.5rem;
         }
         
         .footer-links {
@@ -371,37 +444,71 @@
         }
         
         .footer-links li {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         
         .footer-links a {
-            color: white;
+            color: var(--text-gray);
             text-decoration: none;
-            transition: color 0.3s;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-links a i {
+            width: 20px;
+            text-align: center;
         }
         
         .footer-links a:hover {
-            color: var(--gold);
+            color: var(--accent);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            color: var(--text-gray);
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: var(--accent);
+            color: var(--primary);
+            transform: translateY(-3px);
         }
         
         .copyright {
             text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 20px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+            color: var(--text-gray);
+            font-size: 0.9rem;
         }
         
         @media (max-width: 768px) {
             #company-name {
-                font-size: 2.5rem;
+                font-size: 2.3rem;
             }
             
             .hero-content h1 {
-                font-size: 2rem;
+                font-size: 2.3rem;
             }
             
             .hero-content p {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
             
             .section-title {
@@ -411,6 +518,10 @@
             .programs-container {
                 grid-template-columns: 1fr;
             }
+            
+            .testimonial-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -418,21 +529,22 @@
     <div class="container">
         <header>
             <h1 id="company-name">FORGE OF OLYMPUS</h1>
+            <div class="tagline">Elite Strength & Performance Training</div>
         </header>
         
         <section class="hero-section">
             <div class="hero-content">
-                <h1>Transform Your Body</h1>
-                <p>Specialized 12-week programs for Core, Shoulders & Pelvis</p>
+                <h1>Transform Your Body with Precision Training</h1>
+                <p>Specialized 12-week programs targeting Core, Shoulders & Pelvis for athletic performance and functional strength</p>
                 <a href="#programs" class="hero-button">Explore Programs</a>
             </div>
         </section>
         
         <section id="programs" class="programs-section">
-            <h2 class="section-title">Training Programs</h2>
-            <p style="max-width: 800px; margin: 0 auto 40px; font-size: 1.2rem;">
-                Each 12-week program is divided into three 4-week phases. Select your preferred delivery option and complete your purchase with Stripe.
-            </p>
+            <div class="section-header">
+                <h2 class="section-title">Premium Training Programs</h2>
+                <p class="section-subtitle">Each 12-week program is scientifically designed with three progressive phases to rebuild strength, enhance stability, and maximize performance.</p>
+            </div>
             
             <div class="programs-container">
                 <!-- Core Program -->
@@ -440,30 +552,33 @@
                     <div class="program-price">£149</div>
                     <div class="program-header">
                         <h3 class="program-title">Core Program</h3>
-                        <p>12-Week Comprehensive Transformation</p>
+                        <p class="program-subtitle">Foundational Strength & Stability</p>
                     </div>
                     <div class="program-content">
                         <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-brain"></i> Phase 1 - Reconnection</h4>
+                            <h4 class="phase-title"><i class="fas fa-brain"></i>Phase 1 - Reconnection</h4>
                             <ul class="phase-items">
-                                <li>Trunk bracing</li>
+                                <li>Trunk bracing fundamentals</li>
                                 <li>TVA & oblique activation</li>
-                                <li>Diaphragmatic IAP</li>
+                                <li>Diaphragmatic breathing patterns</li>
+                                <li>Intra-abdominal pressure control</li>
                             </ul>
                         </div>
                         <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-cubes"></i> Phase 2 - Rebuilding</h4>
+                            <h4 class="phase-title"><i class="fas fa-cubes"></i>Phase 2 - Rebuilding</h4>
                             <ul class="phase-items">
-                                <li>Anti-extension & anti-rotation</li>
-                                <li>Under dynamic load</li>
+                                <li>Anti-extension & anti-rotation training</li>
+                                <li>Dynamic load management</li>
+                                <li>Integrated core bracing patterns</li>
                             </ul>
                         </div>
                         <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-bolt"></i> Phase 3 - Performance</h4>
+                            <h4 class="phase-title"><i class="fas fa-bolt"></i>Phase 3 - Performance</h4>
                             <ul class="phase-items">
-                                <li>Bracing in rotation</li>
+                                <li>Rotational bracing under load</li>
                                 <li>Calisthenics integration</li>
-                                <li>Gait application</li>
+                                <li>Gait and locomotion application</li>
+                                <li>Sport-specific implementation</li>
                             </ul>
                         </div>
                     </div>
@@ -486,30 +601,33 @@
                     <div class="program-price">£149</div>
                     <div class="program-header">
                         <h3 class="program-title">Shoulders Program</h3>
-                        <p>12-Week Comprehensive Transformation</p>
+                        <p class="program-subtitle">Optimal Mobility & Stability</p>
                     </div>
                     <div class="program-content">
                         <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-brain"></i> Phase 1 - Reconnection</h4>
+                            <h4 class="phase-title"><i class="fas fa-brain"></i>Phase 1 - Reconnection</h4>
                             <ul class="phase-items">
                                 <li>Scapular retraction/depression</li>
-                                <li>Serratus engagement</li>
+                                <li>Serratus anterior engagement</li>
                                 <li>Rotator cuff isolation</li>
+                                <li>Joint centration techniques</li>
                             </ul>
                         </div>
                         <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-cubes"></i> Phase 2 - Rebuilding</h4>
+                            <h4 class="phase-title"><i class="fas fa-cubes"></i>Phase 2 - Rebuilding</h4>
                             <ul class="phase-items">
-                                <li>Stable vertical & horizontal pressing/pulling</li>
-                                <li>Scap load tolerance</li>
+                                <li>Stable pressing/pulling mechanics</li>
+                                <li>Scapular load tolerance</li>
+                                <li>Integrated shoulder stability</li>
                             </ul>
                         </div>
                         <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-bolt"></i> Phase 3 - Performance</h4>
+                            <h4 class="phase-title"><i class="fas fa-bolt"></i>Phase 3 - Performance</h4>
                             <ul class="phase-items">
-                                <li>Ring work</li>
-                                <li>Overhead loading</li>
-                                <li>Dynamic shoulder stability</li>
+                                <li>Ring work for dynamic stability</li>
+                                <li>Overhead loading techniques</li>
+                                <li>Sport-specific applications</li>
+                                <li>Power transfer optimization</li>
                             </ul>
                         </div>
                     </div>
@@ -532,31 +650,34 @@
                     <div class="program-price">£149</div>
                     <div class="program-header">
                         <h3 class="program-title">Pelvis Program</h3>
-                        <p>12-Week Comprehensive Transformation</p>
+                        <p class="program-subtitle">Power Transfer & Stability</p>
                     </div>
                     <div class="program-content">
                         <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-brain"></i> Phase 1 - Reconnection</h4>
+                            <h4 class="phase-title"><i class="fas fa-brain"></i>Phase 1 - Reconnection</h4>
                             <ul class="phase-items">
-                                <li>Posterior pelvic tilt</li>
+                                <li>Posterior pelvic tilt control</li>
                                 <li>Glute/hamstring differentiation</li>
-                                <li>Adductor control</li>
+                                <li>Adductor recruitment patterns</li>
+                                <li>Pelvic floor integration</li>
                             </ul>
                         </div>
                         <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-cubes"></i> Phase 2 - Rebuilding</h4>
+                            <h4 class="phase-title"><i class="fas fa-cubes"></i>Phase 2 - Rebuilding</h4>
                             <ul class="phase-items">
-                                <li>Bilateral hip thrusts</li>
-                                <li>Hinge mechanics</li>
+                                <li>Bilateral hip thrust mechanics</li>
+                                <li>Hinge pattern optimization</li>
                                 <li>Single-leg glute development</li>
+                                <li>Lumbo-pelvic dissociation</li>
                             </ul>
                         </div>
                         <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-bolt"></i> Phase 3 - Performance</h4>
+                            <h4 class="phase-title"><i class="fas fa-bolt"></i>Phase 3 - Performance</h4>
                             <ul class="phase-items">
-                                <li>Sprint prep</li>
-                                <li>Deep squat control</li>
-                                <li>Power transfer in sport-like mechanics</li>
+                                <li>Sprint mechanics preparation</li>
+                                <li>Deep squat motor control</li>
+                                <li>Power transfer in athletic movements</li>
+                                <li>Multi-planar force production</li>
                             </ul>
                         </div>
                     </div>
@@ -576,35 +697,98 @@
             </div>
         </section>
         
-        <footer>
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Forge of Olympus</h3>
-                    <p>Specialized training programs designed to transform your body and enhance performance.</p>
+        <section class="testimonials-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Client Transformations</h2>
+                    <p class="section-subtitle">Hear from athletes and fitness enthusiasts who've transformed their performance with our programs</p>
                 </div>
                 
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#programs">Programs</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Legal</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Refund Policy</a></li>
-                    </ul>
+                <div class="testimonial-grid">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">"The Core Program completely changed how I approach strength training. My performance in competitive swimming has improved dramatically."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">SJ</div>
+                            <div class="author-info">
+                                <h4>Sarah Johnson</h4>
+                                <p>Competitive Swimmer</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">"After years of shoulder pain, the Shoulders Program gave me the stability and strength to return to competitive climbing pain-free."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">MR</div>
+                            <div class="author-info">
+                                <h4>Michael Rodriguez</h4>
+                                <p>Professional Climber</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">"The Pelvis Program fixed my chronic lower back issues. I'm now lifting heavier and moving better than I have in years."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">TW</div>
+                            <div class="author-info">
+                                <h4>Tara Williams</h4>
+                                <p>Strength Coach</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="copyright">
-                <p>&copy; 2025 Forge of Olympus. All rights reserved.</p>
+        </section>
+        
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3>Forge of Olympus</h3>
+                        <p>Specialized training programs designed to optimize athletic performance, enhance functional strength, and prevent injuries.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                            <a href="#"><i class="fab fa-tiktok"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3>Programs</h3>
+                        <ul class="footer-links">
+                            <li><a href="#"><i class="fas fa-dumbbell"></i> Core Program</a></li>
+                            <li><a href="#"><i class="fas fa-dumbbell"></i> Shoulders Program</a></li>
+                            <li><a href="#"><i class="fas fa-dumbbell"></i> Pelvis Program</a></li>
+                            <li><a href="#"><i class="fas fa-dumbbell"></i> Elite Performance Bundle</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3>Resources</h3>
+                        <ul class="footer-links">
+                            <li><a href="#"><i class="fas fa-book"></i> Training Methodology</a></li>
+                            <li><a href="#"><i class="fas fa-video"></i> Exercise Library</a></li>
+                            <li><a href="#"><i class="fas fa-calendar"></i> Program Calendar</a></li>
+                            <li><a href="#"><i class="fas fa-headset"></i> Coaching Support</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h3>Legal</h3>
+                        <ul class="footer-links">
+                            <li><a href="#"><i class="fas fa-file-contract"></i> Privacy Policy</a></li>
+                            <li><a href="#"><i class="fas fa-file-alt"></i> Terms of Service</a></li>
+                            <li><a href="#"><i class="fas fa-undo"></i> Refund Policy</a></li>
+                            <li><a href="#"><i class="fas fa-question-circle"></i> FAQ</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="copyright">
+                    <p>&copy; 2025 Forge of Olympus. All rights reserved. Designed for elite performance.</p>
+                </div>
             </div>
         </footer>
     </div>
