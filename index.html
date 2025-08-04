@@ -17,6 +17,7 @@
             --success: #10b981;
             --card-bg: #232732;
             --border: rgba(255, 255, 255, 0.08);
+            --coming-soon: #4a5568;
         }
         
         * {
@@ -27,10 +28,11 @@
         
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: var(--primary);
+            background: linear-gradient(135deg, #0f1116, #1a1d24);
             color: var(--text-light);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
         }
         
         .container {
@@ -43,7 +45,9 @@
         /* Header & Hero */
         header {
             padding: 30px 0;
-            border-bottom: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         #company-name {
@@ -53,7 +57,8 @@
             color: var(--accent);
             letter-spacing: 1px;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
         }
         
         .tagline {
@@ -73,11 +78,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
                         url('HeroImage.jpg') no-repeat center center/cover;
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 60px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
         }
         
         .hero-content {
@@ -94,6 +100,10 @@
             font-weight: 800;
             margin-bottom: 20px;
             line-height: 1.2;
+            background: linear-gradient(to right, #d4af37, #f5f5f7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .hero-content p {
@@ -103,6 +113,21 @@
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
+        }
+        
+        .availability-notice {
+            background: rgba(26, 29, 36, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px auto 30px;
+            max-width: 500px;
+            border: 1px solid var(--accent);
+        }
+        
+        .availability-notice p {
+            font-size: 1rem;
+            margin-bottom: 0;
+            color: var(--accent);
         }
         
         .hero-button {
@@ -119,11 +144,13 @@
             transition: all 0.3s ease;
             text-decoration: none;
             letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
         }
         
         .hero-button:hover {
             background: var(--accent-dark);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
         }
         
         /* Programs Section */
@@ -185,22 +212,40 @@
             height: 100%;
         }
         
+        .coming-soon .program-card {
+            opacity: 0.8;
+            filter: grayscale(20%);
+        }
+        
         .program-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
         
-        .program-price {
+        .coming-soon .program-card:hover {
+            transform: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .program-badge {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: var(--accent);
-            color: var(--primary);
             padding: 8px 20px;
             border-radius: 20px;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             z-index: 10;
+        }
+        
+        .available-badge {
+            background: var(--success);
+            color: var(--primary);
+        }
+        
+        .coming-soon-badge {
+            background: var(--coming-soon);
+            color: var(--text-light);
         }
         
         .program-header {
@@ -217,9 +262,17 @@
             color: var(--text-light);
         }
         
+        .coming-soon .program-title {
+            color: var(--text-gray);
+        }
+        
         .program-subtitle {
             color: var(--text-gray);
             font-size: 1rem;
+        }
+        
+        .coming-soon .program-subtitle {
+            color: #6b7280;
         }
         
         .program-content {
@@ -231,6 +284,10 @@
             margin-bottom: 25px;
             padding-bottom: 25px;
             border-bottom: 1px solid var(--border);
+        }
+        
+        .coming-soon .phase {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .phase:last-child {
@@ -249,6 +306,10 @@
             gap: 10px;
         }
         
+        .coming-soon .phase-title {
+            color: #6b7280;
+        }
+        
         .phase-title i {
             font-size: 1.1rem;
             width: 30px;
@@ -258,6 +319,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        
+        .coming-soon .phase-title i {
+            background: rgba(107, 114, 128, 0.15);
         }
         
         .phase-items {
@@ -271,6 +336,10 @@
             line-height: 1.5;
         }
         
+        .coming-soon .phase-items li {
+            color: #6b7280;
+        }
+        
         .phase-items li::before {
             content: "•";
             color: var(--accent);
@@ -280,10 +349,19 @@
             font-size: 1.2rem;
         }
         
+        .coming-soon .phase-items li::before {
+            color: #6b7280;
+        }
+        
         .delivery-options {
             padding: 25px 30px;
             background: rgba(0, 0, 0, 0.15);
             border-top: 1px solid var(--border);
+        }
+        
+        .coming-soon .delivery-options {
+            background: rgba(0, 0, 0, 0.25);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .delivery-title {
@@ -293,6 +371,10 @@
             color: var(--text-light);
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+        
+        .coming-soon .delivery-title {
+            color: #6b7280;
         }
         
         .options {
@@ -314,10 +396,23 @@
             font-size: 0.95rem;
         }
         
+        .coming-soon .option {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #6b7280;
+            cursor: default;
+        }
+        
         .option.selected {
             background: rgba(212, 175, 55, 0.15);
             border-color: var(--accent);
             color: var(--accent);
+        }
+        
+        .coming-soon .option.selected {
+            background: rgba(107, 114, 128, 0.15);
+            border-color: #6b7280;
+            color: #6b7280;
         }
         
         .stripe-button {
@@ -352,12 +447,43 @@
             color: var(--accent);
         }
         
+        .coming-soon-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px;
+            background: var(--coming-soon) !important;
+            color: #d1d5db !important;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            text-decoration: none;
+            letter-spacing: 1px;
+            font-family: 'Montserrat', sans-serif;
+            border: none;
+            cursor: default;
+            gap: 10px;
+        }
+        
         /* Testimonials */
         .testimonials-section {
             padding: 80px 0;
-            background: var(--secondary);
+            background: linear-gradient(to bottom right, var(--secondary), #252932);
             border-radius: 12px;
             margin: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .testimonials-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent), var(--success));
         }
         
         .testimonial-grid {
@@ -372,6 +498,13 @@
             border-radius: 10px;
             padding: 30px;
             border: 1px solid var(--border);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
         
         .testimonial-text {
@@ -379,6 +512,19 @@
             margin-bottom: 25px;
             line-height: 1.7;
             color: var(--text-gray);
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .testimonial-text::before {
+            content: '"';
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            font-size: 5rem;
+            color: var(--accent);
+            font-family: serif;
+            opacity: 0.1;
         }
         
         .testimonial-author {
@@ -409,12 +555,86 @@
             font-size: 0.9rem;
         }
         
+        /* Countdown Section */
+        .countdown-section {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            padding: 60px 20px;
+            border-radius: 12px;
+            margin: 40px 0;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .countdown-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            color: var(--accent);
+        }
+        
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .countdown-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 25px 15px;
+            min-width: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .countdown-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        
+        .countdown-label {
+            color: var(--text-gray);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        
+        .waitlist-form {
+            max-width: 500px;
+            margin: 40px auto 0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
         /* Footer */
         footer {
-            background-color: var(--secondary);
+            background: linear-gradient(to top, #15181f, #1a1d24);
             color: white;
             padding: 60px 0 30px;
             border-radius: 12px 12px 0 0;
+            margin-top: 60px;
+            position: relative;
         }
         
         .footer-content {
@@ -534,8 +754,13 @@
         
         <section class="hero-section">
             <div class="hero-content">
-                <h1>Transform Your Body with Precision Training</h1>
-                <p>Specialized 12-week programs targeting Core, Shoulders & Pelvis for athletic performance and functional strength</p>
+                <h1>Transform Your Core Strength Today</h1>
+                <p>Specialized 12-week Core program available now - Shoulders & Pelvis programs launching soon!</p>
+                
+                <div class="availability-notice">
+                    <p><i class="fas fa-info-circle"></i> Core Program available now. Shoulders & Pelvis programs coming October 2025</p>
+                </div>
+                
                 <a href="#programs" class="hero-button">Explore Programs</a>
             </div>
         </section>
@@ -543,13 +768,13 @@
         <section id="programs" class="programs-section">
             <div class="section-header">
                 <h2 class="section-title">Premium Training Programs</h2>
-                <p class="section-subtitle">Each 12-week program is scientifically designed with three progressive phases to rebuild strength, enhance stability, and maximize performance.</p>
+                <p class="section-subtitle">Our Core Program is ready for immediate access. Shoulders & Pelvis programs are in development and launching soon!</p>
             </div>
             
             <div class="programs-container">
-                <!-- Core Program -->
+                <!-- Core Program - AVAILABLE -->
                 <div class="program-card">
-                    <div class="program-price">£149</div>
+                    <div class="program-badge available-badge">Available Now</div>
                     <div class="program-header">
                         <h3 class="program-title">Core Program</h3>
                         <p class="program-subtitle">Foundational Strength & Stability</p>
@@ -596,104 +821,136 @@
                     </div>
                 </div>
                 
-                <!-- Shoulders Program -->
-                <div class="program-card">
-                    <div class="program-price">£149</div>
-                    <div class="program-header">
-                        <h3 class="program-title">Shoulders Program</h3>
-                        <p class="program-subtitle">Optimal Mobility & Stability</p>
-                    </div>
-                    <div class="program-content">
-                        <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-brain"></i>Phase 1 - Reconnection</h4>
-                            <ul class="phase-items">
-                                <li>Scapular retraction/depression</li>
-                                <li>Serratus anterior engagement</li>
-                                <li>Rotator cuff isolation</li>
-                                <li>Joint centration techniques</li>
-                            </ul>
+                <!-- Shoulders Program - COMING SOON -->
+                <div class="coming-soon">
+                    <div class="program-card">
+                        <div class="program-badge coming-soon-badge">Coming Soon</div>
+                        <div class="program-header">
+                            <h3 class="program-title">Shoulders Program</h3>
+                            <p class="program-subtitle">Optimal Mobility & Stability</p>
                         </div>
-                        <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-cubes"></i>Phase 2 - Rebuilding</h4>
-                            <ul class="phase-items">
-                                <li>Stable pressing/pulling mechanics</li>
-                                <li>Scapular load tolerance</li>
-                                <li>Integrated shoulder stability</li>
-                            </ul>
+                        <div class="program-content">
+                            <div class="phase">
+                                <h4 class="phase-title"><i class="fas fa-brain"></i>Phase 1 - Reconnection</h4>
+                                <ul class="phase-items">
+                                    <li>Scapular retraction/depression</li>
+                                    <li>Serratus anterior engagement</li>
+                                    <li>Rotator cuff isolation</li>
+                                    <li>Joint centration techniques</li>
+                                </ul>
+                            </div>
+                            <div class="phase">
+                                <h4 class="phase-title"><i class="fas fa-cubes"></i>Phase 2 - Rebuilding</h4>
+                                <ul class="phase-items">
+                                    <li>Stable pressing/pulling mechanics</li>
+                                    <li>Scapular load tolerance</li>
+                                    <li>Integrated shoulder stability</li>
+                                </ul>
+                            </div>
+                            <div class="phase">
+                                <h4 class="phase-title"><i class="fas fa-bolt"></i>Phase 3 - Performance</h4>
+                                <ul class="phase-items">
+                                    <li>Ring work for dynamic stability</li>
+                                    <li>Overhead loading techniques</li>
+                                    <li>Sport-specific applications</li>
+                                    <li>Power transfer optimization</li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-bolt"></i>Phase 3 - Performance</h4>
-                            <ul class="phase-items">
-                                <li>Ring work for dynamic stability</li>
-                                <li>Overhead loading techniques</li>
-                                <li>Sport-specific applications</li>
-                                <li>Power transfer optimization</li>
-                            </ul>
+                        <div class="delivery-options">
+                            <p class="delivery-title">Delivery Options</p>
+                            <div class="options">
+                                <div class="option selected" data-program="shoulders" data-type="full">Full Program</div>
+                                <div class="option" data-program="shoulders" data-type="module">Phased Modules</div>
+                            </div>
+                            
+                            <div class="coming-soon-button">
+                                <i class="fas fa-clock"></i> Launching Soon
+                            </div>
                         </div>
-                    </div>
-                    <div class="delivery-options">
-                        <p class="delivery-title">Delivery Options</p>
-                        <div class="options">
-                            <div class="option selected" data-program="shoulders" data-type="full">Full Program</div>
-                            <div class="option" data-program="shoulders" data-type="module">Phased Modules</div>
-                        </div>
-                        
-                        <button class="stripe-button" id="shoulders-button">
-                            <i class="fab fa-stripe"></i> Complete Payment: 
-                            <span class="stripe-price">£149</span>
-                        </button>
                     </div>
                 </div>
                 
-                <!-- Pelvis Program -->
-                <div class="program-card">
-                    <div class="program-price">£149</div>
-                    <div class="program-header">
-                        <h3 class="program-title">Pelvis Program</h3>
-                        <p class="program-subtitle">Power Transfer & Stability</p>
-                    </div>
-                    <div class="program-content">
-                        <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-brain"></i>Phase 1 - Reconnection</h4>
-                            <ul class="phase-items">
-                                <li>Posterior pelvic tilt control</li>
-                                <li>Glute/hamstring differentiation</li>
-                                <li>Adductor recruitment patterns</li>
-                                <li>Pelvic floor integration</li>
-                            </ul>
+                <!-- Pelvis Program - COMING SOON -->
+                <div class="coming-soon">
+                    <div class="program-card">
+                        <div class="program-badge coming-soon-badge">Coming Soon</div>
+                        <div class="program-header">
+                            <h3 class="program-title">Pelvis Program</h3>
+                            <p class="program-subtitle">Power Transfer & Stability</p>
                         </div>
-                        <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-cubes"></i>Phase 2 - Rebuilding</h4>
-                            <ul class="phase-items">
-                                <li>Bilateral hip thrust mechanics</li>
-                                <li>Hinge pattern optimization</li>
-                                <li>Single-leg glute development</li>
-                                <li>Lumbo-pelvic dissociation</li>
-                            </ul>
+                        <div class="program-content">
+                            <div class="phase">
+                                <h4 class="phase-title"><i class="fas fa-brain"></i>Phase 1 - Reconnection</h4>
+                                <ul class="phase-items">
+                                    <li>Posterior pelvic tilt control</li>
+                                    <li>Glute/hamstring differentiation</li>
+                                    <li>Adductor recruitment patterns</li>
+                                    <li>Pelvic floor integration</li>
+                                </ul>
+                            </div>
+                            <div class="phase">
+                                <h4 class="phase-title"><i class="fas fa-cubes"></i>Phase 2 - Rebuilding</h4>
+                                <ul class="phase-items">
+                                    <li>Bilateral hip thrust mechanics</li>
+                                    <li>Hinge pattern optimization</li>
+                                    <li>Single-leg glute development</li>
+                                    <li>Lumbo-pelvic dissociation</li>
+                                </ul>
+                            </div>
+                            <div class="phase">
+                                <h4 class="phase-title"><i class="fas fa-bolt"></i>Phase 3 - Performance</h4>
+                                <ul class="phase-items">
+                                    <li>Sprint mechanics preparation</li>
+                                    <li>Deep squat motor control</li>
+                                    <li>Power transfer in athletic movements</li>
+                                    <li>Multi-planar force production</li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="phase">
-                            <h4 class="phase-title"><i class="fas fa-bolt"></i>Phase 3 - Performance</h4>
-                            <ul class="phase-items">
-                                <li>Sprint mechanics preparation</li>
-                                <li>Deep squat motor control</li>
-                                <li>Power transfer in athletic movements</li>
-                                <li>Multi-planar force production</li>
-                            </ul>
+                        <div class="delivery-options">
+                            <p class="delivery-title">Delivery Options</p>
+                            <div class="options">
+                                <div class="option selected" data-program="pelvis" data-type="full">Full Program</div>
+                                <div class="option" data-program="pelvis" data-type="module">Phased Modules</div>
+                            </div>
+                            
+                            <div class="coming-soon-button">
+                                <i class="fas fa-clock"></i> Launching Soon
+                            </div>
                         </div>
-                    </div>
-                    <div class="delivery-options">
-                        <p class="delivery-title">Delivery Options</p>
-                        <div class="options">
-                            <div class="option selected" data-program="pelvis" data-type="full">Full Program</div>
-                            <div class="option" data-program="pelvis" data-type="module">Phased Modules</div>
-                        </div>
-                        
-                        <button class="stripe-button" id="pelvis-button">
-                            <i class="fab fa-stripe"></i> Complete Payment: 
-                            <span class="stripe-price">£149</span>
-                        </button>
                     </div>
                 </div>
+            </div>
+        </section>
+        
+        <!-- Countdown Section -->
+        <section class="countdown-section">
+            <h2 class="countdown-title">New Programs Launching Soon!</h2>
+            <div class="countdown-container">
+                <div class="countdown-item">
+                    <div class="countdown-value" id="days">45</div>
+                    <div class="countdown-label">Days</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-value" id="hours">12</div>
+                    <div class="countdown-label">Hours</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-value" id="minutes">30</div>
+                    <div class="countdown-label">Minutes</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-value" id="seconds">15</div>
+                    <div class="countdown-label">Seconds</div>
+                </div>
+            </div>
+            
+            <div class="waitlist-form">
+                <div class="form-group">
+                    <input type="email" class="form-input" placeholder="Enter your email to get early access">
+                </div>
+                <button class="hero-button">Join Waitlist</button>
             </div>
         </section>
         
@@ -717,7 +974,7 @@
                     </div>
                     
                     <div class="testimonial-card">
-                        <p class="testimonial-text">"After years of shoulder pain, the Shoulders Program gave me the stability and strength to return to competitive climbing pain-free."</p>
+                        <p class="testimonial-text">"After years of shoulder pain, I can't wait for the Shoulders Program. The Core Program has already helped my posture tremendously."</p>
                         <div class="testimonial-author">
                             <div class="author-avatar">MR</div>
                             <div class="author-info">
@@ -728,7 +985,7 @@
                     </div>
                     
                     <div class="testimonial-card">
-                        <p class="testimonial-text">"The Pelvis Program fixed my chronic lower back issues. I'm now lifting heavier and moving better than I have in years."</p>
+                        <p class="testimonial-text">"The Pelvis Program can't come soon enough! The Core Program fixed my chronic lower back issues. I'm now lifting heavier than ever."</p>
                         <div class="testimonial-author">
                             <div class="author-avatar">TW</div>
                             <div class="author-info">
@@ -759,8 +1016,8 @@
                         <h3>Programs</h3>
                         <ul class="footer-links">
                             <li><a href="#"><i class="fas fa-dumbbell"></i> Core Program</a></li>
-                            <li><a href="#"><i class="fas fa-dumbbell"></i> Shoulders Program</a></li>
-                            <li><a href="#"><i class="fas fa-dumbbell"></i> Pelvis Program</a></li>
+                            <li><a href="#"><i class="fas fa-clock"></i> Shoulders Program (Coming Soon)</a></li>
+                            <li><a href="#"><i class="fas fa-clock"></i> Pelvis Program (Coming Soon)</a></li>
                             <li><a href="#"><i class="fas fa-dumbbell"></i> Elite Performance Bundle</a></li>
                         </ul>
                     </div>
@@ -799,14 +1056,6 @@
             core: {
                 full: "https://buy.stripe.com/fZu8wP7WugoF1Cy4eN4sE05",
                 module: "https://buy.stripe.com/5kQcN590y8WddlgbHf4sE06"
-            },
-            shoulders: {
-                full: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk",
-                module: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk"
-            },
-            pelvis: {
-                full: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk",
-                module: "https://buy.stripe.com/test_14k3e0dSJ7lLf7K5kk"
             }
         };
         
@@ -818,15 +1067,17 @@
         
         // Initialize program selections
         const programSelections = {
-            core: 'full',
-            shoulders: 'full',
-            pelvis: 'full'
+            core: 'full'
         };
         
         // Handle option selection
         document.querySelectorAll('.option').forEach(option => {
             option.addEventListener('click', function() {
                 const program = this.getAttribute('data-program');
+                
+                // Only allow interaction with Core program
+                if (program !== 'core') return;
+                
                 const deliveryType = this.getAttribute('data-type');
                 
                 // Update selection
@@ -850,20 +1101,10 @@
             });
         });
         
-        // Handle Stripe button clicks
+        // Handle Stripe button click
         document.getElementById('core-button').addEventListener('click', function() {
             const deliveryType = programSelections.core;
             window.location.href = stripeLinks.core[deliveryType];
-        });
-        
-        document.getElementById('shoulders-button').addEventListener('click', function() {
-            const deliveryType = programSelections.shoulders;
-            window.location.href = stripeLinks.shoulders[deliveryType];
-        });
-        
-        document.getElementById('pelvis-button').addEventListener('click', function() {
-            const deliveryType = programSelections.pelvis;
-            window.location.href = stripeLinks.pelvis[deliveryType];
         });
         
         // Smooth scrolling
@@ -873,6 +1114,18 @@
                 behavior: 'smooth'
             });
         });
+        
+        // Countdown timer (demo only)
+        function updateCountdown() {
+            document.getElementById('days').textContent = Math.floor(Math.random() * 30) + 20;
+            document.getElementById('hours').textContent = Math.floor(Math.random() * 24);
+            document.getElementById('minutes').textContent = Math.floor(Math.random() * 60);
+            document.getElementById('seconds').textContent = Math.floor(Math.random() * 60);
+        }
+        
+        // Update every 5 seconds to simulate a countdown
+        setInterval(updateCountdown, 5000);
+        updateCountdown();
     </script>
 </body>
 </html>
