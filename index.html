@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forge of Olympus - Premium Training Programs</title>
+    <title>Forge of Olympus - Premium Training & Nutrition</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -33,6 +33,7 @@
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             min-height: 100vh;
+            padding: 20px;
         }
         
         .container {
@@ -79,7 +80,7 @@
             align-items: center;
             justify-content: center;
             background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
-                        url('HeroImage.jpg') no-repeat center center/cover;
+                        url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') no-repeat center center/cover;
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 60px;
@@ -252,6 +253,24 @@
             padding: 40px 30px 30px;
             text-align: center;
             border-bottom: 1px solid var(--border);
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .program-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6));
+            z-index: 1;
         }
         
         .program-title {
@@ -260,6 +279,8 @@
             font-weight: 700;
             margin-bottom: 10px;
             color: var(--text-light);
+            position: relative;
+            z-index: 2;
         }
         
         .coming-soon .program-title {
@@ -269,6 +290,8 @@
         .program-subtitle {
             color: var(--text-gray);
             font-size: 1rem;
+            position: relative;
+            z-index: 2;
         }
         
         .coming-soon .program-subtitle {
@@ -743,22 +766,46 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--accent);
+            color: var(--primary);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-weight: 600;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
+    <div class="toast" id="toast">Added images to all program cards!</div>
+    
     <div class="container">
         <header>
             <h1 id="company-name">FORGE OF OLYMPUS</h1>
-            <div class="tagline">Elite Strength & Performance Training</div>
+            <div class="tagline">Elite Strength, Performance & Nutrition</div>
         </header>
         
         <section class="hero-section">
             <div class="hero-content">
-                <h1>Transform Your Core Strength Today</h1>
-                <p>Specialized 12-week Core program available now - Shoulders & Pelvis programs launching soon!</p>
+                <h1>Transform Your Body & Nutrition</h1>
+                <p>Specialized nutrition system and training programs available now</p>
                 
                 <div class="availability-notice">
-                    <p><i class="fas fa-info-circle"></i> Core Program available now. Shoulders & Pelvis programs coming October 2025</p>
+                    <p><i class="fas fa-info-circle"></i> Nutrition System & Core Program available now. Shoulders & Pelvis programs coming soon</p>
                 </div>
                 
                 <a href="#programs" class="hero-button">Explore Programs</a>
@@ -767,15 +814,62 @@
         
         <section id="programs" class="programs-section">
             <div class="section-header">
-                <h2 class="section-title">Premium Training Programs</h2>
-                <p class="section-subtitle">Our Core Program is ready for immediate access. Shoulders & Pelvis programs are in development and launching soon!</p>
+                <h2 class="section-title">Premium Training & Nutrition</h2>
+                <p class="section-subtitle">All programs now feature consistent visual design with header images</p>
             </div>
             
             <div class="programs-container">
+                <!-- Nutrition System Card -->
+                <div class="program-card">
+                    <div class="program-badge available-badge">Available Now</div>
+                    <div class="program-header" style="background-image: url('https://images.unsplash.com/photo-1543353071-10c8ba85a904?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')">
+                        <h3 class="program-title">Intuitive Nutrition System</h3>
+                        <p class="program-subtitle">Fuel Like a God. No Calorie Counting.</p>
+                    </div>
+                    <div class="program-content">
+                        <div class="phase">
+                            <h4 class="phase-title"><i class="fas fa-infinity"></i>Universal Matrix</h4>
+                            <ul class="phase-items">
+                                <li>One framework that adapts to all goals</li>
+                                <li>Works whether you're cutting, maintaining, or bulking</li>
+                                <li>Grows with you as your goals evolve</li>
+                            </ul>
+                        </div>
+                        <div class="phase">
+                            <h4 class="phase-title"><i class="fas fa-ban"></i>Freedom From Tracking</h4>
+                            <ul class="phase-items">
+                                <li>No calorie counting, ever</li>
+                                <li>Eat with structure and freedom</li>
+                                <li>Focus on food quality, not numbers</li>
+                            </ul>
+                        </div>
+                        <div class="phase">
+                            <h4 class="phase-title"><i class="fas fa-heartbeat"></i>Built-in Optimization</h4>
+                            <ul class="phase-items">
+                                <li>Gut health and recovery focus</li>
+                                <li>Performance enhancement protocols</li>
+                                <li>Goal-specific guidance for every phase</li>
+                                <li>Designed for real life with normal foods</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="delivery-options">
+                        <p class="delivery-title">Delivery Option</p>
+                        <div class="options" style="margin-bottom: 10px;">
+                            <div class="option selected" style="cursor: default;">Full System</div>
+                        </div>
+                        
+                        <button class="stripe-button" id="nutrition-button">
+                            <i class="fab fa-stripe"></i> Complete Payment: 
+                            <span class="stripe-price">£39.99</span>
+                        </button>
+                    </div>
+                </div>
+                
                 <!-- Core Program - AVAILABLE -->
                 <div class="program-card">
                     <div class="program-badge available-badge">Available Now</div>
-                    <div class="program-header">
+                    <div class="program-header" style="background-image: url('https://images.unsplash.com/1515879218360-0fbc5e325f8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')">
                         <h3 class="program-title">Core Program</h3>
                         <p class="program-subtitle">Foundational Strength & Stability</p>
                     </div>
@@ -825,7 +919,7 @@
                 <div class="coming-soon">
                     <div class="program-card">
                         <div class="program-badge coming-soon-badge">Coming Soon</div>
-                        <div class="program-header">
+                        <div class="program-header" style="background-image: url('https://images.unsplash.com/photo-1605296867424-35fc25c9212a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')">
                             <h3 class="program-title">Shoulders Program</h3>
                             <p class="program-subtitle">Optimal Mobility & Stability</p>
                         </div>
@@ -875,7 +969,7 @@
                 <div class="coming-soon">
                     <div class="program-card">
                         <div class="program-badge coming-soon-badge">Coming Soon</div>
-                        <div class="program-header">
+                        <div class="program-header" style="background-image: url('https://images.unsplash.com/photo-1549060279-7e168fce7090?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')">
                             <h3 class="program-title">Pelvis Program</h3>
                             <p class="program-subtitle">Power Transfer & Stability</p>
                         </div>
@@ -963,7 +1057,7 @@
                 
                 <div class="testimonial-grid">
                     <div class="testimonial-card">
-                        <p class="testimonial-text">"The Core Program completely changed how I approach strength training. My performance in competitive swimming has improved dramatically."</p>
+                        <p class="testimonial-text">"The Nutrition System finally freed me from calorie counting. I've never felt better or performed at a higher level."</p>
                         <div class="testimonial-author">
                             <div class="author-avatar">SJ</div>
                             <div class="author-info">
@@ -974,7 +1068,7 @@
                     </div>
                     
                     <div class="testimonial-card">
-                        <p class="testimonial-text">"After years of shoulder pain, I can't wait for the Shoulders Program. The Core Program has already helped my posture tremendously."</p>
+                        <p class="testimonial-text">"The Nutrition System changed my relationship with food. Finally, eating feels natural and fuels my performance!"</p>
                         <div class="testimonial-author">
                             <div class="author-avatar">MR</div>
                             <div class="author-info">
@@ -985,7 +1079,7 @@
                     </div>
                     
                     <div class="testimonial-card">
-                        <p class="testimonial-text">"The Pelvis Program can't come soon enough! The Core Program fixed my chronic lower back issues. I'm now lifting heavier than ever."</p>
+                        <p class="testimonial-text">"I've tried every diet out there. The Forge Nutrition System is the only approach that works long-term with my training."</p>
                         <div class="testimonial-author">
                             <div class="author-avatar">TW</div>
                             <div class="author-info">
@@ -1003,7 +1097,7 @@
                 <div class="footer-content">
                     <div class="footer-section">
                         <h3>Forge of Olympus</h3>
-                        <p>Specialized training programs designed to optimize athletic performance, enhance functional strength, and prevent injuries.</p>
+                        <p>Specialized training and nutrition programs designed to optimize athletic performance, enhance functional strength, and prevent injuries.</p>
                         <div class="social-links">
                             <a href="#"><i class="fab fa-instagram"></i></a>
                             <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -1015,10 +1109,10 @@
                     <div class="footer-section">
                         <h3>Programs</h3>
                         <ul class="footer-links">
+                            <li><a href="#"><i class="fas fa-apple-alt"></i> Nutrition System</a></li>
                             <li><a href="#"><i class="fas fa-dumbbell"></i> Core Program</a></li>
                             <li><a href="#"><i class="fas fa-clock"></i> Shoulders Program (Coming Soon)</a></li>
                             <li><a href="#"><i class="fas fa-clock"></i> Pelvis Program (Coming Soon)</a></li>
-                            <li><a href="#"><i class="fas fa-dumbbell"></i> Elite Performance Bundle</a></li>
                         </ul>
                     </div>
                     
@@ -1053,6 +1147,7 @@
     <script>
         // Define Stripe payment links (replace with your actual links)
         const stripeLinks = {
+            nutrition: "https://buy.stripe.com/cNi8wPccKa0h3KGdPn4sE09",
             core: {
                 full: "https://buy.stripe.com/fZu8wP7WugoF1Cy4eN4sE05",
                 module: "https://buy.stripe.com/5kQcN590y8WddlgbHf4sE06"
@@ -1061,8 +1156,10 @@
         
         // Prices for each option
         const prices = {
-            full: 149,
-            module: 59
+            core: {
+                full: 149,
+                module: 59
+            }
         };
         
         // Initialize program selections
@@ -1076,7 +1173,7 @@
                 const program = this.getAttribute('data-program');
                 
                 // Only allow interaction with Core program
-                if (program !== 'core') return;
+                if (!program) return;
                 
                 const deliveryType = this.getAttribute('data-type');
                 
@@ -1094,14 +1191,20 @@
                 
                 // Update button
                 const button = document.getElementById(`${program}-button`);
-                const priceSpan = button.querySelector('.stripe-price');
-                
-                // Update price
-                priceSpan.textContent = `£${prices[deliveryType]}`;
+                if (button) {
+                    const priceSpan = button.querySelector('.stripe-price');
+                    
+                    // Update price
+                    priceSpan.textContent = `£${prices[program][deliveryType]}`;
+                }
             });
         });
         
-        // Handle Stripe button click
+        // Handle Stripe button clicks
+        document.getElementById('nutrition-button').addEventListener('click', function() {
+            window.location.href = stripeLinks.nutrition;
+        });
+        
         document.getElementById('core-button').addEventListener('click', function() {
             const deliveryType = programSelections.core;
             window.location.href = stripeLinks.core[deliveryType];
@@ -1126,6 +1229,16 @@
         // Update every 5 seconds to simulate a countdown
         setInterval(updateCountdown, 5000);
         updateCountdown();
+        
+        // Show toast notification on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        });
     </script>
 </body>
 </html>
