@@ -43,6 +43,151 @@
             padding: 20px;
         }
         
+        /* Admin Panel */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background: var(--secondary);
+            padding: 10px 15px;
+            border-bottom-left-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        
+        .admin-toggle {
+            background: var(--accent);
+            color: var(--primary);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .admin-panel-content {
+            position: fixed;
+            top: 50px;
+            right: 20px;
+            width: 350px;
+            max-height: 80vh;
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.4);
+            overflow-y: auto;
+            display: none;
+            z-index: 999;
+        }
+        
+        .admin-panel-content.active {
+            display: block;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .admin-header h3 {
+            color: var(--accent);
+            font-size: 1.3rem;
+        }
+        
+        .close-admin {
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .waitlist-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+        
+        .waitlist-emails {
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.15);
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .email-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .email-item:last-child {
+            border-bottom: none;
+        }
+        
+        .email-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .email-actions button {
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .email-actions button:hover {
+            color: var(--accent);
+        }
+        
+        .export-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: var(--primary);
+            border: none;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
         /* Header & Hero */
         header {
             padding: 30px 0;
@@ -79,8 +224,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
-                        url('HeroImage.jpg') no-repeat center center/cover;
+            background: url('HeroImage.jpg') no-repeat center center/cover;
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 60px;
@@ -843,12 +987,52 @@
             .countdown-value {
                 font-size: 2rem;
             }
+            
+            .admin-panel-content {
+                width: 90%;
+                right: 5%;
+            }
         }
     </style>
 </head>
 <body>
     
     <div class="container">
+        <!-- Admin Panel -->
+        <div class="admin-panel">
+            <button class="admin-toggle" id="admin-toggle">
+                <i class="fas fa-user-shield"></i> Admin Panel
+            </button>
+        </div>
+        
+        <div class="admin-panel-content" id="admin-panel">
+            <div class="admin-header">
+                <h3>Waitlist Subscriptions</h3>
+                <button class="close-admin" id="close-admin">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="waitlist-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-subscribers">0</div>
+                    <div class="stat-label">Total Subscribers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="new-today">0</div>
+                    <div class="stat-label">New Today</div>
+                </div>
+            </div>
+            
+            <div class="waitlist-emails" id="waitlist-emails">
+                <!-- Email list will be populated by JavaScript -->
+            </div>
+            
+            <button class="export-btn" id="export-btn">
+                <i class="fas fa-download"></i> Export to CSV
+            </button>
+        </div>
+        
         <header>
             <h1 id="company-name">FORGE OF OLYMPUS</h1>
             <div class="tagline">Elite Strength, Performance & Nutrition</div>
@@ -1098,7 +1282,7 @@
                 
                 <div class="waitlist-form">
                     <div class="form-group">
-                        <input type="email" class="form-input" id="waitlist-email" placeholder="Enter your email to get early access">
+                        <input type="email" class="form-input" id="waitlist-email" placeholder="Enter your email to get early access" required>
                     </div>
                     <button class="hero-button" id="waitlist-button">Join Waitlist</button>
                 </div>
@@ -1312,27 +1496,216 @@
         setInterval(updateCountdown, 1000);
         updateCountdown(); // Initialize immediately
         
-        // Waitlist form submission
-        document.getElementById('waitlist-button').addEventListener('click', function() {
-            const email = document.getElementById('waitlist-email').value;
-            if (email && email.includes('@')) {
-                // Show toast notification
-                const toast = document.getElementById('toast');
-                toast.classList.add('show');
-                
-                // Clear the input
-                document.getElementById('waitlist-email').value = '';
-                
-                // Hide the toast after 3 seconds
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
-            }
-        });
+        // Waitlist Management System
+        const WAITLIST_KEY = 'forgeOfOlympusWaitlist';
         
-        // Show toast notification on page load
+        // Initialize waitlist if not exists
+        function initializeWaitlist() {
+            if (!localStorage.getItem(WAITLIST_KEY)) {
+                localStorage.setItem(WAITLIST_KEY, JSON.stringify([]));
+            }
+        }
+        
+        // Get all waitlist subscribers
+        function getWaitlistSubscribers() {
+            return JSON.parse(localStorage.getItem(WAITLIST_KEY)) || [];
+        }
+        
+        // Add a new subscriber to the waitlist
+        function addToWaitlist(email) {
+            if (!isValidEmail(email)) {
+                showToast('Please enter a valid email address', 'error');
+                return false;
+            }
+            
+            if (isEmailInWaitlist(email)) {
+                showToast('You are already on the waitlist!', 'info');
+                return false;
+            }
+            
+            const subscribers = getWaitlistSubscribers();
+            const newSubscriber = {
+                email: email,
+                date: new Date().toISOString()
+            };
+            
+            subscribers.push(newSubscriber);
+            localStorage.setItem(WAITLIST_KEY, JSON.stringify(subscribers));
+            
+            showToast('Thank you for joining the waitlist!');
+            renderWaitlist();
+            return true;
+        }
+        
+        // Remove email from waitlist
+        function removeFromWaitlist(email) {
+            const subscribers = getWaitlistSubscribers();
+            const filtered = subscribers.filter(sub => sub.email !== email);
+            localStorage.setItem(WAITLIST_KEY, JSON.stringify(filtered));
+            renderWaitlist();
+        }
+        
+        // Check if email is already in waitlist
+        function isEmailInWaitlist(email) {
+            const subscribers = getWaitlistSubscribers();
+            return subscribers.some(sub => sub.email === email);
+        }
+        
+        // Validate email format
+        function isValidEmail(email) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+        
+        // Render waitlist in admin panel
+        function renderWaitlist() {
+            const subscribers = getWaitlistSubscribers();
+            const container = document.getElementById('waitlist-emails');
+            
+            // Update stats
+            document.getElementById('total-subscribers').textContent = subscribers.length;
+            
+            // Calculate new today
+            const today = new Date().toISOString().split('T')[0];
+            const newToday = subscribers.filter(sub => sub.date.split('T')[0] === today).length;
+            document.getElementById('new-today').textContent = newToday;
+            
+            // Clear container
+            container.innerHTML = '';
+            
+            if (subscribers.length === 0) {
+                container.innerHTML = '<p class="no-subscribers">No subscribers yet</p>';
+                return;
+            }
+            
+            // Sort by date (newest first)
+            subscribers.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Add each subscriber
+            subscribers.forEach(sub => {
+                const emailItem = document.createElement('div');
+                emailItem.className = 'email-item';
+                
+                const emailText = document.createElement('div');
+                emailText.className = 'email-text';
+                emailText.textContent = sub.email;
+                
+                const emailDate = document.createElement('div');
+                emailDate.className = 'email-date';
+                emailDate.textContent = formatDate(sub.date);
+                
+                const emailActions = document.createElement('div');
+                emailActions.className = 'email-actions';
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.title = 'Remove from waitlist';
+                deleteBtn.addEventListener('click', () => {
+                    if (confirm(`Remove ${sub.email} from the waitlist?`)) {
+                        removeFromWaitlist(sub.email);
+                    }
+                });
+                
+                emailActions.appendChild(deleteBtn);
+                
+                emailItem.appendChild(emailText);
+                emailItem.appendChild(emailDate);
+                emailItem.appendChild(emailActions);
+                
+                container.appendChild(emailItem);
+            });
+        }
+        
+        // Format date for display
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+        
+        // Export waitlist to CSV
+        function exportToCSV() {
+            const subscribers = getWaitlistSubscribers();
+            if (subscribers.length === 0) {
+                showToast('No subscribers to export', 'info');
+                return;
+            }
+            
+            let csvContent = 'data:text/csv;charset=utf-8,Email,Date Joined\n';
+            
+            subscribers.forEach(sub => {
+                csvContent += `${sub.email},${sub.date}\n`;
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'forge_of_olympus_waitlist.csv');
+            document.body.appendChild(link);
+            
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Toast notifications
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            
+            // Reset classes
+            toast.className = 'toast';
+            
+            // Add type-specific class
+            if (type === 'error') {
+                toast.style.background = '#ef4444';
+            } else if (type === 'info') {
+                toast.style.background = '#3b82f6';
+            } else {
+                toast.style.background = 'var(--accent)';
+            }
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Initial toast is now handled by the waitlist form
+            // Initialize waitlist system
+            initializeWaitlist();
+            renderWaitlist();
+            
+            // Handle waitlist form submission
+            document.getElementById('waitlist-button').addEventListener('click', function() {
+                const email = document.getElementById('waitlist-email').value.trim();
+                if (email) {
+                    if (addToWaitlist(email)) {
+                        document.getElementById('waitlist-email').value = '';
+                    }
+                } else {
+                    showToast('Please enter your email', 'error');
+                }
+            });
+            
+            // Handle Enter key in email field
+            document.getElementById('waitlist-email').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('waitlist-button').click();
+                }
+            });
+            
+            // Admin panel toggle
+            document.getElementById('admin-toggle').addEventListener('click', function() {
+                document.getElementById('admin-panel').classList.toggle('active');
+            });
+            
+            document.getElementById('close-admin').addEventListener('click', function() {
+                document.getElementById('admin-panel').classList.remove('active');
+            });
+            
+            // Export button
+            document.getElementById('export-btn').addEventListener('click', exportToCSV);
         });
     </script>
 </body>
