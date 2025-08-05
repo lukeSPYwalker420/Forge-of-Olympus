@@ -586,6 +586,25 @@
             margin: 40px 0;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .countdown-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1517343985841-f8b2d66e010b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .countdown-content {
+            position: relative;
+            z-index: 1;
         }
         
         .countdown-title {
@@ -608,6 +627,18 @@
             padding: 25px 15px;
             min-width: 100px;
             border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .countdown-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent);
         }
         
         .countdown-value {
@@ -615,6 +646,7 @@
             font-weight: 700;
             color: var(--accent);
             margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
         }
         
         .countdown-label {
@@ -627,6 +659,10 @@
         .waitlist-form {
             max-width: 500px;
             margin: 40px auto 0;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
         }
         
         .form-group {
@@ -741,6 +777,39 @@
             font-size: 0.9rem;
         }
         
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--accent);
+            color: var(--primary);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-weight: 600;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Animation for countdown */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .countdown-value {
+            animation: pulse 2s infinite;
+        }
+        
         @media (max-width: 768px) {
             #company-name {
                 font-size: 2.3rem;
@@ -765,28 +834,15 @@
             .testimonial-grid {
                 grid-template-columns: 1fr;
             }
-        }
-        
-        /* Toast notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            background: var(--accent);
-            color: var(--primary);
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            font-weight: 600;
-        }
-        
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
+            
+            .countdown-item {
+                min-width: 80px;
+                padding: 20px 10px;
+            }
+            
+            .countdown-value {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -868,7 +924,7 @@
                 <!-- Core Program - AVAILABLE -->
                 <div class="program-card">
                     <div class="program-badge available-badge">Available Now</div>
-                    <div class="program-header" style="background-image: url('https://images.unsplash.com/1515879218360-0fbc5e325f8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')">
+                    <div class="program-header" style="background-image: url('https://images.unsplash.com/photo-1515879218360-0fbc5e325f8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')">
                         <h3 class="program-title">Core Program</h3>
                         <p class="program-subtitle">Foundational Strength & Stability</p>
                     </div>
@@ -1019,31 +1075,33 @@
         
         <!-- Countdown Section -->
         <section class="countdown-section">
-            <h2 class="countdown-title">New Programs Launching Soon!</h2>
-            <div class="countdown-container">
-                <div class="countdown-item">
-                    <div class="countdown-value" id="days">45</div>
-                    <div class="countdown-label">Days</div>
+            <div class="countdown-content">
+                <h2 class="countdown-title">New Programs Launching Soon!</h2>
+                <div class="countdown-container">
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="days">00</div>
+                        <div class="countdown-label">Days</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="hours">00</div>
+                        <div class="countdown-label">Hours</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="minutes">00</div>
+                        <div class="countdown-label">Minutes</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="seconds">00</div>
+                        <div class="countdown-label">Seconds</div>
+                    </div>
                 </div>
-                <div class="countdown-item">
-                    <div class="countdown-value" id="hours">12</div>
-                    <div class="countdown-label">Hours</div>
+                
+                <div class="waitlist-form">
+                    <div class="form-group">
+                        <input type="email" class="form-input" id="waitlist-email" placeholder="Enter your email to get early access">
+                    </div>
+                    <button class="hero-button" id="waitlist-button">Join Waitlist</button>
                 </div>
-                <div class="countdown-item">
-                    <div class="countdown-value" id="minutes">30</div>
-                    <div class="countdown-label">Minutes</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="countdown-value" id="seconds">15</div>
-                    <div class="countdown-label">Seconds</div>
-                </div>
-            </div>
-            
-            <div class="waitlist-form">
-                <div class="form-group">
-                    <input type="email" class="form-input" placeholder="Enter your email to get early access">
-                </div>
-                <button class="hero-button">Join Waitlist</button>
             </div>
         </section>
         
@@ -1143,6 +1201,8 @@
         </footer>
     </div>
     
+    <div class="toast" id="toast">Thank you for joining the waitlist!</div>
+    
     <script>
         // Define Stripe payment links (replace with your actual links)
         const stripeLinks = {
@@ -1217,26 +1277,62 @@
             });
         });
         
-        // Countdown timer (demo only)
+        // Fixed Countdown Timer to January 10, 2025
         function updateCountdown() {
-            document.getElementById('days').textContent = Math.floor(Math.random() * 30) + 20;
-            document.getElementById('hours').textContent = Math.floor(Math.random() * 24);
-            document.getElementById('minutes').textContent = Math.floor(Math.random() * 60);
-            document.getElementById('seconds').textContent = Math.floor(Math.random() * 60);
+            // Set the target date to January 10, 2025
+            const targetDate = new Date('2025-10-01T00:00:00');
+            const now = new Date();
+            
+            // Calculate the time difference in milliseconds
+            const diff = targetDate - now;
+            
+            // If the target date has passed, set all to zero
+            if (diff <= 0) {
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+                return;
+            }
+            
+            // Calculate days, hours, minutes, seconds
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // Update the DOM elements with leading zeros
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
         }
         
-        // Update every 5 seconds to simulate a countdown
-        setInterval(updateCountdown, 5000);
-        updateCountdown();
+        // Update the countdown every second
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // Initialize immediately
+        
+        // Waitlist form submission
+        document.getElementById('waitlist-button').addEventListener('click', function() {
+            const email = document.getElementById('waitlist-email').value;
+            if (email && email.includes('@')) {
+                // Show toast notification
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                
+                // Clear the input
+                document.getElementById('waitlist-email').value = '';
+                
+                // Hide the toast after 3 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        });
         
         // Show toast notification on page load
         document.addEventListener('DOMContentLoaded', function() {
-            const toast = document.getElementById('toast');
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            // Initial toast is now handled by the waitlist form
         });
     </script>
 </body>
