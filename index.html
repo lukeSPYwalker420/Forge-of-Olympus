@@ -17,7 +17,6 @@
             --success: #10b981;
             --card-bg: #232732;
             --border: rgba(255, 255, 255, 0.08);
-            --coming-soon: #4a5568;
         }
         
         * {
@@ -41,139 +40,6 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-        }
-        
-        .admin-toggle {
-            background: var(--accent);
-            color: var(--primary);
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .admin-panel-content {
-            position: fixed;
-            top: 50px;
-            right: 20px;
-            width: 350px;
-            max-height: 80vh;
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.4);
-            overflow-y: auto;
-            display: none;
-            z-index: 999;
-        }
-        
-        .admin-panel-content.active {
-            display: block;
-        }
-        
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .admin-header h3 {
-            color: var(--accent);
-            font-size: 1.3rem;
-        }
-        
-        .close-admin {
-            background: none;
-            border: none;
-            color: var(--text-gray);
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-        
-        .waitlist-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-gray);
-        }
-        
-        .waitlist-emails {
-            max-height: 300px;
-            overflow-y: auto;
-            background: rgba(0,0,0,0.15);
-            border-radius: 8px;
-            padding: 10px;
-        }
-        
-        .email-item {
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .email-item:last-child {
-            border-bottom: none;
-        }
-        
-        .email-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .email-actions button {
-            background: none;
-            border: none;
-            color: var(--text-gray);
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        
-        .email-actions button:hover {
-            color: var(--accent);
-        }
-        
-        .export-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--accent);
-            color: var(--primary);
-            border: none;
-            border-radius: 4px;
-            margin-top: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
         }
         
         /* Header & Hero */
@@ -350,19 +216,9 @@
             max-width: 350px;
         }
         
-        .coming-soon .program-card {
-            opacity: 0.8;
-            filter: grayscale(20%);
-        }
-        
         .program-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-        }
-        
-        .coming-soon .program-card:hover {
-            transform: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
         
         .program-badge {
@@ -379,11 +235,6 @@
         .available-badge {
             background: var(--success);
             color: var(--primary);
-        }
-        
-        .coming-soon-badge {
-            background: var(--coming-soon);
-            color: var(--text-light);
         }
         
         .program-header {
@@ -420,19 +271,11 @@
             z-index: 2;
         }
         
-        .coming-soon .program-title {
-            color: var(--text-gray);
-        }
-        
         .program-subtitle {
             color: var(--text-gray);
             font-size: 1rem;
             position: relative;
             z-index: 2;
-        }
-        
-        .coming-soon .program-subtitle {
-            color: #6b7280;
         }
         
         .program-content {
@@ -444,10 +287,6 @@
             margin-bottom: 25px;
             padding-bottom: 25px;
             border-bottom: 1px solid var(--border);
-        }
-        
-        .coming-soon .phase {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .phase:last-child {
@@ -466,10 +305,6 @@
             gap: 10px;
         }
         
-        .coming-soon .phase-title {
-            color: #6b7280;
-        }
-        
         .phase-title i {
             font-size: 1.1rem;
             width: 30px;
@@ -479,10 +314,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        
-        .coming-soon .phase-title i {
-            background: rgba(107, 114, 128, 0.15);
         }
         
         .phase-items {
@@ -496,10 +327,6 @@
             line-height: 1.5;
         }
         
-        .coming-soon .phase-items li {
-            color: #6b7280;
-        }
-        
         .phase-items li::before {
             content: "•";
             color: var(--accent);
@@ -509,70 +336,10 @@
             font-size: 1.2rem;
         }
         
-        .coming-soon .phase-items li::before {
-            color: #6b7280;
-        }
-        
         .delivery-options {
             padding: 25px 30px;
             background: rgba(0, 0, 0, 0.15);
             border-top: 1px solid var(--border);
-        }
-        
-        .coming-soon .delivery-options {
-            background: rgba(0, 0, 0, 0.25);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .delivery-title {
-            font-size: 1rem;
-            margin-bottom: 18px;
-            font-weight: 600;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .coming-soon .delivery-title {
-            color: #6b7280;
-        }
-        
-        .options {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
-        }
-        
-        .option {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: 1px solid var(--border);
-            font-size: 0.95rem;
-        }
-        
-        .coming-soon .option {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: #6b7280;
-            cursor: default;
-        }
-        
-        .option.selected {
-            background: rgba(212, 175, 55, 0.15);
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-        
-        .coming-soon .option.selected {
-            background: rgba(107, 114, 128, 0.15);
-            border-color: #6b7280;
-            color: #6b7280;
         }
         
         .stripe-button {
@@ -598,121 +365,6 @@
         
         .stripe-button:hover {
             background: #363b47;
-        }
-        
-        .stripe-price {
-            font-size: 1.2rem;
-            margin-left: 5px;
-            font-weight: 700;
-            color: var(--accent);
-        }
-        
-        .coming-soon-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 16px;
-            background: var(--coming-soon) !important;
-            color: #d1d5db !important;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 6px;
-            text-decoration: none;
-            letter-spacing: 1px;
-            font-family: 'Montserrat', sans-serif;
-            border: none;
-            cursor: default;
-            gap: 10px;
-        }
-        
-        /* Testimonials */
-        .testimonials-section {
-            padding: 80px 0;
-            background: linear-gradient(to bottom right, var(--secondary), #252932);
-            border-radius: 12px;
-            margin: 60px 0;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .testimonials-section::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(to right, var(--accent), var(--success));
-        }
-        
-        .testimonial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-        
-        .testimonial-card {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
-            padding: 30px;
-            border: 1px solid var(--border);
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        
-        .testimonial-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-        
-        .testimonial-text {
-            font-style: italic;
-            margin-bottom: 25px;
-            line-height: 1.7;
-            color: var(--text-gray);
-            position: relative;
-            padding-left: 20px;
-        }
-        
-        .testimonial-text::before {
-            content: '"';
-            position: absolute;
-            top: -20px;
-            left: -10px;
-            font-size: 5rem;
-            color: var(--accent);
-            font-family: serif;
-            opacity: 0.1;
-        }
-        
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .author-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: var(--primary);
-        }
-        
-        .author-info h4 {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .author-info p {
-            color: var(--text-gray);
-            font-size: 0.9rem;
         }
         
         /* Footer */
@@ -806,39 +458,6 @@
             font-size: 0.9rem;
         }
         
-        /* Toast notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            background: var(--accent);
-            color: var(--primary);
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            font-weight: 600;
-        }
-        
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        
-        /* Animation for countdown */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .countdown-value {
-            animation: pulse 2s infinite;
-        }
-        
         /* Responsive Design for Programs */
         @media (max-width: 1200px) {
             .programs-container {
@@ -865,24 +484,6 @@
             
             .programs-container {
                 grid-template-columns: 1fr;
-            }
-            
-            .testimonial-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .countdown-item {
-                min-width: 80px;
-                padding: 20px 10px;
-            }
-            
-            .countdown-value {
-                font-size: 2rem;
-            }
-            
-            .admin-panel-content {
-                width: 90%;
-                right: 5%;
             }
         }
     </style>
@@ -934,9 +535,9 @@
                         </div>
                     </div>
                     <div class="delivery-options">
-                        <button class="stripe-button" data-stripe-link="STRIPE_URL_PLACEHOLDER_ARES">
+                        <a href="https://buy.stripe.com/14A28r1y63BT6WS6mV4sE0k" class="stripe-button" target="_blank">
                             <i class="fab fa-stripe"></i> Buy Now – £XX
-                        </button>
+                        </a>
                     </div>
                 </div>
                 
@@ -959,9 +560,9 @@
                         </div>
                     </div>
                     <div class="delivery-options">
-                        <button class="stripe-button" data-stripe-link="STRIPE_URL_PLACEHOLDER_ZEUS">
+                        <a href="https://buy.stripe.com/6oU3cvekSa0h80WaDb4sE0j" class="stripe-button" target="_blank">
                             <i class="fab fa-stripe"></i> Buy Now – £XX
-                        </button>
+                        </a>
                     </div>
                 </div>
                 
@@ -984,9 +585,9 @@
                         </div>
                     </div>
                     <div class="delivery-options">
-                        <button class="stripe-button" data-stripe-link="STRIPE_URL_PLACEHOLDER_APOLLO">
+                        <a href="https://buy.stripe.com/8x25kD0u2fkBa947qZ4sE0i" class="stripe-button" target="_blank">
                             <i class="fab fa-stripe"></i> Buy Now – £XX
-                        </button>
+                        </a>
                     </div>
                 </div>
                 
@@ -1009,9 +610,9 @@
                         </div>
                     </div>
                     <div class="delivery-options">
-                        <button class="stripe-button" data-stripe-link="STRIPE_URL_PLACEHOLDER_HERMES">
+                        <a href="https://buy.stripe.com/8x28wPdgO3BTa94bHf4sE0h" class="stripe-button" target="_blank">
                             <i class="fab fa-stripe"></i> Buy Now – £XX
-                        </button>
+                        </a>
                     </div>
                 </div>
                 
@@ -1034,9 +635,9 @@
                         </div>
                     </div>
                     <div class="delivery-options">
-                        <button class="stripe-button" data-stripe-link="STRIPE_URL_PLACEHOLDER_HEPHAESTUS">
+                        <a href="https://buy.stripe.com/6oU8wPa4CfkB1Cy7qZ4sE0g" class="stripe-button" target="_blank">
                             <i class="fab fa-stripe"></i> Buy Now – £XX
-                        </button>
+                        </a>
                     </div>
                 </div>
                 
@@ -1059,53 +660,9 @@
                         </div>
                     </div>
                     <div class="delivery-options">
-                        <button class="stripe-button" data-stripe-link="STRIPE_URL_PLACEHOLDER_POSEIDON">
+                        <a href="https://buy.stripe.com/4gMdR9a4C5K1fto8v34sE0f" class="stripe-button" target="_blank">
                             <i class="fab fa-stripe"></i> Buy Now – £XX
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <section class="testimonials-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Client Transformations</h2>
-                    <p class="section-subtitle">Hear from athletes and fitness enthusiasts who've transformed their performance with our programs</p>
-                </div>
-                
-                <div class="testimonial-grid">
-                    <div class="testimonial-card">
-                        <p class="testimonial-text">"The Ares Protocol completely transformed my strength. I added 50kg to my deadlift in just 12 weeks!"</p>
-                        <div class="testimonial-author">
-                            <div class="author-avatar">SJ</div>
-                            <div class="author-info">
-                                <h4>Sarah Johnson</h4>
-                                <p>Competitive Powerlifter</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="testimonial-card">
-                        <p class="testimonial-text">"The Zeus Method helped me develop explosive power I never knew I had. My vertical jump increased by 8 inches!"</p>
-                        <div class="testimonial-author">
-                            <div class="author-avatar">MR</div>
-                            <div class="author-info">
-                                <h4>Michael Rodriguez</h4>
-                                <p>Professional Basketball Player</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="testimonial-card">
-                        <p class="testimonial-text">"After years of shoulder pain, the Hephaestus Framework finally gave me pain-free lifting. Life-changing!"</p>
-                        <div class="testimonial-author">
-                            <div class="author-avatar">TW</div>
-                            <div class="author-info">
-                                <h4>Tara Williams</h4>
-                                <p>Strength Coach</p>
-                            </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -1163,23 +720,8 @@
                 </div>
             </div>
         </footer>
-    </div>
-    
-    <div class="toast" id="toast">Thank you for joining the waitlist!</div>
     
     <script>
-        // Handle new program button clicks
-        document.querySelectorAll('.stripe-button[data-stripe-link]').forEach(button => {
-            button.addEventListener('click', function() {
-                const stripeUrl = this.getAttribute('data-stripe-link');
-                if (stripeUrl && stripeUrl !== 'STRIPE_URL_PLACEHOLDER') {
-                    window.open(stripeUrl, '_blank');
-                } else {
-                    alert('Stripe link not configured yet. Please check back soon!');
-                }
-            });
-        });
-        
         // Smooth scrolling
         document.querySelector('.hero-button').addEventListener('click', function(e) {
             e.preventDefault();
@@ -1187,121 +729,6 @@
                 behavior: 'smooth'
             });
         });
-        
-        // Waitlist Management System
-        const WAITLIST_KEY = 'forgeOfOlympusWaitlist';
-        
-        // Initialize waitlist if not exists
-        function initializeWaitlist() {
-            if (!localStorage.getItem(WAITLIST_KEY)) {
-                localStorage.setItem(WAITLIST_KEY, JSON.stringify([]));
-            }
-        }
-        
-        // Get all waitlist subscribers
-        function getWaitlistSubscribers() {
-            return JSON.parse(localStorage.getItem(WAITLIST_KEY)) || [];
-        }
-        
-        // Add a new subscriber to the waitlist
-        function addToWaitlist(email) {
-            if (!isValidEmail(email)) {
-                showToast('Please enter a valid email address', 'error');
-                return false;
-            }
-            
-            if (isEmailInWaitlist(email)) {
-                showToast('You are already on the waitlist!', 'info');
-                return false;
-            }
-            
-            const subscribers = getWaitlistSubscribers();
-            const newSubscriber = {
-                email: email,
-                date: new Date().toISOString()
-            };
-            
-            subscribers.push(newSubscriber);
-            localStorage.setItem(WAITLIST_KEY, JSON.stringify(subscribers));
-            
-            showToast('Thank you for joining the waitlist!');
-            renderWaitlist();
-            return true;
-        }
-        
-        // Remove email from waitlist
-        function removeFromWaitlist(email) {
-            const subscribers = getWaitlistSubscribers();
-            const filtered = subscribers.filter(sub => sub.email !== email);
-            localStorage.setItem(WAITLIST_KEY, JSON.stringify(filtered));
-            renderWaitlist();
-        }
-        
-        // Check if email is already in waitlist
-        function isEmailInWaitlist(email) {
-            const subscribers = getWaitlistSubscribers();
-            return subscribers.some(sub => sub.email === email);
-        }
-        
-        // Validate email format
-        function isValidEmail(email) {
-            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return re.test(String(email).toLowerCase());
-        }
-        
-        // Format date for display
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        }
-        
-        // Export waitlist to CSV
-        function exportToCSV() {
-            const subscribers = getWaitlistSubscribers();
-            if (subscribers.length === 0) {
-                showToast('No subscribers to export', 'info');
-                return;
-            }
-            
-            let csvContent = 'data:text/csv;charset=utf-8,Email,Date Joined\n';
-            
-            subscribers.forEach(sub => {
-                csvContent += `${sub.email},${sub.date}\n`;
-            });
-            
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement('a');
-            link.setAttribute('href', encodedUri);
-            link.setAttribute('download', 'forge_of_olympus_waitlist.csv');
-            document.body.appendChild(link);
-            
-            link.click();
-            document.body.removeChild(link);
-        }
-        
-        // Toast notifications
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            
-            // Reset classes
-            toast.className = 'toast';
-            
-            // Add type-specific class
-            if (type === 'error') {
-                toast.style.background = '#ef4444';
-            } else if (type === 'info') {
-                toast.style.background = '#3b82f6';
-            } else {
-                toast.style.background = 'var(--accent)';
-            }
-            
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
     </script>
 </body>
 </html>
