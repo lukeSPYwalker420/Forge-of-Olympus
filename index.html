@@ -153,6 +153,115 @@
             box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
         }
         
+        /* How It Works Section */
+        .how-it-works {
+            padding: 80px 0 60px;
+            text-align: center;
+        }
+        
+        .how-it-works .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.6rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--text-light);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .how-it-works .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .how-it-works .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            max-width: 700px;
+            margin: 30px auto 50px;
+            line-height: 1.7;
+        }
+        
+        .features-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: var(--accent);
+            font-size: 2rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+        
+        .feature-card p {
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+        
+        .whatsapp-highlight {
+            background: rgba(37, 211, 102, 0.1);
+            border: 1px solid rgba(37, 211, 102, 0.3);
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-align: left;
+        }
+        
+        .whatsapp-highlight i {
+            font-size: 3rem;
+            color: #25D366;
+            flex-shrink: 0;
+        }
+        
+        .whatsapp-highlight h3 {
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        .whatsapp-highlight p {
+            color: var(--text-gray);
+            margin-bottom: 0;
+        }
+        
         /* Programs Section */
         .programs-section {
             padding: 20px 0 60px;
@@ -458,7 +567,7 @@
             font-size: 0.9rem;
         }
         
-        /* Responsive Design for Programs */
+        /* Responsive Design */
         @media (max-width: 1200px) {
             .programs-container {
                 grid-template-columns: repeat(2, 1fr);
@@ -485,6 +594,11 @@
             .programs-container {
                 grid-template-columns: 1fr;
             }
+            
+            .whatsapp-highlight {
+                flex-direction: column;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -505,6 +619,48 @@
                 </div>
                 
                 <a href="#programs" class="hero-button">Explore Programs</a>
+            </div>
+        </section>
+        
+        <!-- How It Works Section -->
+        <section class="how-it-works">
+            <div class="container">
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-subtitle">Forget the rigid weekly check-ins of traditional online training. Get real-time, on-demand support when you need it most.</p>
+                
+                <div class="features-container">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <h3>Expert Training Programs</h3>
+                        <p>Receive specialized programs designed for your goals, whether it's strength, power, aesthetics, or athletic performance.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h3>Nutrition Guidance</h3>
+                        <p>Get help with meal planning, macro calculations, and pre/post-workout nutrition tailored to your needs.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3>On-Demand Support</h3>
+                        <p>No more waiting for weekly check-ins. Get answers to your questions when you actually need them.</p>
+                    </div>
+                </div>
+                
+                <div class="whatsapp-highlight">
+                    <i class="fab fa-whatsapp"></i>
+                    <div>
+                        <h3>Real-Time Support via WhatsApp</h3>
+                        <p>In the gym and need form advice? Confused about cardio options? Unsure about your macros? Simply send a WhatsApp message and get immediate guidance. No rigid schedules, no waiting days for responses - just real support when you need it.</p>
+                    </div>
+                </div>
             </div>
         </section>
         
