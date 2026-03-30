@@ -1,0 +1,28 @@
+{
+  "name": "forge-of-olympus",
+  "version": "1.0.0",
+  "description": "Backend for Forge of Olympus plan and progression system",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.7",
+    "express": "^4.22.1",
+    "joi": "^17.13.3",
+    "mongodb": "^7.1.1",
+    "mongoose": "^8.23.0",
+    "nodemailer": "^8.0.4",
+    "stripe": "^17.5.0",
+    "validator": "^13.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
