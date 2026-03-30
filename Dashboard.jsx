@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function Dashboard() {
   const userId = localStorage.getItem("userId");
 
   // Redirect if not logged in
+  useEffect(() => {
+    if (!userId) {
+      window.location.href = "/login";
+    }
+  }, [userId]);
+
   if (!userId) {
-    window.location.href = "/login";
     return null;
   }
 
