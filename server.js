@@ -1,838 +1,441 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const path = require('path');
-const validator = require('validator');
-const Joi = require('joi');
-const nodemailer = require('nodemailer');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// ======================
-// INITIAL CONFIGURATION
-// ======================
 dotenv.config();
+
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// ======================
-// DATABASE CONNECTION
-// ======================
-mongoose.connect(process.env.USER_DB_URI, {
-  connectTimeoutMS: 5000
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1);
-});
-
-// ======================
-// MIDDLEWARE
-// ======================
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'https://forge-of-olympus.onrender.com',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
-  credentials: true
-}));
-
+app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use(express.urlencoded({ extended: true }));
 
-// ======================
-// SCHEMAS & MODELS
-// ======================
-const UserSchema = new mongoose.Schema({
-  sex: { type: String, enum: ['male', 'female'], required: true },
-  age: { type: Number, required: true },
-  height: { type: Number, required: true },
-  weight: { type: Number, required: true },
-  bodyFat: { type: Number }, // Optional, if provided
-  allergies: { type: [String], default: [] },
-  email: { 
-    type: String, 
-    required: [true, 'Email is required'],
-    unique: true,
-    trim: true,
-    lowercase: true,
-    validate: {
-      validator: v => validator.isEmail(v),
-      message: props => `${props.value} is not a valid email!`
+/* =========================
+   FIX __dirname (ES MODULE SAFE)
+========================= */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+/* =========================
+   DB CONNECTION
+========================= */
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
+  });
+
+/* =========================
+   SCHEMAS
+========================= */
+
+const ProgramSchema = new mongoose.Schema({
+  week: Number,
+  day: Number,
+  focus: String,
+  exercises: [
+    {
+      liftName: String,
+      role: String,
+      sets: Number,
+      reps: String,
+      rpeTarget: Number
     }
-  },
-  fitnessGoal: {
-    type: String,
-    enum: [
-      'Weight loss', 
-      'Muscle gain', 
-      'Improved endurance', 
-      'Overall health and wellness', 
-      'Athletic performance'
-    ],
-    required: true
-  },
-  fitnessGoalDetails: {
-    type: String,
-    required: true,
-    validate: {
-      validator: function(value) {
-        // In update operations, "this" is not the document but the query context.
-        // Try to extract the updated fitnessGoal from the update payload.
-        let fitnessGoal;
-        if (this.getUpdate && typeof this.getUpdate === 'function') {
-          const update = this.getUpdate();
-          // If the update uses $set, extract from there:
-          if (update.$set && update.$set.fitnessGoal) {
-            fitnessGoal = update.$set.fitnessGoal;
-          } else if (update.fitnessGoal) {
-            fitnessGoal = update.fitnessGoal;
-          }
-        }
-        // Fallback to the current document's value:
-        if (!fitnessGoal) {
-          fitnessGoal = this.fitnessGoal;
-        }
-    
-        switch (fitnessGoal) {
-          case 'Weight loss':
-          case 'Muscle gain':
-            return ['Less than 5 kg', '5-10 kg', '10-20 kg', 'More than 20 kg'].includes(value);
-          case 'Improved endurance':
-            return ['Cardiovascular fitness', 'Muscular endurance', 'Mix of both'].includes(value);
-          case 'Overall health and wellness':
-            return ['Yes', 'No', 'Prefer not to say'].includes(value);
-          case 'Athletic performance':
-            return ['Speed', 'Strength', 'Endurance', 'Agility', 'Flexibility'].includes(value);
-          default:
-            return false;
-        }
-      },
-      message: 'Invalid fitness goal details based on selected fitness goal'
-    }    
-  },
-  workoutPreferences: { 
-    type: String,
-    enum: ['Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine', null],
-    default: 'Mixed routine'
-  },
-  dietPreferences: {
-    type: String,
-    enum: ['none', 'vegetarian', 'vegan', 'gluten', 'paleo', 'keto', null],
-    set: v => v?.replace(/-free$/, '') || null,
-    default: 'none'
-  },
-  activityLevel: {
-    type: String,
-    enum: ['sedentary', 'light', 'moderate', 'active', 'very_active'],
-    default: 'moderate'
-  },
-  fitnessLevel: {
-    type: String,
-    enum: ["Beginner", "Intermediate", "Advanced"],
-    default: 'Beginner'
-  },
-  exerciseFrequency: {
-    type: String,
-    enum: ["1-2 days", "3-4 days", "5-6 days", "Every day"],
-    default: '3-4 days'
-  },
-  medicalConditions: {
-    hasConditions: { type: Boolean, required: true },
-    conditions: { type: [String], default: [] } // an array of strings
-  },
-  injuryDetails: {
-    hasInjuries: { type: Boolean, required: true },
-    details: { type: [String], default: [] }
-  },
-  mealFrequency: {
-    type: String,
-    enum: ['3_meals', '4-5_meals', '6+_meals'],
-    required: true
-  },
-  cookFrequency: {
-    type: String,
-    enum: ['rarely', 'sometimes', 'frequently'],
-    required: true
-  },
-  groceryBudget: {
-    type: String,
-    enum: ['<100', '100-150', '>150'],
-    required: true
-  },
-  plans: {
-    exercise: {
-      type: mongoose.Schema.Types.Mixed, 
-      validate: {
-        validator: (v) => v && Array.isArray(v.schedule) && v.schedule.length > 0,
-        message: 'Invalid exercise plan structure'
-      }
-    },
-    meals: { // Renamed from 'diet' to 'meals' for clarity
-      type: mongoose.Schema.Types.Mixed, 
-      validate: {
-        validator: (v) => v && typeof v === 'object',
-        message: 'Invalid meal plan structure'
-      }
-    },
-    generatedAt: {
-      type: Date,
-      default: Date.now,
-      validate: {
-        validator: v => v <= Date.now(),
-        message: 'Plan date cannot be in the future'
-      }
-    }
-  },  
-  stripeCustomerId: {
-    type: String,
-    index: true  // Optional: Add index if Stripe customer ID is queried often
-  }
-}, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
+  ]
 });
 
-const User = mongoose.model('User', UserSchema);
+const Program = mongoose.model("Program", ProgramSchema);
 
-// ======================
-// VALIDATION SCHEMAS
-// ======================
-const mergeSchema = Joi.object({
-  email: Joi.string().email().required(),
-  newData: Joi.object({
-    // === Quiz Data Fields ===
-    fitnessGoal: Joi.string().valid(
-      'Weight loss', 
-      'Muscle gain', 
-      'Improved endurance', 
-      'Overall health and wellness', 
-      'Athletic performance'
-    ).required(),
-    fitnessGoalDetails: Joi.alternatives().conditional('fitnessGoal', {
-      switch: [
-        {
-          is: 'Weight loss',
-          then: Joi.string().valid('Less than 5 kg', '5-10 kg', '10-20 kg', 'More than 20 kg').required()
-        },
-        {
-          is: 'Muscle gain',
-          then: Joi.string().valid('Less than 5 kg', '5-10 kg', '10-20 kg', 'More than 20 kg').required()
-        },
-        {
-          is: 'Improved endurance',
-          then: Joi.string().valid('Cardiovascular fitness', 'Muscular endurance', 'Mix of both').required()
-        },
-        {
-          is: 'Overall health and wellness',
-          then: Joi.string().valid('Yes', 'No', 'Prefer not to say').required()
-        },
-        {
-          is: 'Athletic performance',
-          then: Joi.string().valid('Speed', 'Strength', 'Endurance', 'Agility', 'Flexibility').required()
-        }
-      ],
-      otherwise: Joi.forbidden()
-    }),
-    injuryDetails: Joi.object({
-      hasInjuries: Joi.boolean().required(),
-      details: Joi.array().items(
-        Joi.string().valid(
-          'Back injury', 
-          'Knee injury', 
-          'Shoulder injury', 
-          'Elbow injury', 
-          'Wrist injury', 
-          'Hip injury', 
-          'Ankle injury'
-        )
-      )
-      .when('hasInjuries', { 
-        is: true, 
-        then: Joi.array().min(1).required(),
-        otherwise: Joi.optional()
-      })
-    }).optional(),
-    medicalConditions: Joi.object({
-      hasConditions: Joi.boolean().required(),
-      conditions: Joi.array().items(
-        Joi.string().valid(
-          'High blood pressure', 
-          'Diabetes', 
-          'Asthma', 
-          'Arthritis', 
-          'Heart disease', 
-          'Depression', 
-          'Anxiety', 
-          'Thyroid disorder'
-        )
-      )
-      .when('hasConditions', { 
-        is: true, 
-        then: Joi.array().min(1).required(), 
-        otherwise: Joi.optional()
-      })
-    }).optional(),
-    workoutPreferences: Joi.string().valid('Strength training', 'Cardio', 'Yoga/Pilates', 'Mixed routine').required(),
-    dietPreferences: Joi.string().valid('none', 'vegetarian', 'vegan', 'gluten', 'paleo', 'keto').required(),
-    activityLevel: Joi.string().valid('sedentary', 'light', 'moderate', 'active', 'very_active').required(),
-    fitnessLevel: Joi.string().valid('Beginner', 'Intermediate', 'Advanced').required(),
-    exerciseFrequency: Joi.string().valid('1-2 days', '3-4 days', '5-6 days', 'Every day').required(),
-
-    // === Paywall (Personal Details) Fields ===
-    sex: Joi.string().valid('male', 'female').required(),
-    age: Joi.number().integer().min(0).required(),
-    height: Joi.number().required(),
-    weight: Joi.number().required(),
-    bodyFat: Joi.number().optional(), // body fat percentage (optional)
-    allergies: Joi.array().items(Joi.string()).optional(), // food allergies
-    
-    // === Paywall (Meal & Grocery) Fields ===
-    mealFrequency: Joi.string().valid('3_meals', '4-5_meals', '6+_meals').required(),
-    cookFrequency: Joi.string().valid('rarely', 'sometimes', 'frequently').required(),
-    groceryBudget: Joi.string().valid('<100', '100-150', '>150').required(),
-
-    // === Plans Field (Including Meal Plan) ===
-    plans: Joi.object({
-      exercise: Joi.object().required(),
-      diet: Joi.object().required(),
-      // Optional meals field based on your JSON example:
-      meals: Joi.object({
-        breakfast: Joi.array().items(
-          Joi.object({
-            meal_id: Joi.string().required(),
-            name: Joi.string().required(),
-            tags: Joi.array().items(Joi.string()).optional(),
-            calories: Joi.number().required(),
-            macros: Joi.object({
-              protein: Joi.number().required(),
-              carbs: Joi.number().required(),
-              fats: Joi.number().required()
-            }).required(),
-            ingredients: Joi.array().items(Joi.string()).required(),
-            instructions: Joi.string().required(),
-            cost: Joi.number().required()
-          })
-        ).required(),
-        lunch: Joi.array().items(Joi.object()).optional(),
-        dinner: Joi.array().items(Joi.object()).optional(),
-        snacks: Joi.array().items(Joi.object()).optional()
-      }).optional(),
-      generatedAt: Joi.date().max('now').required()
-    }).required(),
-
-    stripeCustomerId: Joi.string().optional()
-
-  }).required()
+const LiftStateSchema = new mongoose.Schema({
+  userId: String,
+  lift: String,
+  currentWeight: Number,
+  consecutiveSuccesses: { type: Number, default: 0 },
+  stallCounter: { type: Number, default: 0 },
+  lastRPE: Number,
+  lastCompleted: Boolean,
+  updatedAt: { type: Date, default: Date.now }
 });
 
-// ======================
-// EMAIL SERVICE
-// ======================
-const transporter = nodemailer.createTransport({
-  service: 'Gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+const LiftState = mongoose.model("LiftState", LiftStateSchema);
+
+const SessionSchema = new mongoose.Schema({
+  userId: String,
+  week: Number,
+  day: Number,
+  lift: String,
+  targetRPE: Number,
+  actualRPE: Number,
+  completed: Boolean,
+  actualWeight: Number,
+  repsCompleted: Number,
+  createdAt: { type: Date, default: Date.now }
 });
 
-async function sendPlanEmail(email, exercisePlan, dietPlan) {
-  try {
-    await transporter.sendMail({
-      from: `Forge of Olympus <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Your Custom Plan is Ready!',
-      html: generateEmailContent(exercisePlan, dietPlan)
-    });
-  } catch (error) {
-    console.error('Email send failed:', error);
-  }
-}
+const Session = mongoose.model("Session", SessionSchema);
 
-// ======================
-// STRIPE INTEGRATION
-// ======================
-const PRODUCTS = {
-  standard: { priceId: 'price_1QjJzPFywsnhFgWfkMFvBVom' },
-  premium: { priceId: 'price_1QjK0LFywsnhFgWfQWxV1ucp' }
+/* =========================
+   PROGRAM LOADER
+========================= */
+
+const programPath = path.join(__dirname, "data", "powerlifting-program.json");
+
+const loadProgram = () => {
+  return JSON.parse(fs.readFileSync(programPath, "utf-8"));
 };
 
-async function createStripeSession(userEmail, priceId) {
-  return stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: [{ price: priceId, quantity: 1 }],
-    mode: 'payment',
-    success_url: `${process.env.FRONTEND_URL}/success`,
-    cancel_url: `${process.env.FRONTEND_URL}/cancel`,
-    metadata: { userEmail }
-  });
-}
+/* =========================
+   PROGRESSION ENGINE
+========================= */
 
-// ======================
-// CORE FUNCTIONALITY
-// ======================
-app.post('/api/user/merge', async (req, res) => {
-  try {
-    console.log("Received merge request:", JSON.stringify(req.body, null, 2)); // Debug log
+function calculateProgression(state, session) {
+  let nextWeight =
+    typeof state.currentWeight === "number" && state.currentWeight > 0
+      ? state.currentWeight
+      : session.actualWeight || 0;
 
-    // Validate request body
-    const { error } = mergeSchema.validate(req.body);
-    if (error) return res.status(400).json({ error: error.details[0].message });
+  let successStreak = state.consecutiveSuccesses || 0;
+  let stallCounter = state.stallCounter || 0;
 
-    const { email, newData } = req.body;
-    const sanitizedEmail = validator.normalizeEmail(email);
+  const completed = session.completed === true;
 
-    if (!newData || Object.keys(newData).length === 0) {
-      return res.status(400).json({ error: "No valid data provided for update" });
+  const targetRPE = session.targetRPE;
+  const actualRPE = session.actualRPE;
+
+  // ─────────────────────────────
+  // 1. VALID RPE SIGNAL
+  // ─────────────────────────────
+  const hasRPE =
+    typeof actualRPE === "number" &&
+    typeof targetRPE === "number";
+
+  const rpeDelta = hasRPE ? (targetRPE - actualRPE) : 0;
+
+  // ─────────────────────────────
+  // 2. PERFORMANCE QUALITY
+  // ─────────────────────────────
+  const isGoodSession =
+    completed &&
+    hasRPE &&
+    actualRPE <= targetRPE + 0.5;
+
+  const isOverreaching =
+    hasRPE &&
+    actualRPE > targetRPE + 1;
+
+  // ─────────────────────────────
+  // 3. PROGRESSION LOGIC (RPE-BASED)
+  // ─────────────────────────────
+
+  if (isGoodSession) {
+    successStreak += 1;
+    stallCounter = 0;
+
+    // ONLY progress if consistently under target (true surplus capacity)
+    if (successStreak >= 2 && rpeDelta >= 0.5) {
+      nextWeight += getLoadIncrease(session.liftName);
+      successStreak = 0;
     }
 
-    // Database update
-    const user = await User.findOneAndUpdate(
-      { email: sanitizedEmail },
-      { $set: newData },
-      { new: true, upsert: true, runValidators: true, context: 'query' }
-    );    
-
-    res.json({ success: true, user });
-  } catch (error) {
-    console.error("Merge error:", error); // Debugging
-    handleServerError(res, error, 'Merge failed');
+    return {
+      nextWeight,
+      consecutiveSuccesses: successStreak,
+      stallCounter
+    };
   }
-});
 
-app.post('/api/stripe/webhook', express.raw({type: 'application/json'}), async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  
-  try {
-    const event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
+  // ─────────────────────────────
+  // 4. OVERREACH = FATIGUE RESPONSE
+  // ─────────────────────────────
+  if (isOverreaching) {
+    successStreak = 0;
+    stallCounter += 1;
 
-    if (event.type === 'checkout.session.completed') {
-      const session = event.data.object;
-      const user = await User.findOne({ email: session.metadata.userEmail });
-      
-      if (!user) throw new Error('User not found');
-      
-      const plans = await generatePlan(user.toObject());
-      user.plans = plans;
-      await user.save();
-      
-      await sendPlanEmail(user.email, plans.exercise_plan, plans.meal_plan);
+    if (stallCounter >= 2) {
+      nextWeight -= getLoadIncrease(session.liftName);
+      stallCounter = 0;
     }
 
-    res.json({ received: true });
-  } catch (error) {
-    handleServerError(res, error, 'Webhook processing failed');
+    return {
+      nextWeight,
+      consecutiveSuccesses: successStreak,
+      stallCounter
+    };
   }
-});
 
-// ======================
-// HELPER FUNCTIONS
-// ======================
-function handleServerError(res, error, context) {
-  console.error(`${context}:`, error);
-  const status = error.statusCode || 500;
-  res.status(status).json({ 
-    error: context,
-    details: error.message 
-  });
-}
-
-function generateEmailContent(exercisePlan, dietPlan) {
-  return `
-    <h1>Your Personalized Fitness Plan</h1>
-    <p>Access your dashboard: <a href="${process.env.FRONTEND_URL}/dashboard">View Plans</a></p>
-    <h2>Sample Exercises</h2>
-    <ul>${exercisePlan.slice(0, 3).map(ex => `<li>${ex.name}</li>`).join('')}</ul>
-    <h2>Sample Meals</h2>
-    <ul>${dietPlan.breakfast.slice(0, 2).map(meal => `<li>${meal.name}</li>`).join('')}</ul>
-  `;
-}
-
-async function getExercises(userData) {
-  try {
-    // Read and parse the exercise.json file
-    const filePath = path.join(__dirname, 'exercise.json');
-    const data = fs.readFileSync(filePath, 'utf-8');
-    const exercisePlans = JSON.parse(data);
-
-    // Initialize an empty array to store tags based on user data
-    let tags = [];
-
-    // **Goal Handling**
-    if (userData.goal) tags.push(userData.goal);
-
-    // **Workout Frequency**
-    if (userData.days_per_week) tags.push(userData.days_per_week);
-
-    // **Exercise Type Preference**
-    if (userData.exercise_type_preference) tags.push(userData.exercise_type_preference);
-
-    // **Injury Handling**
-    if (!userData.injury_avoidances || userData.injury_avoidances.length === 0) {
-      tags.push("No Injuries");
-    } else {
-      userData.injury_avoidances.forEach(injury => tags.push(injury));
-    }
-
-    // **Fitness Level Handling**
-    if (userData.fitness_level) tags.push(userData.fitness_level);
-
-    // **Exercise Environment**
-    if (userData.exercise_environment) tags.push(userData.exercise_environment);
-
-    // **Focus Type**
-    if (userData.focus_type) tags.push(userData.focus_type);
-
-    // **Dietary Restrictions (Optional)**
-    if (userData.dietary_restrictions && userData.dietary_restrictions !== "None") {
-      tags.push(userData.dietary_restrictions);
-    }
-
-    // **Find the best-matching plan**
-    let bestMatch = null;
-    let maxMatches = 0;
-
-    exercisePlans.forEach(plan => {
-      const matchCount = plan.tags.filter(tag => tags.includes(tag)).length;
-
-      if (matchCount > maxMatches) {
-        maxMatches = matchCount;
-        bestMatch = plan;
-      }
-    });
-
-    // Return the best-matching plan or null if none found
-    return bestMatch || null;
-
-  } catch (error) {
-    console.error('Error reading or parsing exercise.json:', error);
-    throw new Error('Error fetching exercise plans');
-  }
-}
-
-function getMeals(userData) {
-  // Create a query object for meal filtering
-  let query = {
-    calories: { $lte: userData.daily_calories },
-    mealCategory: { $in: userData.mealTimes }
+  // ─────────────────────────────
+  // 5. DEFAULT (neutral stimulus)
+  // ─────────────────────────────
+  return {
+    nextWeight,
+    consecutiveSuccesses: 0,
+    stallCounter: stallCounter + 1
   };
-
-  // Convert allergies to "contains-x" format and exclude matching meals
-  if (userData.dietary_restrictions?.length) {
-    const allergyTags = userData.dietary_restrictions.map(a => `contains-${a.toLowerCase()}`);
-    query.restrictions = { $nin: allergyTags }; // Exclude meals with these tags
-  }
-
-  // Optional: Add budget filter
-  if (userData.groceryBudget) {
-    query.price = { $lte: userData.groceryBudget };
-  }
-
-  // Optional: Macronutrient goals
-  if (userData.macronutrientGoals) {
-    query['macronutrients.protein'] = { $gte: userData.macronutrientGoals.protein };
-    query['macronutrients.carbs'] = { $lte: userData.macronutrientGoals.carbs };
-    query['macronutrients.fats'] = { $lte: userData.macronutrientGoals.fats };
-  }
-
-  return Meal.find(query);
-}
-
-// Helper function for TDEE calculation
-function calculateTDEE(weight, height, age, activityLevel, bodyFatPercentage = null) {
-  let BMR;
-
-  if (bodyFatPercentage) {
-    // Katch-McArdle Formula (for lean body mass)
-    const leanBodyMass = weight * (1 - bodyFatPercentage / 100);
-    BMR = 370 + (21.6 * leanBodyMass);
-  } else {
-    // Harris-Benedict Formula (for standard BMR)
-    BMR = 10 * weight + 6.25 * height - 5 * age + 5; // For men
-  }
-
-  // Activity level multipliers (you can adjust these values)
-  const activityMultipliers = {
-    sedentary: 1.2,
-    light: 1.375,
-    moderate: 1.55,
-    heavy: 1.725,
-    veryHeavy: 1.9,
-  };
-
-  // Calculate TDEE (Total Daily Energy Expenditure)
-  return BMR * (activityMultipliers[activityLevel] || 1.2); // Default to sedentary if not found
-}
-
-async function generatePlan(userData) {
-  // Validate core user data
-  if (!userData || !userData.activityLevel || !userData.fitnessLevel) {
-    throw new Error('Invalid user data for plan generation');
-  }
-
-  // Calculate nutritional needs
-  const tdee = calculateTDEE(
-    userData.weight,
-    userData.height,
-    userData.age,
-    userData.activityLevel,
-    userData.bodyFatPercentage
-  );
-
-  // Get filtered exercises with injury considerations
-  const exercises = await getExercises({
-    goals: userData.fitnessGoals,
-    equipmentAvailability: userData.exerciseEnvironment === 'Home' ? 'bodyweight' : 'full',
-    injuryAvoidance: Array.from(userData.followUpAnswers?.values() || []),
-    daysAvailable: userData.exerciseFrequency.match(/\d+/)?.[0] || 3,
-    fitnessLevel: userData.fitnessLevel
-  });
-
-  // Generate periodized workout schedule
-  const exercisePlan = createPeriodizedPlan(
-    exercises,
-    userData.exerciseFrequency,
-    userData.workoutPreferences
-  );
-
-  // Get dietary-appropriate meals
-  const meals = await getMeals({
-    dietaryRestrictions: userData.dietPreferences,
-    allergies: userData.allergies,
-    calories: tdee,
-    budget: userData.groceryBudget,
-    cookFrequency: userData.cookFrequency
-  });
-
-  // Structure meal plan according to preferences
-  const mealPlan = buildMealSchedule({
-    meals,
-    mealFrequency: userData.mealFrequency,
-    cookingTime: userData.cookFrequency === 'frequently' ? 'high' : 'low',
-    calorieTarget: tdee
-  });
 
   return {
-    exercise_plan: {
-      schedule: exercisePlan,
-      progression: createProgressionStrategy(userData.fitnessLevel),
-      recoveryTips: generateRecoveryTips(userData.medicalConditions)
-    },
-    diet_plan: {
-      meals: mealPlan,
-      nutritionalSummary: calculateMacronutrients(mealPlan),
-      shoppingList: generateShoppingList(mealPlan, userData.groceryBudget)
-    }
+    nextWeight,
+    consecutiveSuccesses: successStreak,
+    stallCounter
   };
 }
 
-// Helper function for workout periodization
-function createPeriodizedPlan(exercises, frequency, preferences) {
-  const daysPerWeek = parseInt(frequency.match(/\d+/)[0]) || 3;
-  const splitType = getSplitType(daysPerWeek, preferences);
-  
-  return Array.from({length: daysPerWeek}, (_, i) => ({
-    day: i + 1,
-    focus: splitType[i % splitType.length],
-    exercises: exercises
-      .filter(ex => ex.goal.includes(splitType[i % splitType.length]))
-      .sort((a,b) => a.difficulty - b.difficulty)
-      .slice(0, 5)
-  }));
+function getLoadIncrease(liftName = "") {
+  const name = liftName.toLowerCase();
+
+  if (name.includes("squat")) return 5;
+  if (name.includes("deadlift")) return 5;
+  if (name.includes("bench")) return 2.5;
+
+  return 2.5;
 }
 
-// Meal schedule builder with portion control
-function buildMealSchedule({ meals, mealFrequency, cookingTime, calorieTarget }) {
-  const mealCategories = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
-  const mealsPerDay = parseInt(mealFrequency.charAt(0));
+/* =========================
+   ROUTES
+========================= */
 
-  return Array.from({length: 7}, () => ({
-    day: new Date().getDay(),
-    meals: mealCategories.slice(0, mealsPerDay).map(category => ({
-      category,
-      options: meals
-        .filter(m => m.mealCategory === category)
-        .filter(m => cookingTime === 'high' ? m.prepTime <= 30 : m.prepTime <= 15)
-        .slice(0, 3)
-    })),
-    calorieTotal: Math.floor(calorieTarget / mealsPerDay)
-  }));
-}
+/**
+ * GET PROGRAM (STATIC)
+ */
+app.get("/api/program/:week/:day", (req, res) => {
+  const week = Number(req.params.week);
+  const day = Number(req.params.day);
 
-// Serve static files from the root directory
-app.use(express.static(__dirname));  // Serving from the root directory
-
-app.post('/api/user/process', async (req, res) => {
-  const { step, data } = req.body;
-
-  if (!step || !data || !data.email) {
-    return res.status(400).json({ error: 'Missing step, data, or email' });
+  if (!Number.isFinite(week) || !Number.isFinite(day)) {
+    return res.status(400).json({ error: "Invalid week/day" });
   }
 
+  const program = loadProgram();
+
+  const session = program.find(
+    p => p.week === week && p.day === day
+  );
+
+  if (!session) {
+    return res.status(404).json({ error: "Session not found" });
+  }
+
+  res.json(session);
+});
+
+/**
+ * SESSION LOG (RAW DATA ONLY)
+ */
+app.post("/api/session-log", async (req, res) => {
   try {
-    let user = await User.findOne({ email: data.email });
+    const {
+      userId,
+      week,
+      day,
+      liftName,
+      completed,
+      actualRPE,
+      targetRPE,
+      notes
+    } = req.body;
 
-    if (!user) {
-      user = new User({ email: data.email, ...data });
-    } else {
-      user = Object.assign(user, data);
-    }
+    const log = await Session.create({
+  userId,
+  week,
+  day,
+  lift: liftName,
+  completed: !!completed,
+  actualRPE: actualRPE ?? null,
+  targetRPE: targetRPE ?? null,
+  actualWeight: req.body.actualWeight ?? null,
+  notes: notes ?? ""
+});
 
-    user.step = step; // Save the current step
-    await user.save();
+    res.json(log);
 
-    res.json({ success: true, message: 'Data saved successfully' });
-  } catch (error) {
-    console.error('Error during data save:', error);
-    res.status(500).json({ error: 'Error saving data' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// Profile completion route
-app.post('/api/user/complete-profile', async (req, res) => {
-  const { email, profileData } = req.body;
-
-  // Check if email is missing
-  if (!email) {
-    return res.status(400).json({ error: 'Missing email' });
-  }
-
-  // Email validation
-  if (!validator.isEmail(email)) {
-    return res.status(400).json({ error: 'Invalid email format' });
-  }
-
+/**
+ * APPLY PROGRESSION (STATE UPDATE)
+ */
+app.post("/api/progression/apply", async (req, res) => {
   try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    const { userId, liftName } = req.body;
 
-    user.email = email; // Ensure email is set
-    Object.assign(user, profileData); // Merge profile data
-    await user.save();
+const state = await LiftState.findOne({ userId, lift: liftName });
 
-    res.json({ success: true, message: 'Profile completed successfully' });
-  } catch (error) {
-    console.error('Error during profile completion:', error);
-    res.status(500).json({ error: 'Error completing profile' });
+const lastSession = await Session.findOne({
+  userId,
+  lift: liftName
+}).sort({ createdAt: -1 });
+
+if (!lastSession) {
+  return res.status(400).json({ error: "No session data" });
+}
+
+// 🧠 CREATE STATE IF FIRST TIME
+if (!state) {
+  const newState = new LiftState({
+    userId,
+    lift: liftName,
+    currentWeight: lastSession.actualWeight || 0,
+    consecutiveSuccesses: 0,
+    stallCounter: 0
+  });
+
+  await newState.save();
+
+  return res.json({
+    message: "Initial weight set",
+    state: newState
+  });
+}
+
+    const result = calculateProgression(state, {
+  liftName,
+  targetRPE: lastSession.targetRPE,
+  actualRPE: lastSession.actualRPE,
+  completed: lastSession.completed,
+  actualWeight: lastSession.actualWeight
+});
+
+    state.currentWeight = result.nextWeight;
+    state.consecutiveSuccesses = result.consecutiveSuccesses;
+    state.stallCounter = result.stallCounter;
+    state.updatedAt = new Date();
+
+    await state.save();
+
+    res.json({
+      message: "Progression applied",
+      state
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-app.post('/api/payment-links', async (req, res) => {
+/**
+ * LIFT STATE
+ */
+app.get("/api/lift-state/:userId", async (req, res) => {
   try {
-    const { productId, userEmail } = req.body;
-    
-    // Validate input
-    if (!productId || !userEmail) {
-      return res.status(400).json({ error: 'Missing product ID or email' });
+    const state = await LiftState.find({ userId: req.params.userId });
+    res.json(state);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * UNIFIED SESSION VIEW (FRONTEND CORE ENDPOINT)
+ */
+app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
+  try {
+    const week = Number(req.params.week);
+    const day = Number(req.params.day);
+    const userId = req.params.userId;
+
+    const program = loadProgram();
+
+    if (!program) {
+      return res.status(500).json({ error: "Program not loaded" });
     }
 
-    if (!validator.isEmail(userEmail)) {
-      return res.status(400).json({ error: 'Invalid email format' });
+    const session = program.find(
+      p => p.week === week && p.day === day
+    );
+
+    if (!session) {
+      return res.status(404).json({ error: "Session not found" });
     }
 
-    // Validate product exists
-    const product = PRODUCTS[productId];
-    if (!product) {
-      return res.status(400).json({ 
-        error: 'Invalid product',
-        validProducts: Object.keys(PRODUCTS)
+    const logs = await Session.find({
+      userId,
+      week,
+      day
+    }).sort({ createdAt: -1 });
+
+    const lastLog = logs[0] || null;
+
+    const liftStates = await LiftState.find({ userId });
+
+    const projected = (session.exercises || []).map(ex => {
+      const state = liftStates.find(s => s.lift === ex.liftName);
+
+      if (!state) {
+        return {
+          liftName: ex.liftName,
+          role: ex.role,
+          sets: ex.sets,
+          reps: ex.reps,
+          rpeTarget: ex.rpeTarget,
+          currentWeight: 0,
+          projectedNextWeight: 0,
+          note: "No state yet"
+        };
+      }
+
+      const simulated = calculateProgression(state, {
+        liftName: ex.liftName,
+        targetRPE: ex.rpeTarget,
+        actualRPE: lastLog?.actualRPE ?? null,
+        completed: lastLog?.completed ?? false
       });
-    }
 
-    // Create Stripe payment link
-    const paymentLink = await stripe.paymentLinks.create({
-      line_items: [{
-        price: product.stripePriceId,
-        quantity: 1
-      }],
-      metadata: { 
-        userEmail: userEmail.toLowerCase().trim(),
-        productId,
-        tier: product.tier
-      },
-      after_completion: {
-        type: 'redirect',
-        redirect: {
-          url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`
-        }
-      },
-      expires_at: Math.floor(Date.now() / 1000) + 3600 // 1 hour expiration
+      return {
+        liftName: ex.liftName,
+        role: ex.role,
+        sets: ex.sets,
+        reps: ex.reps,
+        rpeTarget: ex.rpeTarget,
+        currentWeight: state.currentWeight,
+        projectedNextWeight: simulated?.nextWeight ?? state.currentWeight
+      };
     });
 
     res.json({
-      paymentUrl: paymentLink.url,
-      expiresAt: paymentLink.expires_at
+      program: session,
+      lastLog,
+      projected
     });
-    
-  } catch (error) {
-    console.error('Payment link error:', error);
-    res.status(500).json({ 
-      error: 'Payment system error',
-      details: error.message 
-    });
+
+  } catch (err) {
+    console.error("SESSION VIEW ERROR:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
-// Plan generation route
-app.post('/api/user/generate-plan', async (req, res) => {
-  const { email, userData } = req.body;
-
-  if (!email || !userData) {
-    return res.status(400).json({ error: 'Missing email or user data' });
-  }
-
+/**
+ * SESSION HISTORY (PER LIFT)
+ */
+app.get("/api/history/:userId/:liftName", async (req, res) => {
   try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    const { userId, liftName } = req.params;
 
-    const { exercise_plan, diet_plan } = await generatePlan(userData);
-    res.json({ exercise_plan, diet_plan });
-  } catch (error) {
-    console.error('Error generating plan:', error);
-    res.status(500).json({ error: 'Error generating plan' });
+    const history = await Session.find({
+      userId,
+      lift: liftName
+    })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.json(history);
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// Add after your routes
-app.use((err, req, res, next) => {
-  console.error('Global error:', err);
-  
-  if (err.name === 'ValidationError') {
-    return res.status(422).json({
-      error: 'Validation failed',
-      details: Object.values(err.errors).map(e => e.message)
-    });
-  }
-  
-  if (err.code === 11000) {
-    return res.status(409).json({
-      error: 'Duplicate key',
-      details: 'This email is already registered'
-    });
-  }
+/* =========================
+   START SERVER
+========================= */
 
-  res.status(500).json({ error: 'Internal server error' });
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-// Serve the frontend (SPA fallback)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname));
-});
-
-// Set the port variable
-const port = process.env.PORT || 5000;
-
-// Start the server
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
