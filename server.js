@@ -51,7 +51,12 @@ const __dirname = path.dirname(__filename);
 const LiftStateSchema = new mongoose.Schema({
   userId: String,
   liftName: String,
-  estimated1RM: { type: Number, default: 0 },
+  estimated1RM: { type: Number, default: 0 },      // for strength
+  currentWeight: { type: Number, default: 0 },     // for general fitness & hypertrophy
+  lastROM: { type: Number, default: 0 },           // for mobility
+  lastRepsAchieved: { type: Number, default: 0 },   // for hypertrophy rep range progression
+  consecutiveSuccesses: { type: Number, default: 0 },
+  stallCounter: { type: Number, default: 0 },
   updatedAt: { type: Date, default: Date.now }
 });
 const LiftState = mongoose.model("LiftState", LiftStateSchema);
@@ -66,7 +71,16 @@ const SessionSchema = new mongoose.Schema({
   targetRPE: Number,
   actualRPE: Number,
   actualWeight: Number,
+  targetRIR: Number,
+  actualRIR: Number,
   completed: Boolean,
+  progressionType: String,   // strength, power, mobility, volume, deload
+  actualQuality: Number,     // for power exercises
+  targetQuality: Number,
+  actualROM: Number,         // for mobility
+  targetROM: Number,
+  actualPain: Number,
+  targetPain: Number,
   createdAt: { type: Date, default: Date.now }
 });
 const Session = mongoose.model("Session", SessionSchema);
@@ -88,6 +102,15 @@ const UserSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.model("User", UserSchema);
+
+const SubscriptionSchema = new mongoose.Schema({
+  userId: String,        // link to your User
+  programName: String,   // e.g., "Ares Protocol"
+  stripeSubscriptionId: String,
+  status: String,        // active, cancelled, past_due
+  currentPeriodEnd: Date,
+  createdAt: Date
+});
 
 // ==================== Program Loader ====================
 const loadProgram = (programName) => {
@@ -131,6 +154,7 @@ function weightForRPE(oneRM, targetRPE, targetReps) {
 }
 
 // ==================== Progression: update 1RM from performance ====================
+// ==================== 1. STRENGTH (RPE-based, 1RM-driven) ====================
 function strengthRPEProgression(state, sessionData) {
   let new1RM = state.estimated1RM || 0;
   const completed = sessionData.completed === true;
@@ -140,7 +164,6 @@ function strengthRPEProgression(state, sessionData) {
   const rpeOk = sessionData.actualRPE <= sessionData.targetRPE + 0.5;
   const isGoodSession = completed && repsMet && rpeOk;
 
-  // Always calculate a fresh 1RM from this session (if valid)
   let fresh1RM = null;
   if (completed && sessionData.actualWeight && actualReps && sessionData.actualRPE) {
     fresh1RM = estimate1RM(sessionData.actualWeight, actualReps, sessionData.actualRPE);
@@ -148,27 +171,216 @@ function strengthRPEProgression(state, sessionData) {
 
   if (fresh1RM !== null) {
     if (isGoodSession) {
-      // Good session: take the higher of previous and fresh (allows progress)
       new1RM = Math.max(new1RM, fresh1RM);
-      // Optional: small bonus for consecutive good sessions (streak logic)
-      // but not necessary – the fresh1RM will naturally increase if weight goes up.
     } else {
-      // Bad session: use the fresh estimate (which will be lower if RPE was high)
       new1RM = fresh1RM;
-      // Optional extra penalty for repeated failures (e.g., if stallCounter >= 2, subtract 2.5kg)
-      // You can add that later if needed.
     }
   }
-
   return { estimated1RM: Math.round(new1RM) };
 }
 
-// Dispatcher (only strength for now)
-function calculateProgression(state, sessionData, logic) {
-  return strengthRPEProgression(state, sessionData);
+// ==================== 2. HYPERTROPHY (RIR / Volume progression) ====================
+// ==================== 2. HYPERTROPHY (Rep range + RIR progression) ====================
+function hypertrophyVolumeProgression(state, sessionData) {
+  let newWeight = state.currentWeight || sessionData.actualWeight || 0;
+  let lastReps = state.lastRepsAchieved || 0;
+  let successStreak = state.consecutiveSuccesses || 0;
+  let stallCounter = state.stallCounter || 0;
+
+  const completed = sessionData.completed === true;
+  const actualReps = sessionData.repsCompleted || 0;
+  const targetRIR = sessionData.targetRIR || 2;
+  const actualRIR = sessionData.actualRIR;
+  const hasRIR = typeof actualRIR === 'number';
+  const rirGood = hasRIR && actualRIR <= targetRIR - 1;  // harder than planned
+
+  // Parse target rep range from string like "8-12"
+  const targetRepsStr = sessionData.targetReps || "8-12";
+  let minReps = 8, maxReps = 12;
+  if (targetRepsStr.includes('-')) {
+    const parts = targetRepsStr.split('-').map(Number);
+    minReps = parts[0];
+    maxReps = parts[1];
+  } else {
+    minReps = maxReps = parseInt(targetRepsStr, 10);
+  }
+
+  const isGoodSession = completed && rirGood && actualReps >= minReps;
+
+  if (isGoodSession) {
+    // Update lastRepsAchieved if this is higher than before (up to maxReps)
+    if (actualReps > lastReps && actualReps <= maxReps) {
+      lastReps = actualReps;
+    }
+    successStreak += 1;
+    stallCounter = 0;
+
+    // If we've reached the top of the rep range, increase weight
+    if (lastReps >= maxReps) {
+      const increment = (sessionData.liftName?.toLowerCase().includes("squat") ||
+                         sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+      newWeight += increment;
+      lastReps = minReps;   // reset to lower end of range
+      successStreak = 0;
+    }
+  } else {
+    // Bad session: reset rep progression but no weight loss
+    successStreak = 0;
+    stallCounter += 1;
+    // Optional: if stallCounter >= 3, reduce weight slightly
+    if (stallCounter >= 3 && newWeight > 0) {
+      const decrement = (sessionData.liftName?.toLowerCase().includes("squat") ||
+                         sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+      newWeight = Math.max(0, newWeight - decrement);
+      stallCounter = 0;
+      // Also reset lastReps to minReps (but keep weight lower)
+      lastReps = minReps;
+    }
+  }
+
+  return {
+    currentWeight: Math.round(newWeight),
+    lastRepsAchieved: lastReps,
+    consecutiveSuccesses: successStreak,
+    stallCounter
+  };
 }
 
-// ==================== API Routes ====================
+// ==================== 3. EXPLOSIVE POWER (Quality-based) – PLACEHOLDER ====================
+function explosivePowerProgression(state, sessionData) {
+  // To be implemented later
+  return { currentWeight: state.currentWeight, consecutiveSuccesses: 0, stallCounter: 0 };
+}
+
+// ==================== 4. ENDURANCE (Density progression) – PLACEHOLDER ====================
+function enduranceDensityProgression(state, sessionData) {
+  // To be implemented later
+  return { currentWeight: state.currentWeight, consecutiveSuccesses: 0, stallCounter: 0 };
+}
+
+// ==================== 5. MOBILITY (ROM + pain) – PLACEHOLDER ====================
+function mobilityRangeProgression(state, sessionData) {
+  // To be implemented later
+  return { lastROM: state.lastROM, consecutiveSuccesses: 0, stallCounter: 0 };
+}
+
+// ==================== 6. GENERAL FITNESS HYBRID (strength + power + mobility + volume) ====================
+function generalFitnessProgression(state, sessionData) {
+  let newWeight = state.currentWeight || sessionData.actualWeight || 0;
+  let newROM = state.lastROM || sessionData.actualROM || 0;
+  let successStreak = state.consecutiveSuccesses || 0;
+  let stallCounter = state.stallCounter || 0;
+
+  const completed = sessionData.completed === true;
+  const progressionType = sessionData.progressionType || "strength";
+
+  // ===== STRENGTH BLOCK (RPE-based, slower progression) =====
+  if (progressionType === "strength") {
+    const targetReps = parseInt(sessionData.targetReps, 10);
+    const actualReps = sessionData.repsCompleted || 0;
+    const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
+    const rpeOk = sessionData.actualRPE <= sessionData.targetRPE + 1; // more forgiving
+    const isGoodSession = completed && repsMet && rpeOk;
+
+    if (isGoodSession) {
+      successStreak += 1;
+      stallCounter = 0;
+      if (successStreak >= 3) {
+        newWeight += (sessionData.liftName?.toLowerCase().includes("squat") || sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+        successStreak = 0;
+      }
+    } else {
+      successStreak = 0;
+      stallCounter += 1;
+      // No automatic deload for general fitness
+    }
+  }
+
+  // ===== POWER BLOCK (quality-based) =====
+  else if (progressionType === "power") {
+    const qualityOk = (sessionData.actualQuality || 0) >= (sessionData.targetQuality || 7);
+    const isGoodPowerSession = completed && qualityOk;
+
+    if (isGoodPowerSession) {
+      successStreak += 1;
+      if (successStreak >= 2) {
+        newWeight += 2.5;
+        successStreak = 0;
+      }
+    } else {
+      successStreak = 0;
+    }
+  }
+
+  // ===== MOBILITY BLOCK (ROM + pain) =====
+  else if (progressionType === "mobility") {
+    const romMet = (sessionData.actualROM || 0) >= (sessionData.targetROM || 0);
+    const painOk = (sessionData.actualPain || 0) <= (sessionData.targetPain || 2);
+    const isGoodMobilitySession = completed && romMet && painOk;
+
+    if (isGoodMobilitySession) {
+      successStreak += 1;
+      if (successStreak >= 2) {
+        newROM += 5;
+        successStreak = 0;
+      }
+    } else {
+      successStreak = 0;
+    }
+  }
+
+  // ===== VOLUME / STABILITY BLOCK =====
+  else if (progressionType === "volume" || progressionType === "stability") {
+    const targetReps = parseInt(sessionData.targetReps, 10);
+    const actualReps = sessionData.repsCompleted || 0;
+    const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
+    const isGoodVolumeSession = completed && repsMet;
+
+    if (isGoodVolumeSession) {
+      successStreak += 1;
+      if (successStreak >= 3) {
+        // For volume, we increase reps target in frontend; here just reset streak
+        successStreak = 0;
+      }
+    } else {
+      successStreak = 0;
+    }
+  }
+
+  // ===== DELOAD – no progression =====
+  else if (progressionType === "deload") {
+    // Do nothing
+  }
+
+  return {
+    currentWeight: Math.round(newWeight),
+    lastROM: Math.round(newROM),
+    consecutiveSuccesses: successStreak,
+    stallCounter
+  };
+}
+
+// ==================== Dispatcher ====================
+function calculateProgression(state, sessionData, logic) {
+  switch (logic) {
+    case "STRENGTH_RPE":
+      return strengthRPEProgression(state, sessionData);
+    case "HYPERTROPHY_VOLUME":
+      return hypertrophyVolumeProgression(state, sessionData);
+    case "EXPLOSIVE_POWER":
+      return explosivePowerProgression(state, sessionData);
+    case "ENDURANCE_DENSITY":
+      return enduranceDensityProgression(state, sessionData);
+    case "MOBILITY":
+      return mobilityRangeProgression(state, sessionData);
+    case "GENERAL_FITNESS_HYBRID":
+      return generalFitnessProgression(state, sessionData);
+    default:
+      return strengthRPEProgression(state, sessionData);
+  }
+}
+
+// ==================== GET SESSION VIEW ====================
 app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
   try {
     const week = Number(req.params.week);
@@ -181,36 +393,58 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     const session = programData.sessions.find(p => p.week === week && p.day === day);
     if (!session) return res.status(404).json({ error: "Session not found" });
 
+    // Get available weeks and days for dropdowns
+    const availableWeeks = [...new Set(programData.sessions.map(s => s.week))].sort((a,b)=>a-b);
+    const availableDaysPerWeek = {};
+    availableWeeks.forEach(w => {
+    availableDaysPerWeek[w] = [...new Set(programData.sessions.filter(s => s.week === w).map(s => s.day))].sort((a,b)=>a-b);
+});
+
     const logic = programData.logic || "STRENGTH_RPE";
     const liftStates = await LiftState.find({ userId });
 
     const projected = (session.exercises || []).map(ex => {
-      const state = liftStates.find(s => s.liftName === ex.liftName);
-      let currentWeight = 0;
-      let projectedNextWeight = 0;
-      if (state && state.estimated1RM > 0) {
-        const targetRPE = ex.rpeTarget || 7;
-        currentWeight = weightForRPE(state.estimated1RM, targetRPE, ex.reps);
-        // Next week's weight if RPE increases by 0.5 (optional preview)
-        projectedNextWeight = weightForRPE(state.estimated1RM, targetRPE + 0.5, ex.reps);
-      }
-      return {
-        liftName: ex.liftName,
-        sets: ex.sets,
-        reps: ex.reps,
-        rpeTarget: ex.rpeTarget,
-        currentWeight,
-        projectedNextWeight
-      };
-    });
+  const state = liftStates.find(s => s.liftName === ex.liftName);
+  let currentWeight = 0;
+  let projectedNextWeight = 0;
 
-    res.json({ program: session, logic, projected });
+  if (state) {
+    if (logic === "STRENGTH_RPE" && state.estimated1RM > 0) {
+      const targetRPE = ex.rpeTarget || 7;
+      currentWeight = weightForRPE(state.estimated1RM, targetRPE, ex.reps);
+      projectedNextWeight = weightForRPE(state.estimated1RM, targetRPE + 0.5, ex.reps);
+    } 
+    else if (logic === "GENERAL_FITNESS_HYBRID" && state.currentWeight > 0) {
+      currentWeight = state.currentWeight;
+      const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+      projectedNextWeight = currentWeight + inc;
+    }
+    else if (logic === "HYPERTROPHY_VOLUME" && state.currentWeight > 0) {
+      // Hypertrophy uses currentWeight directly
+      currentWeight = state.currentWeight;
+      // Next weight preview: add increment after 3 good sessions
+      const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+      projectedNextWeight = currentWeight + inc;
+    }
+  }
+
+  return {
+    liftName: ex.liftName,
+    sets: ex.sets,
+    reps: ex.reps,
+    rpeTarget: ex.rpeTarget,
+    rirTarget: ex.rirTarget,        // ← add this
+    currentWeight,
+    projectedNextWeight
+  };
+});
+
+    res.json({ program: session, logic, projected, availableWeeks, availableDaysPerWeek });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
-
 app.post("/api/session-log", async (req, res) => {
   try {
     const log = await Session.create(req.body);
@@ -229,30 +463,55 @@ app.post("/api/progression/apply", async (req, res) => {
     }
 
     let state = await LiftState.findOne({ userId, liftName });
-    if (!state) {
-      // First time: estimate 1RM from this session
-      const initial1RM = estimate1RM(lastSession.actualWeight, lastSession.repsCompleted, lastSession.actualRPE);
-      state = new LiftState({ userId, liftName, estimated1RM: initial1RM });
-      await state.save();
-      return res.json({ message: "Initial 1RM set", state });
-    }
+if (!state) {
+  let initialState = { userId, liftName };
+  if (logic === "STRENGTH_RPE") {
+    const initial1RM = estimate1RM(lastSession.actualWeight, lastSession.repsCompleted, lastSession.actualRPE);
+    initialState.estimated1RM = initial1RM;
+  } else {
+    initialState.currentWeight = lastSession.actualWeight || 0;
+    initialState.lastROM = 0;
+    initialState.lastRepsAchieved = 0;   // ✅ add this line for hypertrophy
+  }
+  state = new LiftState(initialState);
+  await state.save();
+  return res.json({ message: "Initial state set", state });
+}
 
-    const result = calculateProgression(state, {
+    // Prepare sessionData for progression function
+    const sessionData = {
       completed: lastSession.completed,
       targetReps: lastSession.targetReps,
       repsCompleted: lastSession.repsCompleted,
       targetRPE: lastSession.targetRPE,
       actualRPE: lastSession.actualRPE,
       actualWeight: lastSession.actualWeight,
-      liftName
-    }, logic || "STRENGTH_RPE");
+      liftName,
+      progressionType: lastSession.progressionType, // from JSON
+      actualQuality: lastSession.actualQuality,
+      targetQuality: lastSession.targetQuality,
+      actualROM: lastSession.actualROM,
+      targetROM: lastSession.targetROM,
+      actualPain: lastSession.actualPain,
+      targetPain: lastSession.targetPain,
+      targetRIR: lastSession.targetRIR,    
+      actualRIR: lastSession.actualRIR
+    };
 
-    state.estimated1RM = result.estimated1RM;
+    const result = calculateProgression(state, sessionData, logic || "STRENGTH_RPE");
+
+    // Update state based on what the progression function returned
+    if (result.estimated1RM !== undefined) state.estimated1RM = result.estimated1RM;
+    if (result.currentWeight !== undefined) state.currentWeight = result.currentWeight;
+    if (result.lastRepsAchieved !== undefined) state.lastRepsAchieved = result.lastRepsAchieved;
+    if (result.lastROM !== undefined) state.lastROM = result.lastROM;
+    state.consecutiveSuccesses = result.consecutiveSuccesses || 0;
+    state.stallCounter = result.stallCounter || 0;
     state.updatedAt = new Date();
     await state.save();
 
-    console.log(`💾 ${liftName}: 1RM=${state.estimated1RM}kg`);
-    res.json({ message: "1RM updated", state });
+    console.log(`💾 ${liftName}: ${logic === "STRENGTH_RPE" ? `1RM=${state.estimated1RM}kg` : `weight=${state.currentWeight}kg`}`);
+    res.json({ message: "Progression applied", state });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -291,23 +550,79 @@ app.get("/api/recent-sessions/:userId", async (req, res) => {
 
 // ==================== LOGIN ENDPOINT ====================
 app.post("/api/login", async (req, res) => {
-  const { email } = req.body;
+  const { email, password } = req.body;
   if (!email) return res.status(400).json({ error: "Email required" });
 
-  // Find or create user (if you have a User model)
+  // Admin override
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com"; // your email
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD; // optional, set in .env
+
+  let isAdmin = false;
+  if (email === ADMIN_EMAIL) {
+    if (ADMIN_PASSWORD && password !== ADMIN_PASSWORD) {
+      return res.status(401).json({ error: "Invalid admin password" });
+    }
+    isAdmin = true;
+  }
+
+  // Find or create user
   let user = await User.findOne({ email });
   if (!user) {
     user = await User.create({ email });
   }
 
-  const purchases = await Purchase.find({ email });
-  const purchasedPrograms = purchases.map(p => p.programName);
+  let purchasedPrograms = [];
+  if (isAdmin) {
+    // Admin gets all programs
+    purchasedPrograms = [
+      "Ares Protocol", "Zeus Method", "Apollo Physique",
+      "Hermes Engine", "Hephaestus Framework", "Poseidon Core",
+      "Hercules Foundation"
+    ];
+  } else {
+    const purchases = await Purchase.find({ email });
+    purchasedPrograms = purchases.map(p => p.programName);
+  }
 
   res.json({
     userId: user._id.toString(),
     email,
     purchasedPrograms
   });
+});
+
+// ==================== ADMIN: Assign program to user (no Stripe) ====================
+app.post("/api/admin/assign-program", async (req, res) => {
+  const { adminEmail, adminPassword, userEmail, programName } = req.body;
+  
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+  
+  if (adminEmail !== ADMIN_EMAIL) {
+    return res.status(403).json({ error: "Not authorized" });
+  }
+  if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
+    return res.status(403).json({ error: "Invalid admin password" });
+  }
+  if (!userEmail || !programName) {
+    return res.status(400).json({ error: "Email and program name required" });
+  }
+  
+  // Find or create user
+  let user = await User.findOne({ email: userEmail });
+  if (!user) {
+    user = await User.create({ email: userEmail });
+  }
+  
+  // Create purchase record (no Stripe)
+  await Purchase.findOneAndUpdate(
+    { email: userEmail, programName },
+    { email: userEmail, programName, stripePaymentIntentId: `admin_${Date.now()}` },
+    { upsert: true }
+  );
+  
+  console.log(`✅ Admin assigned ${programName} to ${userEmail}`);
+  res.json({ message: `Assigned ${programName} to ${userEmail}` });
 });
 
 // Serve React build

@@ -77,3 +77,37 @@
   height: 100vh;
   color: var(--text-light);
 }
+.admin-card {
+  grid-column: span 1;
+  background: #2a2a35;
+  border: 1px solid var(--accent);
+}
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+.admin-input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-dark);
+  color: var(--text-light);
+}
+.admin-message {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  width: 100%;
+  margin-top: 8px;
+  cursor: pointer;
+}

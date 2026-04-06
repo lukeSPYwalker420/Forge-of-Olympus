@@ -5,10 +5,19 @@ import "./Dashboard.css";
 export default function Dashboard() {
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
+  const userEmail = localStorage.getItem("userEmail") || ""; // store email on login
   const [purchasedPrograms, setPurchasedPrograms] = useState([]);
   const [estimates, setEstimates] = useState({});
   const [recentSessions, setRecentSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Admin state
+  const [assignEmail, setAssignEmail] = useState("");
+  const [assignProgram, setAssignProgram] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminMessage, setAdminMessage] = useState("");
+  
+  const isAdmin = userEmail === "kieren2203@googlemail.com"; // your admin email
 
   useEffect(() => {
     if (!userId) {
@@ -51,6 +60,36 @@ export default function Dashboard() {
     program ? navigate("/session") : navigate("/program");
   };
 
+  const assignProgramToUser = async () => {
+    if (!assignEmail || !assignProgram) {
+      setAdminMessage("Please fill in email and program");
+      return;
+    }
+    try {
+      const res = await fetch("/api/admin/assign-program", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail: userEmail,
+          adminPassword,
+          userEmail: assignEmail,
+          programName: assignProgram
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setAdminMessage(`✅ ${data.message}`);
+        setAssignEmail("");
+        setAssignProgram("");
+        setAdminPassword("");
+      } else {
+        setAdminMessage(`❌ ${data.error}`);
+      }
+    } catch (err) {
+      setAdminMessage(`❌ Error: ${err.message}`);
+    }
+  };
+
   if (loading) return <div className="dashboard-loading">Loading your data...</div>;
 
   return (
@@ -61,6 +100,7 @@ export default function Dashboard() {
       </div>
 
       <div className="dashboard-grid">
+        {/* Existing cards */}
         <div className="card">
           <h2>Your Program</h2>
           {purchasedPrograms.length === 0 ? (
@@ -72,6 +112,7 @@ export default function Dashboard() {
             </>
           )}
           <button onClick={handleStartWorkout} className="btn-workout">🏋️ Start Workout</button>
+          <button onClick={() => navigate("/")} className="btn-secondary">Browse More Programs</button>
         </div>
 
         <div className="card">
@@ -97,6 +138,42 @@ export default function Dashboard() {
             </ul>
           )}
         </div>
+
+        {/* Admin Panel – only visible to admin */}
+        {isAdmin && (
+          <div className="card admin-card">
+            <h2>🔧 Admin: Assign Program</h2>
+            <div className="admin-form">
+              <input
+                type="email"
+                placeholder="User Email"
+                value={assignEmail}
+                onChange={e => setAssignEmail(e.target.value)}
+                className="admin-input"
+              />
+              <select
+                value={assignProgram}
+                onChange={e => setAssignProgram(e.target.value)}
+                className="admin-input"
+              >
+                <option value="">Select Program</option>
+                <option value="Ares Protocol">Ares Protocol</option>
+                <option value="Apollo Physique">Apollo Physique</option>
+                <option value="Hercules Foundation">Hercules Foundation</option>
+                <option value="Mark Training">Mark Training</option>
+              </select>
+              <input
+                type="password"
+                placeholder="Admin Password (if set)"
+                value={adminPassword}
+                onChange={e => setAdminPassword(e.target.value)}
+                className="admin-input"
+              />
+              <button onClick={assignProgramToUser} className="btn-primary">Assign Program</button>
+              {adminMessage && <p className="admin-message">{adminMessage}</p>}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

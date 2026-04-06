@@ -77,6 +77,85 @@
   color: var(--accent);
   margin-left: 1rem;
 }
+/* How It Works section */
+.how-it-works {
+  background: #0f1116;
+  padding: 80px 20px;
+  text-align: center;
+}
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 40px;
+  margin-top: 40px;
+}
+.step {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: 16px;
+  text-align: center;
+}
+.step-number {
+  width: 48px;
+  height: 48px;
+  background: var(--accent);
+  color: #000;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.step h3 {
+  margin-bottom: 8px;
+}
+.step p {
+  color: var(--text-gray);
+  font-size: 0.9rem;
+}
+
+/* Program card buttons */
+.program-buttons {
+  display: flex;
+  gap: 12px;
+  padding: 0 20px 20px;
+  flex-wrap: wrap;
+}
+.btn-plan, .btn-coaching {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: 0.2s;
+}
+.btn-plan {
+  background: var(--accent);
+  color: #000;
+}
+.btn-coaching {
+  background: #2c3039;
+  color: white;
+  border: 1px solid var(--accent);
+}
+.btn-plan:hover, .btn-coaching:hover {
+  transform: translateY(-2px);
+}
+.engine-cta {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px;
+  background: var(--card-bg);
+  border-radius: 16px;
+}
+.engine-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: bold;
+}
 .programs {
   padding: 80px 20px;
   background: var(--bg-dark);

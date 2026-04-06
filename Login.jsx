@@ -15,6 +15,7 @@ export default function Login() {
   const data = await res.json();
   if (res.ok) {
     localStorage.setItem("userId", data.userId);
+    localStorage.setItem("userEmail", data.email);
     localStorage.setItem("purchasedPrograms", JSON.stringify(data.purchasedPrograms));
     navigate("/dashboard");
   } else {

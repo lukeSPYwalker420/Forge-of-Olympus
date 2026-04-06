@@ -1,38 +1,43 @@
 import { useNavigate } from "react-router-dom";
+import "./ProgramSelect.css"; // we'll create this
 
 export default function ProgramSelect() {
   const navigate = useNavigate();
-
-  // Read directly from localStorage on every render (no useEffect needed)
   const purchased = JSON.parse(localStorage.getItem("purchasedPrograms") || "[]");
-  const allPrograms = [
-    "Ares Protocol", "Zeus Method", "Apollo Physique",
-    "Hermes Engine", "Hephaestus Framework", "Poseidon Core"
-  ];
-  const availablePrograms = allPrograms.filter(p => purchased.includes(p));
 
   const handleSelect = (programName) => {
     localStorage.setItem("program", programName);
-    navigate("/session");
+    // ✅ Go to dashboard after selecting program
+    navigate("/dashboard");
   };
 
-  if (availablePrograms.length === 0) {
+  if (purchased.length === 0) {
     return (
-      <div style={{ padding: 40 }}>
-        <h1>No programs purchased yet</h1>
-        <p>Please buy a program from our <a href="/">homepage</a> first.</p>
+      <div className="program-select-empty">
+        <h1>No programs available</h1>
+        <p>Please contact your coach to assign a program, or <a href="/">browse our plans</a>.</p>
+        <button onClick={() => navigate("/")} className="back-home-btn">Back to Home</button>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: 40 }}>
+    <div className="program-select-container">
       <h1>Select Your Program</h1>
-      {availablePrograms.map(p => (
-        <button key={p} onClick={() => handleSelect(p)} style={{ display: "block", margin: 10 }}>
-          {p}
-        </button>
-      ))}
+      <div className="program-select-grid">
+        {purchased.map(p => (
+          <button
+            key={p}
+            onClick={() => handleSelect(p)}
+            className="program-select-btn"
+          >
+            {p}
+          </button>
+        ))}
+      </div>
+      <button onClick={() => navigate("/dashboard")} className="back-dashboard-btn">
+        ← Back to Dashboard
+      </button>
     </div>
   );
 }
