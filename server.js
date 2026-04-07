@@ -22,7 +22,7 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
     console.error(`Webhook signature failed: ${err.message}`);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    return res.status(400).send(`npm start Error: ${err.message}`);
   }
 
   if (event.type === "checkout.session.completed") {
@@ -116,6 +116,9 @@ const SubscriptionSchema = new mongoose.Schema({
 const loadProgram = (programName) => {
   const safeName = programName.replace(/\s+/g, '-');
   const filePath = path.join(__dirname, "data", `${safeName}.json`);
+  console.log(`[DEBUG] Looking for program file: ${filePath}`);
+  console.log(`[DEBUG] __dirname = ${__dirname}`);
+  console.log(`[DEBUG] Does file exist? ${fs.existsSync(filePath)}`);
   if (!fs.existsSync(filePath)) throw new Error(`Program file not found: ${filePath}`);
   const raw = JSON.parse(fs.readFileSync(filePath, "utf-8"));
   if (raw.sessions && Array.isArray(raw.sessions)) return { name: raw.name, logic: raw.logic, sessions: raw.sessions };
