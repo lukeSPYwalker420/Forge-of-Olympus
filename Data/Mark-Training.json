@@ -1,0 +1,216 @@
+{
+  "name": "Mark Training",
+  "logic": "GENERAL_FITNESS_HYBRID",
+  "sessions": [
+    {
+      "week": 1,
+      "day": 1,
+      "focus": "Barbell (Zercher-focused / Full Body) – Base",
+      "exercises": [
+        { "liftName": "Zercher Squat", "sets": 3, "reps": "8-10", "rirTarget": 2, "progressionType": "strength", "notes": "Upright torso, slow eccentric, pause at bottom if form allows" },
+        { "liftName": "Barbell RDL", "sets": 3, "reps": "8-10", "rirTarget": 2, "progressionType": "strength", "notes": "Neutral back, slow tempo, no aggressive lockout" },
+        { "liftName": "Barbell Bench Press", "sets": 3, "reps": "8-10", "rirTarget": 2, "progressionType": "strength", "notes": "Stable scapulae, control descent" },
+        { "liftName": "Single-Arm Barbell Row", "sets": 3, "reps": "10", "rirTarget": 2, "progressionType": "strength", "notes": "Per side, avoid torso rotation" },
+        { "liftName": "Step-Ups", "sets": 3, "reps": "10", "rirTarget": 2, "progressionType": "strength", "notes": "Per leg, upright posture, full knee extension" },
+        { "liftName": "Hanging Knee Raise", "sets": 3, "reps": "12", "rirTarget": 3, "progressionType": "stability", "notes": "Controlled movement, engage core" },
+        { "liftName": "Band Pull-Aparts", "sets": 2, "reps": "15", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "Optional finisher, focus on scapular health" }
+      ]
+    },
+    {
+      "week": 1,
+      "day": 2,
+      "focus": "Dumbbell (Stability / Unilateral / Upper Body Emphasis) – Base",
+      "exercises": [
+        { "liftName": "Dumbbell Small Incline Press", "sets": 3, "reps": "8", "rirTarget": 2, "progressionType": "strength", "notes": "Shoulder stability, controlled tempo, alternate arms if desired" },
+        { "liftName": "Dumbbell Split Squat", "sets": 3, "reps": "10", "rirTarget": 2, "progressionType": "strength", "notes": "Per leg, upright torso, slow descent" },
+        { "liftName": "Dumbbell Kelso Shrugs", "sets": 3, "reps": "12-15", "rirTarget": 3, "progressionType": "volume", "notes": "Engage lower/mid traps, slight arm bend" },
+        { "liftName": "Dumbbell Row (Chest Supported)", "sets": 3, "reps": "10", "rirTarget": 2, "progressionType": "strength", "notes": "Per side, minimise torso sway, pull from scapula" },
+        { "liftName": "Side-Lying External Rotation", "sets": 3, "reps": "12", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "Per side, light weight, slow and controlled" },
+        { "liftName": "Farmer Carry", "sets": 3, "reps": "1", "rirTarget": 3, "progressionType": "stability", "notes": "20-25m, upright posture, core engaged" },
+        { "liftName": "Pallof Press", "sets": 2, "reps": "12", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "Per side, optional core prehab, anti-rotation" }
+      ]
+    },
+    {
+      "week": 1,
+      "day": 3,
+      "focus": "Cable / Fixed Path Machine (Controlled / Rehab Focus) – Base",
+      "exercises": [
+        { "liftName": "Cable Chest Press", "sets": 3, "reps": "10-12", "rirTarget": 2, "progressionType": "strength", "notes": "Moderate weight, control, scapular stability" },
+        { "liftName": "Seated Cable Row", "sets": 3, "reps": "10-12", "rirTarget": 2, "progressionType": "strength", "notes": "Control eccentric, squeeze mid-traps" },
+        { "liftName": "Cable Lower Trap Pull", "sets": 3, "reps": "12-15", "rirTarget": 3, "progressionType": "volume", "notes": "Also called Kelso shrug, keep arms straight" },
+        { "liftName": "Cable External Rotation", "sets": 3, "reps": "12", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "Per side, elbow pinned to side" },
+        { "liftName": "Step-Ups (Machine Assisted)", "sets": 3, "reps": "12", "rirTarget": 2, "progressionType": "strength", "notes": "Per leg, control and posture" },
+        { "liftName": "Cable Pallof Press", "sets": 3, "reps": "12-15", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "Anti-rotation, core stability" },
+        { "liftName": "Banded Face Pulls", "sets": 2, "reps": "12-15", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "Optional finisher, shoulder health" }
+      ]
+    },
+    {
+      "week": 2,
+      "day": 1,
+      "focus": "Barbell – Progressive Overload",
+      "exercises": [
+        { "liftName": "Zercher Squat", "sets": 3, "reps": "6-8", "rirTarget": 2, "progressionType": "strength", "notes": "Increase load, maintain depth and control" },
+        { "liftName": "Barbell RDL", "sets": 3, "reps": "6-8", "rirTarget": 2, "progressionType": "strength", "notes": "Slightly heavier, slow eccentric" },
+        { "liftName": "Barbell Bench Press", "sets": 3, "reps": "6-8", "rirTarget": 2, "progressionType": "strength", "notes": "Increase weight, keep form strict" },
+        { "liftName": "Single-Arm Barbell Row", "sets": 3, "reps": "8-10", "rirTarget": 2, "progressionType": "strength", "notes": "Per side, heavier load" },
+        { "liftName": "Step-Ups", "sets": 3, "reps": "8-10", "rirTarget": 2, "progressionType": "strength", "notes": "Add weight if posture holds" },
+        { "liftName": "Hanging Knee Raise", "sets": 3, "reps": "12-15", "rirTarget": 3, "progressionType": "stability", "notes": "Slow tempo, control" },
+        { "liftName": "Band Pull-Aparts", "sets": 2, "reps": "15", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "Focus on peak contraction" }
+      ]
+    },
+    {
+      "week": 2,
+      "day": 2,
+      "focus": "Dumbbell – Progressive Overload",
+      "exercises": [
+        { "liftName": "Dumbbell Small Incline Press", "sets": 3, "reps": "6-8", "rirTarget": 2, "progressionType": "strength", "notes": "Heavier dumbbells, control descent" },
+        { "liftName": "Dumbbell Split Squat", "sets": 3, "reps": "8-10", "rirTarget": 2, "progressionType": "strength", "notes": "Add weight, keep upright" },
+        { "liftName": "Dumbbell Kelso Shrugs", "sets": 3, "reps": "12-15", "rirTarget": 3, "progressionType": "volume", "notes": "Focus on trap squeeze" },
+        { "liftName": "Dumbbell Row (Chest Supported)", "sets": 3, "reps": "8-10", "rirTarget": 2, "progressionType": "strength", "notes": "Heavier, strict form" },
+        { "liftName": "Side-Lying External Rotation", "sets": 3, "reps": "12", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "Control, no momentum" },
+        { "liftName": "Farmer Carry", "sets": 3, "reps": "1", "rirTarget": 3, "progressionType": "stability", "notes": "Slightly heavier, 20-25m" },
+        { "liftName": "Pallof Press", "sets": 2, "reps": "12", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "Anti-rotation, hold peak" }
+      ]
+    },
+    {
+      "week": 2,
+      "day": 3,
+      "focus": "Cable – Progressive Overload",
+      "exercises": [
+        { "liftName": "Cable Chest Press", "sets": 3, "reps": "8-10", "rirTarget": 2, "progressionType": "strength", "notes": "Increase weight, control" },
+        { "liftName": "Seated Cable Row", "sets": 3, "reps": "8-10", "rirTarget": 2, "progressionType": "strength", "notes": "Squeeze, slow eccentric" },
+        { "liftName": "Cable Lower Trap Pull", "sets": 3, "reps": "12-15", "rirTarget": 3, "progressionType": "volume", "notes": "Focus on lower traps" },
+        { "liftName": "Cable External Rotation", "sets": 3, "reps": "12", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "Elbow pinned" },
+        { "liftName": "Step-Ups (Machine Assisted)", "sets": 3, "reps": "10-12", "rirTarget": 2, "progressionType": "strength", "notes": "Add load, control" },
+        { "liftName": "Cable Pallof Press", "sets": 3, "reps": "12-15", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "Anti-rotation" },
+        { "liftName": "Banded Face Pulls", "sets": 2, "reps": "12-15", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "External rotation focus" }
+      ]
+    },
+    {
+      "week": 3,
+      "day": 1,
+      "focus": "Barbell – Intensity Shift",
+      "exercises": [
+        { "liftName": "Zercher Squat", "sets": 4, "reps": "5-6", "rirTarget": 2, "progressionType": "strength", "notes": "Heavier, maintain depth, pause optional" },
+        { "liftName": "Barbell RDL", "sets": 4, "reps": "5-6", "rirTarget": 2, "progressionType": "strength", "notes": "Heavier, controlled" },
+        { "liftName": "Barbell Bench Press", "sets": 4, "reps": "5-6", "rirTarget": 2, "progressionType": "strength", "notes": "Heavier, paused reps" },
+        { "liftName": "Single-Arm Barbell Row", "sets": 3, "reps": "6-8", "rirTarget": 2, "progressionType": "strength", "notes": "Heavy, strict" },
+        { "liftName": "Step-Ups", "sets": 3, "reps": "6-8", "rirTarget": 2, "progressionType": "strength", "notes": "Heavier, controlled" },
+        { "liftName": "Hanging Knee Raise", "sets": 3, "reps": "10-12", "rirTarget": 3, "progressionType": "stability", "notes": "Leg raises if able" },
+        { "liftName": "Band Pull-Aparts", "sets": 2, "reps": "15", "qualityTarget": 10, "painTarget": 2, "progressionType": "mobility", "notes": "Max contraction" }
+      ]
+    },
+    {
+      "week": 3,
+      "day": 2,
+      "focus": "Dumbbell – Intensity Shift",
+      "exercises": [
+        { "liftName": "Dumbbell Small Incline Press", "sets": 4, "reps": "5-6", "rirTarget": 2, "progressionType": "strength", "notes": "Heavier, control" },
+        { "liftName": "Dumbbell Split Squat", "sets": 4, "reps": "6-8", "rirTarget": 2, "progressionType": "strength", "notes": "Heavier, upright" },
+        { "liftName": "Dumbbell Kelso Shrugs", "sets": 3, "reps": "10-12", "rirTarget": 3, "progressionType": "volume", "notes": "Heavier, squeeze" },
+        { "liftName": "Dumbbell Row (Chest Supported)", "sets": 4, "reps": "6-8", "rirTarget": 2, "progressionType": "strength", "notes": "Heavy, strict" },
+        { "liftName": "Side-Lying External Rotation", "sets": 3, "reps": "12", "qualityTarget": 10, "painTarget": 2, "progressionType": "mobility", "notes": "Light, perfect form" },
+        { "liftName": "Farmer Carry", "sets": 3, "reps": "1", "rirTarget": 3, "progressionType": "stability", "notes": "Heavier, 20-25m" },
+        { "liftName": "Pallof Press", "sets": 2, "reps": "12", "qualityTarget": 10, "painTarget": 2, "progressionType": "mobility", "notes": "Max anti-rotation" }
+      ]
+    },
+    {
+      "week": 3,
+      "day": 3,
+      "focus": "Cable – Intensity Shift",
+      "exercises": [
+        { "liftName": "Cable Chest Press", "sets": 4, "reps": "6-8", "rirTarget": 2, "progressionType": "strength", "notes": "Heavier, control" },
+        { "liftName": "Seated Cable Row", "sets": 4, "reps": "6-8", "rirTarget": 2, "progressionType": "strength", "notes": "Heavy, slow eccentric" },
+        { "liftName": "Cable Lower Trap Pull", "sets": 3, "reps": "10-12", "rirTarget": 3, "progressionType": "volume", "notes": "Heavier, focus on lower traps" },
+        { "liftName": "Cable External Rotation", "sets": 3, "reps": "12", "qualityTarget": 10, "painTarget": 2, "progressionType": "mobility", "notes": "Perfect control" },
+        { "liftName": "Step-Ups (Machine Assisted)", "sets": 3, "reps": "6-8", "rirTarget": 2, "progressionType": "strength", "notes": "Heavier, control" },
+        { "liftName": "Cable Pallof Press", "sets": 3, "reps": "10-12", "qualityTarget": 10, "painTarget": 2, "progressionType": "mobility", "notes": "Max anti-rotation" },
+        { "liftName": "Banded Face Pulls", "sets": 2, "reps": "12-15", "qualityTarget": 10, "painTarget": 2, "progressionType": "mobility", "notes": "Peak contraction" }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 1,
+      "focus": "Barbell – Peak",
+      "exercises": [
+        { "liftName": "Zercher Squat", "sets": 4, "reps": "3-5", "rirTarget": 1, "progressionType": "strength", "notes": "Heaviest of block, maintain form" },
+        { "liftName": "Barbell RDL", "sets": 4, "reps": "3-5", "rirTarget": 1, "progressionType": "strength", "notes": "Heavy, controlled" },
+        { "liftName": "Barbell Bench Press", "sets": 4, "reps": "3-5", "rirTarget": 1, "progressionType": "strength", "notes": "Heavy, paused if possible" },
+        { "liftName": "Single-Arm Barbell Row", "sets": 3, "reps": "5-6", "rirTarget": 1, "progressionType": "strength", "notes": "Heavy, strict" },
+        { "liftName": "Step-Ups", "sets": 3, "reps": "5-6", "rirTarget": 1, "progressionType": "strength", "notes": "Heavy, controlled" },
+        { "liftName": "Hanging Knee Raise", "sets": 3, "reps": "10-12", "rirTarget": 3, "progressionType": "stability", "notes": "Control" },
+        { "liftName": "Band Pull-Aparts", "sets": 2, "reps": "15", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility", "notes": "Maintain quality" }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 2,
+      "focus": "Dumbbell – Peak",
+      "exercises": [
+        { "liftName": "Dumbbell Small Incline Press", "sets": 4, "reps": "3-5", "rirTarget": 1, "progressionType": "strength", "notes": "Heavy, control" },
+        { "liftName": "Dumbbell Split Squat", "sets": 4, "reps": "5-6", "rirTarget": 1, "progressionType": "strength", "notes": "Heavy, upright" },
+        { "liftName": "Dumbbell Kelso Shrugs", "sets": 3, "reps": "8-10", "rirTarget": 2, "progressionType": "volume", "notes": "Heavy, squeeze" },
+        { "liftName": "Dumbbell Row (Chest Supported)", "sets": 4, "reps": "5-6", "rirTarget": 1, "progressionType": "strength", "notes": "Heavy, strict" },
+        { "liftName": "Side-Lying External Rotation", "sets": 3, "reps": "12", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility", "notes": "Maintain control" },
+        { "liftName": "Farmer Carry", "sets": 3, "reps": "1", "rirTarget": 2, "progressionType": "stability", "notes": "Heavy, 20-25m" },
+        { "liftName": "Pallof Press", "sets": 2, "reps": "12", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility", "notes": "Max anti-rotation" }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 3,
+      "focus": "Cable – Peak",
+      "exercises": [
+        { "liftName": "Cable Chest Press", "sets": 4, "reps": "5-6", "rirTarget": 1, "progressionType": "strength", "notes": "Heavy, control" },
+        { "liftName": "Seated Cable Row", "sets": 4, "reps": "5-6", "rirTarget": 1, "progressionType": "strength", "notes": "Heavy, squeeze" },
+        { "liftName": "Cable Lower Trap Pull", "sets": 3, "reps": "8-10", "rirTarget": 2, "progressionType": "volume", "notes": "Heavy, focus on lower traps" },
+        { "liftName": "Cable External Rotation", "sets": 3, "reps": "12", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility", "notes": "Perfect form" },
+        { "liftName": "Step-Ups (Machine Assisted)", "sets": 3, "reps": "5-6", "rirTarget": 1, "progressionType": "strength", "notes": "Heavy, control" },
+        { "liftName": "Cable Pallof Press", "sets": 3, "reps": "8-10", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility", "notes": "Max anti-rotation" },
+        { "liftName": "Banded Face Pulls", "sets": 2, "reps": "12-15", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility", "notes": "Maintain quality" }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 1,
+      "focus": "Barbell – Deload",
+      "exercises": [
+        { "liftName": "Zercher Squat", "sets": 3, "reps": "8-10", "rirTarget": 3, "progressionType": "deload", "notes": "Reduce weight, focus on control" },
+        { "liftName": "Barbell RDL", "sets": 3, "reps": "8-10", "rirTarget": 3, "progressionType": "deload", "notes": "Light weight, perfect form" },
+        { "liftName": "Barbell Bench Press", "sets": 3, "reps": "8-10", "rirTarget": 3, "progressionType": "deload", "notes": "Light, paused optional" },
+        { "liftName": "Single-Arm Barbell Row", "sets": 2, "reps": "10", "rirTarget": 3, "progressionType": "deload", "notes": "Light, control" },
+        { "liftName": "Step-Ups", "sets": 2, "reps": "10", "rirTarget": 3, "progressionType": "deload", "notes": "Bodyweight or light" },
+        { "liftName": "Hanging Knee Raise", "sets": 2, "reps": "10", "rirTarget": 4, "progressionType": "deload", "notes": "Easy tempo" },
+        { "liftName": "Band Pull-Aparts", "sets": 2, "reps": "15", "qualityTarget": 7, "painTarget": 2, "progressionType": "deload", "notes": "Light, maintain mobility" }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 2,
+      "focus": "Dumbbell – Deload",
+      "exercises": [
+        { "liftName": "Dumbbell Small Incline Press", "sets": 3, "reps": "8-10", "rirTarget": 3, "progressionType": "deload", "notes": "Light, control" },
+        { "liftName": "Dumbbell Split Squat", "sets": 3, "reps": "10", "rirTarget": 3, "progressionType": "deload", "notes": "Bodyweight or light" },
+        { "liftName": "Dumbbell Kelso Shrugs", "sets": 2, "reps": "15", "rirTarget": 4, "progressionType": "deload", "notes": "Light, focus on stretch" },
+        { "liftName": "Dumbbell Row (Chest Supported)", "sets": 2, "reps": "10", "rirTarget": 3, "progressionType": "deload", "notes": "Light, control" },
+        { "liftName": "Side-Lying External Rotation", "sets": 2, "reps": "12", "qualityTarget": 7, "painTarget": 2, "progressionType": "deload", "notes": "Light, maintain ROM" },
+        { "liftName": "Farmer Carry", "sets": 2, "reps": "1", "rirTarget": 4, "progressionType": "deload", "notes": "Light, 20m" },
+        { "liftName": "Pallof Press", "sets": 2, "reps": "12", "qualityTarget": 7, "painTarget": 2, "progressionType": "deload", "notes": "Light anti-rotation" }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 3,
+      "focus": "Cable – Deload",
+      "exercises": [
+        { "liftName": "Cable Chest Press", "sets": 3, "reps": "10-12", "rirTarget": 3, "progressionType": "deload", "notes": "Light, control" },
+        { "liftName": "Seated Cable Row", "sets": 3, "reps": "10-12", "rirTarget": 3, "progressionType": "deload", "notes": "Light, focus on stretch" },
+        { "liftName": "Cable Lower Trap Pull", "sets": 2, "reps": "15", "rirTarget": 4, "progressionType": "deload", "notes": "Light, mobility focus" },
+        { "liftName": "Cable External Rotation", "sets": 2, "reps": "12", "qualityTarget": 7, "painTarget": 2, "progressionType": "deload", "notes": "Light, maintain control" },
+        { "liftName": "Step-Ups (Machine Assisted)", "sets": 2, "reps": "10", "rirTarget": 3, "progressionType": "deload", "notes": "Bodyweight or light" },
+        { "liftName": "Cable Pallof Press", "sets": 2, "reps": "12", "qualityTarget": 7, "painTarget": 2, "progressionType": "deload", "notes": "Light, anti-rotation" },
+        { "liftName": "Banded Face Pulls", "sets": 2, "reps": "12", "qualityTarget": 7, "painTarget": 2, "progressionType": "deload", "notes": "Light, maintain mobility" }
+      ]
+    }
+  ]
+}
