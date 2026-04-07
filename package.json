@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "build": "cd frontend && npm install && npm run build"
+    "build": "cd frontend && npm install && npm run build && cd .. && mkdir -p data && cp -r data/* data/"
   },
   "dependencies": {
     "cors": "^2.8.5",
