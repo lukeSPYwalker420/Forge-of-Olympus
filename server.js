@@ -439,6 +439,7 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
   rirTarget: ex.rirTarget,
   romTarget: ex.romTarget,     // add this
   painTarget: ex.painTarget,   // add this
+  progressionType: ex.progressionType, 
   currentWeight,
   projectedNextWeight
 };
