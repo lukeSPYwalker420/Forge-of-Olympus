@@ -160,6 +160,7 @@ export default function Dashboard() {
                 <option value="Ares Protocol">Ares Protocol</option>
                 <option value="Apollo Physique">Apollo Physique</option>
                 <option value="Hercules Foundation">Hercules Foundation</option>
+                <option value="Hephaestus Framework">Hephaestus Framework</option>
                 <option value="Mark Training">Mark Training</option>
               </select>
               <input
