@@ -1,0 +1,244 @@
+{
+  "name": "Hephaestus Framework",
+  "logic": "GENERAL_FITNESS_HYBRID",
+  "sessions": [
+    {
+      "week": 1,
+      "day": 1,
+      "focus": "Lower Pattern – Control & Range",
+      "exercises": [
+        { "liftName": "Tempo Goblet Squat", "sets": 4, "reps": "8", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "Full depth, controlled descent" },
+        { "liftName": "Single-Leg RDL", "sets": 3, "reps": "10", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "per leg" },
+        { "liftName": "Rear Foot Elevated Split Squat", "sets": 3, "reps": "8", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "per leg" },
+        { "liftName": "Cossack Squat", "sets": 2, "reps": "6", "qualityTarget": 7, "painTarget": 2, "progressionType": "mobility", "notes": "per side" },
+        { "liftName": "Standing Tibialis Raises", "sets": 3, "reps": "15", "qualityTarget": 7, "painTarget": 2, "progressionType": "mobility" }
+      ]
+    },
+    {
+      "week": 1,
+      "day": 2,
+      "focus": "Upper Pattern – Control & Range",
+      "exercises": [
+        { "liftName": "Paused Dumbbell Bench Press", "sets": 4, "reps": "8", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility" },
+        { "liftName": "Chest Supported Row", "sets": 4, "reps": "10", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility" },
+        { "liftName": "Half-Kneeling Single Arm Overhead Press", "sets": 3, "reps": "8", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "per arm" },
+        { "liftName": "Cable Face Pulls", "sets": 3, "reps": "12-15", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility" },
+        { "liftName": "Incline Y Raises", "sets": 2, "reps": "12", "qualityTarget": 7, "painTarget": 2, "progressionType": "mobility" }
+      ]
+    },
+    {
+      "week": 1,
+      "day": 3,
+      "focus": "Integrated Stability",
+      "exercises": [
+        { "liftName": "Front Squat (Paused)", "sets": 4, "reps": "6", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility" },
+        { "liftName": "Trap Bar Deadlift", "sets": 4, "reps": "6", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility" },
+        { "liftName": "Walking Lunges", "sets": 3, "reps": "10", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "per leg" },
+        { "liftName": "Dead Bugs", "sets": 3, "reps": "10", "qualityTarget": 8, "painTarget": 2, "progressionType": "stability", "notes": "per side" },
+        { "liftName": "Farmer's Carries", "sets": 3, "reps": "1", "qualityTarget": 8, "painTarget": 2, "progressionType": "stability", "notes": "30-40 sec" }
+      ]
+    },
+    {
+      "week": 1,
+      "day": 4,
+      "focus": "Home Structural Session",
+      "exercises": [
+        { "liftName": "Deep Squat Hold", "sets": 3, "reps": "1", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "30-45 sec hold", "romTarget": 90 },
+        { "liftName": "Split Squat Iso Hold", "sets": 3, "reps": "1", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "per leg, 20-30 sec", "romTarget": 85 },
+        { "liftName": "Single-Leg Glute Bridge", "sets": 3, "reps": "12", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility" },
+        { "liftName": "Wall Slides", "sets": 3, "reps": "12", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility" },
+        { "liftName": "Pike Compression Holds", "sets": 3, "reps": "1", "qualityTarget": 7, "painTarget": 2, "progressionType": "mobility", "notes": "20-30 sec", "romTarget": 80 },
+        { "liftName": "Side Plank", "sets": 3, "reps": "1", "qualityTarget": 8, "painTarget": 2, "progressionType": "stability", "notes": "per side, 20-30 sec" }
+      ]
+    },
+    {
+  "week": 2,
+  "day": 1,
+  "focus": "Lower Pattern – Range Reinforcement",
+  "exercises": [
+    { "liftName": "Tempo Goblet Squat", "sets": 4, "reps": "8", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Single-Leg RDL", "sets": 3, "reps": "10", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "per leg" },
+    { "liftName": "Rear Foot Elevated Split Squat", "sets": 3, "reps": "8", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "per leg" },
+    { "liftName": "Cossack Squat", "sets": 2, "reps": "6", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "per side" },
+    { "liftName": "Standing Tibialis Raises", "sets": 3, "reps": "15", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility" }
+  ]
+},
+{
+  "week": 2,
+  "day": 2,
+  "focus": "Upper Pattern – Range Reinforcement",
+  "exercises": [
+    { "liftName": "Paused Dumbbell Bench Press", "sets": 4, "reps": "8", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Chest Supported Row", "sets": 4, "reps": "10", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Half-Kneeling Single Arm Overhead Press", "sets": 3, "reps": "8", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "per arm" },
+    { "liftName": "Cable Face Pulls", "sets": 3, "reps": "12-15", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Incline Y Raises", "sets": 2, "reps": "12", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility" }
+  ]
+},
+{
+  "week": 2,
+  "day": 3,
+  "focus": "Integrated Stability – Reinforcement",
+  "exercises": [
+    { "liftName": "Front Squat (Paused)", "sets": 4, "reps": "6", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Trap Bar Deadlift", "sets": 4, "reps": "6", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Walking Lunges", "sets": 3, "reps": "10", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "per leg" },
+    { "liftName": "Dead Bugs", "sets": 3, "reps": "10", "qualityTarget": 9, "painTarget": 2, "progressionType": "stability", "notes": "per side" },
+    { "liftName": "Farmer's Carries", "sets": 3, "reps": "1", "qualityTarget": 9, "painTarget": 2, "progressionType": "stability", "notes": "30-40 sec" }
+  ]
+},
+{
+  "week": 2,
+  "day": 4,
+  "focus": "Home Session – ROM Reinforcement",
+  "exercises": [
+    { "liftName": "Deep Squat Hold", "sets": 3, "reps": "1", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "35-50 sec hold", "romTarget": 95 },
+    { "liftName": "Split Squat Iso Hold", "sets": 3, "reps": "1", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "per leg, 25-35 sec", "romTarget": 90 },
+    { "liftName": "Single-Leg Glute Bridge", "sets": 3, "reps": "12", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Wall Slides", "sets": 3, "reps": "12", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Pike Compression Holds", "sets": 3, "reps": "1", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "25-35 sec", "romTarget": 85 },
+    { "liftName": "Side Plank", "sets": 3, "reps": "1", "qualityTarget": 9, "painTarget": 2, "progressionType": "stability", "notes": "per side, 25-35 sec" }
+  ]
+},
+{
+  "week": 3,
+  "day": 1,
+  "focus": "Lower Pattern – Load Introduction (Control First)",
+  "exercises": [
+    { "liftName": "Tempo Goblet Squat", "sets": 4, "reps": "6-8", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Single-Leg RDL", "sets": 3, "reps": "8-10", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "per leg" },
+    { "liftName": "Rear Foot Elevated Split Squat", "sets": 3, "reps": "6-8", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "per leg" },
+    { "liftName": "Cossack Squat", "sets": 2, "reps": "6-8", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "per side" },
+    { "liftName": "Standing Tibialis Raises", "sets": 3, "reps": "15-20", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility" }
+  ]
+},
+{
+  "week": 3,
+  "day": 2,
+  "focus": "Upper Pattern – Load Introduction",
+  "exercises": [
+    { "liftName": "Paused Dumbbell Bench Press", "sets": 4, "reps": "6-8", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Chest Supported Row", "sets": 4, "reps": "8-10", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Half-Kneeling Single Arm Overhead Press", "sets": 3, "reps": "6-8", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "per arm" },
+    { "liftName": "Cable Face Pulls", "sets": 3, "reps": "12-15", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Incline Y Raises", "sets": 2, "reps": "12-15", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility" }
+  ]
+},
+{
+  "week": 3,
+  "day": 3,
+  "focus": "Integrated Stability – Load Introduction",
+  "exercises": [
+    { "liftName": "Front Squat (Paused)", "sets": 4, "reps": "5-6", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Trap Bar Deadlift", "sets": 4, "reps": "5-6", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Walking Lunges", "sets": 3, "reps": "8-10", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "per leg" },
+    { "liftName": "Dead Bugs", "sets": 3, "reps": "10-12", "qualityTarget": 9, "painTarget": 2, "progressionType": "stability", "notes": "per side" },
+    { "liftName": "Farmer's Carries", "sets": 3, "reps": "1", "qualityTarget": 9, "painTarget": 2, "progressionType": "stability", "notes": "30-40 sec" }
+  ]
+},
+{
+  "week": 3,
+  "day": 4,
+  "focus": "Home Session – ROM & Control",
+  "exercises": [
+    { "liftName": "Deep Squat Hold", "sets": 3, "reps": "1", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "40-55 sec hold", "romTarget": 100 },
+    { "liftName": "Split Squat Iso Hold", "sets": 3, "reps": "1", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility", "notes": "per leg, 30-40 sec", "romTarget": 95 },
+    { "liftName": "Single-Leg Glute Bridge", "sets": 3, "reps": "12-15", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Wall Slides", "sets": 3, "reps": "12-15", "qualityTarget": 9, "painTarget": 2, "progressionType": "mobility" },
+    { "liftName": "Pike Compression Holds", "sets": 3, "reps": "1", "qualityTarget": 8, "painTarget": 2, "progressionType": "mobility", "notes": "30-40 sec", "romTarget": 90 },
+    { "liftName": "Side Plank", "sets": 3, "reps": "1", "qualityTarget": 9, "painTarget": 2, "progressionType": "stability", "notes": "per side, 30-40 sec" }
+  ]
+},
+{
+  "week": 4,
+  "day": 1,
+  "focus": "Lower Pattern – Control Under Load",
+  "exercises": [
+    { "liftName": "Tempo Goblet Squat", "sets": 4, "reps": "5-6", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility" },
+    { "liftName": "Single-Leg RDL", "sets": 3, "reps": "6-8", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility", "notes": "per leg" },
+    { "liftName": "Rear Foot Elevated Split Squat", "sets": 3, "reps": "5-6", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility", "notes": "per leg" },
+    { "liftName": "Cossack Squat", "sets": 2, "reps": "6", "qualityTarget": 9, "painTarget": 1, "progressionType": "mobility", "notes": "per side" },
+    { "liftName": "Standing Tibialis Raises", "sets": 3, "reps": "15", "qualityTarget": 9, "painTarget": 1, "progressionType": "mobility" }
+  ]
+},
+{
+  "week": 4,
+  "day": 2,
+  "focus": "Upper Pattern – Control Under Load",
+  "exercises": [
+    { "liftName": "Paused Dumbbell Bench Press", "sets": 4, "reps": "5-6", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility" },
+    { "liftName": "Chest Supported Row", "sets": 4, "reps": "6-8", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility" },
+    { "liftName": "Half-Kneeling Single Arm Overhead Press", "sets": 3, "reps": "5-6", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility", "notes": "per arm" },
+    { "liftName": "Cable Face Pulls", "sets": 3, "reps": "12-15", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility" },
+    { "liftName": "Incline Y Raises", "sets": 2, "reps": "12", "qualityTarget": 9, "painTarget": 1, "progressionType": "mobility" }
+  ]
+},
+{
+  "week": 4,
+  "day": 3,
+  "focus": "Integrated Stability – Control Under Load",
+  "exercises": [
+    { "liftName": "Front Squat (Paused)", "sets": 4, "reps": "4-5", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility" },
+    { "liftName": "Trap Bar Deadlift", "sets": 4, "reps": "4-5", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility" },
+    { "liftName": "Walking Lunges", "sets": 3, "reps": "6-8", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility", "notes": "per leg" },
+    { "liftName": "Dead Bugs", "sets": 3, "reps": "10", "qualityTarget": 10, "painTarget": 1, "progressionType": "stability", "notes": "per side" },
+    { "liftName": "Farmer's Carries", "sets": 3, "reps": "1", "qualityTarget": 10, "painTarget": 1, "progressionType": "stability", "notes": "30-40 sec" }
+  ]
+},
+{
+  "week": 4,
+  "day": 4,
+  "focus": "Home Session – Peak ROM & Control",
+  "exercises": [
+    { "liftName": "Deep Squat Hold", "sets": 3, "reps": "1", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility", "notes": "45-60 sec hold", "romTarget": 105 },
+    { "liftName": "Split Squat Iso Hold", "sets": 3, "reps": "1", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility", "notes": "per leg, 35-45 sec", "romTarget": 100 },
+    { "liftName": "Single-Leg Glute Bridge", "sets": 3, "reps": "12", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility" },
+    { "liftName": "Wall Slides", "sets": 3, "reps": "12", "qualityTarget": 10, "painTarget": 1, "progressionType": "mobility" },
+    { "liftName": "Pike Compression Holds", "sets": 3, "reps": "1", "qualityTarget": 9, "painTarget": 1, "progressionType": "mobility", "notes": "35-45 sec", "romTarget": 95 },
+    { "liftName": "Side Plank", "sets": 3, "reps": "1", "qualityTarget": 10, "painTarget": 1, "progressionType": "stability", "notes": "per side, 35-45 sec" }
+  ]
+},
+{
+  "week": 5,
+  "day": 1,
+  "focus": "Deload – Lower Pattern",
+  "exercises": [
+    { "liftName": "Tempo Goblet Squat", "sets": 3, "reps": "8-10", "qualityTarget": 8, "painTarget": 2, "progressionType": "deload" },
+    { "liftName": "Single-Leg RDL", "sets": 2, "reps": "10", "qualityTarget": 8, "painTarget": 2, "progressionType": "deload", "notes": "per leg" },
+    { "liftName": "Rear Foot Elevated Split Squat", "sets": 2, "reps": "8", "qualityTarget": 8, "painTarget": 2, "progressionType": "deload", "notes": "per leg" },
+    { "liftName": "Cossack Squat", "sets": 2, "reps": "6", "qualityTarget": 7, "painTarget": 2, "progressionType": "deload", "notes": "per side" }
+  ]
+},
+{
+  "week": 5,
+  "day": 2,
+  "focus": "Deload – Upper Pattern",
+  "exercises": [
+    { "liftName": "Paused Dumbbell Bench Press", "sets": 3, "reps": "8-10", "qualityTarget": 8, "painTarget": 2, "progressionType": "deload" },
+    { "liftName": "Chest Supported Row", "sets": 3, "reps": "10", "qualityTarget": 8, "painTarget": 2, "progressionType": "deload" },
+    { "liftName": "Cable Face Pulls", "sets": 2, "reps": "15", "qualityTarget": 7, "painTarget": 2, "progressionType": "deload" },
+    {"liftName": "Incline Y Raises", "sets": 2, "reps": "12", "qualityTarget": 7, "painTarget": 2, "progressionType": "deload" }
+  ]
+},
+{
+  "week": 5,
+  "day": 3,
+  "focus": "Deload – Integrated Stability",
+  "exercises": [
+    { "liftName": "Front Squat (Paused)", "sets": 3, "reps": "6-8", "qualityTarget": 8, "painTarget": 2, "progressionType": "deload" },
+    { "liftName": "Trap Bar Deadlift", "sets": 3, "reps": "6-8", "qualityTarget": 8, "painTarget": 2, "progressionType": "deload" },
+    { "liftName": "Dead Bugs", "sets": 2, "reps": "10", "qualityTarget": 7, "painTarget": 2, "progressionType": "deload", "notes": "per side" }
+  ]
+},
+{
+  "week": 5,
+  "day": 4,
+  "focus": "Deload – Home Session",
+  "exercises": [
+    { "liftName": "Deep Squat Hold", "sets": 2, "reps": "1", "qualityTarget": 8, "painTarget": 2, "progressionType": "deload", "notes": "30 sec hold" },
+    { "liftName": "Split Squat Iso Hold", "sets": 2, "reps": "1", "qualityTarget": 8, "painTarget": 2, "progressionType": "deload", "notes": "per leg, 20 sec" },
+    { "liftName": "Side Plank", "sets": 2, "reps": "1", "qualityTarget": 7, "painTarget": 2, "progressionType": "deload", "notes": "per side, 20 sec" }
+  ]
+}
+  ]
+}
