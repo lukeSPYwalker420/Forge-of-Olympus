@@ -432,14 +432,16 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
   }
 
   return {
-    liftName: ex.liftName,
-    sets: ex.sets,
-    reps: ex.reps,
-    rpeTarget: ex.rpeTarget,
-    rirTarget: ex.rirTarget,        // ← add this
-    currentWeight,
-    projectedNextWeight
-  };
+  liftName: ex.liftName,
+  sets: ex.sets,
+  reps: ex.reps,
+  rpeTarget: ex.rpeTarget,
+  rirTarget: ex.rirTarget,
+  romTarget: ex.romTarget,     // add this
+  painTarget: ex.painTarget,   // add this
+  currentWeight,
+  projectedNextWeight
+};
 });
 
     res.json({ program: session, logic, projected, availableWeeks, availableDaysPerWeek });
