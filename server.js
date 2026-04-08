@@ -99,6 +99,8 @@ const Purchase = mongoose.model("Purchase", PurchaseSchema);
 
 const UserSchema = new mongoose.Schema({
   email: { type: String, unique: true },
+  streak: { type: Number, default: 0 },
+  lastWorkoutDate: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.model("User", UserSchema);
@@ -458,6 +460,19 @@ app.post("/api/session-log", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+  // After saving session, update streak
+const today = new Date().toDateString();
+const user = await User.findById(userId);
+const lastDate = user.lastWorkoutDate ? new Date(user.lastWorkoutDate).toDateString() : null;
+if (lastDate === today) {
+  // Already logged today – no change
+} else if (lastDate === new Date(Date.now() - 86400000).toDateString()) {
+  user.streak += 1;
+} else {
+  user.streak = 1;
+}
+user.lastWorkoutDate = new Date();
+await user.save();
 });
 
 app.post("/api/progression/apply", async (req, res) => {
@@ -533,6 +548,23 @@ app.get("/api/history/:userId/:liftName", async (req, res) => {
   }
 });
 
+app.get("/api/1rm-history/:userId/:liftName", async (req, res) => {
+  try {
+    const { userId, liftName } = req.params;
+    const sessions = await Session.find({ userId, liftName })
+      .sort({ createdAt: 1 })
+      .select("actualWeight repsCompleted actualRPE createdAt");
+    // Estimate 1RM for each session
+    const history = sessions.map(s => ({
+      date: s.createdAt,
+      estimated1RM: estimate1RM(s.actualWeight, s.repsCompleted, s.actualRPE)
+    }));
+    res.json(history);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Dashboard endpoint: get current 1RM for a lift
 app.get("/api/estimate-1rm/:userId/:liftName", async (req, res) => {
   try {
@@ -591,10 +623,11 @@ app.post("/api/login", async (req, res) => {
   }
 
   res.json({
-    userId: user._id.toString(),
-    email,
-    purchasedPrograms
-  });
+  userId: user._id.toString(),
+  email,
+  purchasedPrograms,
+  streak: user.streak || 0
+});
 });
 
 // ==================== ADMIN: Assign program to user (no Stripe) ====================
