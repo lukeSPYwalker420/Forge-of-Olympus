@@ -8,7 +8,6 @@ import { fileURLToPath } from "url";
 import stripe from "stripe";
 
 dotenv.config();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 app.use(cors());
