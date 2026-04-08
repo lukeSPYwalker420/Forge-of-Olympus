@@ -107,6 +107,13 @@ const UserSchema = new mongoose.Schema({
 });
 const User = mongoose.model("User", UserSchema);
 
+const LeadSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  source: { type: String, default: "register_modal" },
+  createdAt: { type: Date, default: Date.now }
+});
+const Lead = mongoose.model("Lead", LeadSchema);
+
 const SubscriptionSchema = new mongoose.Schema({
   userId: String,        // link to your User
   programName: String,   // e.g., "Ares Protocol"
@@ -675,6 +682,64 @@ app.post("/api/login", async (req, res) => {
 });
 
 // ==================== ADMIN: Assign program to user (no Stripe) ====================
+// ==================== LEAD CAPTURE ====================
+app.post("/api/leads", async (req, res) => {
+  const { email, source } = req.body;
+  if (!email || !email.includes("@")) {
+    return res.status(400).json({ error: "Valid email required" });
+  }
+  try {
+    const lead = await Lead.findOneAndUpdate(
+      { email },
+      { email, source: source || "register_modal", updatedAt: new Date() },
+      { upsert: true, new: true }
+    );
+    console.log(`📧 Lead captured: ${email}`);
+    res.json({ message: "Lead saved", lead });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==================== ADMIN: VIEW ALL LEADS ====================
+app.get("/api/admin/leads", async (req, res) => {
+  const { adminEmail, adminPassword } = req.headers;
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+  
+  if (adminEmail !== ADMIN_EMAIL) {
+    return res.status(403).json({ error: "Not authorized" });
+  }
+  if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
+    return res.status(403).json({ error: "Invalid admin password" });
+  }
+  
+  const leads = await Lead.find().sort({ createdAt: -1 });
+  res.json(leads);
+});
+
+// ==================== ADMIN: EXPORT LEADS AS CSV ====================
+app.get("/api/admin/leads/export", async (req, res) => {
+  const { adminEmail, adminPassword } = req.headers;
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+  
+  if (adminEmail !== ADMIN_EMAIL) {
+    return res.status(403).json({ error: "Not authorized" });
+  }
+  if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
+    return res.status(403).json({ error: "Invalid admin password" });
+  }
+  
+  const leads = await Lead.find().sort({ createdAt: -1 });
+  let csv = "email,source,createdAt\n";
+  leads.forEach(l => {
+    csv += `"${l.email}","${l.source}","${l.createdAt.toISOString()}"\n`;
+  });
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader("Content-Disposition", "attachment; filename=forge_leads.csv");
+  res.send(csv);
+});
 app.post("/api/admin/assign-program", async (req, res) => {
   const { adminEmail, adminPassword, userEmail, programName } = req.body;
   
