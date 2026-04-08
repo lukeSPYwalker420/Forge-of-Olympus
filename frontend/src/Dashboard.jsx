@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DashboardChart from './DashboardChart';
 import "./Dashboard.css";
 
 export default function Dashboard() {
@@ -10,6 +11,7 @@ export default function Dashboard() {
   const [estimates, setEstimates] = useState({});
   const [recentSessions, setRecentSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  
   
   // Admin state
   const [assignEmail, setAssignEmail] = useState("");
@@ -90,6 +92,22 @@ export default function Dashboard() {
     }
   };
 
+  function predictPR(history) {
+  if (history.length < 2) return null;
+  const recent = history.slice(-4);
+  const x = recent.map((_, i) => i);
+  const y = recent.map(h => h.estimated1RM);
+  const n = x.length;
+  const sumX = x.reduce((a,b)=>a+b,0);
+  const sumY = y.reduce((a,b)=>a+b,0);
+  const sumXY = x.reduce((a,b,i)=>a + b*y[i],0);
+  const sumX2 = x.reduce((a,b)=>a + b*b,0);
+  const slope = (n*sumXY - sumX*sumY) / (n*sumX2 - sumX*sumX);
+  const intercept = (sumY - slope*sumX) / n;
+  const nextX = recent.length;
+  return Math.round(slope * nextX + intercept);
+}
+
   if (loading) return <div className="dashboard-loading">Loading your data...</div>;
 
   return (
@@ -116,13 +134,24 @@ export default function Dashboard() {
         </div>
 
         <div className="card">
-          <h2>Estimated 1RM</h2>
-          <div className="estimates-list">
-            <div className="estimate-item"><span>Squat</span><strong>{estimates["Squat (Top set)"] || "—"} kg</strong></div>
-            <div className="estimate-item"><span>Bench</span><strong>{estimates["Bench (Top set)"] || "—"} kg</strong></div>
-            <div className="estimate-item"><span>Deadlift</span><strong>{estimates["Deadlift (Top set)"] || "—"} kg</strong></div>
-          </div>
-        </div>
+  <h2>Estimated 1RM</h2>
+  <div className="estimates-list">
+    <div className="estimate-item"><span>Squat</span><strong>{estimates["Squat (Top set)"] || "—"} kg</strong></div>
+    <div className="estimate-item"><span>Bench</span><strong>{estimates["Bench (Top set)"] || "—"} kg</strong></div>
+    <div className="estimate-item"><span>Deadlift</span><strong>{estimates["Deadlift (Top set)"] || "—"} kg</strong></div>
+  </div>
+  <div className="estimate-item">
+  <span>Squat (4‑week PR)</span>
+  <strong>{predictPR || estimates["Squat (Top set)"]} kg</strong>
+</div>
+  {/* Add chart for each lift – you can use a dropdown or just show one at a time */}
+  <details>
+    <summary style={{cursor:"pointer", marginTop:"16px", color:"var(--accent)"}}>View Progress Chart</summary>
+    <DashboardChart userId={userId} liftName="Squat (Top set)" />
+    <DashboardChart userId={userId} liftName="Bench (Top set)" />
+    <DashboardChart userId={userId} liftName="Deadlift (Top set)" />
+  </details>
+</div>
 
         <div className="card">
           <h2>Recent Activity</h2>
@@ -138,6 +167,14 @@ export default function Dashboard() {
             </ul>
           )}
         </div>
+
+        <div className="card">
+  <h2>Workout Streak</h2>
+  <p style={{fontSize:"2rem", fontWeight:"bold", color:"var(--accent)"}}>
+    {localStorage.getItem("streak") || 0} 🔥
+  </p>
+  <p>Consecutive workout days</p>
+</div>
 
         {/* Admin Panel – only visible to admin */}
         {isAdmin && (

@@ -27,7 +27,13 @@ export default function SessionView() {
 
   if (!userId) return <Navigate to="/login" replace />;
   if (!program) return <Navigate to="/program" replace />;
-  if (loading) return <div>Loading session...</div>;
+  if (loading) return (
+  <div className="dashboard-container">
+    <Skeleton />
+    <Skeleton />
+    <Skeleton />
+  </div>
+);
   if (error) return <div>Error: {error}</div>;
   if (!data) return <div>No data returned</div>;
 
