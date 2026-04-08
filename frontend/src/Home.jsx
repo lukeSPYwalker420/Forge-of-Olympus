@@ -14,29 +14,34 @@ export default function Home() {
     setEmail("");
   };
 
-  const handleEmailSubmit = (e) => {
-    e.preventDefault();
-    if (!email || !email.includes("@")) {
-      setModalMessage("Please enter a valid email address.");
-      return;
-    }
+  const handleEmailSubmit = async (e) => {
+  e.preventDefault();
+  if (!email || !email.includes("@")) {
+    setModalMessage("Please enter a valid email address.");
+    return;
+  }
 
-    // Store email as marketing lead
-    const leads = JSON.parse(localStorage.getItem("forge_leads") || "[]");
-    if (!leads.includes(email)) {
-      leads.push(email);
-      localStorage.setItem("forge_leads", JSON.stringify(leads));
-      console.log("Marketing lead captured:", email);
-      console.log("All leads:", leads);
+  try {
+    const response = await fetch("http://localhost:5000/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, source: "register_modal" })
+    });
+    if (response.ok) {
+      setModalMessage("Thanks! You're on the list. We'll be in touch.");
+      setTimeout(() => {
+        setShowModal(false);
+        setEmail("");
+        setModalMessage("");
+      }, 2000);
+    } else {
+      setModalMessage("Something went wrong. Please try again.");
     }
-
-    setModalMessage("Thanks! You're on the list. We'll be in touch.");
-    setTimeout(() => {
-      setShowModal(false);
-      setEmail("");
-      setModalMessage("");
-    }, 2000);
-  };
+  } catch (err) {
+    console.error(err);
+    setModalMessage("Network error. Please try again.");
+  }
+};
 
   return (
     <>
@@ -70,21 +75,21 @@ export default function Home() {
               Explore Programs
             </button>
             <button
-              onClick={() =>
-                document
-                  .getElementById("programs")
-                  ?.scrollIntoView({ behavior: "smooth" })
-              }
-              className="btn btn-outline"
-            >
-              View Plans
-            </button>
+  onClick={() =>
+    document
+      .getElementById("how-it-works")
+      ?.scrollIntoView({ behavior: "smooth" })
+  }
+  className="btn btn-outline"
+>
+  How It Works
+</button>
           </div>
         </div>
       </section>
 
       {/* ========== HOW IT WORKS (app & dashboard focused) ========== */}
-      <section className="how-it-works">
+      <section className="how-it-works" id="how-it-works">
         <div className="container">
           <h2>How It Works</h2>
           <div className="steps-grid">
