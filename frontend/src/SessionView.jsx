@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import Skeleton from "./Skeleton";
 
 export default function SessionView() {
   const [data, setData] = useState(null);
