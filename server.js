@@ -5,9 +5,11 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import stripe from "stripe"
+import stripe from "stripe";
 
 dotenv.config();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -81,6 +83,7 @@ const SessionSchema = new mongoose.Schema({
   targetROM: Number,
   actualPain: Number,
   targetPain: Number,
+  programName: String,
   createdAt: { type: Date, default: Date.now }
 });
 const Session = mongoose.model("Session", SessionSchema);
@@ -582,6 +585,48 @@ app.get("/api/recent-sessions/:userId", async (req, res) => {
     const sessions = await Session.find({ userId }).sort({ createdAt: -1 }).limit(20);
     res.json(sessions);
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get next session (week/day) for a user based on their last completed session
+app.get("/api/next-session/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const programName = req.query.program;
+    if (!programName) return res.status(400).json({ error: "Missing program name" });
+
+    const programData = loadProgram(programName);
+    const sessions = programData.sessions;
+    if (!sessions.length) return res.status(404).json({ error: "No sessions in program" });
+
+    // Find the latest session logged by this user for this program
+    const lastSession = await Session.findOne({ userId, programName })
+      .sort({ createdAt: -1 })
+      .select("week day");
+
+    let nextWeek, nextDay;
+
+    if (!lastSession) {
+      // First session ever
+      nextWeek = sessions[0].week;
+      nextDay = sessions[0].day;
+    } else {
+      const lastIndex = sessions.findIndex(s => s.week === lastSession.week && s.day === lastSession.day);
+      if (lastIndex !== -1 && lastIndex + 1 < sessions.length) {
+        const next = sessions[lastIndex + 1];
+        nextWeek = next.week;
+        nextDay = next.day;
+      } else {
+        // Last session was the final session in the program; loop back to beginning
+        nextWeek = sessions[0].week;
+        nextDay = sessions[0].day;
+      }
+    }
+
+    res.json({ week: nextWeek, day: nextDay });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
