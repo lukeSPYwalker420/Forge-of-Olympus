@@ -7,8 +7,14 @@ export default function SessionView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [inputs, setInputs] = useState({});
-  const [week, setWeek] = useState(1);
-  const [day, setDay] = useState(1);
+  const [week, setWeek] = useState(() => {
+  const saved = localStorage.getItem("nextWeek");
+  return saved ? parseInt(saved) : 1;
+});
+const [day, setDay] = useState(() => {
+  const saved = localStorage.getItem("nextDay");
+  return saved ? parseInt(saved) : 1;
+});
   const [history, setHistory] = useState({});
 
   const userId = localStorage.getItem("userId");
@@ -81,6 +87,7 @@ export default function SessionView() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId,
+          programName: program,
           week: data.program?.week,
           day: data.program?.day,
           liftName,

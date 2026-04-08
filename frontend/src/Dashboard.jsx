@@ -57,10 +57,30 @@ export default function Dashboard() {
     fetchData();
   }, [userId, navigate]);
 
-  const handleStartWorkout = () => {
-    const program = localStorage.getItem("program");
-    program ? navigate("/session") : navigate("/program");
-  };
+  const handleStartWorkout = async () => {
+  const program = localStorage.getItem("program");
+  if (!program) {
+    navigate("/program");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/next-session/${userId}?program=${encodeURIComponent(program)}`);
+    if (res.ok) {
+      const { week, day } = await res.json();
+      localStorage.setItem("nextWeek", week);
+      localStorage.setItem("nextDay", day);
+    } else {
+      localStorage.setItem("nextWeek", 1);
+      localStorage.setItem("nextDay", 1);
+    }
+  } catch (err) {
+    console.error(err);
+    localStorage.setItem("nextWeek", 1);
+    localStorage.setItem("nextDay", 1);
+  }
+  navigate("/session");
+};
 
   const assignProgramToUser = async () => {
     if (!assignEmail || !assignProgram) {
