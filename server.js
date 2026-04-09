@@ -70,7 +70,9 @@ const SessionSchema = new mongoose.Schema({
   day: Number,
   liftName: String,
   targetReps: String,
-  repsCompleted: Number,
+  targetSets: Number,           // new: number of sets for this exercise
+  repsPerSet: [Number],         // new: array of reps per set, e.g., [5,5,4,0]
+  repsCompleted: Number,        // keep for backward compatibility
   targetRPE: Number,
   actualRPE: Number,
   actualWeight: Number,
@@ -160,15 +162,22 @@ function weightForRPE(oneRM, targetRPE, targetReps) {
 function strengthRPEProgression(state, sessionData) {
   let new1RM = state.estimated1RM || 0;
   const completed = sessionData.completed === true;
+  
+  // New logic using repsPerSet
+  const repsPerSet = sessionData.repsPerSet || [];
   const targetReps = parseInt(sessionData.targetReps, 10);
-  const actualReps = sessionData.repsCompleted || 0;
-  const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
+  const targetSets = sessionData.targetSets || 1;
+  const allSetsCompleted = repsPerSet.length === targetSets && repsPerSet.every(r => r >= targetReps);
+  const anyMissed = repsPerSet.some(r => r < targetReps);
+  
   const rpeOk = sessionData.actualRPE <= sessionData.targetRPE + 0.5;
-  const isGoodSession = completed && repsMet && rpeOk;
+  const isGoodSession = completed && allSetsCompleted && rpeOk;
 
   let fresh1RM = null;
-  if (completed && sessionData.actualWeight && actualReps && sessionData.actualRPE) {
-    fresh1RM = estimate1RM(sessionData.actualWeight, actualReps, sessionData.actualRPE);
+  if (completed && sessionData.actualWeight && repsPerSet.length && sessionData.actualRPE) {
+    // Use the best set (highest reps) or average? For simplicity, use the highest reps
+    const bestReps = Math.max(...repsPerSet);
+    fresh1RM = estimate1RM(sessionData.actualWeight, bestReps, sessionData.actualRPE);
   }
 
   if (fresh1RM !== null) {
@@ -188,12 +197,7 @@ function hypertrophyVolumeProgression(state, sessionData) {
   let stallCounter = state.stallCounter || 0;
 
   const completed = sessionData.completed === true;
-  const actualReps = sessionData.repsCompleted || 0;
-  const targetRIR = sessionData.targetRIR || 2;
-  const actualRIR = sessionData.actualRIR;
-  const hasRIR = typeof actualRIR === 'number';
-  const rirGood = hasRIR && actualRIR <= targetRIR - 1;
-
+  const repsPerSet = sessionData.repsPerSet || [];
   const targetRepsStr = sessionData.targetReps || "8-12";
   let minReps = 8, maxReps = 12;
   if (targetRepsStr.includes('-')) {
@@ -203,8 +207,17 @@ function hypertrophyVolumeProgression(state, sessionData) {
   } else {
     minReps = maxReps = parseInt(targetRepsStr, 10);
   }
+  
+  const targetSets = sessionData.targetSets || 3;
+  const allSetsCompleted = repsPerSet.length === targetSets && repsPerSet.every(r => r >= minReps);
+  const actualReps = Math.max(...repsPerSet); // best set for progression
+  
+  const targetRIR = sessionData.targetRIR || 2;
+  const actualRIR = sessionData.actualRIR;
+  const hasRIR = typeof actualRIR === 'number';
+  const rirGood = hasRIR && actualRIR <= targetRIR - 1;
 
-  const isGoodSession = completed && rirGood && actualReps >= minReps;
+  const isGoodSession = completed && allSetsCompleted && rirGood;
 
   if (isGoodSession) {
     if (actualReps > lastReps && actualReps <= maxReps) {
@@ -427,12 +440,14 @@ app.post("/api/session-log", async (req, res) => {
   try {
     const log = await Session.create(req.body);
     
-    // Update user streak
-    if (log.userId) {
-      const user = await User.findById(log.userId);
+    // Update user streak using userId from request body
+    const userId = req.body.userId;
+    if (userId) {
+      const user = await User.findById(userId);
       if (user) {
         const today = new Date().toDateString();
         const lastDate = user.lastWorkoutDate ? new Date(user.lastWorkoutDate).toDateString() : null;
+        
         if (lastDate !== today) {
           if (lastDate === new Date(Date.now() - 86400000).toDateString()) {
             user.streak += 1;
@@ -441,6 +456,7 @@ app.post("/api/session-log", async (req, res) => {
           }
           user.lastWorkoutDate = new Date();
           await user.save();
+          console.log(`🔥 Streak: ${user.email} → ${user.streak} days`);
         }
       }
     }
@@ -480,6 +496,8 @@ app.post("/api/progression/apply", async (req, res) => {
       completed: lastSession.completed,
       targetReps: lastSession.targetReps,
       repsCompleted: lastSession.repsCompleted,
+      targetSets: lastSession.targetSets,
+      repsPerSet: lastSession.repsPerSet,
       targetRPE: lastSession.targetRPE,
       actualRPE: lastSession.actualRPE,
       actualWeight: lastSession.actualWeight,
@@ -636,6 +654,15 @@ app.post("/api/login", async (req, res) => {
     purchasedPrograms,
     streak: user.streak || 0
   });
+});
+
+app.get("/api/streak/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    res.json({ streak: user?.streak || 0 });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.post("/api/leads", async (req, res) => {
