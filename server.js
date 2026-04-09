@@ -130,7 +130,16 @@ const loadProgram = (programName) => {
   if (raw.sessions && Array.isArray(raw.sessions)) return { name: raw.name, logic: raw.logic, sessions: raw.sessions };
   if (Array.isArray(raw)) return { sessions: raw, logic: "STRENGTH_RPE" };
   throw new Error(`Invalid program format`);
-};
+  if (raw.sessions && Array.isArray(raw.sessions)) {
+  // Normalise lift names to a consistent format (e.g., capitalise "Set")
+  raw.sessions.forEach(session => {
+    session.exercises.forEach(ex => {
+      ex.liftName = ex.liftName.replace(/set\)/i, "Set)");
+    });
+  });
+  return { name: raw.name, logic: raw.logic, sessions: raw.sessions };
+}
+}
 
 // ==================== Helper Functions ====================
 function estimate1RM(weight, reps, actualRPE) {
@@ -555,11 +564,25 @@ app.get("/api/1rm-history/:userId/:liftName", async (req, res) => {
     const { userId, liftName } = req.params;
     const sessions = await Session.find({ userId, liftName })
       .sort({ createdAt: 1 })
-      .select("actualWeight repsCompleted actualRPE createdAt");
-    const history = sessions.map(s => ({
-      date: s.createdAt,
-      estimated1RM: estimate1RM(s.actualWeight, s.repsCompleted, s.actualRPE)
-    }));
+      .select("actualWeight repsCompleted repsPerSet actualRPE createdAt");
+
+    const history = sessions.map(s => {
+      // Determine reps to use: best from repsPerSet or fallback to repsCompleted
+      let reps = null;
+      if (s.repsPerSet && s.repsPerSet.length) {
+        reps = Math.max(...s.repsPerSet);
+      } else {
+        reps = s.repsCompleted;
+      }
+      
+      if (!s.actualWeight || !reps || !s.actualRPE) return null;
+      
+      return {
+        date: s.createdAt,
+        estimated1RM: estimate1RM(s.actualWeight, reps, s.actualRPE)
+      };
+    }).filter(h => h !== null);
+    
     res.json(history);
   } catch (err) {
     res.status(500).json({ error: err.message });
