@@ -480,9 +480,10 @@ app.post("/api/progression/apply", async (req, res) => {
     if (!state) {
       let initialState = { userId, liftName };
       if (logic === "STRENGTH_RPE") {
-        const initial1RM = estimate1RM(lastSession.actualWeight, lastSession.repsCompleted, lastSession.actualRPE);
-        initialState.estimated1RM = initial1RM;
-      } else {
+  const initial1RM = estimate1RM(lastSession.actualWeight, lastSession.repsCompleted, lastSession.actualRPE);
+  initialState.estimated1RM = initial1RM;
+  initialState.currentWeight = 0;   // ← add this line
+} else {
         initialState.currentWeight = lastSession.actualWeight || 0;
         initialState.lastROM = 0;
         initialState.lastRepsAchieved = 0;
