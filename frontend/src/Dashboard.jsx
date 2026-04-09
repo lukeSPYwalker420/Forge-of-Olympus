@@ -222,19 +222,21 @@ export default function Dashboard() {
         <div className="card">
           <h2>Estimated 1RM</h2>
           <div className="estimates-list">
-            <div className="estimate-item"><span>Squat</span><strong>{estimates["Squat (Top set)"] || "—"} kg</strong></div>
-            <div className="estimate-item"><span>Bench</span><strong>{estimates["Bench (Top set)"] || "—"} kg</strong></div>
-            <div className="estimate-item"><span>Deadlift</span><strong>{estimates["Deadlift (Top set)"] || "—"} kg</strong></div>
+          <div className="estimate-item"><span>Squat</span><strong>{estimates["Squat (Top Set)"] || "—"} kg</strong></div>
+          <div className="estimate-item"><span>Bench</span><strong>{estimates["Bench (Top Set)"] || "—"} kg</strong></div>
+          <div className="estimate-item"><span>Deadlift</span><strong>{estimates["Deadlift (Top Set)"] || "—"} kg</strong></div>
           </div>
           <div className="estimate-item">
             <span>Squat (4‑week PR)</span>
-            <strong>{predictPR || estimates["Squat (Top set)"]} kg</strong>
+            <strong>{predictPR || estimates["Squat (Top Set)"]} kg</strong>
+            <strong>{predictPR || estimates["Bench (Top Set)"]} kg</strong>
+            <strong>{predictPR || estimates["Deadlift (Top Set)"]} kg</strong>
           </div>
           <details>
             <summary style={{ cursor: "pointer", marginTop: "16px", color: "var(--accent)" }}>View Progress Chart</summary>
-            <DashboardChart userId={userId} liftName="Squat (Top set)" />
-            <DashboardChart userId={userId} liftName="Bench (Top set)" />
-            <DashboardChart userId={userId} liftName="Deadlift (Top set)" />
+            <DashboardChart userId={userId} liftName="Squat (Top Set)" />
+            <DashboardChart userId={userId} liftName="Bench (Top Set)" />
+            <DashboardChart userId={userId} liftName="Deadlift (Top Set)" />
           </details>
         </div>
 
