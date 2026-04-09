@@ -5,11 +5,13 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import stripe from "stripe";
+import Stripe from "stripe";
 
 dotenv.config();
 
 const app = express();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -23,7 +25,7 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
     console.error(`Webhook signature failed: ${err.message}`);
-    return res.status(400).send(`npm start Error: ${err.message}`);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   if (event.type === "checkout.session.completed") {
@@ -31,7 +33,6 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
     const customerEmail = session.customer_details?.email;
     if (!customerEmail) return res.status(400).send("No email");
 
-    // Fetch line items to get program name
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
     const programName = lineItems.data[0]?.description || "Unknown Program";
 
@@ -45,6 +46,7 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
 
   res.json({ received: true });
 });
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -52,10 +54,10 @@ const __dirname = path.dirname(__filename);
 const LiftStateSchema = new mongoose.Schema({
   userId: String,
   liftName: String,
-  estimated1RM: { type: Number, default: 0 },      // for strength
-  currentWeight: { type: Number, default: 0 },     // for general fitness & hypertrophy
-  lastROM: { type: Number, default: 0 },           // for mobility
-  lastRepsAchieved: { type: Number, default: 0 },   // for hypertrophy rep range progression
+  estimated1RM: { type: Number, default: 0 },
+  currentWeight: { type: Number, default: 0 },
+  lastROM: { type: Number, default: 0 },
+  lastRepsAchieved: { type: Number, default: 0 },
   consecutiveSuccesses: { type: Number, default: 0 },
   stallCounter: { type: Number, default: 0 },
   updatedAt: { type: Date, default: Date.now }
@@ -75,10 +77,10 @@ const SessionSchema = new mongoose.Schema({
   targetRIR: Number,
   actualRIR: Number,
   completed: Boolean,
-  progressionType: String,   // strength, power, mobility, volume, deload
-  actualQuality: Number,     // for power exercises
+  progressionType: String,
+  actualQuality: Number,
   targetQuality: Number,
-  actualROM: Number,         // for mobility
+  actualROM: Number,
   targetROM: Number,
   actualPain: Number,
   targetPain: Number,
@@ -114,15 +116,6 @@ const LeadSchema = new mongoose.Schema({
 });
 const Lead = mongoose.model("Lead", LeadSchema);
 
-const SubscriptionSchema = new mongoose.Schema({
-  userId: String,        // link to your User
-  programName: String,   // e.g., "Ares Protocol"
-  stripeSubscriptionId: String,
-  status: String,        // active, cancelled, past_due
-  currentPeriodEnd: Date,
-  createdAt: Date
-});
-
 // ==================== Program Loader ====================
 const loadProgram = (programName) => {
   const safeName = programName.replace(/\s+/g, '-');
@@ -135,25 +128,21 @@ const loadProgram = (programName) => {
   if (raw.sessions && Array.isArray(raw.sessions)) return { name: raw.name, logic: raw.logic, sessions: raw.sessions };
   if (Array.isArray(raw)) return { sessions: raw, logic: "STRENGTH_RPE" };
   throw new Error(`Invalid program format`);
-  console.log(`Loading program: ${safeName} from ${filePath}`);
 };
 
-// ==================== Corrected 1RM estimation ====================
+// ==================== Helper Functions ====================
 function estimate1RM(weight, reps, actualRPE) {
-  if (!weight || !reps || !actualRPE) return weight;
-  // RPE to % of 1RM (for typical 1-5 reps)
+  if (!weight || !reps || !actualRPE || actualRPE <= 0) return weight || 0;
   const rpeToPercent = {
     10: 1.00, 9.5: 0.97, 9: 0.94, 8.5: 0.91, 8: 0.88,
     7.5: 0.85, 7: 0.82, 6.5: 0.79, 6: 0.76, 5.5: 0.73, 5: 0.70
   };
   let percent = rpeToPercent[actualRPE] || 0.8;
   let estimated = weight / percent;
-  // Adjust for higher reps (Epley)
   if (reps > 5) estimated = weight * (1 + reps / 30);
   return Math.round(estimated);
 }
 
-// Calculate weight for a given target RPE and reps, based on 1RM
 function weightForRPE(oneRM, targetRPE, targetReps) {
   if (!oneRM || !targetRPE) return 0;
   const rpeToPercent = {
@@ -161,15 +150,13 @@ function weightForRPE(oneRM, targetRPE, targetReps) {
     7.5: 0.85, 7: 0.82, 6.5: 0.79, 6: 0.76, 5.5: 0.73, 5: 0.70
   };
   let percent = rpeToPercent[targetRPE] || 0.8;
-  // Slight adjustment for low reps (<5)
   if (targetReps <= 3) percent += 0.02;
   if (targetReps >= 8) percent -= 0.03;
   percent = Math.min(0.95, Math.max(0.65, percent));
   return Math.round(oneRM * percent / 2.5) * 2.5;
 }
 
-// ==================== Progression: update 1RM from performance ====================
-// ==================== 1. STRENGTH (RPE-based, 1RM-driven) ====================
+// ==================== Progression Functions ====================
 function strengthRPEProgression(state, sessionData) {
   let new1RM = state.estimated1RM || 0;
   const completed = sessionData.completed === true;
@@ -194,8 +181,6 @@ function strengthRPEProgression(state, sessionData) {
   return { estimated1RM: Math.round(new1RM) };
 }
 
-// ==================== 2. HYPERTROPHY (RIR / Volume progression) ====================
-// ==================== 2. HYPERTROPHY (Rep range + RIR progression) ====================
 function hypertrophyVolumeProgression(state, sessionData) {
   let newWeight = state.currentWeight || sessionData.actualWeight || 0;
   let lastReps = state.lastRepsAchieved || 0;
@@ -207,9 +192,8 @@ function hypertrophyVolumeProgression(state, sessionData) {
   const targetRIR = sessionData.targetRIR || 2;
   const actualRIR = sessionData.actualRIR;
   const hasRIR = typeof actualRIR === 'number';
-  const rirGood = hasRIR && actualRIR <= targetRIR - 1;  // harder than planned
+  const rirGood = hasRIR && actualRIR <= targetRIR - 1;
 
-  // Parse target rep range from string like "8-12"
   const targetRepsStr = sessionData.targetReps || "8-12";
   let minReps = 8, maxReps = 12;
   if (targetRepsStr.includes('-')) {
@@ -223,32 +207,27 @@ function hypertrophyVolumeProgression(state, sessionData) {
   const isGoodSession = completed && rirGood && actualReps >= minReps;
 
   if (isGoodSession) {
-    // Update lastRepsAchieved if this is higher than before (up to maxReps)
     if (actualReps > lastReps && actualReps <= maxReps) {
       lastReps = actualReps;
     }
     successStreak += 1;
     stallCounter = 0;
 
-    // If we've reached the top of the rep range, increase weight
     if (lastReps >= maxReps) {
       const increment = (sessionData.liftName?.toLowerCase().includes("squat") ||
                          sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
       newWeight += increment;
-      lastReps = minReps;   // reset to lower end of range
+      lastReps = minReps;
       successStreak = 0;
     }
   } else {
-    // Bad session: reset rep progression but no weight loss
     successStreak = 0;
     stallCounter += 1;
-    // Optional: if stallCounter >= 3, reduce weight slightly
     if (stallCounter >= 3 && newWeight > 0) {
       const decrement = (sessionData.liftName?.toLowerCase().includes("squat") ||
                          sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
       newWeight = Math.max(0, newWeight - decrement);
       stallCounter = 0;
-      // Also reset lastReps to minReps (but keep weight lower)
       lastReps = minReps;
     }
   }
@@ -261,25 +240,18 @@ function hypertrophyVolumeProgression(state, sessionData) {
   };
 }
 
-// ==================== 3. EXPLOSIVE POWER (Quality-based) – PLACEHOLDER ====================
 function explosivePowerProgression(state, sessionData) {
-  // To be implemented later
   return { currentWeight: state.currentWeight, consecutiveSuccesses: 0, stallCounter: 0 };
 }
 
-// ==================== 4. ENDURANCE (Density progression) – PLACEHOLDER ====================
 function enduranceDensityProgression(state, sessionData) {
-  // To be implemented later
   return { currentWeight: state.currentWeight, consecutiveSuccesses: 0, stallCounter: 0 };
 }
 
-// ==================== 5. MOBILITY (ROM + pain) – PLACEHOLDER ====================
 function mobilityRangeProgression(state, sessionData) {
-  // To be implemented later
   return { lastROM: state.lastROM, consecutiveSuccesses: 0, stallCounter: 0 };
 }
 
-// ==================== 6. GENERAL FITNESS HYBRID (strength + power + mobility + volume) ====================
 function generalFitnessProgression(state, sessionData) {
   let newWeight = state.currentWeight || sessionData.actualWeight || 0;
   let newROM = state.lastROM || sessionData.actualROM || 0;
@@ -289,12 +261,11 @@ function generalFitnessProgression(state, sessionData) {
   const completed = sessionData.completed === true;
   const progressionType = sessionData.progressionType || "strength";
 
-  // ===== STRENGTH BLOCK (RPE-based, slower progression) =====
   if (progressionType === "strength") {
     const targetReps = parseInt(sessionData.targetReps, 10);
     const actualReps = sessionData.repsCompleted || 0;
     const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
-    const rpeOk = sessionData.actualRPE <= sessionData.targetRPE + 1; // more forgiving
+    const rpeOk = sessionData.actualRPE <= sessionData.targetRPE + 1;
     const isGoodSession = completed && repsMet && rpeOk;
 
     if (isGoodSession) {
@@ -307,12 +278,8 @@ function generalFitnessProgression(state, sessionData) {
     } else {
       successStreak = 0;
       stallCounter += 1;
-      // No automatic deload for general fitness
     }
-  }
-
-  // ===== POWER BLOCK (quality-based) =====
-  else if (progressionType === "power") {
+  } else if (progressionType === "power") {
     const qualityOk = (sessionData.actualQuality || 0) >= (sessionData.targetQuality || 7);
     const isGoodPowerSession = completed && qualityOk;
 
@@ -325,10 +292,7 @@ function generalFitnessProgression(state, sessionData) {
     } else {
       successStreak = 0;
     }
-  }
-
-  // ===== MOBILITY BLOCK (ROM + pain) =====
-  else if (progressionType === "mobility") {
+  } else if (progressionType === "mobility") {
     const romMet = (sessionData.actualROM || 0) >= (sessionData.targetROM || 0);
     const painOk = (sessionData.actualPain || 0) <= (sessionData.targetPain || 2);
     const isGoodMobilitySession = completed && romMet && painOk;
@@ -342,10 +306,7 @@ function generalFitnessProgression(state, sessionData) {
     } else {
       successStreak = 0;
     }
-  }
-
-  // ===== VOLUME / STABILITY BLOCK =====
-  else if (progressionType === "volume" || progressionType === "stability") {
+  } else if (progressionType === "volume" || progressionType === "stability") {
     const targetReps = parseInt(sessionData.targetReps, 10);
     const actualReps = sessionData.repsCompleted || 0;
     const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
@@ -354,16 +315,12 @@ function generalFitnessProgression(state, sessionData) {
     if (isGoodVolumeSession) {
       successStreak += 1;
       if (successStreak >= 3) {
-        // For volume, we increase reps target in frontend; here just reset streak
         successStreak = 0;
       }
     } else {
       successStreak = 0;
     }
-  }
-
-  // ===== DELOAD – no progression =====
-  else if (progressionType === "deload") {
+  } else if (progressionType === "deload") {
     // Do nothing
   }
 
@@ -375,7 +332,6 @@ function generalFitnessProgression(state, sessionData) {
   };
 }
 
-// ==================== Dispatcher ====================
 function calculateProgression(state, sessionData, logic) {
   switch (logic) {
     case "STRENGTH_RPE":
@@ -395,7 +351,13 @@ function calculateProgression(state, sessionData, logic) {
   }
 }
 
-// ==================== GET SESSION VIEW ====================
+// ==================== API Routes ====================
+
+// Health check
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", timestamp: Date.now() });
+});
+
 app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
   try {
     const week = Number(req.params.week);
@@ -408,54 +370,51 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     const session = programData.sessions.find(p => p.week === week && p.day === day);
     if (!session) return res.status(404).json({ error: "Session not found" });
 
-    // Get available weeks and days for dropdowns
     const availableWeeks = [...new Set(programData.sessions.map(s => s.week))].sort((a,b)=>a-b);
     const availableDaysPerWeek = {};
     availableWeeks.forEach(w => {
-    availableDaysPerWeek[w] = [...new Set(programData.sessions.filter(s => s.week === w).map(s => s.day))].sort((a,b)=>a-b);
-});
+      availableDaysPerWeek[w] = [...new Set(programData.sessions.filter(s => s.week === w).map(s => s.day))].sort((a,b)=>a-b);
+    });
 
     const logic = programData.logic || "STRENGTH_RPE";
     const liftStates = await LiftState.find({ userId });
 
     const projected = (session.exercises || []).map(ex => {
-  const state = liftStates.find(s => s.liftName === ex.liftName);
-  let currentWeight = 0;
-  let projectedNextWeight = 0;
+      const state = liftStates.find(s => s.liftName === ex.liftName);
+      let currentWeight = 0;
+      let projectedNextWeight = 0;
 
-  if (state) {
-    if (logic === "STRENGTH_RPE" && state.estimated1RM > 0) {
-      const targetRPE = ex.rpeTarget || 7;
-      currentWeight = weightForRPE(state.estimated1RM, targetRPE, ex.reps);
-      projectedNextWeight = weightForRPE(state.estimated1RM, targetRPE + 0.5, ex.reps);
-    } 
-    else if (logic === "GENERAL_FITNESS_HYBRID" && state.currentWeight > 0) {
-      currentWeight = state.currentWeight;
-      const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-      projectedNextWeight = currentWeight + inc;
-    }
-    else if (logic === "HYPERTROPHY_VOLUME" && state.currentWeight > 0) {
-      // Hypertrophy uses currentWeight directly
-      currentWeight = state.currentWeight;
-      // Next weight preview: add increment after 3 good sessions
-      const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-      projectedNextWeight = currentWeight + inc;
-    }
-  }
+      if (state) {
+        if (logic === "STRENGTH_RPE" && state.estimated1RM > 0) {
+          const targetRPE = ex.rpeTarget || 7;
+          currentWeight = weightForRPE(state.estimated1RM, targetRPE, ex.reps);
+          projectedNextWeight = weightForRPE(state.estimated1RM, targetRPE + 0.5, ex.reps);
+        } 
+        else if (logic === "GENERAL_FITNESS_HYBRID" && state.currentWeight > 0) {
+          currentWeight = state.currentWeight;
+          const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+          projectedNextWeight = currentWeight + inc;
+        }
+        else if (logic === "HYPERTROPHY_VOLUME" && state.currentWeight > 0) {
+          currentWeight = state.currentWeight;
+          const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+          projectedNextWeight = currentWeight + inc;
+        }
+      }
 
-  return {
-  liftName: ex.liftName,
-  sets: ex.sets,
-  reps: ex.reps,
-  rpeTarget: ex.rpeTarget,
-  rirTarget: ex.rirTarget,
-  romTarget: ex.romTarget,     // add this
-  painTarget: ex.painTarget,   // add this
-  progressionType: ex.progressionType, 
-  currentWeight,
-  projectedNextWeight
-};
-});
+      return {
+        liftName: ex.liftName,
+        sets: ex.sets,
+        reps: ex.reps,
+        rpeTarget: ex.rpeTarget,
+        rirTarget: ex.rirTarget,
+        romTarget: ex.romTarget,
+        painTarget: ex.painTarget,
+        progressionType: ex.progressionType,
+        currentWeight,
+        projectedNextWeight
+      };
+    });
 
     res.json({ program: session, logic, projected, availableWeeks, availableDaysPerWeek });
   } catch (err) {
@@ -463,26 +422,34 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 app.post("/api/session-log", async (req, res) => {
   try {
     const log = await Session.create(req.body);
+    
+    // Update user streak
+    if (log.userId) {
+      const user = await User.findById(log.userId);
+      if (user) {
+        const today = new Date().toDateString();
+        const lastDate = user.lastWorkoutDate ? new Date(user.lastWorkoutDate).toDateString() : null;
+        if (lastDate !== today) {
+          if (lastDate === new Date(Date.now() - 86400000).toDateString()) {
+            user.streak += 1;
+          } else {
+            user.streak = 1;
+          }
+          user.lastWorkoutDate = new Date();
+          await user.save();
+        }
+      }
+    }
+    
     res.json(log);
   } catch (err) {
+    console.error("Session log error:", err);
     res.status(500).json({ error: err.message });
   }
-  // After saving session, update streak
-const today = new Date().toDateString();
-const user = await User.findById(userId);
-const lastDate = user.lastWorkoutDate ? new Date(user.lastWorkoutDate).toDateString() : null;
-if (lastDate === today) {
-  // Already logged today – no change
-} else if (lastDate === new Date(Date.now() - 86400000).toDateString()) {
-  user.streak += 1;
-} else {
-  user.streak = 1;
-}
-user.lastWorkoutDate = new Date();
-await user.save();
 });
 
 app.post("/api/progression/apply", async (req, res) => {
@@ -494,22 +461,21 @@ app.post("/api/progression/apply", async (req, res) => {
     }
 
     let state = await LiftState.findOne({ userId, liftName });
-if (!state) {
-  let initialState = { userId, liftName };
-  if (logic === "STRENGTH_RPE") {
-    const initial1RM = estimate1RM(lastSession.actualWeight, lastSession.repsCompleted, lastSession.actualRPE);
-    initialState.estimated1RM = initial1RM;
-  } else {
-    initialState.currentWeight = lastSession.actualWeight || 0;
-    initialState.lastROM = 0;
-    initialState.lastRepsAchieved = 0;   // ✅ add this line for hypertrophy
-  }
-  state = new LiftState(initialState);
-  await state.save();
-  return res.json({ message: "Initial state set", state });
-}
+    if (!state) {
+      let initialState = { userId, liftName };
+      if (logic === "STRENGTH_RPE") {
+        const initial1RM = estimate1RM(lastSession.actualWeight, lastSession.repsCompleted, lastSession.actualRPE);
+        initialState.estimated1RM = initial1RM;
+      } else {
+        initialState.currentWeight = lastSession.actualWeight || 0;
+        initialState.lastROM = 0;
+        initialState.lastRepsAchieved = 0;
+      }
+      state = new LiftState(initialState);
+      await state.save();
+      return res.json({ message: "Initial state set", state });
+    }
 
-    // Prepare sessionData for progression function
     const sessionData = {
       completed: lastSession.completed,
       targetReps: lastSession.targetReps,
@@ -518,7 +484,7 @@ if (!state) {
       actualRPE: lastSession.actualRPE,
       actualWeight: lastSession.actualWeight,
       liftName,
-      progressionType: lastSession.progressionType, // from JSON
+      progressionType: lastSession.progressionType,
       actualQuality: lastSession.actualQuality,
       targetQuality: lastSession.targetQuality,
       actualROM: lastSession.actualROM,
@@ -531,7 +497,6 @@ if (!state) {
 
     const result = calculateProgression(state, sessionData, logic || "STRENGTH_RPE");
 
-    // Update state based on what the progression function returned
     if (result.estimated1RM !== undefined) state.estimated1RM = result.estimated1RM;
     if (result.currentWeight !== undefined) state.currentWeight = result.currentWeight;
     if (result.lastRepsAchieved !== undefined) state.lastRepsAchieved = result.lastRepsAchieved;
@@ -544,6 +509,7 @@ if (!state) {
     console.log(`💾 ${liftName}: ${logic === "STRENGTH_RPE" ? `1RM=${state.estimated1RM}kg` : `weight=${state.currentWeight}kg`}`);
     res.json({ message: "Progression applied", state });
   } catch (err) {
+    console.error("Progression error:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -564,7 +530,6 @@ app.get("/api/1rm-history/:userId/:liftName", async (req, res) => {
     const sessions = await Session.find({ userId, liftName })
       .sort({ createdAt: 1 })
       .select("actualWeight repsCompleted actualRPE createdAt");
-    // Estimate 1RM for each session
     const history = sessions.map(s => ({
       date: s.createdAt,
       estimated1RM: estimate1RM(s.actualWeight, s.repsCompleted, s.actualRPE)
@@ -575,7 +540,6 @@ app.get("/api/1rm-history/:userId/:liftName", async (req, res) => {
   }
 });
 
-// Dashboard endpoint: get current 1RM for a lift
 app.get("/api/estimate-1rm/:userId/:liftName", async (req, res) => {
   try {
     const { userId, liftName } = req.params;
@@ -596,7 +560,6 @@ app.get("/api/recent-sessions/:userId", async (req, res) => {
   }
 });
 
-// Get next session (week/day) for a user based on their last completed session
 app.get("/api/next-session/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
@@ -607,7 +570,6 @@ app.get("/api/next-session/:userId", async (req, res) => {
     const sessions = programData.sessions;
     if (!sessions.length) return res.status(404).json({ error: "No sessions in program" });
 
-    // Find the latest session logged by this user for this program
     const lastSession = await Session.findOne({ userId, programName })
       .sort({ createdAt: -1 })
       .select("week day");
@@ -615,7 +577,6 @@ app.get("/api/next-session/:userId", async (req, res) => {
     let nextWeek, nextDay;
 
     if (!lastSession) {
-      // First session ever
       nextWeek = sessions[0].week;
       nextDay = sessions[0].day;
     } else {
@@ -625,7 +586,6 @@ app.get("/api/next-session/:userId", async (req, res) => {
         nextWeek = next.week;
         nextDay = next.day;
       } else {
-        // Last session was the final session in the program; loop back to beginning
         nextWeek = sessions[0].week;
         nextDay = sessions[0].day;
       }
@@ -638,14 +598,12 @@ app.get("/api/next-session/:userId", async (req, res) => {
   }
 });
 
-// ==================== LOGIN ENDPOINT ====================
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
   if (!email) return res.status(400).json({ error: "Email required" });
 
-  // Admin override
-  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com"; // your email
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD; // optional, set in .env
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
   let isAdmin = false;
   if (email === ADMIN_EMAIL) {
@@ -655,7 +613,6 @@ app.post("/api/login", async (req, res) => {
     isAdmin = true;
   }
 
-  // Find or create user
   let user = await User.findOne({ email });
   if (!user) {
     user = await User.create({ email });
@@ -663,7 +620,6 @@ app.post("/api/login", async (req, res) => {
 
   let purchasedPrograms = [];
   if (isAdmin) {
-    // Admin gets all programs
     purchasedPrograms = [
       "Ares Protocol", "Zeus Method", "Apollo Physique",
       "Hermes Engine", "Hephaestus Framework", "Poseidon Core",
@@ -675,15 +631,13 @@ app.post("/api/login", async (req, res) => {
   }
 
   res.json({
-  userId: user._id.toString(),
-  email,
-  purchasedPrograms,
-  streak: user.streak || 0
-});
+    userId: user._id.toString(),
+    email,
+    purchasedPrograms,
+    streak: user.streak || 0
+  });
 });
 
-// ==================== ADMIN: Assign program to user (no Stripe) ====================
-// ==================== LEAD CAPTURE ====================
 app.post("/api/leads", async (req, res) => {
   const { email, source } = req.body;
   if (!email || !email.includes("@")) {
@@ -702,7 +656,6 @@ app.post("/api/leads", async (req, res) => {
   }
 });
 
-// ==================== ADMIN: VIEW ALL LEADS ====================
 app.get("/api/admin/leads", async (req, res) => {
   const { adminEmail, adminPassword } = req.headers;
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
@@ -719,7 +672,6 @@ app.get("/api/admin/leads", async (req, res) => {
   res.json(leads);
 });
 
-// ==================== ADMIN: EXPORT LEADS AS CSV ====================
 app.get("/api/admin/leads/export", async (req, res) => {
   const { adminEmail, adminPassword } = req.headers;
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
@@ -741,6 +693,7 @@ app.get("/api/admin/leads/export", async (req, res) => {
   res.setHeader("Content-Disposition", "attachment; filename=forge_leads.csv");
   res.send(csv);
 });
+
 app.post("/api/admin/assign-program", async (req, res) => {
   const { adminEmail, adminPassword, userEmail, programName } = req.body;
   
@@ -757,24 +710,16 @@ app.post("/api/admin/assign-program", async (req, res) => {
     return res.status(400).json({ error: "Email and program name required" });
   }
   
-  // Find or create user
   let user = await User.findOne({ email: userEmail });
   if (!user) {
     user = await User.create({ email: userEmail });
   }
   
-  // Create purchase record (no Stripe)
   await Purchase.findOneAndUpdate(
     { email: userEmail, programName },
     { email: userEmail, programName, stripePaymentIntentId: `admin_${Date.now()}` },
     { upsert: true }
   );
-
-  // Global error handler for async routes
-app.use((err, req, res, next) => {
-  console.error("Global error:", err);
-  res.status(500).json({ error: err.message || "Internal server error" });
-});
   
   console.log(`✅ Admin assigned ${programName} to ${userEmail}`);
   res.json({ message: `Assigned ${programName} to ${userEmail}` });
@@ -784,6 +729,12 @@ app.use((err, req, res, next) => {
 const distPath = path.join(__dirname, "frontend", "dist");
 app.use(express.static(distPath));
 app.get("*", (req, res) => res.sendFile(path.join(distPath, "index.html")));
+
+// Global error handler (must be AFTER all routes)
+app.use((err, req, res, next) => {
+  console.error("Global error:", err);
+  res.status(500).json({ error: err.message || "Internal server error" });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
