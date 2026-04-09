@@ -233,19 +233,39 @@ export default function Dashboard() {
 
         {/* Recent Activity Card */}
         <div className="card">
-          <h2>Recent Activity</h2>
-          {recentSessions.length === 0 ? (
-            <p>No sessions logged yet.</p>
-          ) : (
-            <ul className="session-list">
-              {recentSessions.map((s, idx) => (
-                <li key={idx}>
-                  {new Date(s.createdAt).toLocaleDateString()} – {s.liftName}: {s.actualWeight}kg x {s.repsCompleted} @ RPE {s.actualRPE}
-                </li>
-              ))}
-            </ul>
-          )}
+  <h2>Recent Activity</h2>
+  {recentSessions.length === 0 ? (
+    <p>No sessions logged yet.</p>
+  ) : (
+    (() => {
+      // Group sessions by date
+      const grouped = recentSessions.reduce((acc, session) => {
+        const date = new Date(session.createdAt).toLocaleDateString(undefined, {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric'
+        });
+        if (!acc[date]) acc[date] = [];
+        acc[date].push(session);
+        return acc;
+      }, {});
+      
+      return Object.entries(grouped).map(([date, sessions]) => (
+        <div key={date} style={{ marginBottom: 16, borderBottom: "1px solid var(--border)", paddingBottom: 12 }}>
+          <h3 style={{ color: "var(--accent)", marginBottom: 8, fontSize: "1rem" }}>{date}</h3>
+          {sessions.map((s, idx) => (
+            <div key={idx} style={{ fontSize: "0.85rem", paddingLeft: 8, marginBottom: 4 }}>
+              <strong>{s.liftName}</strong> – {s.setsCompleted || 1} sets × {s.repsCompleted} reps
+              {s.actualWeight && <span> @ {s.actualWeight}kg</span>}
+              {s.actualRPE && <span> (RPE {s.actualRPE})</span>}
+              {s.actualRIR && <span> (RIR {s.actualRIR})</span>}
+            </div>
+          ))}
         </div>
+      ));
+    })()
+  )}
+</div>
 
         {/* Workout Streak Card */}
         <div className="card">
