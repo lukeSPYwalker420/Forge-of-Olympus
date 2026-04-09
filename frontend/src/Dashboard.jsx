@@ -34,7 +34,7 @@ export default function Dashboard() {
         const programs = JSON.parse(localStorage.getItem("purchasedPrograms") || "[]");
         setPurchasedPrograms(programs);
 
-        const mainLifts = ["Squat (Top Set)", "Bench (Top Set)", "Deadlift (Top Set)"];
+        const mainLifts = ["Squat (Top set)", "Bench (Top set)", "Deadlift (Top set)"];
         const estPromises = mainLifts.map(lift =>
           fetch(`/api/estimate-1rm/${userId}/${encodeURIComponent(lift)}`).then(res => res.json())
         );
