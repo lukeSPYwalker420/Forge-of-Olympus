@@ -61,8 +61,18 @@ export default function Home() {
 
       <section className="hero">
         <div className="hero-content">
-          <h1>Build Strength, Power & Aesthetic Dominance</h1>
-          <p>Elite‑level training systems for serious lifters</p>
+          <h1>Train Without Guessing. Every Weight You Lift Is Calculated.</h1>
+<p>
+  Adaptive training systems that adjust to your performance in real time.
+  No spreadsheets. No plateaus. Just progression.
+</p>
+<section className="authority">
+  <div className="container">
+    <p>
+      Most lifters don’t fail from lack of effort — they fail because their training stops adapting.
+    </p>
+  </div>
+</section>
           <div className="hero-buttons">
             <button
               onClick={() =>
@@ -113,20 +123,16 @@ export default function Home() {
             </div>
             <div className="step">
               <div className="step-number">3</div>
-              <h3>Log & Adapt</h3>
+              <h3>3. Log & Adapt</h3>
               <p>
-                Enter your sets, reps, and RIR. The adaptive engine automatically
-                adjusts future loads, wave blocks, and deloads. No guessing – just
-                progression.
+                Enter your sets, reps, and effort. The system automatically adjusts your next session.
               </p>
             </div>
             <div className="step">
               <div className="step-number">4</div>
-              <h3>Track Progress</h3>
+              <h3>4. Progress Becomes Inevitable</h3>
               <p>
-                Watch your 1RM climb on interactive charts, see rep PRs, and
-                compare volume over time. The app highlights weak points and
-                suggests focus areas.
+                No guesswork. No stalls. Every session builds on the last.
               </p>
             </div>
           </div>
@@ -141,6 +147,18 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <section className="difference">
+  <div className="container">
+    <h2>Coaching Logic — Built Into the App</h2>
+    <p>
+      Most apps give you templates. Forge of Olympus gives you decision-making.
+    </p>
+    <p>
+      The same logic a coach uses to adjust your training — now automated.
+    </p>
+  </div>
+</section>
 
       <section className="programs" id="programs">
         <div className="container">
@@ -224,11 +242,11 @@ const programs = [
     oneTimeLink: "https://buy.stripe.com/bJe5kD3Gec8pchc6mV4sE0p",
     coachingLink: "https://buy.stripe.com/14A28r1y63BT6WS6mV4sE0k",
     features: [
-      "Maximal strength development",
-      "Powerlifting-focused programming",
-      "Progressive overload systems",
-      "Peak performance protocols",
-    ],
+  "Maximal strength progression system",
+  "Adaptive overload based on performance",
+  "Peak strength development",
+  "Built for serious lifters"
+]
   },
   {
     title: "Apollo Physique",
