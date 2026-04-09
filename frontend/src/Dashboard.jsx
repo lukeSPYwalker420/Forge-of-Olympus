@@ -24,40 +24,47 @@ export default function Dashboard() {
   const isAdmin = userEmail === "kieren2203@googlemail.com";
 
   useEffect(() => {
-    if (!userId) {
-      navigate("/login");
-      return;
-    }
+  if (!userId) {
+    navigate("/login");
+    return;
+  }
 
-    const fetchData = async () => {
-      try {
-        const programs = JSON.parse(localStorage.getItem("purchasedPrograms") || "[]");
-        setPurchasedPrograms(programs);
+  const fetchData = async () => {
+    try {
+      const programs = JSON.parse(localStorage.getItem("purchasedPrograms") || "[]");
+      setPurchasedPrograms(programs);
 
-        const mainLifts = ["Squat (Top Set)", "Bench (Top Set)", "Deadlift (Top Set)"];
-        const estPromises = mainLifts.map(lift =>
-          fetch(`/api/estimate-1rm/${userId}/${encodeURIComponent(lift)}`).then(res => res.json())
-        );
-        const estResults = await Promise.all(estPromises);
-        const estMap = {};
-        mainLifts.forEach((lift, idx) => {
-          estMap[lift] = estResults[idx].estimated1RM || 0;
-        });
-        setEstimates(estMap);
+      const mainLifts = ["Squat (Top Set)", "Bench (Top Set)", "Deadlift (Top Set)"];
+      
+      // Fetch all 1RMs in parallel
+      const estPromises = mainLifts.map(lift =>
+        fetch(`/api/estimate-1rm/${userId}/${encodeURIComponent(lift)}`)
+          .then(res => res.json())
+          .catch(err => ({ estimated1RM: null, error: err }))
+      );
+      const estResults = await Promise.all(estPromises);
+      
+      // Build the estimates object
+      const estMap = {};
+      mainLifts.forEach((lift, idx) => {
+        estMap[lift] = estResults[idx].estimated1RM || 0;
+      });
+      setEstimates(estMap);
 
-        const historyRes = await fetch(`/api/recent-sessions/${userId}`);
-        if (historyRes.ok) {
-          const sessions = await historyRes.json();
-          setRecentSessions(sessions.slice(0, 5));
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+      const historyRes = await fetch(`/api/recent-sessions/${userId}`);
+      if (historyRes.ok) {
+        const sessions = await historyRes.json();
+        setRecentSessions(sessions.slice(0, 5));
       }
-    };
-    fetchData();
-  }, [userId, navigate]);
+    } catch (err) {
+      console.error("Dashboard fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  fetchData();
+}, [userId, navigate]);
 
   const handleStartWorkout = async () => {
     const program = localStorage.getItem("program");
