@@ -135,6 +135,7 @@ const loadProgram = (programName) => {
   if (raw.sessions && Array.isArray(raw.sessions)) return { name: raw.name, logic: raw.logic, sessions: raw.sessions };
   if (Array.isArray(raw)) return { sessions: raw, logic: "STRENGTH_RPE" };
   throw new Error(`Invalid program format`);
+  console.log(`Loading program: ${safeName} from ${filePath}`);
 };
 
 // ==================== Corrected 1RM estimation ====================
@@ -768,6 +769,12 @@ app.post("/api/admin/assign-program", async (req, res) => {
     { email: userEmail, programName, stripePaymentIntentId: `admin_${Date.now()}` },
     { upsert: true }
   );
+
+  // Global error handler for async routes
+app.use((err, req, res, next) => {
+  console.error("Global error:", err);
+  res.status(500).json({ error: err.message || "Internal server error" });
+});
   
   console.log(`✅ Admin assigned ${programName} to ${userEmail}`);
   res.json({ message: `Assigned ${programName} to ${userEmail}` });
