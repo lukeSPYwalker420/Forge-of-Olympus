@@ -478,20 +478,27 @@ app.post("/api/progression/apply", async (req, res) => {
 
     let state = await LiftState.findOne({ userId, liftName });
     if (!state) {
-      let initialState = { userId, liftName };
-      if (logic === "STRENGTH_RPE") {
-  const initial1RM = estimate1RM(lastSession.actualWeight, lastSession.repsCompleted, lastSession.actualRPE);
-  initialState.estimated1RM = initial1RM;
-  initialState.currentWeight = 0;   // ← add this line
-} else {
-        initialState.currentWeight = lastSession.actualWeight || 0;
-        initialState.lastROM = 0;
-        initialState.lastRepsAchieved = 0;
-      }
-      state = new LiftState(initialState);
-      await state.save();
-      return res.json({ message: "Initial state set", state });
+  let initialState = { userId, liftName };
+  if (logic === "STRENGTH_RPE") {
+    // Use repsPerSet if available, otherwise fall back to repsCompleted
+    let bestReps = null;
+    if (lastSession.repsPerSet && lastSession.repsPerSet.length) {
+      bestReps = Math.max(...lastSession.repsPerSet);
+    } else {
+      bestReps = lastSession.repsCompleted;
     }
+    const initial1RM = estimate1RM(lastSession.actualWeight, bestReps, lastSession.actualRPE);
+    initialState.estimated1RM = initial1RM;
+    initialState.currentWeight = 0;
+  } else {
+    initialState.currentWeight = lastSession.actualWeight || 0;
+    initialState.lastROM = 0;
+    initialState.lastRepsAchieved = 0;
+  }
+  state = new LiftState(initialState);
+  await state.save();
+  return res.json({ message: "Initial state set", state });
+}
 
     const sessionData = {
       completed: lastSession.completed,
