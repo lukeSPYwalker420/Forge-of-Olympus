@@ -799,6 +799,14 @@ app.post("/api/create-checkout-session", async (req, res) => {
   }
 });
 
+app.get("/api/test-stripe", (req, res) => {
+  res.json({ 
+    stripeExists: !!stripe, 
+    keyExists: !!process.env.STRIPE_SECRET_KEY,
+    keyPrefix: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 7) : "none"
+  });
+});
+
 // Serve React build
 const distPath = path.join(__dirname, "frontend", "dist");
 app.use(express.static(distPath));
