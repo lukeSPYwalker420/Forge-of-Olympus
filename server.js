@@ -12,40 +12,10 @@ dotenv.config();
 const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), webhookHandler);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async (req, res) => {
-  const sig = req.headers["stripe-signature"];
-  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-  } catch (err) {
-    console.error(`Webhook signature failed: ${err.message}`);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    const customerEmail = session.customer_details?.email;
-    if (!customerEmail) return res.status(400).send("No email");
-
-    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-    const programName = lineItems.data[0]?.description || "Unknown Program";
-
-    await Purchase.findOneAndUpdate(
-      { stripePaymentIntentId: session.payment_intent },
-      { email: customerEmail, programName, stripePaymentIntentId: session.payment_intent },
-      { upsert: true }
-    );
-    console.log(`✅ Purchase recorded: ${customerEmail} → ${programName}`);
-  }
-
-  res.json({ received: true });
-});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -91,10 +61,6 @@ const SessionSchema = new mongoose.Schema({
 });
 const Session = mongoose.model("Session", SessionSchema);
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("MongoDB error:", err));
-
 const PurchaseSchema = new mongoose.Schema({
   email: { type: String, required: true },
   programName: { type: String, required: true },
@@ -117,6 +83,61 @@ const LeadSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 const Lead = mongoose.model("Lead", LeadSchema);
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.error("MongoDB error:", err));
+
+app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async (req, res) => {
+  const sig = req.headers["stripe-signature"];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    console.error(`Webhook signature failed: ${err.message}`);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    const customerEmail = session.customer_details?.email;
+    if (!customerEmail) return res.status(400).send("No email");
+
+    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+    const programName = lineItems.data[0]?.description || "Unknown Program";
+
+    const purchase = await Purchase.findOneAndUpdate(
+        { stripePaymentIntentId: session.payment_intent },
+        { 
+          email: customerEmail, 
+          programName, 
+          stripePaymentIntentId: session.payment_intent,
+          purchasedAt: new Date()
+        },
+        { upsert: true, new: true }
+      );
+      
+      console.log(`✅ Purchase recorded: ${purchase.email} → ${purchase.programName}`);
+      
+      // Also ensure user exists
+      await User.findOneAndUpdate(
+        { email: customerEmail },
+        { email: customerEmail },
+        { upsert: true }
+      );
+
+    await Purchase.findOneAndUpdate(
+      { stripePaymentIntentId: session.payment_intent },
+      { email: customerEmail, programName, stripePaymentIntentId: session.payment_intent },
+      { upsert: true }
+    );
+    console.log(`✅ Purchase recorded: ${customerEmail} → ${programName}`);
+  }
+
+  res.json({ received: true });
+});
 
 // ==================== Program Loader ====================
 const loadProgram = (programName) => {
@@ -670,9 +691,8 @@ app.post("/api/login", async (req, res) => {
   let purchasedPrograms = [];
   if (isAdmin) {
     purchasedPrograms = [
-      "Ares Protocol", "Zeus Method", "Apollo Physique",
-      "Hermes Engine", "Hephaestus Framework", "Poseidon Core",
-      "Hercules Foundation"
+      "Ares Protocol", "Apollo Physique",
+      "Hephaestus Framework", "Hercules Foundation"
     ];
   } else {
     const purchases = await Purchase.find({ email });
@@ -783,6 +803,33 @@ app.post("/api/admin/assign-program", async (req, res) => {
   res.json({ message: `Assigned ${programName} to ${userEmail}` });
 });
 
+app.post("/api/create-checkout-session", async (req, res) => {
+  const { programName, email } = req.body;
+
+  // Map program name to Stripe Price ID (you'll add these)
+  const priceIds = {
+    "Ares Protocol": "price_1TJM36FywsnhFgWfMqo2H5no",
+    "Apollo Physique": "price_1TJM3yFywsnhFgWfCLEAFwZD",
+    "Hephaestus Framework": "price_1TJM5EFywsnhFgWfwr1yhP4e",
+    "Hercules Foundation": "price_1TJM4hFywsnhFgWfygiuDvQ6"
+    // add others
+  };
+
+  const session = await stripe.checkout.Session.create({
+    mode: "subscription",
+    customer_email: email,
+    line_items: [{ price: priceIds[programName], quantity: 1 }],
+    subscription_data: {
+      trial_period_days: 30,
+      trial_settings: { end_behavior: { missing_payment_method: "cancel" } }
+    },
+    payment_method_collection: "always", // No card needed for trial
+    success_url: "https://https://forge-of-olympus.onrender.com//success",
+    cancel_url: "https://https://forge-of-olympus.onrender.com//cancel"
+  });
+
+  res.json({ url: session.url });
+});
 // Serve React build
 const distPath = path.join(__dirname, "frontend", "dist");
 app.use(express.static(distPath));
