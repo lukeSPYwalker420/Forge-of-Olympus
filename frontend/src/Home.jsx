@@ -44,16 +44,14 @@ export default function Home() {
 };
 
 const handleSubscribe = async (programName) => {
-  // Get user email (if logged in)
-  const email = localStorage.getItem("userEmail") || "";
-  if (!email) {
-    // If not logged in, ask for email first
-    const userEmail = prompt("Enter your email to start your free trial:");
-    if (!userEmail) return;
-    localStorage.setItem("userEmail", userEmail);
-  }
-
   try {
+    const email = localStorage.getItem("userEmail") || "";
+    if (!email) {
+      const userEmail = prompt("Enter your email to start your free trial:");
+      if (!userEmail) return;
+      localStorage.setItem("userEmail", userEmail);
+    }
+
     const response = await fetch("/api/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -62,11 +60,22 @@ const handleSubscribe = async (programName) => {
         email: localStorage.getItem("userEmail") 
       })
     });
-    const { url } = await response.json();
-    window.location.href = url; // eslint-disable-line react-hooks/immutability
+    
+    const data = await response.json();
+    console.log("Response data:", data);
+    
+    if (!response.ok) {
+      throw new Error(data.error || "Checkout failed");
+    }
+    
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error("No checkout URL returned");
+    }
   } catch (err) {
-    console.error(err);
-    alert("Something went wrong. Please try again.");
+    console.error("Checkout error:", err);
+    alert(`Error: ${err.message}. Please try again or contact support.`);
   }
 };
 
@@ -218,10 +227,7 @@ const handleCoaching = (programName) => {
                     <li key={f}>{f}</li>
                   ))}
                 </ul>
-                <button 
-                  onClick={() => handleSubscribe(p.title)} 
-                  className="btn-plan"
-                >
+                <button onClick={(e) => { e.preventDefault(); handleSubscribe(p.title); }} className="btn-plan">
                   Start Free Trial – £19.99/mo after 30 days
                 </button>
                 <button 
