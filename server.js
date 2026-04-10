@@ -751,29 +751,52 @@ app.post("/api/admin/assign-program", async (req, res) => {
 });
 
 app.post("/api/create-checkout-session", async (req, res) => {
-  const { programName, email } = req.body;
+  try {
+    const { programName, email } = req.body;
+    
+    console.log(`[DEBUG] Creating checkout session for ${programName}, email: ${email}`);
 
-  const priceIds = {
-    "Ares Protocol": "price_1TJM36FywsnhFgWfMqo2H5no",
-    "Apollo Physique": "price_1TJM3yFywsnhFgWfCLEAFwZD",
-    "Hephaestus Framework": "price_1TJM5EFywsnhFgWfwr1yhP4e",
-    "Hercules Foundation": "price_1TJM4hFywsnhFgWfygiuDvQ6"
-  };
+    if (!programName) {
+      return res.status(400).json({ error: "Program name is required" });
+    }
+    
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
 
-  const session = await stripe.checkout.Session.create({
-    mode: "subscription",
-    customer_email: email,
-    line_items: [{ price: priceIds[programName], quantity: 1 }],
-    subscription_data: {
-      trial_period_days: 30,
-      trial_settings: { end_behavior: { missing_payment_method: "cancel" } }
-    },
-    payment_method_collection: "always",
-    success_url: "https://forge-of-olympus.onrender.com/success",
-    cancel_url: "https://forge-of-olympus.onrender.com/cancel"
-  });
+    const priceIds = {
+      "Ares Protocol": "price_1TJM36FywsnhFgWfMqo2H5no",
+      "Apollo Physique": "price_1TJM3yFywsnhFgWfCLEAFwZD",
+      "Hephaestus Framework": "price_1TJM5EFywsnhFgWfwr1yhP4e",
+      "Hercules Foundation": "price_1TJM4hFywsnhFgWfygiuDvQ6"
+    };
 
-  res.json({ url: session.url });
+    const priceId = priceIds[programName];
+    if (!priceId) {
+      return res.status(400).json({ error: `Program "${programName}" not found` });
+    }
+
+    console.log(`[DEBUG] Using price ID: ${priceId}`);
+
+    const session = await stripe.checkout.Session.create({
+      mode: "subscription",
+      customer_email: email,
+      line_items: [{ price: priceId, quantity: 1 }],
+      subscription_data: {
+        trial_period_days: 30,
+        trial_settings: { end_behavior: { missing_payment_method: "cancel" } }
+      },
+      payment_method_collection: "always",
+      success_url: "https://forge-of-olympus.onrender.com/success",
+      cancel_url: "https://forge-of-olympus.onrender.com/cancel"
+    });
+
+    console.log(`[DEBUG] Session created: ${session.id}`);
+    res.json({ url: session.url });
+  } catch (error) {
+    console.error("Checkout error:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Serve React build
