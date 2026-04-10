@@ -43,6 +43,42 @@ export default function Home() {
   }
 };
 
+const handleSubscribe = async (programName) => {
+  // Get user email (if logged in)
+  const email = localStorage.getItem("userEmail") || "";
+  if (!email) {
+    // If not logged in, ask for email first
+    const userEmail = prompt("Enter your email to start your free trial:");
+    if (!userEmail) return;
+    localStorage.setItem("userEmail", userEmail);
+  }
+
+  try {
+    const response = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        programName, 
+        email: localStorage.getItem("userEmail") 
+      })
+    });
+    const { url } = await response.json();
+    window.location.href = url; // eslint-disable-line react-hooks/immutability
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong. Please try again.");
+  }
+};
+
+const handleCoaching = (programName) => {
+  // For coaching, you can either:
+  // Option 1: Keep the old Stripe link (no free trial needed)
+  const program = programs.find(p => p.title === programName);
+  if (program && program.coachingLink) {
+    window.location.href = program.coachingLink;
+  }
+};
+
   return (
     <>
       <nav className="navbar">
@@ -182,14 +218,18 @@ export default function Home() {
                     <li key={f}>{f}</li>
                   ))}
                 </ul>
-                <div className="program-buttons">
-                  <a href={p.oneTimeLink} className="btn-plan">
-                    Get Plan + Engine – £19.99
-                  </a>
-                  <a href={p.coachingLink} className="btn-coaching">
-                    Get Plan + Coaching – £169.99/mo
-                  </a>
-                </div>
+                <button 
+                  onClick={() => handleSubscribe(p.title)} 
+                  className="btn-plan"
+                >
+                  Start Free Trial – £19.99/mo after 30 days
+                </button>
+                <button 
+                  onClick={() => handleCoaching(p.title)} 
+                  className="btn-coaching"
+                >
+                  Get Plan + Coaching – £169.99/mo
+                </button>
               </div>
             ))}
           </div>
