@@ -10,7 +10,7 @@ import Stripe from "stripe";
 dotenv.config();
 
 const app = express();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe("sk_live_mk_1KlVHOFywsnhFgWfh0qsnBrR");
 
 // ==================== IMPORTANT: Webhook must be BEFORE express.json() ====================
 app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async (req, res) => {
