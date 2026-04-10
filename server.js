@@ -12,7 +12,39 @@ dotenv.config();
 const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), webhookHandler);
+// ==================== IMPORTANT: Webhook must be BEFORE express.json() ====================
+app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async (req, res) => {
+  const sig = req.headers["stripe-signature"];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    console.error(`Webhook signature failed: ${err.message}`);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    const customerEmail = session.customer_details?.email;
+    if (!customerEmail) return res.status(400).send("No email");
+
+    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+    const programName = lineItems.data[0]?.description || "Unknown Program";
+
+    await Purchase.findOneAndUpdate(
+      { stripePaymentIntentId: session.payment_intent },
+      { email: customerEmail, programName, stripePaymentIntentId: session.payment_intent },
+      { upsert: true }
+    );
+    console.log(`✅ Purchase recorded: ${customerEmail} → ${programName}`);
+  }
+
+  res.json({ received: true });
+});
+
+// ==================== Normal middleware AFTER webhook ====================
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -40,9 +72,9 @@ const SessionSchema = new mongoose.Schema({
   day: Number,
   liftName: String,
   targetReps: String,
-  targetSets: Number,           // new: number of sets for this exercise
-  repsPerSet: [Number],         // new: array of reps per set, e.g., [5,5,4,0]
-  repsCompleted: Number,        // keep for backward compatibility
+  targetSets: Number,
+  repsPerSet: [Number],
+  repsCompleted: Number,
   targetRPE: Number,
   actualRPE: Number,
   actualWeight: Number,
@@ -88,57 +120,6 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB error:", err));
 
-app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async (req, res) => {
-  const sig = req.headers["stripe-signature"];
-  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-  } catch (err) {
-    console.error(`Webhook signature failed: ${err.message}`);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    const customerEmail = session.customer_details?.email;
-    if (!customerEmail) return res.status(400).send("No email");
-
-    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-    const programName = lineItems.data[0]?.description || "Unknown Program";
-
-    const purchase = await Purchase.findOneAndUpdate(
-        { stripePaymentIntentId: session.payment_intent },
-        { 
-          email: customerEmail, 
-          programName, 
-          stripePaymentIntentId: session.payment_intent,
-          purchasedAt: new Date()
-        },
-        { upsert: true, new: true }
-      );
-      
-      console.log(`✅ Purchase recorded: ${purchase.email} → ${purchase.programName}`);
-      
-      // Also ensure user exists
-      await User.findOneAndUpdate(
-        { email: customerEmail },
-        { email: customerEmail },
-        { upsert: true }
-      );
-
-    await Purchase.findOneAndUpdate(
-      { stripePaymentIntentId: session.payment_intent },
-      { email: customerEmail, programName, stripePaymentIntentId: session.payment_intent },
-      { upsert: true }
-    );
-    console.log(`✅ Purchase recorded: ${customerEmail} → ${programName}`);
-  }
-
-  res.json({ received: true });
-});
-
 // ==================== Program Loader ====================
 const loadProgram = (programName) => {
   const safeName = programName.replace(/\s+/g, '-');
@@ -151,16 +132,7 @@ const loadProgram = (programName) => {
   if (raw.sessions && Array.isArray(raw.sessions)) return { name: raw.name, logic: raw.logic, sessions: raw.sessions };
   if (Array.isArray(raw)) return { sessions: raw, logic: "STRENGTH_RPE" };
   throw new Error(`Invalid program format`);
-  if (raw.sessions && Array.isArray(raw.sessions)) {
-  // Normalise lift names to a consistent format (e.g., capitalise "Set")
-  raw.sessions.forEach(session => {
-    session.exercises.forEach(ex => {
-      ex.liftName = ex.liftName.replace(/set\)/i, "Set)");
-    });
-  });
-  return { name: raw.name, logic: raw.logic, sessions: raw.sessions };
-}
-}
+};
 
 // ==================== Helper Functions ====================
 function estimate1RM(weight, reps, actualRPE) {
@@ -192,20 +164,15 @@ function weightForRPE(oneRM, targetRPE, targetReps) {
 function strengthRPEProgression(state, sessionData) {
   let new1RM = state.estimated1RM || 0;
   const completed = sessionData.completed === true;
-  
-  // New logic using repsPerSet
   const repsPerSet = sessionData.repsPerSet || [];
   const targetReps = parseInt(sessionData.targetReps, 10);
   const targetSets = sessionData.targetSets || 1;
   const allSetsCompleted = repsPerSet.length === targetSets && repsPerSet.every(r => r >= targetReps);
-  const anyMissed = repsPerSet.some(r => r < targetReps);
-  
   const rpeOk = sessionData.actualRPE <= sessionData.targetRPE + 0.5;
   const isGoodSession = completed && allSetsCompleted && rpeOk;
 
   let fresh1RM = null;
   if (completed && sessionData.actualWeight && repsPerSet.length && sessionData.actualRPE) {
-    // Use the best set (highest reps) or average? For simplicity, use the highest reps
     const bestReps = Math.max(...repsPerSet);
     fresh1RM = estimate1RM(sessionData.actualWeight, bestReps, sessionData.actualRPE);
   }
@@ -240,13 +207,11 @@ function hypertrophyVolumeProgression(state, sessionData) {
   
   const targetSets = sessionData.targetSets || 3;
   const allSetsCompleted = repsPerSet.length === targetSets && repsPerSet.every(r => r >= minReps);
-  const actualReps = Math.max(...repsPerSet); // best set for progression
-  
+  const actualReps = Math.max(...repsPerSet);
   const targetRIR = sessionData.targetRIR || 2;
   const actualRIR = sessionData.actualRIR;
   const hasRIR = typeof actualRIR === 'number';
   const rirGood = hasRIR && actualRIR <= targetRIR - 1;
-
   const isGoodSession = completed && allSetsCompleted && rirGood;
 
   if (isGoodSession) {
@@ -255,7 +220,6 @@ function hypertrophyVolumeProgression(state, sessionData) {
     }
     successStreak += 1;
     stallCounter = 0;
-
     if (lastReps >= maxReps) {
       const increment = (sessionData.liftName?.toLowerCase().includes("squat") ||
                          sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
@@ -325,7 +289,6 @@ function generalFitnessProgression(state, sessionData) {
   } else if (progressionType === "power") {
     const qualityOk = (sessionData.actualQuality || 0) >= (sessionData.targetQuality || 7);
     const isGoodPowerSession = completed && qualityOk;
-
     if (isGoodPowerSession) {
       successStreak += 1;
       if (successStreak >= 2) {
@@ -339,7 +302,6 @@ function generalFitnessProgression(state, sessionData) {
     const romMet = (sessionData.actualROM || 0) >= (sessionData.targetROM || 0);
     const painOk = (sessionData.actualPain || 0) <= (sessionData.targetPain || 2);
     const isGoodMobilitySession = completed && romMet && painOk;
-
     if (isGoodMobilitySession) {
       successStreak += 1;
       if (successStreak >= 2) {
@@ -354,7 +316,6 @@ function generalFitnessProgression(state, sessionData) {
     const actualReps = sessionData.repsCompleted || 0;
     const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
     const isGoodVolumeSession = completed && repsMet;
-
     if (isGoodVolumeSession) {
       successStreak += 1;
       if (successStreak >= 3) {
@@ -396,7 +357,6 @@ function calculateProgression(state, sessionData, logic) {
 
 // ==================== API Routes ====================
 
-// Health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: Date.now() });
 });
@@ -433,12 +393,7 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
           currentWeight = weightForRPE(state.estimated1RM, targetRPE, ex.reps);
           projectedNextWeight = weightForRPE(state.estimated1RM, targetRPE + 0.5, ex.reps);
         } 
-        else if (logic === "GENERAL_FITNESS_HYBRID" && state.currentWeight > 0) {
-          currentWeight = state.currentWeight;
-          const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-          projectedNextWeight = currentWeight + inc;
-        }
-        else if (logic === "HYPERTROPHY_VOLUME" && state.currentWeight > 0) {
+        else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && state.currentWeight > 0) {
           currentWeight = state.currentWeight;
           const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
           projectedNextWeight = currentWeight + inc;
@@ -469,15 +424,12 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
 app.post("/api/session-log", async (req, res) => {
   try {
     const log = await Session.create(req.body);
-    
-    // Update user streak using userId from request body
     const userId = req.body.userId;
     if (userId) {
       const user = await User.findById(userId);
       if (user) {
         const today = new Date().toDateString();
         const lastDate = user.lastWorkoutDate ? new Date(user.lastWorkoutDate).toDateString() : null;
-        
         if (lastDate !== today) {
           if (lastDate === new Date(Date.now() - 86400000).toDateString()) {
             user.streak += 1;
@@ -490,7 +442,6 @@ app.post("/api/session-log", async (req, res) => {
         }
       }
     }
-    
     res.json(log);
   } catch (err) {
     console.error("Session log error:", err);
@@ -508,27 +459,26 @@ app.post("/api/progression/apply", async (req, res) => {
 
     let state = await LiftState.findOne({ userId, liftName });
     if (!state) {
-  let initialState = { userId, liftName };
-  if (logic === "STRENGTH_RPE") {
-    // Use repsPerSet if available, otherwise fall back to repsCompleted
-    let bestReps = null;
-    if (lastSession.repsPerSet && lastSession.repsPerSet.length) {
-      bestReps = Math.max(...lastSession.repsPerSet);
-    } else {
-      bestReps = lastSession.repsCompleted;
+      let initialState = { userId, liftName };
+      if (logic === "STRENGTH_RPE") {
+        let bestReps = null;
+        if (lastSession.repsPerSet && lastSession.repsPerSet.length) {
+          bestReps = Math.max(...lastSession.repsPerSet);
+        } else {
+          bestReps = lastSession.repsCompleted;
+        }
+        const initial1RM = estimate1RM(lastSession.actualWeight, bestReps, lastSession.actualRPE);
+        initialState.estimated1RM = initial1RM;
+        initialState.currentWeight = 0;
+      } else {
+        initialState.currentWeight = lastSession.actualWeight || 0;
+        initialState.lastROM = 0;
+        initialState.lastRepsAchieved = 0;
+      }
+      state = new LiftState(initialState);
+      await state.save();
+      return res.json({ message: "Initial state set", state });
     }
-    const initial1RM = estimate1RM(lastSession.actualWeight, bestReps, lastSession.actualRPE);
-    initialState.estimated1RM = initial1RM;
-    initialState.currentWeight = 0;
-  } else {
-    initialState.currentWeight = lastSession.actualWeight || 0;
-    initialState.lastROM = 0;
-    initialState.lastRepsAchieved = 0;
-  }
-  state = new LiftState(initialState);
-  await state.save();
-  return res.json({ message: "Initial state set", state });
-}
 
     const sessionData = {
       completed: lastSession.completed,
@@ -588,16 +538,13 @@ app.get("/api/1rm-history/:userId/:liftName", async (req, res) => {
       .select("actualWeight repsCompleted repsPerSet actualRPE createdAt");
 
     const history = sessions.map(s => {
-      // Determine reps to use: best from repsPerSet or fallback to repsCompleted
       let reps = null;
       if (s.repsPerSet && s.repsPerSet.length) {
         reps = Math.max(...s.repsPerSet);
       } else {
         reps = s.repsCompleted;
       }
-      
       if (!s.actualWeight || !reps || !s.actualRPE) return null;
-      
       return {
         date: s.createdAt,
         estimated1RM: estimate1RM(s.actualWeight, reps, s.actualRPE)
@@ -806,13 +753,11 @@ app.post("/api/admin/assign-program", async (req, res) => {
 app.post("/api/create-checkout-session", async (req, res) => {
   const { programName, email } = req.body;
 
-  // Map program name to Stripe Price ID (you'll add these)
   const priceIds = {
     "Ares Protocol": "price_1TJM36FywsnhFgWfMqo2H5no",
     "Apollo Physique": "price_1TJM3yFywsnhFgWfCLEAFwZD",
     "Hephaestus Framework": "price_1TJM5EFywsnhFgWfwr1yhP4e",
     "Hercules Foundation": "price_1TJM4hFywsnhFgWfygiuDvQ6"
-    // add others
   };
 
   const session = await stripe.checkout.Session.create({
@@ -823,13 +768,14 @@ app.post("/api/create-checkout-session", async (req, res) => {
       trial_period_days: 30,
       trial_settings: { end_behavior: { missing_payment_method: "cancel" } }
     },
-    payment_method_collection: "always", // No card needed for trial
-    success_url: "https://https://forge-of-olympus.onrender.com//success",
-    cancel_url: "https://https://forge-of-olympus.onrender.com//cancel"
+    payment_method_collection: "always",
+    success_url: "https://forge-of-olympus.onrender.com/success",
+    cancel_url: "https://forge-of-olympus.onrender.com/cancel"
   });
 
   res.json({ url: session.url });
 });
+
 // Serve React build
 const distPath = path.join(__dirname, "frontend", "dist");
 app.use(express.static(distPath));
