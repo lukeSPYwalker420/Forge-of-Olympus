@@ -780,7 +780,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
 
     console.log(`[DEBUG] Using price ID: ${priceId}`);
 
-    const session = await stripe.checkout.Session.create({
+    const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer_email: email,
       line_items: [{ price: priceId, quantity: 1 }],
