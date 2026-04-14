@@ -809,6 +809,21 @@ app.get("/api/test-stripe", (req, res) => {
   });
 });
 
+app.delete("/api/session-log/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Session.findByIdAndDelete(id);
+    res.json({ message: "Session deleted" });
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Serve static files from the public directory (images)
+const publicPath = path.join(__dirname, "frontend", "public");
+app.use(express.static(publicPath));
+
 // Serve React build
 const distPath = path.join(__dirname, "frontend", "dist");
 app.use(express.static(distPath));
