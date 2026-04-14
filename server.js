@@ -13,6 +13,18 @@ const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-02-24.acacia", // Use the latest stable version
 });
+// Helper function to decode and normalize program names
+function normalizeProgramName(encodedName) {
+  try {
+    let decoded = decodeURIComponent(encodedName);
+    // Remove any " – Strength Program" or similar suffixes
+    decoded = decoded.replace(/ –.*$/, '');
+    decoded = decoded.replace(/ -.*$/, '');
+    return decoded.trim();
+  } catch (e) {
+    return encodedName;
+  }
+}
 
 // ==================== IMPORTANT: Webhook must be BEFORE express.json() ====================
 app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async (req, res) => {
@@ -43,8 +55,8 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
       const programName = lineItems.data[0]?.description || session.metadata?.programName || "Unknown Program";
       
-      console.log(`📦 Processing purchase: ${customerEmail} → ${programName}`);
-      console.log(`Payment Intent: ${session.payment_intent}`);
+      // Normalize the program name
+      const normalizedProgramName = normalizeProgramName(programName);
 
       // Ensure user exists
       let user = await User.findOne({ email: customerEmail });
@@ -398,8 +410,12 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     const week = Number(req.params.week);
     const day = Number(req.params.day);
     const userId = req.params.userId;
-    const programName = req.query.program;
+    let programName = req.query.program;
     if (!programName) return res.status(400).json({ error: "Missing program name" });
+
+    // Normalize the program name
+    programName = normalizeProgramName(programName);
+    console.log(`[DEBUG] Normalized program name: ${programName}`);
 
     const programData = loadProgram(programName);
     const session = programData.sessions.find(p => p.week === week && p.day === day);
@@ -612,8 +628,12 @@ app.get("/api/recent-sessions/:userId", async (req, res) => {
 app.get("/api/next-session/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
-    const programName = req.query.program;
+    let programName = req.query.program;
     if (!programName) return res.status(400).json({ error: "Missing program name" });
+
+    // Normalize the program name
+    programName = normalizeProgramName(programName);
+    console.log(`[DEBUG] Normalized program name: ${programName}`);
 
     const programData = loadProgram(programName);
     const sessions = programData.sessions;
