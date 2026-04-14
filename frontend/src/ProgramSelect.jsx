@@ -6,11 +6,12 @@ export default function ProgramSelect() {
   const purchased = JSON.parse(localStorage.getItem("purchasedPrograms") || "[]");
 
   const handleSelect = (programName) => {
-    localStorage.setItem("program", programName);
-    // ✅ Go to dashboard after selecting program
-    localStorage.setItem("programJustSelected", "true");
-    navigate("/dashboard");
-  };
+  // Clean the program name
+  const cleanName = programName.replace(/ –.*$/, '').replace(/ -.*$/, '');
+  localStorage.setItem("program", cleanName);
+  localStorage.setItem("programJustSelected", "true");
+  navigate("/dashboard");
+};
 
   if (purchased.length === 0) {
     return (
