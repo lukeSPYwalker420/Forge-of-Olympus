@@ -29,18 +29,48 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
-    const customerEmail = session.customer_details?.email;
-    if (!customerEmail) return res.status(400).send("No email");
+    
+    // Get email from multiple possible sources
+    const customerEmail = session.customer_details?.email || session.customer_email || session.metadata?.userEmail;
+    
+    if (!customerEmail) {
+      console.error("No email found in session:", session.id);
+      return res.status(400).send("No email");
+    }
 
-    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-    const programName = lineItems.data[0]?.description || "Unknown Program";
+    try {
+      // Fetch line items to get program name
+      const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+      const programName = lineItems.data[0]?.description || session.metadata?.programName || "Unknown Program";
+      
+      console.log(`📦 Processing purchase: ${customerEmail} → ${programName}`);
+      console.log(`Payment Intent: ${session.payment_intent}`);
 
-    await Purchase.findOneAndUpdate(
-      { stripePaymentIntentId: session.payment_intent },
-      { email: customerEmail, programName, stripePaymentIntentId: session.payment_intent },
-      { upsert: true }
-    );
-    console.log(`✅ Purchase recorded: ${customerEmail} → ${programName}`);
+      // Ensure user exists
+      let user = await User.findOne({ email: customerEmail });
+      if (!user) {
+        user = await User.create({ email: customerEmail });
+        console.log(`📝 Created new user: ${customerEmail}`);
+      }
+
+      // Create or update purchase record
+      const purchase = await Purchase.findOneAndUpdate(
+        { stripePaymentIntentId: session.payment_intent },
+        { 
+          email: customerEmail, 
+          programName, 
+          stripePaymentIntentId: session.payment_intent,
+          purchasedAt: new Date()
+        },
+        { upsert: true, new: true }
+      );
+      
+      console.log(`✅ Purchase recorded: ${purchase.email} → ${purchase.programName}`);
+      
+    } catch (dbError) {
+      console.error("Database error in webhook:", dbError);
+      return res.status(500).send("Database error");
+    }
   }
 
   res.json({ received: true });
@@ -782,15 +812,19 @@ app.post("/api/create-checkout-session", async (req, res) => {
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
-      customer_email: email,
+      customer_email: email,  // This ensures Stripe knows the email
       line_items: [{ price: priceId, quantity: 1 }],
       subscription_data: {
         trial_period_days: 30,
         trial_settings: { end_behavior: { missing_payment_method: "cancel" } }
       },
       payment_method_collection: "always",
-      success_url: "https://forge-of-olympus.onrender.com/success",
-      cancel_url: "https://forge-of-olympus.onrender.com/cancel"
+      success_url: "https://forge-of-olympus.onrender.com/success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: "https://forge-of-olympus.onrender.com/cancel",
+      metadata: {
+        programName: programName,
+        userEmail: email  // Store email in metadata as backup
+      }
     });
 
     console.log(`[DEBUG] Session created: ${session.id}`);
