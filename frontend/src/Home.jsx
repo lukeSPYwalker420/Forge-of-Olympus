@@ -45,39 +45,60 @@ export default function Home() {
   };
 
   const handleSubscribe = async (programName) => {
-    try {
-      const email = localStorage.getItem("userEmail") || "";
-      if (!email) {
-        const userEmail = prompt("Enter your email to start your free trial:");
-        if (!userEmail) return;
-        localStorage.setItem("userEmail", userEmail);
+  try {
+    let email = localStorage.getItem("userEmail");
+    
+    // If no email stored, ask for it AND create account
+    if (!email) {
+      email = prompt("Enter your email to start your free trial:");
+      if (!email || !email.includes("@")) {
+        alert("Please enter a valid email address");
+        return;
       }
-
-      const response = await fetch("/api/create-checkout-session", {
+      
+      // Create/verify user account BEFORE checkout
+      const loginRes = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          programName, 
-          email: localStorage.getItem("userEmail") 
-        })
+        body: JSON.stringify({ email })
       });
       
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || "Checkout failed");
-      }
-      
-      if (data.url) {
-        window.location.href = data.url;
+      const userData = await loginRes.json();
+      if (loginRes.ok) {
+        localStorage.setItem("userId", userData.userId);
+        localStorage.setItem("userEmail", userData.email);
+        localStorage.setItem("purchasedPrograms", JSON.stringify(userData.purchasedPrograms));
       } else {
-        throw new Error("No checkout URL returned");
+        alert("Error creating account. Please try again.");
+        return;
       }
-    } catch (err) {
-      console.error("Checkout error:", err);
-      alert(`Error: ${err.message}. Please try again or contact support.`);
     }
-  };
+
+    const response = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        programName, 
+        email: email
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || "Checkout failed");
+    }
+    
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error("No checkout URL returned");
+    }
+  } catch (err) {
+    console.error("Checkout error:", err);
+    alert(`Error: ${err.message}. Please try again or contact support.`);
+  }
+};
 
   const handleCoaching = (programName) => {
     const program = programs.find(p => p.title === programName);
