@@ -8,6 +8,7 @@ export default function ProgramSelect() {
   const handleSelect = (programName) => {
     localStorage.setItem("program", programName);
     // ✅ Go to dashboard after selecting program
+    localStorage.setItem("programJustSelected", "true");
     navigate("/dashboard");
   };
 

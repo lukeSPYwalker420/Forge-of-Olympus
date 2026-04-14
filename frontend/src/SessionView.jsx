@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import Skeleton from "./Skeleton";
+import SessionReadiness from "./SessionReadiness";
 
 export default function SessionView() {
   const [data, setData] = useState(null);
@@ -16,6 +17,8 @@ export default function SessionView() {
     return saved ? parseInt(saved) : 1;
   });
   const [history, setHistory] = useState({});
+  const [showReadiness, setShowReadiness] = useState(true);
+  const [adjustments, setAdjustments] = useState({ rpeAdjustment: 0, rirAdjustment: 0 });
 
   const userId = localStorage.getItem("userId");
   const program = localStorage.getItem("program");
@@ -32,35 +35,108 @@ export default function SessionView() {
       .finally(() => setLoading(false));
   }, [week, day, userId, program]);
 
-  if (!userId) return <Navigate to="/login" replace />;
-  if (!program) return <Navigate to="/program" replace />;
-  if (loading) return (
-    <div className="dashboard-container">
-      <Skeleton />
-      <Skeleton />
-      <Skeleton />
-    </div>
-  );
-  if (error) return <div>Error: {error}</div>;
-  if (!data) return <div>No data returned</div>;
+  const handleReadinessComplete = (readinessData) => {
+    setAdjustments(readinessData.adjustments);
+    setShowReadiness(false);
+  };
+
+  const handleUndoLastEntry = async (liftName) => {
+    if (!confirm("Undo the last entry for this exercise?")) return;
+    
+    try {
+      // Get the last session
+      const historyRes = await fetch(`/api/history/${userId}/${encodeURIComponent(liftName)}`);
+      const hist = await historyRes.json();
+      
+      if (hist.length === 0) {
+        alert("No entries to undo");
+        return;
+      }
+      
+      const lastEntry = hist[0];
+      
+      // Delete the last session
+      await fetch(`/api/session-log/${lastEntry._id}`, {
+        method: "DELETE"
+      });
+      
+      // Refresh data
+      await fetchHistory(liftName);
+      
+      // Refresh session view to update weights
+      const res = await fetch(`/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`);
+      const json = await res.json();
+      setData(json);
+      
+      alert("Last entry undone!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to undo");
+    }
+  };
+
+  const handleAutoFill = (lift) => {
+    // Auto-fill all targets based on the program's target values
+    const newInputs = { ...inputs };
+    const liftInputs = newInputs[lift.liftName] || {};
+    
+    // Auto-fill RPE/RIR based on adjusted targets
+    if (lift.progressionType === "strength" || data.logic === "STRENGTH_RPE") {
+      let targetRPE = lift.rpeTarget;
+      if (adjustments.rpeAdjustment) {
+        targetRPE = Math.min(10, Math.max(1, targetRPE + adjustments.rpeAdjustment));
+      }
+      liftInputs.rpe = targetRPE;
+    }
+    
+    if (data.logic === "HYPERTROPHY_VOLUME" || lift.progressionType === "volume") {
+      let targetRIR = lift.rirTarget;
+      if (adjustments.rirAdjustment) {
+        targetRIR = Math.min(5, Math.max(0, targetRIR + adjustments.rirAdjustment));
+      }
+      liftInputs.rir = targetRIR;
+    }
+    
+    // Auto-fill quality for power exercises
+    if (lift.progressionType === "power" && lift.qualityTarget) {
+      liftInputs.quality = lift.qualityTarget;
+    }
+    
+    // Auto-fill ROM/Pain for mobility
+    if (lift.progressionType === "mobility") {
+      liftInputs.rom = lift.romTarget;
+      liftInputs.pain = lift.painTarget;
+    }
+    
+    newInputs[lift.liftName] = liftInputs;
+    setInputs(newInputs);
+  };
 
   const logSet = async (lift) => {
     const liftName = lift.liftName;
     const targetReps = lift.reps;
     const targetSets = lift.sets;
-    const targetRPE = lift.rpeTarget;
-    const targetRIR = lift.rirTarget;
+    let targetRPE = lift.rpeTarget;
+    let targetRIR = lift.rirTarget;
     const targetQuality = lift.qualityTarget;
     const targetROM = lift.romTarget;
     const targetPain = lift.painTarget;
     const progressionType = lift.progressionType;
     const logic = data.logic;
-    // Update streak in localStorage
+    
+    // Apply readiness adjustments
+    if (adjustments.rpeAdjustment && (progressionType === "strength" || logic === "STRENGTH_RPE")) {
+      targetRPE = Math.min(10, Math.max(1, targetRPE + adjustments.rpeAdjustment));
+    }
+    if (adjustments.rirAdjustment && (logic === "HYPERTROPHY_VOLUME" || progressionType === "volume")) {
+      targetRIR = Math.min(5, Math.max(0, targetRIR + adjustments.rirAdjustment));
+    }
+    
     const streakRes = await fetch(`/api/streak/${userId}`);
-  if (streakRes.ok) {
-    const { streak } = await streakRes.json();
-  localStorage.setItem("streak", streak);
-}
+    if (streakRes.ok) {
+      const { streak } = await streakRes.json();
+      localStorage.setItem("streak", streak);
+    }
 
     try {
       const weight = inputs[liftName]?.weight;
@@ -87,7 +163,6 @@ export default function SessionView() {
         actualRIR = Number(inputs[liftName]?.rir || targetRIR);
       }
 
-      // 1) Log session
       await fetch("/api/session-log", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -118,20 +193,20 @@ export default function SessionView() {
 
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // 2) Apply progression
       await fetch("/api/progression/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, liftName, logic })
       });
 
-      // 3) Refresh session data
       const res = await fetch(`/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`);
       const json = await res.json();
       setData(json);
 
-      // 4) Refresh history for this lift
       await fetchHistory(liftName);
+      
+      // Clear inputs for this lift after successful log
+      setInputs(prev => ({ ...prev, [liftName]: {} }));
     } catch (err) {
       console.error(err);
     }
@@ -147,6 +222,21 @@ export default function SessionView() {
     }
   };
 
+  if (!userId) return <Navigate to="/login" replace />;
+  if (!program) return <Navigate to="/program" replace />;
+  if (showReadiness && data?.logic) {
+    return <SessionReadiness onComplete={handleReadinessComplete} programLogic={data.logic} />;
+  }
+  if (loading) return (
+    <div className="dashboard-container">
+      <Skeleton />
+      <Skeleton />
+      <Skeleton />
+    </div>
+  );
+  if (error) return <div>Error: {error}</div>;
+  if (!data) return <div>No data returned</div>;
+
   const getMetricLabel = (lift) => {
     const pt = lift.progressionType;
     if (pt === "power") return "Quality (1-10)";
@@ -158,11 +248,25 @@ export default function SessionView() {
 
   const getTargetValue = (lift) => {
     const pt = lift.progressionType;
-    if (pt === "power") return lift.qualityTarget;
-    if (pt === "mobility") return `${lift.romTarget}% / Pain ≤${lift.painTarget}`;
-    if (pt === "strength" || data.logic === "STRENGTH_RPE") return lift.rpeTarget;
-    if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") return lift.rirTarget;
-    return lift.rpeTarget;
+    let target = null;
+    
+    if (pt === "power") target = lift.qualityTarget;
+    else if (pt === "mobility") target = `${lift.romTarget}% / Pain ≤${lift.painTarget}`;
+    else if (pt === "strength" || data.logic === "STRENGTH_RPE") target = lift.rpeTarget;
+    else if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") target = lift.rirTarget;
+    else target = lift.rpeTarget;
+    
+    // Apply adjustments
+    if (adjustments.rpeAdjustment && (pt === "strength" || data.logic === "STRENGTH_RPE")) {
+      const adjusted = Math.min(10, Math.max(1, target + adjustments.rpeAdjustment));
+      target = `${target} → ${adjusted} (adjusted)`;
+    }
+    if (adjustments.rirAdjustment && (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume")) {
+      const adjusted = Math.min(5, Math.max(0, target + adjustments.rirAdjustment));
+      target = `${target} → ${adjusted} (adjusted)`;
+    }
+    
+    return target;
   };
 
   return (
@@ -207,7 +311,6 @@ export default function SessionView() {
                 <span>Next: {lift.projectedNextWeight ?? 0}</span>
               </div>
               
-              {/* Main inputs row */}
               <div style={{ display: "flex", gap: 10, marginBottom: 15, flexWrap: "wrap" }}>
                 {pt !== "mobility" && (
                   <input
@@ -259,7 +362,6 @@ export default function SessionView() {
                 )}
               </div>
 
-              {/* Per‑set reps inputs */}
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 15 }}>
                 <span style={{ fontWeight: "bold", minWidth: "50px" }}>Sets:</span>
                 {[...Array(lift.sets)].map((_, idx) => (
@@ -282,9 +384,22 @@ export default function SessionView() {
                 ))}
               </div>
 
-              <div style={{ display: "flex", gap: 10 }}>
-                <button onClick={() => logSet(lift)} style={{ padding: "10px 15px", borderRadius: 8, border: "none", background: "#111", color: "#fff", cursor: "pointer" }}>Log Set</button>
-                <button onClick={() => fetchHistory(lift.liftName)} style={{ padding: "10px 15px", borderRadius: 8, border: "1px solid #ccc", background: "#fff", cursor: "pointer" }}>History</button>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <button onClick={() => logSet(lift)} style={{ padding: "10px 15px", borderRadius: 8, border: "none", background: "#111", color: "#fff", cursor: "pointer" }}>
+                  Log Set
+                </button>
+                <button onClick={() => handleAutoFill(lift)} style={{ padding: "10px 15px", borderRadius: 8, border: "1px solid #4caf50", background: "#4caf50", color: "#fff", cursor: "pointer" }}>
+                  ⚡ Auto Fill
+                </button>
+                <button onClick={() => handleUndoLastEntry(lift.liftName)} style={{ padding: "10px 15px", borderRadius: 8, border: "1px solid #ff9800", background: "#ff9800", color: "#fff", cursor: "pointer" }}>
+                  ↩ Undo Last
+                </button>
+                <button onClick={() => fetchHistory(lift.liftName)} style={{ padding: "10px 15px", borderRadius: 8, border: "1px solid #ccc", background: "#fff", cursor: "pointer" }}>
+                  History
+                </button>
+                <button onClick={() => setInputs(prev => ({ ...prev, [lift.liftName]: {} }))} style={{ padding: "6px 12px", fontSize: "12px", background: "#444", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer" }}>
+                  Clear
+                </button>
               </div>
               
               {history[lift.liftName] && (

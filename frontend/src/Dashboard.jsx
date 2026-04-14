@@ -23,48 +23,56 @@ export default function Dashboard() {
 
   const isAdmin = userEmail === "kieren2203@googlemail.com";
 
+  // Handle program just selected (fixes the infinite loop)
   useEffect(() => {
-  if (!userId) {
-    navigate("/login");
-    return;
-  }
-
-  const fetchData = async () => {
-    try {
-      const programs = JSON.parse(localStorage.getItem("purchasedPrograms") || "[]");
-      setPurchasedPrograms(programs);
-
-      const mainLifts = ["Squat (Top Set)", "Bench (Top Set)", "Deadlift (Top Set)"];
-      
-      // Fetch all 1RMs in parallel
-      const estPromises = mainLifts.map(lift =>
-        fetch(`/api/estimate-1rm/${userId}/${encodeURIComponent(lift)}`)
-          .then(res => res.json())
-          .catch(err => ({ estimated1RM: null, error: err }))
-      );
-      const estResults = await Promise.all(estPromises);
-      
-      // Build the estimates object
-      const estMap = {};
-      mainLifts.forEach((lift, idx) => {
-        estMap[lift] = estResults[idx].estimated1RM || 0;
-      });
-      setEstimates(estMap);
-
-      const historyRes = await fetch(`/api/recent-sessions/${userId}`);
-      if (historyRes.ok) {
-        const sessions = await historyRes.json();
-        setRecentSessions(sessions.slice(0, 5));
-      }
-    } catch (err) {
-      console.error("Dashboard fetch error:", err);
-    } finally {
-      setLoading(false);
+    if (localStorage.getItem("programJustSelected") === "true") {
+      localStorage.removeItem("programJustSelected");
+      // Force a re-render by updating a state that triggers the dashboard to refresh
+      setLoading(true);
+      setTimeout(() => setLoading(false), 100);
     }
-  };
-  
-  fetchData();
-}, [userId, navigate]);
+  }, []);
+
+  useEffect(() => {
+    if (!userId) {
+      navigate("/login");
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        const programs = JSON.parse(localStorage.getItem("purchasedPrograms") || "[]");
+        setPurchasedPrograms(programs);
+
+        const mainLifts = ["Squat (Top Set)", "Bench (Top Set)", "Deadlift (Top Set)"];
+        
+        const estPromises = mainLifts.map(lift =>
+          fetch(`/api/estimate-1rm/${userId}/${encodeURIComponent(lift)}`)
+            .then(res => res.json())
+            .catch(err => ({ estimated1RM: null, error: err }))
+        );
+        const estResults = await Promise.all(estPromises);
+        
+        const estMap = {};
+        mainLifts.forEach((lift, idx) => {
+          estMap[lift] = estResults[idx].estimated1RM || 0;
+        });
+        setEstimates(estMap);
+
+        const historyRes = await fetch(`/api/recent-sessions/${userId}`);
+        if (historyRes.ok) {
+          const sessions = await historyRes.json();
+          setRecentSessions(sessions.slice(0, 5));
+        }
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [userId, navigate]);
 
   const handleStartWorkout = async () => {
     const program = localStorage.getItem("program");
@@ -198,7 +206,9 @@ export default function Dashboard() {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h1>⚡ Forge of Olympus</h1>
+        <span className="dashboard-logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
+          ⚡ FORGE OF OLYMPUS
+        </span>
         <button onClick={() => { localStorage.clear(); navigate("/"); }} className="logout-btn">Logout</button>
       </div>
 
@@ -222,15 +232,13 @@ export default function Dashboard() {
         <div className="card">
           <h2>Estimated 1RM</h2>
           <div className="estimates-list">
-          <div className="estimate-item"><span>Squat</span><strong>{estimates["Squat (Top Set)"] || "—"} kg</strong></div>
-          <div className="estimate-item"><span>Bench</span><strong>{estimates["Bench (Top Set)"] || "—"} kg</strong></div>
-          <div className="estimate-item"><span>Deadlift</span><strong>{estimates["Deadlift (Top Set)"] || "—"} kg</strong></div>
+            <div className="estimate-item"><span>Squat</span><strong>{estimates["Squat (Top Set)"] || "—"} kg</strong></div>
+            <div className="estimate-item"><span>Bench</span><strong>{estimates["Bench (Top Set)"] || "—"} kg</strong></div>
+            <div className="estimate-item"><span>Deadlift</span><strong>{estimates["Deadlift (Top Set)"] || "—"} kg</strong></div>
           </div>
           <div className="estimate-item">
             <span>Squat (4‑week PR)</span>
             <strong>{predictPR || estimates["Squat (Top Set)"]} kg</strong>
-            <strong>{predictPR || estimates["Bench (Top Set)"]} kg</strong>
-            <strong>{predictPR || estimates["Deadlift (Top Set)"]} kg</strong>
           </div>
           <details>
             <summary style={{ cursor: "pointer", marginTop: "16px", color: "var(--accent)" }}>View Progress Chart</summary>
@@ -242,39 +250,38 @@ export default function Dashboard() {
 
         {/* Recent Activity Card */}
         <div className="card">
-  <h2>Recent Activity</h2>
-  {recentSessions.length === 0 ? (
-    <p>No sessions logged yet.</p>
-  ) : (
-    (() => {
-      // Group sessions by date
-      const grouped = recentSessions.reduce((acc, session) => {
-        const date = new Date(session.createdAt).toLocaleDateString(undefined, {
-          weekday: 'short',
-          month: 'short',
-          day: 'numeric'
-        });
-        if (!acc[date]) acc[date] = [];
-        acc[date].push(session);
-        return acc;
-      }, {});
-      
-      return Object.entries(grouped).map(([date, sessions]) => (
-        <div key={date} style={{ marginBottom: 16, borderBottom: "1px solid var(--border)", paddingBottom: 12 }}>
-          <h3 style={{ color: "var(--accent)", marginBottom: 8, fontSize: "1rem" }}>{date}</h3>
-          {sessions.map((s, idx) => (
-            <div key={idx} style={{ fontSize: "0.85rem", paddingLeft: 8, marginBottom: 4 }}>
-              <strong>{s.liftName}</strong> – {s.setsCompleted || 1} sets × {s.repsCompleted} reps
-              {s.actualWeight && <span> @ {s.actualWeight}kg</span>}
-              {s.actualRPE && <span> (RPE {s.actualRPE})</span>}
-              {s.actualRIR && <span> (RIR {s.actualRIR})</span>}
-            </div>
-          ))}
+          <h2>Recent Activity</h2>
+          {recentSessions.length === 0 ? (
+            <p>No sessions logged yet.</p>
+          ) : (
+            (() => {
+              const grouped = recentSessions.reduce((acc, session) => {
+                const date = new Date(session.createdAt).toLocaleDateString(undefined, {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric'
+                });
+                if (!acc[date]) acc[date] = [];
+                acc[date].push(session);
+                return acc;
+              }, {});
+              
+              return Object.entries(grouped).map(([date, sessions]) => (
+                <div key={date} style={{ marginBottom: 16, borderBottom: "1px solid var(--border)", paddingBottom: 12 }}>
+                  <h3 style={{ color: "var(--accent)", marginBottom: 8, fontSize: "1rem" }}>{date}</h3>
+                  {sessions.map((s, idx) => (
+                    <div key={idx} style={{ fontSize: "0.85rem", paddingLeft: 8, marginBottom: 4 }}>
+                      <strong>{s.liftName}</strong> – {s.setsCompleted || 1} sets × {s.repsCompleted} reps
+                      {s.actualWeight && <span> @ {s.actualWeight}kg</span>}
+                      {s.actualRPE && <span> (RPE {s.actualRPE})</span>}
+                      {s.actualRIR && <span> (RIR {s.actualRIR})</span>}
+                    </div>
+                  ))}
+                </div>
+              ));
+            })()
+          )}
         </div>
-      ));
-    })()
-  )}
-</div>
 
         {/* Workout Streak Card */}
         <div className="card">
