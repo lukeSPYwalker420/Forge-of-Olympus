@@ -351,6 +351,7 @@ export default function Dashboard() {
                 <option value="Hercules Foundation">Hercules Foundation</option>
                 <option value="Hephaestus Framework">Hephaestus Framework</option>
                 <option value="Mark Training">Mark Training</option>
+                <option value="Hercules Foundation - Pauline Version">Hercules Foundation - Pauline Version</option>
               </select>
               <input
                 type="password"
