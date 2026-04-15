@@ -128,6 +128,8 @@ const SessionSchema = new mongoose.Schema({
   progressionType: String,
   actualQuality: Number,
   targetQuality: Number,
+  targetStability: Number,
+  actualStability: Number,
   actualROM: Number,
   targetROM: Number,
   actualPain: Number,
@@ -299,8 +301,52 @@ function enduranceDensityProgression(state, sessionData) {
   return { currentWeight: state.currentWeight, consecutiveSuccesses: 0, stallCounter: 0 };
 }
 
+// MOBILITY progression - using Stability rating (how controlled the movement is)
 function mobilityRangeProgression(state, sessionData) {
-  return { lastROM: state.lastROM, consecutiveSuccesses: 0, stallCounter: 0 };
+  let newWeight = state.currentWeight || sessionData.actualWeight || 0;
+  let successStreak = state.consecutiveSuccesses || 0;
+  let stallCounter = state.stallCounter || 0;
+
+  const completed = sessionData.completed === true;
+  const actualStability = sessionData.actualStability || 0;
+  const targetStability = sessionData.targetStability || 7;
+  const stabilityMet = actualStability >= targetStability;
+  
+  const actualPain = sessionData.actualPain || 0;
+  const targetPain = sessionData.targetPain || 4;
+  const painOk = actualPain <= targetPain;
+  
+  const isGoodSession = completed && stabilityMet && painOk;
+
+  if (isGoodSession) {
+    successStreak += 1;
+    stallCounter = 0;
+    
+    // After 3 stable sessions, increase weight
+    if (successStreak >= 3) {
+      const increment = 2.5;
+      newWeight += increment;
+      successStreak = 0;
+      console.log(`💪 Mobility progression (stability): ${sessionData.liftName} increased to ${newWeight}kg`);
+    }
+  } else {
+    successStreak = 0;
+    stallCounter += 1;
+    
+    // After 2 unstable sessions, decrease weight
+    if (stallCounter >= 2 && newWeight > 0) {
+      newWeight = Math.max(0, newWeight - 2.5);
+      stallCounter = 0;
+      console.log(`⚠️ Mobility regression: ${sessionData.liftName} decreased to ${newWeight}kg`);
+    }
+  }
+
+  return {
+    currentWeight: Math.round(newWeight * 2) / 2,
+    consecutiveSuccesses: successStreak,
+    stallCounter,
+    lastROM: state.lastROM  // Keep existing ROM value for backward compatibility
+  };
 }
 
 function generalFitnessProgression(state, sessionData) {
@@ -872,6 +918,33 @@ app.delete("/api/session-log/:id", async (req, res) => {
     console.error("Delete error:", err);
     res.status(500).json({ error: err.message });
   }
+});
+
+app.delete("/api/admin/remove-program", async (req, res) => {
+  const { adminEmail, adminPassword, userEmail, programName } = req.body;
+  
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+  
+  if (adminEmail !== ADMIN_EMAIL) {
+    return res.status(403).json({ error: "Not authorized" });
+  }
+  if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
+    return res.status(403).json({ error: "Invalid admin password" });
+  }
+  if (!userEmail || !programName) {
+    return res.status(400).json({ error: "Email and program name required" });
+  }
+  
+  // Remove the purchase record
+  const result = await Purchase.deleteOne({ email: userEmail, programName });
+  
+  if (result.deletedCount === 0) {
+    return res.status(404).json({ error: "Program not found for this user" });
+  }
+  
+  console.log(`✅ Admin removed ${programName} from ${userEmail}`);
+  res.json({ message: `Removed ${programName} from ${userEmail}` });
 });
 
 // Serve static files from the public directory (images)
