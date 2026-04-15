@@ -20,6 +20,12 @@ export default function Dashboard() {
   const [leads, setLeads] = useState([]);
   const [loadingLeads, setLoadingLeads] = useState(false);
   const [exporting, setExporting] = useState(false);
+  
+  // Remove program state
+  const [removeEmail, setRemoveEmail] = useState("");
+  const [removeProgram, setRemoveProgram] = useState("");
+  const [removePassword, setRemovePassword] = useState("");
+  const [removeMessage, setRemoveMessage] = useState("");
 
   const isAdmin = userEmail === "kieren2203@googlemail.com";
 
@@ -27,7 +33,6 @@ export default function Dashboard() {
   useEffect(() => {
     if (localStorage.getItem("programJustSelected") === "true") {
       localStorage.removeItem("programJustSelected");
-      // Force a re-render by updating a state that triggers the dashboard to refresh
       setLoading(true);
       setTimeout(() => setLoading(false), 100);
     }
@@ -126,6 +131,36 @@ export default function Dashboard() {
       }
     } catch (err) {
       setAdminMessage(`❌ Error: ${err.message}`);
+    }
+  };
+
+  const removeProgramFromUser = async () => {
+    if (!removeEmail || !removeProgram) {
+      setRemoveMessage("Please fill in email and program");
+      return;
+    }
+    try {
+      const res = await fetch("/api/admin/remove-program", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail: userEmail,
+          adminPassword: removePassword,
+          userEmail: removeEmail,
+          programName: removeProgram
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setRemoveMessage(`✅ ${data.message}`);
+        setRemoveEmail("");
+        setRemoveProgram("");
+        setRemovePassword("");
+      } else {
+        setRemoveMessage(`❌ ${data.error}`);
+      }
+    } catch (err) {
+      setRemoveMessage(`❌ Error: ${err.message}`);
     }
   };
 
@@ -326,6 +361,42 @@ export default function Dashboard() {
               />
               <button onClick={assignProgramToUser} className="btn-primary">Assign Program</button>
               {adminMessage && <p className="admin-message">{adminMessage}</p>}
+            </div>
+
+            {/* Remove Program Section */}
+            <div style={{ marginTop: "20px", borderTop: "1px solid #333", paddingTop: "20px" }}>
+              <h3>🗑️ Remove Program from User</h3>
+              <div className="admin-form">
+                <input
+                  type="email"
+                  placeholder="User Email"
+                  value={removeEmail}
+                  onChange={e => setRemoveEmail(e.target.value)}
+                  className="admin-input"
+                />
+                <select
+                  value={removeProgram}
+                  onChange={e => setRemoveProgram(e.target.value)}
+                  className="admin-input"
+                >
+                  <option value="">Select Program to Remove</option>
+                  <option value="Ares Protocol">Ares Protocol</option>
+                  <option value="Apollo Physique">Apollo Physique</option>
+                  <option value="Hercules Foundation">Hercules Foundation</option>
+                  <option value="Hephaestus Framework">Hephaestus Framework</option>
+                </select>
+                <input
+                  type="password"
+                  placeholder="Admin Password (if set)"
+                  value={removePassword}
+                  onChange={e => setRemovePassword(e.target.value)}
+                  className="admin-input"
+                />
+                <button onClick={removeProgramFromUser} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer" }}>
+                  Remove Program
+                </button>
+                {removeMessage && <p className="admin-message">{removeMessage}</p>}
+              </div>
             </div>
 
             <hr style={{ margin: "20px 0", borderColor: "#333" }} />

@@ -44,7 +44,6 @@ export default function SessionView() {
     if (!confirm("Undo the last entry for this exercise?")) return;
     
     try {
-      // Get the last session
       const historyRes = await fetch(`/api/history/${userId}/${encodeURIComponent(liftName)}`);
       const hist = await historyRes.json();
       
@@ -55,15 +54,12 @@ export default function SessionView() {
       
       const lastEntry = hist[0];
       
-      // Delete the last session
       await fetch(`/api/session-log/${lastEntry._id}`, {
         method: "DELETE"
       });
       
-      // Refresh data
       await fetchHistory(liftName);
       
-      // Refresh session view to update weights
       const res = await fetch(`/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`);
       const json = await res.json();
       setData(json);
@@ -76,11 +72,9 @@ export default function SessionView() {
   };
 
   const handleAutoFill = (lift) => {
-    // Auto-fill all targets based on the program's target values
     const newInputs = { ...inputs };
     const liftInputs = newInputs[lift.liftName] || {};
     
-    // Auto-fill RPE/RIR based on adjusted targets
     if (lift.progressionType === "strength" || data.logic === "STRENGTH_RPE") {
       let targetRPE = lift.rpeTarget;
       if (adjustments.rpeAdjustment) {
@@ -97,15 +91,13 @@ export default function SessionView() {
       liftInputs.rir = targetRIR;
     }
     
-    // Auto-fill quality for power exercises
     if (lift.progressionType === "power" && lift.qualityTarget) {
       liftInputs.quality = lift.qualityTarget;
     }
     
-    // Auto-fill ROM/Pain for mobility
     if (lift.progressionType === "mobility") {
-      liftInputs.rom = lift.romTarget;
-      liftInputs.pain = lift.painTarget;
+      liftInputs.stability = lift.stabilityTarget || 7;
+      liftInputs.pain = lift.painTarget || 4;
     }
     
     newInputs[lift.liftName] = liftInputs;
@@ -120,11 +112,11 @@ export default function SessionView() {
     let targetRIR = lift.rirTarget;
     const targetQuality = lift.qualityTarget;
     const targetROM = lift.romTarget;
-    const targetPain = lift.painTarget;
+    const targetPain = lift.painTarget || 4;
+    const targetStability = lift.stabilityTarget || 7;
     const progressionType = lift.progressionType;
     const logic = data.logic;
     
-    // Apply readiness adjustments
     if (adjustments.rpeAdjustment && (progressionType === "strength" || logic === "STRENGTH_RPE")) {
       targetRPE = Math.min(10, Math.max(1, targetRPE + adjustments.rpeAdjustment));
     }
@@ -150,6 +142,7 @@ export default function SessionView() {
       let actualQuality = null;
       let actualROM = null;
       let actualPain = null;
+      let actualStability = null;  // ADD THIS LINE
       const repsPerSet = inputs[liftName]?.repsPerSet || [];
 
       if (progressionType === "strength" || logic === "STRENGTH_RPE") {
@@ -157,7 +150,7 @@ export default function SessionView() {
       } else if (progressionType === "power") {
         actualQuality = Number(inputs[liftName]?.quality || targetQuality);
       } else if (progressionType === "mobility") {
-        actualROM = Number(inputs[liftName]?.rom || targetROM);
+        actualStability = Number(inputs[liftName]?.stability || targetStability);
         actualPain = Number(inputs[liftName]?.pain || targetPain);
       } else if (logic === "HYPERTROPHY_VOLUME" || progressionType === "volume") {
         actualRIR = Number(inputs[liftName]?.rir || targetRIR);
@@ -180,11 +173,13 @@ export default function SessionView() {
           targetQuality,
           targetROM,
           targetPain,
+          targetStability,
           actualRPE,
           actualRIR,
           actualQuality,
           actualROM,
           actualPain,
+          actualStability,
           actualWeight: weight ? Number(weight) : null,
           completed: true,
           progressionType
@@ -205,7 +200,6 @@ export default function SessionView() {
 
       await fetchHistory(liftName);
       
-      // Clear inputs for this lift after successful log
       setInputs(prev => ({ ...prev, [liftName]: {} }));
     } catch (err) {
       console.error(err);
@@ -240,7 +234,7 @@ export default function SessionView() {
   const getMetricLabel = (lift) => {
     const pt = lift.progressionType;
     if (pt === "power") return "Quality (1-10)";
-    if (pt === "mobility") return "ROM (%) / Pain (1-10)";
+    if (pt === "mobility") return "Stability (1-10) / Pain (1-10)";
     if (pt === "strength" || data.logic === "STRENGTH_RPE") return "RPE";
     if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") return "RIR";
     return "RPE";
@@ -251,12 +245,11 @@ export default function SessionView() {
     let target = null;
     
     if (pt === "power") target = lift.qualityTarget;
-    else if (pt === "mobility") target = `${lift.romTarget}% / Pain ≤${lift.painTarget}`;
+    else if (pt === "mobility") target = `Stability ≥${lift.stabilityTarget || 7} / Pain ≤${lift.painTarget || 4}`;
     else if (pt === "strength" || data.logic === "STRENGTH_RPE") target = lift.rpeTarget;
     else if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") target = lift.rirTarget;
     else target = lift.rpeTarget;
     
-    // Apply adjustments
     if (adjustments.rpeAdjustment && (pt === "strength" || data.logic === "STRENGTH_RPE")) {
       const adjusted = Math.min(10, Math.max(1, target + adjustments.rpeAdjustment));
       target = `${target} → ${adjusted} (adjusted)`;
@@ -320,6 +313,7 @@ export default function SessionView() {
                     onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
                   />
                 )}
+                
                 {pt === "power" && (
                   <input
                     placeholder="Quality (1-10)"
@@ -328,13 +322,20 @@ export default function SessionView() {
                     onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], quality: e.target.value } }))}
                   />
                 )}
+                
                 {pt === "mobility" && (
                   <>
                     <input
-                      placeholder="ROM (%)"
+                      placeholder="Weight (kg)"
                       style={{ padding: 8, width: "100px" }}
-                      value={inputs[lift.liftName]?.rom || ""}
-                      onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], rom: e.target.value } }))}
+                      value={inputs[lift.liftName]?.weight || ""}
+                      onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
+                    />
+                    <input
+                      placeholder="Stability (1-10)"
+                      style={{ padding: 8, width: "100px" }}
+                      value={inputs[lift.liftName]?.stability || ""}
+                      onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], stability: e.target.value } }))}
                     />
                     <input
                       placeholder="Pain (1-10)"
@@ -344,6 +345,7 @@ export default function SessionView() {
                     />
                   </>
                 )}
+                
                 {(pt === "strength" || data.logic === "STRENGTH_RPE") && (
                   <input
                     placeholder="RPE"
@@ -352,6 +354,7 @@ export default function SessionView() {
                     onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], rpe: e.target.value } }))}
                   />
                 )}
+                
                 {(data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") && (
                   <input
                     placeholder="RIR"
@@ -409,7 +412,8 @@ export default function SessionView() {
                     let metricStr = "";
                     if (entry.actualRPE) metricStr = `RPE ${entry.actualRPE}`;
                     else if (entry.actualRIR) metricStr = `RIR ${entry.actualRIR}`;
-                    else if (entry.actualQuality) metricStr = `Quality ${entry.actualQuality}`;
+                    else if (entry.actualStability && entry.actualPain) metricStr = `Stability ${entry.actualStability} / Pain ${entry.actualPain}`;
+                    else if (entry.actualStability) metricStr = `Stability ${entry.actualStability}`;
                     else if (entry.actualROM) metricStr = `ROM ${entry.actualROM}% / Pain ${entry.actualPain}`;
                     const setsInfo = entry.repsPerSet ? `Sets: [${entry.repsPerSet.join(", ")}]` : `${entry.repsCompleted} reps`;
                     return (
