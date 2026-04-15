@@ -30,152 +30,152 @@
       "day": 3,
       "focus": "Mobility & Stability",
       "exercises": [
-        { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "progressionType": "mobility", "romTarget": 80, "painTarget": 2 },
-        { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "progressionType": "mobility", "romTarget": 85, "painTarget": 2 },
+        { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "progressionType": "mobility", "stabilityTarget": 7, "painTarget": 4 },
+        { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "progressionType": "mobility", "stabilityTarget": 7, "painTarget": 4 },
         { "liftName": "Single-Leg RDL", "sets": 3, "reps": "10", "rpeTarget": 6, "progressionType": "stability" },
         { "liftName": "Cable Face Pulls", "sets": 3, "reps": "12-15", "rpeTarget": 7, "progressionType": "volume" },
         { "liftName": "Dead Bugs", "sets": 3, "reps": "10", "progressionType": "mobility", "qualityTarget": 8 }
       ]
     },
     {
-  "week": 2,
-  "day": 1,
-  "focus": "Strength (Progressive Overload)",
-  "exercises": [
-    { "liftName": "Back Squat", "sets": 4, "reps": "6-8", "rpeTarget": 7.5, "progressionType": "strength" },
-    { "liftName": "Bench Press", "sets": 4, "reps": "6-8", "rpeTarget": 7.5, "progressionType": "strength" },
-    { "liftName": "Bent Over Row", "sets": 3, "reps": "6-8", "rpeTarget": 7.5, "progressionType": "strength" },
-    { "liftName": "Barbell Shoulder Press", "sets": 3, "reps": "6-8", "rpeTarget": 7.5, "progressionType": "strength" },
-    { "liftName": "Skull Crushers", "sets": 3, "reps": "10-12", "rpeTarget": 7.5, "progressionType": "volume" }
-  ]
-},
-{
-  "week": 2,
-  "day": 2,
-  "focus": "Power (Maintain Speed)",
-  "exercises": [
-    { "liftName": "Box Jumps", "sets": 5, "reps": "3", "progressionType": "power", "qualityTarget": 8 },
-    { "liftName": "Broad Jumps", "sets": 4, "reps": "3", "progressionType": "power", "qualityTarget": 8 },
-    { "liftName": "Hang Power Clean", "sets": 5, "reps": "3", "rpeTarget": 7.5, "progressionType": "power" },
-    { "liftName": "High Pull", "sets": 6, "reps": "2", "rpeTarget": 6.5, "progressionType": "power" }
-  ]
-},
-{
-  "week": 2,
-  "day": 3,
-  "focus": "Mobility & Stability (Increase ROM)",
-  "exercises": [
-    { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "progressionType": "mobility", "romTarget": 85, "painTarget": 2 },
-    { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "progressionType": "mobility", "romTarget": 90, "painTarget": 2 },
-    { "liftName": "Single-Leg RDL", "sets": 3, "reps": "10", "rpeTarget": 6.5, "progressionType": "stability" },
-    { "liftName": "Cable Face Pulls", "sets": 3, "reps": "12-15", "rpeTarget": 7.5, "progressionType": "volume" },
-    { "liftName": "Dead Bugs", "sets": 3, "reps": "10", "progressionType": "mobility", "qualityTarget": 8 }
-  ]
-},
+      "week": 2,
+      "day": 1,
+      "focus": "Strength (Progressive Overload)",
+      "exercises": [
+        { "liftName": "Back Squat", "sets": 4, "reps": "6-8", "rpeTarget": 7.5, "progressionType": "strength" },
+        { "liftName": "Bench Press", "sets": 4, "reps": "6-8", "rpeTarget": 7.5, "progressionType": "strength" },
+        { "liftName": "Bent Over Row", "sets": 3, "reps": "6-8", "rpeTarget": 7.5, "progressionType": "strength" },
+        { "liftName": "Barbell Shoulder Press", "sets": 3, "reps": "6-8", "rpeTarget": 7.5, "progressionType": "strength" },
+        { "liftName": "Skull Crushers", "sets": 3, "reps": "10-12", "rpeTarget": 7.5, "progressionType": "volume" }
+      ]
+    },
     {
-  "week": 3,
-  "day": 1,
-  "focus": "Strength (Peak Intensity)",
-  "exercises": [
-    { "liftName": "Back Squat", "sets": 3, "reps": "4-6", "rpeTarget": 8, "progressionType": "strength" },
-    { "liftName": "Bench Press", "sets": 3, "reps": "4-6", "rpeTarget": 8, "progressionType": "strength" },
-    { "liftName": "Bent Over Row", "sets": 3, "reps": "4-6", "rpeTarget": 8, "progressionType": "strength" },
-    { "liftName": "Barbell Shoulder Press", "sets": 3, "reps": "4-6", "rpeTarget": 8, "progressionType": "strength" },
-    { "liftName": "Skull Crushers", "sets": 2, "reps": "8-10", "rpeTarget": 8, "progressionType": "volume" }
-  ]
-},
-{
-  "week": 3,
-  "day": 2,
-  "focus": "Power (Max Intent)",
-  "exercises": [
-    { "liftName": "Box Jumps", "sets": 4, "reps": "3", "progressionType": "power", "qualityTarget": 9 },
-    { "liftName": "Broad Jumps", "sets": 3, "reps": "3", "progressionType": "power", "qualityTarget": 9 },
-    { "liftName": "Hang Power Clean", "sets": 4, "reps": "3", "rpeTarget": 8, "progressionType": "power" },
-    { "liftName": "High Pull", "sets": 5, "reps": "2", "rpeTarget": 7, "progressionType": "power" }
-  ]
-},
-{
-  "week": 3,
-  "day": 3,
-  "focus": "Mobility & Stability (Peak ROM)",
-  "exercises": [
-    { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "progressionType": "mobility", "romTarget": 90, "painTarget": 2 },
-    { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "progressionType": "mobility", "romTarget": 95, "painTarget": 2 },
-    { "liftName": "Single-Leg RDL", "sets": 3, "reps": "8", "rpeTarget": 7, "progressionType": "stability" },
-    { "liftName": "Cable Face Pulls", "sets": 3, "reps": "10-12", "rpeTarget": 8, "progressionType": "volume" },
-    { "liftName": "Dead Bugs", "sets": 3, "reps": "10", "progressionType": "mobility", "qualityTarget": 9 }
-  ]
-},
+      "week": 2,
+      "day": 2,
+      "focus": "Power (Maintain Speed)",
+      "exercises": [
+        { "liftName": "Box Jumps", "sets": 5, "reps": "3", "progressionType": "power", "qualityTarget": 8 },
+        { "liftName": "Broad Jumps", "sets": 4, "reps": "3", "progressionType": "power", "qualityTarget": 8 },
+        { "liftName": "Hang Power Clean", "sets": 5, "reps": "3", "rpeTarget": 7.5, "progressionType": "power" },
+        { "liftName": "High Pull", "sets": 6, "reps": "2", "rpeTarget": 6.5, "progressionType": "power" }
+      ]
+    },
     {
-  "week": 4,
-  "day": 1,
-  "focus": "Strength (Peak)",
-  "exercises": [
-    { "liftName": "Back Squat", "sets": 3, "reps": "2-4", "rpeTarget": 8.5, "progressionType": "strength" },
-    { "liftName": "Bench Press", "sets": 3, "reps": "2-4", "rpeTarget": 8.5, "progressionType": "strength" },
-    { "liftName": "Bent Over Row", "sets": 3, "reps": "2-4", "rpeTarget": 8.5, "progressionType": "strength" },
-    { "liftName": "Barbell Shoulder Press", "sets": 3, "reps": "2-4", "rpeTarget": 8.5, "progressionType": "strength" },
-    { "liftName": "Skull Crushers", "sets": 2, "reps": "6-8", "rpeTarget": 8.5, "progressionType": "volume" }
-  ]
-},
-{
-  "week": 4,
-  "day": 2,
-  "focus": "Power (Max Intent)",
-  "exercises": [
-    { "liftName": "Box Jumps", "sets": 3, "reps": "3", "progressionType": "power", "qualityTarget": 9.5 },
-    { "liftName": "Broad Jumps", "sets": 3, "reps": "3", "progressionType": "power", "qualityTarget": 9.5 },
-    { "liftName": "Hang Power Clean", "sets": 3, "reps": "2", "rpeTarget": 8.5, "progressionType": "power" },
-    { "liftName": "High Pull", "sets": 3, "reps": "2", "rpeTarget": 7.5, "progressionType": "power" }
-  ]
-},
-{
-  "week": 4,
-  "day": 3,
-  "focus": "Mobility & Stability (Maintain ROM)",
-  "exercises": [
-    { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "progressionType": "mobility", "romTarget": 95, "painTarget": 2 },
-    { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "progressionType": "mobility", "romTarget": 100, "painTarget": 2 },
-    { "liftName": "Single-Leg RDL", "sets": 2, "reps": "8", "rpeTarget": 7.5, "progressionType": "stability" },
-    { "liftName": "Cable Face Pulls", "sets": 2, "reps": "10-12", "rpeTarget": 8.5, "progressionType": "volume" },
-    { "liftName": "Dead Bugs", "sets": 2, "reps": "10", "progressionType": "mobility", "qualityTarget": 9.5 }
-  ]
-},
+      "week": 2,
+      "day": 3,
+      "focus": "Mobility & Stability (Increase ROM)",
+      "exercises": [
+        { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "progressionType": "mobility", "stabilityTarget": 8, "painTarget": 4 },
+        { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "progressionType": "mobility", "stabilityTarget": 8, "painTarget": 4 },
+        { "liftName": "Single-Leg RDL", "sets": 3, "reps": "10", "rpeTarget": 6.5, "progressionType": "stability" },
+        { "liftName": "Cable Face Pulls", "sets": 3, "reps": "12-15", "rpeTarget": 7.5, "progressionType": "volume" },
+        { "liftName": "Dead Bugs", "sets": 3, "reps": "10", "progressionType": "mobility", "qualityTarget": 8 }
+      ]
+    },
     {
-  "week": 5,
-  "day": 1,
-  "focus": "Deload (Recovery)",
-  "exercises": [
-    { "liftName": "Back Squat", "sets": 3, "reps": "8-10", "rpeTarget": 5, "progressionType": "deload" },
-    { "liftName": "Bench Press", "sets": 3, "reps": "8-10", "rpeTarget": 5, "progressionType": "deload" },
-    { "liftName": "Bent Over Row", "sets": 3, "reps": "8-10", "rpeTarget": 5, "progressionType": "deload" },
-    { "liftName": "Barbell Shoulder Press", "sets": 2, "reps": "10-12", "rpeTarget": 5, "progressionType": "deload" },
-    { "liftName": "Skull Crushers", "sets": 2, "reps": "12-15", "rpeTarget": 5, "progressionType": "deload" }
-  ]
-},
-{
-  "week": 5,
-  "day": 2,
-  "focus": "Power (Low Intensity, Maintain Pattern)",
-  "exercises": [
-    { "liftName": "Box Jumps", "sets": 3, "reps": "3", "progressionType": "power", "qualityTarget": 7 },
-    { "liftName": "Broad Jumps", "sets": 3, "reps": "3", "progressionType": "power", "qualityTarget": 7 },
-    { "liftName": "Hang Power Clean", "sets": 3, "reps": "3", "rpeTarget": 5, "progressionType": "power" },
-    { "liftName": "High Pull", "sets": 3, "reps": "3", "rpeTarget": 5, "progressionType": "power" }
-  ]
-},
-{
-  "week": 5,
-  "day": 3,
-  "focus": "Mobility & Stability (Active Recovery)",
-  "exercises": [
-    { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "progressionType": "mobility", "romTarget": 90, "painTarget": 1 },
-    { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "progressionType": "mobility", "romTarget": 95, "painTarget": 1 },
-    { "liftName": "Single-Leg RDL", "sets": 2, "reps": "10", "rpeTarget": 5, "progressionType": "stability" },
-    { "liftName": "Cable Face Pulls", "sets": 2, "reps": "12-15", "rpeTarget": 5, "progressionType": "deload" },
-    { "liftName": "Dead Bugs", "sets": 2, "reps": "10", "progressionType": "mobility", "qualityTarget": 7 }
-  ]
-}
+      "week": 3,
+      "day": 1,
+      "focus": "Strength (Peak Intensity)",
+      "exercises": [
+        { "liftName": "Back Squat", "sets": 3, "reps": "4-6", "rpeTarget": 8, "progressionType": "strength" },
+        { "liftName": "Bench Press", "sets": 3, "reps": "4-6", "rpeTarget": 8, "progressionType": "strength" },
+        { "liftName": "Bent Over Row", "sets": 3, "reps": "4-6", "rpeTarget": 8, "progressionType": "strength" },
+        { "liftName": "Barbell Shoulder Press", "sets": 3, "reps": "4-6", "rpeTarget": 8, "progressionType": "strength" },
+        { "liftName": "Skull Crushers", "sets": 2, "reps": "8-10", "rpeTarget": 8, "progressionType": "volume" }
+      ]
+    },
+    {
+      "week": 3,
+      "day": 2,
+      "focus": "Power (Max Intent)",
+      "exercises": [
+        { "liftName": "Box Jumps", "sets": 4, "reps": "3", "progressionType": "power", "qualityTarget": 9 },
+        { "liftName": "Broad Jumps", "sets": 3, "reps": "3", "progressionType": "power", "qualityTarget": 9 },
+        { "liftName": "Hang Power Clean", "sets": 4, "reps": "3", "rpeTarget": 8, "progressionType": "power" },
+        { "liftName": "High Pull", "sets": 5, "reps": "2", "rpeTarget": 7, "progressionType": "power" }
+      ]
+    },
+    {
+      "week": 3,
+      "day": 3,
+      "focus": "Mobility & Stability (Peak ROM)",
+      "exercises": [
+        { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "progressionType": "mobility", "stabilityTarget": 9, "painTarget": 4 },
+        { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "progressionType": "mobility", "stabilityTarget": 9, "painTarget": 4 },
+        { "liftName": "Single-Leg RDL", "sets": 3, "reps": "8", "rpeTarget": 7, "progressionType": "stability" },
+        { "liftName": "Cable Face Pulls", "sets": 3, "reps": "10-12", "rpeTarget": 8, "progressionType": "volume" },
+        { "liftName": "Dead Bugs", "sets": 3, "reps": "10", "progressionType": "mobility", "qualityTarget": 9 }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 1,
+      "focus": "Strength (Peak)",
+      "exercises": [
+        { "liftName": "Back Squat", "sets": 3, "reps": "2-4", "rpeTarget": 8.5, "progressionType": "strength" },
+        { "liftName": "Bench Press", "sets": 3, "reps": "2-4", "rpeTarget": 8.5, "progressionType": "strength" },
+        { "liftName": "Bent Over Row", "sets": 3, "reps": "2-4", "rpeTarget": 8.5, "progressionType": "strength" },
+        { "liftName": "Barbell Shoulder Press", "sets": 3, "reps": "2-4", "rpeTarget": 8.5, "progressionType": "strength" },
+        { "liftName": "Skull Crushers", "sets": 2, "reps": "6-8", "rpeTarget": 8.5, "progressionType": "volume" }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 2,
+      "focus": "Power (Max Intent)",
+      "exercises": [
+        { "liftName": "Box Jumps", "sets": 3, "reps": "3", "progressionType": "power", "qualityTarget": 9.5 },
+        { "liftName": "Broad Jumps", "sets": 3, "reps": "3", "progressionType": "power", "qualityTarget": 9.5 },
+        { "liftName": "Hang Power Clean", "sets": 3, "reps": "2", "rpeTarget": 8.5, "progressionType": "power" },
+        { "liftName": "High Pull", "sets": 3, "reps": "2", "rpeTarget": 7.5, "progressionType": "power" }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 3,
+      "focus": "Mobility & Stability (Maintain ROM)",
+      "exercises": [
+        { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "progressionType": "mobility", "stabilityTarget": 9, "painTarget": 4 },
+        { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "progressionType": "mobility", "stabilityTarget": 9, "painTarget": 4 },
+        { "liftName": "Single-Leg RDL", "sets": 2, "reps": "8", "rpeTarget": 7.5, "progressionType": "stability" },
+        { "liftName": "Cable Face Pulls", "sets": 2, "reps": "10-12", "rpeTarget": 8.5, "progressionType": "volume" },
+        { "liftName": "Dead Bugs", "sets": 2, "reps": "10", "progressionType": "mobility", "qualityTarget": 9.5 }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 1,
+      "focus": "Deload (Recovery)",
+      "exercises": [
+        { "liftName": "Back Squat", "sets": 3, "reps": "8-10", "rpeTarget": 5, "progressionType": "deload" },
+        { "liftName": "Bench Press", "sets": 3, "reps": "8-10", "rpeTarget": 5, "progressionType": "deload" },
+        { "liftName": "Bent Over Row", "sets": 3, "reps": "8-10", "rpeTarget": 5, "progressionType": "deload" },
+        { "liftName": "Barbell Shoulder Press", "sets": 2, "reps": "10-12", "rpeTarget": 5, "progressionType": "deload" },
+        { "liftName": "Skull Crushers", "sets": 2, "reps": "12-15", "rpeTarget": 5, "progressionType": "deload" }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 2,
+      "focus": "Power (Low Intensity, Maintain Pattern)",
+      "exercises": [
+        { "liftName": "Box Jumps", "sets": 3, "reps": "3", "progressionType": "power", "qualityTarget": 7 },
+        { "liftName": "Broad Jumps", "sets": 3, "reps": "3", "progressionType": "power", "qualityTarget": 7 },
+        { "liftName": "Hang Power Clean", "sets": 3, "reps": "3", "rpeTarget": 5, "progressionType": "power" },
+        { "liftName": "High Pull", "sets": 3, "reps": "3", "rpeTarget": 5, "progressionType": "power" }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 3,
+      "focus": "Mobility & Stability (Active Recovery)",
+      "exercises": [
+        { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "progressionType": "mobility", "stabilityTarget": 6, "painTarget": 3 },
+        { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "progressionType": "mobility", "stabilityTarget": 6, "painTarget": 3 },
+        { "liftName": "Single-Leg RDL", "sets": 2, "reps": "10", "rpeTarget": 5, "progressionType": "stability" },
+        { "liftName": "Cable Face Pulls", "sets": 2, "reps": "12-15", "rpeTarget": 5, "progressionType": "deload" },
+        { "liftName": "Dead Bugs", "sets": 2, "reps": "10", "progressionType": "mobility", "qualityTarget": 7 }
+      ]
+    }
   ]
 }
