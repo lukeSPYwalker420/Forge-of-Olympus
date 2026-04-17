@@ -72,37 +72,58 @@ export default function SessionView() {
   };
 
   const handleAutoFill = (lift) => {
-    const newInputs = { ...inputs };
-    const liftInputs = newInputs[lift.liftName] || {};
-    
-    if (lift.progressionType === "strength" || data.logic === "STRENGTH_RPE") {
-      let targetRPE = lift.rpeTarget;
-      if (adjustments.rpeAdjustment) {
-        targetRPE = Math.min(10, Math.max(1, targetRPE + adjustments.rpeAdjustment));
-      }
-      liftInputs.rpe = targetRPE;
+  const newInputs = { ...inputs };
+  const liftInputs = newInputs[lift.liftName] || {};
+  
+  // Auto fill target reps for each set
+  const targetRepsPerSet = [];
+  const targetRepsValue = lift.reps;
+  
+  // Parse target reps (could be "8-12" or just "8")
+  let targetRepsNumber = 8;
+  if (targetRepsValue) {
+    if (targetRepsValue.includes('-')) {
+      const parts = targetRepsValue.split('-').map(Number);
+      targetRepsNumber = parts[1] || parts[0]; // Use the higher number for hypertrophy
+    } else {
+      targetRepsNumber = parseInt(targetRepsValue, 10);
     }
-    
-    if (data.logic === "HYPERTROPHY_VOLUME" || lift.progressionType === "volume") {
-      let targetRIR = lift.rirTarget;
-      if (adjustments.rirAdjustment) {
-        targetRIR = Math.min(5, Math.max(0, targetRIR + adjustments.rirAdjustment));
-      }
-      liftInputs.rir = targetRIR;
+  }
+  
+  // Fill each set with the target reps
+  for (let i = 0; i < (lift.sets || 1); i++) {
+    targetRepsPerSet.push(targetRepsNumber);
+  }
+  liftInputs.repsPerSet = targetRepsPerSet;
+  
+  if (lift.progressionType === "strength" || data.logic === "STRENGTH_RPE") {
+    let targetRPE = lift.rpeTarget;
+    if (adjustments.rpeAdjustment) {
+      targetRPE = Math.min(10, Math.max(1, targetRPE + adjustments.rpeAdjustment));
     }
-    
-    if (lift.progressionType === "power" && lift.qualityTarget) {
-      liftInputs.quality = lift.qualityTarget;
+    liftInputs.rpe = targetRPE;
+  }
+  
+  if (data.logic === "HYPERTROPHY_VOLUME" || lift.progressionType === "volume") {
+    let targetRIR = lift.rirTarget;
+    if (adjustments.rirAdjustment) {
+      targetRIR = Math.min(5, Math.max(0, targetRIR + adjustments.rirAdjustment));
     }
-    
-    if (lift.progressionType === "mobility") {
-      liftInputs.stability = lift.stabilityTarget || 7;
-      liftInputs.pain = lift.painTarget || 4;
-    }
-    
-    newInputs[lift.liftName] = liftInputs;
-    setInputs(newInputs);
-  };
+    liftInputs.rir = targetRIR;
+  }
+  
+  if (lift.progressionType === "power" && lift.qualityTarget) {
+    liftInputs.quality = lift.qualityTarget;
+  }
+  
+  if (lift.progressionType === "mobility") {
+    liftInputs.stability = lift.stabilityTarget || 7;
+    liftInputs.pain = lift.painTarget || 4;
+  }
+  
+  newInputs[lift.liftName] = liftInputs;
+  setInputs(newInputs);
+};
 
   const logSet = async (lift) => {
     const liftName = lift.liftName;

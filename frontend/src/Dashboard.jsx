@@ -11,6 +11,7 @@ export default function Dashboard() {
   const [estimates, setEstimates] = useState({});
   const [recentSessions, setRecentSessions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
   // Admin state
   const [assignEmail, setAssignEmail] = useState("");
@@ -284,39 +285,128 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Activity Card */}
-        <div className="card">
-          <h2>Recent Activity</h2>
-          {recentSessions.length === 0 ? (
-            <p>No sessions logged yet.</p>
-          ) : (
-            (() => {
-              const grouped = recentSessions.reduce((acc, session) => {
-                const date = new Date(session.createdAt).toLocaleDateString(undefined, {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric'
-                });
-                if (!acc[date]) acc[date] = [];
-                acc[date].push(session);
-                return acc;
-              }, {});
-              
-              return Object.entries(grouped).map(([date, sessions]) => (
-                <div key={date} style={{ marginBottom: 16, borderBottom: "1px solid var(--border)", paddingBottom: 12 }}>
-                  <h3 style={{ color: "var(--accent)", marginBottom: 8, fontSize: "1rem" }}>{date}</h3>
-                  {sessions.map((s, idx) => (
-                    <div key={idx} style={{ fontSize: "0.85rem", paddingLeft: 8, marginBottom: 4 }}>
-                      <strong>{s.liftName}</strong> – {s.setsCompleted || 1} sets × {s.repsCompleted} reps
-                      {s.actualWeight && <span> @ {s.actualWeight}kg</span>}
-                      {s.actualRPE && <span> (RPE {s.actualRPE})</span>}
-                      {s.actualRIR && <span> (RIR {s.actualRIR})</span>}
-                    </div>
-                  ))}
-                </div>
-              ));
-            })()
-          )}
-        </div>
+<div className="card">
+  <h2>Recent Activity</h2>
+  {recentSessions.length === 0 ? (
+    <p>No sessions logged yet.</p>
+  ) : (
+    (() => {
+      // Group sessions by date AND workout (week+day)
+      const grouped = recentSessions.reduce((acc, session) => {
+        const dateKey = new Date(session.createdAt).toDateString();
+        const workoutKey = `${dateKey}_w${session.week}_d${session.day}`;
+        
+        if (!acc[workoutKey]) {
+          acc[workoutKey] = {
+            date: session.createdAt,
+            week: session.week,
+            day: session.day,
+            focus: session.programName || "Workout",
+            exercises: [],
+            isExpanded: false
+          };
+        }
+        acc[workoutKey].exercises.push(session);
+        return acc;
+      }, {});
+      
+      const toggleWorkout = (workoutKey) => {
+        setExpandedWorkouts(prev => ({
+          ...prev,
+          [workoutKey]: !prev[workoutKey]
+        }));
+      };
+      
+      return Object.entries(grouped).slice(0, 5).map(([workoutKey, workout]) => {
+        const isExpanded = expandedWorkouts[workoutKey];
+        const workoutDate = new Date(workout.date);
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        let dateDisplay = workoutDate.toLocaleDateString(undefined, {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric'
+        });
+        
+        if (workoutDate.toDateString() === today.toDateString()) {
+          dateDisplay = "Today";
+        } else if (workoutDate.toDateString() === yesterday.toDateString()) {
+          dateDisplay = "Yesterday";
+        }
+        
+        // Calculate improvements
+        const improvements = {
+          repPR: false,
+          weightPR: false,
+          wasHard: false
+        };
+        
+        // Simple check for PRs (compare with previous sessions of same exercise)
+        workout.exercises.forEach(ex => {
+          // This would need historical data - simplified for now
+          if (ex.actualRPE && ex.actualRPE >= 8.5) {
+            improvements.wasHard = true;
+          }
+        });
+        
+        return (
+          <div key={workoutKey} style={{ 
+            marginBottom: 16, 
+            borderBottom: "1px solid var(--border)", 
+            paddingBottom: 12 
+          }}>
+            <div 
+              onClick={() => toggleWorkout(workoutKey)}
+              style={{ 
+                display: "flex", 
+                justifyContent: "space-between", 
+                alignItems: "center",
+                cursor: "pointer",
+                padding: "8px",
+                borderRadius: "8px",
+                background: isExpanded ? "var(--card-hover)" : "transparent"
+              }}
+            >
+              <div>
+                <h3 style={{ color: "var(--accent)", marginBottom: 4, fontSize: "1rem" }}>
+                  {dateDisplay} - Week {workout.week}, Day {workout.day}
+                </h3>
+                <p style={{ fontSize: "0.8rem", color: "var(--text-gray)" }}>
+                  {workout.exercises.length} exercises • 
+                  {improvements.repPR && " 🏆 Rep PR •"}
+                  {improvements.weightPR && " 🏋️ Weight PR •"}
+                  {improvements.wasHard && " 💪 Challenging session"}
+                </p>
+              </div>
+              <span style={{ fontSize: "1.2rem" }}>{isExpanded ? "▼" : "▶"}</span>
+            </div>
+            
+            {isExpanded && (
+              <div style={{ marginTop: 12, paddingLeft: 8 }}>
+                {workout.exercises.map((s, idx) => (
+                  <div key={idx} style={{ fontSize: "0.85rem", marginBottom: 8 }}>
+                    <strong>{s.liftName}</strong> – 
+                    {s.repsPerSet && s.repsPerSet.length > 0 
+                      ? ` Sets: [${s.repsPerSet.join(", ")}]`
+                      : ` ${s.setsCompleted || 1} × ${s.repsCompleted} reps`
+                    }
+                    {s.actualWeight && <span> @ {s.actualWeight}kg</span>}
+                    {s.actualRPE && <span> (RPE {s.actualRPE})</span>}
+                    {s.actualRIR && <span> (RIR {s.actualRIR})</span>}
+                    {s.actualStability && <span> (Stability {s.actualStability})</span>}
+                    {s.actualPain && <span> (Pain {s.actualPain})</span>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      });
+    })()
+  )}
+</div>
 
         {/* Workout Streak Card */}
         <div className="card">
