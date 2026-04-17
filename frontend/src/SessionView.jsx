@@ -19,6 +19,11 @@ export default function SessionView() {
   const [history, setHistory] = useState({});
   const [showReadiness, setShowReadiness] = useState(true);
   const [adjustments, setAdjustments] = useState({ rpeAdjustment: 0, rirAdjustment: 0 });
+  
+  // Completion modal state - MOVED INSIDE component
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [workoutSummary, setWorkoutSummary] = useState(null);
+  const [completedExerciseCount, setCompletedExerciseCount] = useState(0);
 
   const userId = localStorage.getItem("userId");
   const program = localStorage.getItem("program");
@@ -72,58 +77,77 @@ export default function SessionView() {
   };
 
   const handleAutoFill = (lift) => {
-  const newInputs = { ...inputs };
-  const liftInputs = newInputs[lift.liftName] || {};
-  
-  // Auto fill target reps for each set
-  const targetRepsPerSet = [];
-  const targetRepsValue = lift.reps;
-  
-  // Parse target reps (could be "8-12" or just "8")
-  let targetRepsNumber = 8;
-  if (targetRepsValue) {
-    if (targetRepsValue.includes('-')) {
-      const parts = targetRepsValue.split('-').map(Number);
-      targetRepsNumber = parts[1] || parts[0]; // Use the higher number for hypertrophy
-    } else {
-      targetRepsNumber = parseInt(targetRepsValue, 10);
+    const newInputs = { ...inputs };
+    const liftInputs = newInputs[lift.liftName] || {};
+    
+    const targetRepsPerSet = [];
+    const targetRepsValue = lift.reps;
+    
+    let targetRepsNumber = 8;
+    if (targetRepsValue) {
+      if (targetRepsValue.includes('-')) {
+        const parts = targetRepsValue.split('-').map(Number);
+        targetRepsNumber = parts[1] || parts[0];
+      } else {
+        targetRepsNumber = parseInt(targetRepsValue, 10);
+      }
     }
-  }
-  
-  // Fill each set with the target reps
-  for (let i = 0; i < (lift.sets || 1); i++) {
-    targetRepsPerSet.push(targetRepsNumber);
-  }
-  liftInputs.repsPerSet = targetRepsPerSet;
-  
-  if (lift.progressionType === "strength" || data.logic === "STRENGTH_RPE") {
-    let targetRPE = lift.rpeTarget;
-    if (adjustments.rpeAdjustment) {
-      targetRPE = Math.min(10, Math.max(1, targetRPE + adjustments.rpeAdjustment));
+    
+    for (let i = 0; i < (lift.sets || 1); i++) {
+      targetRepsPerSet.push(targetRepsNumber);
     }
-    liftInputs.rpe = targetRPE;
-  }
-  
-  if (data.logic === "HYPERTROPHY_VOLUME" || lift.progressionType === "volume") {
-    let targetRIR = lift.rirTarget;
-    if (adjustments.rirAdjustment) {
-      targetRIR = Math.min(5, Math.max(0, targetRIR + adjustments.rirAdjustment));
+    liftInputs.repsPerSet = targetRepsPerSet;
+    
+    if (lift.progressionType === "strength" || data.logic === "STRENGTH_RPE") {
+      let targetRPE = lift.rpeTarget;
+      if (adjustments.rpeAdjustment) {
+        targetRPE = Math.min(10, Math.max(1, targetRPE + adjustments.rpeAdjustment));
+      }
+      liftInputs.rpe = targetRPE;
     }
-    liftInputs.rir = targetRIR;
-  }
+    
+    if (data.logic === "HYPERTROPHY_VOLUME" || lift.progressionType === "volume") {
+      let targetRIR = lift.rirTarget;
+      if (adjustments.rirAdjustment) {
+        targetRIR = Math.min(5, Math.max(0, targetRIR + adjustments.rirAdjustment));
+      }
+      liftInputs.rir = targetRIR;
+    }
+    
+    if (lift.progressionType === "power" && lift.qualityTarget) {
+      liftInputs.quality = lift.qualityTarget;
+    }
+    
+    if (lift.progressionType === "mobility") {
+      liftInputs.stability = lift.stabilityTarget || 7;
+      liftInputs.pain = lift.painTarget || 4;
+    }
+    
+    newInputs[lift.liftName] = liftInputs;
+    setInputs(newInputs);
+  };
+
+  // Track when an exercise is logged
+const markExerciseComplete = () => {
+  const newCount = completedExerciseCount + 1;
+  setCompletedExerciseCount(newCount);
   
-  if (lift.progressionType === "power" && lift.qualityTarget) {
-    liftInputs.quality = lift.qualityTarget;
+  if (newCount === data?.projected?.length) {
+    generateWorkoutSummary();
   }
-  
-  if (lift.progressionType === "mobility") {
-    liftInputs.stability = lift.stabilityTarget || 7;
-    liftInputs.pain = lift.painTarget || 4;
-  }
-  
-  newInputs[lift.liftName] = liftInputs;
-  setInputs(newInputs);
 };
+
+  // Generate workout summary
+  const generateWorkoutSummary = async () => {
+    try {
+      const res = await fetch(`/api/workout-summary/${userId}?program=${encodeURIComponent(program)}&week=${week}&day=${day}`);
+      const summary = await res.json();
+      setWorkoutSummary(summary);
+      setShowCompletionModal(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const logSet = async (lift) => {
     const liftName = lift.liftName;
@@ -163,7 +187,7 @@ export default function SessionView() {
       let actualQuality = null;
       let actualROM = null;
       let actualPain = null;
-      let actualStability = null;  // ADD THIS LINE
+      let actualStability = null;
       const repsPerSet = inputs[liftName]?.repsPerSet || [];
 
       if (progressionType === "strength" || logic === "STRENGTH_RPE") {
@@ -222,6 +246,7 @@ export default function SessionView() {
       await fetchHistory(liftName);
       
       setInputs(prev => ({ ...prev, [liftName]: {} }));
+      markExerciseComplete();
     } catch (err) {
       console.error(err);
     }
@@ -449,6 +474,108 @@ export default function SessionView() {
           );
         })}
       </div>
+      
+      {/* Workout Completion Modal */}
+      {showCompletionModal && workoutSummary && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0,0,0,0.95)", zIndex: 2000,
+          display: "flex", alignItems: "center", justifyContent: "center", padding: "20px",
+          overflowY: "auto"
+        }}>
+          <div style={{
+            background: "var(--card-bg)", borderRadius: "24px", padding: "30px",
+            maxWidth: "500px", width: "100%", border: "1px solid var(--accent)",
+            maxHeight: "90vh", overflowY: "auto"
+          }}>
+            <h2 style={{ color: "var(--accent)", marginBottom: "8px" }}>Workout Complete! 🎉</h2>
+            <p style={{ color: "var(--text-gray)", marginBottom: "20px" }}>Great work today</p>
+            
+            <div style={{ marginBottom: "24px" }}>
+              <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>📊 Session Stats</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div style={{ background: "var(--bg-light)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.timeToComplete}</div>
+                  <div style={{ fontSize: "12px", color: "var(--text-gray)" }}>Time</div>
+                </div>
+                <div style={{ background: "var(--bg-light)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.totalVolume}kg</div>
+                  <div style={{ fontSize: "12px", color: "var(--text-gray)" }}>Total Volume</div>
+                </div>
+                <div style={{ background: "var(--bg-light)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.exercisesCompleted}</div>
+                  <div style={{ fontSize: "12px", color: "var(--text-gray)" }}>Exercises</div>
+                </div>
+                <div style={{ background: "var(--bg-light)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.streak} 🔥</div>
+                  <div style={{ fontSize: "12px", color: "var(--text-gray)" }}>Day Streak</div>
+                </div>
+              </div>
+            </div>
+            
+            {workoutSummary.prs.length > 0 && (
+              <div style={{ marginBottom: "24px" }}>
+                <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>🏆 Personal Records</h3>
+                <ul style={{ listStyle: "none", padding: 0 }}>
+                  {workoutSummary.prs.map((pr, i) => (
+                    <li key={i} style={{ padding: "4px 0", color: "#4caf50" }}>✓ {pr}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {workoutSummary.underRPE.length > 0 && (
+              <div style={{ marginBottom: "24px" }}>
+                <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>💪 Nailed It</h3>
+                <ul style={{ listStyle: "none", padding: 0 }}>
+                  {workoutSummary.underRPE.map((r, i) => (
+                    <li key={i} style={{ padding: "4px 0", color: "var(--accent)" }}>✓ {r}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {workoutSummary.nextFocus && (
+              <div style={{ marginBottom: "24px", background: "var(--bg-light)", padding: "16px", borderRadius: "8px" }}>
+                <h3 style={{ fontSize: "1rem", marginBottom: "8px" }}>📝 Next Session Focus</h3>
+                <p style={{ fontSize: "14px", color: "var(--text-gray)" }}>{workoutSummary.nextFocus}</p>
+              </div>
+            )}
+            
+            <div style={{ display: "flex", gap: "12px", marginTop: "20px", flexWrap: "wrap" }}>
+              <button 
+                onClick={() => {
+                  const shareText = `🔥 Just crushed my ${program} workout on Forge of Olympus!\n\nWeek ${week}, Day ${day}\n✅ ${workoutSummary.exercisesCompleted} exercises completed\n💪 ${workoutSummary.prs.length} personal records\n⏱️ ${workoutSummary.timeToComplete}\n\nJoin me: forge-of-olympus.onrender.com`;
+                  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+                  window.open(tweetUrl, '_blank');
+                }}
+                style={{ flex: 1, padding: "12px", background: "#1da1f2", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}
+              >
+                🐦 Share on X
+              </button>
+              <button 
+                onClick={() => {
+                  const shareText = `🔥 Just crushed my ${program} workout on Forge of Olympus!\n\nWeek ${week}, Day ${day}\n✅ ${workoutSummary.exercisesCompleted} exercises completed\n💪 ${workoutSummary.prs.length} personal records\n⏱️ ${workoutSummary.timeToComplete}`;
+                  const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=https://forge-of-olympus.onrender.com&quote=${encodeURIComponent(shareText)}`;
+                  window.open(fbUrl, '_blank');
+                }}
+                style={{ flex: 1, padding: "12px", background: "#4267B2", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}
+              >
+                📘 Share on Facebook
+              </button>
+              <button 
+                onClick={() => {
+                  setShowCompletionModal(false);
+                  window.location.href = "/dashboard";
+                }}
+                style={{ flex: 1, padding: "12px", background: "var(--accent)", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" }}
+              >
+                Go to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

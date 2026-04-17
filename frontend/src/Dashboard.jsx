@@ -12,6 +12,10 @@ export default function Dashboard() {
   const [recentSessions, setRecentSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedWorkout, setExpandedWorkout] = useState(null);
+  
+  // Rewards state
+  const [rewards, setRewards] = useState({ unlockedRewards: [], nextMilestone: null, streak: 0 });
+  const [dailyQuote, setDailyQuote] = useState(null);
 
   // Admin state
   const [assignEmail, setAssignEmail] = useState("");
@@ -29,6 +33,8 @@ export default function Dashboard() {
   const [removeMessage, setRemoveMessage] = useState("");
 
   const isAdmin = userEmail === "kieren2203@googlemail.com";
+  
+  const { unlockedRewards = [], nextMilestone = null } = rewards;
 
   // Handle program just selected (fixes the infinite loop)
   useEffect(() => {
@@ -65,7 +71,7 @@ export default function Dashboard() {
         });
         setEstimates(estMap);
 
-        const historyRes = await fetch(`/api/recent-sessions/${userId}`);
+        const historyRes = await fetch(`/api/recent-sessions/${userId}?limit=50`);
         if (historyRes.ok) {
           const sessions = await historyRes.json();
           setRecentSessions(sessions.slice(0, 5));
@@ -79,6 +85,31 @@ export default function Dashboard() {
     
     fetchData();
   }, [userId, navigate]);
+
+  // Fetch streak rewards
+  useEffect(() => {
+    if (!userId) return;
+    fetch(`/api/user-rewards/${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        setRewards(data);
+        if (data.streak !== parseInt(localStorage.getItem("streak") || 0)) {
+          localStorage.setItem("streak", data.streak);
+        }
+      })
+      .catch(err => console.error(err));
+  }, [userId]);
+
+  // Fetch daily quote if streak >= 3
+  useEffect(() => {
+    const streak = parseInt(localStorage.getItem("streak") || 0);
+    if (streak >= 3) {
+      fetch(`/api/daily-quote`)
+        .then(res => res.json())
+        .then(data => setDailyQuote(data))
+        .catch(err => console.error(err));
+    }
+  }, [rewards.streak]);
 
   const handleStartWorkout = async () => {
     const program = localStorage.getItem("program");
@@ -262,6 +293,15 @@ export default function Dashboard() {
           )}
           <button onClick={handleStartWorkout} className="btn-workout">🏋️ Start Workout</button>
           <button onClick={() => navigate("/")} className="btn-secondary">Browse More Programs</button>
+          <button 
+            onClick={() => {
+              const shareText = `I'm training with Forge of Olympus! 🔥 Join me: forge-of-olympus.onrender.com`;
+              window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+            }}
+            style={{ background: "#1da1f2", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer" }}
+          >
+            🐦 Share
+          </button>
         </div>
 
         {/* Estimated 1RM Card */}
@@ -285,210 +325,184 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Activity Card */}
-<div className="card">
-  <h2>Recent Activity</h2>
-  {recentSessions.length === 0 ? (
-    <p>No sessions logged yet.</p>
-  ) : (
-    (() => {
-      // Group sessions by workout (date + week + day)
-      const workoutMap = new Map();
-      
-      recentSessions.forEach(session => {
-        const date = new Date(session.createdAt);
-        const dateKey = date.toDateString();
-        const workoutKey = `${dateKey}_w${session.week}_d${session.day}`;
-        
-        if (!workoutMap.has(workoutKey)) {
-          workoutMap.set(workoutKey, {
-            id: workoutKey,
-            date: session.createdAt,
-            week: session.week,
-            day: session.day,
-            focus: session.programName || "Workout",
-            exercises: [],
-            isExpanded: false
-          });
-        }
-        workoutMap.get(workoutKey).exercises.push(session);
-      });
-      
-      // Convert to array and sort by date (most recent first)
-      const workouts = Array.from(workoutMap.values())
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .slice(0, 4);  // Last 4 workouts only
-      
-      // Calculate workout summary stats
-      const getWorkoutSummary = (exercises) => {
-        let qualityCount = 0;
-        let struggleCount = 0;
-        
-        exercises.forEach(ex => {
-          // Check for good lifts
-          if (ex.actualRPE && ex.targetRPE && ex.actualRPE <= ex.targetRPE + 0.5) {
-            qualityCount++;
-          }
-          if (ex.actualRIR && ex.targetRIR && ex.actualRIR <= ex.targetRIR) {
-            qualityCount++;
-          }
-          if (ex.actualStability && ex.targetStability && ex.actualStability >= ex.targetStability) {
-            qualityCount++;
-          }
-          if (ex.actualQuality && ex.targetQuality && ex.actualQuality >= ex.targetQuality) {
-            qualityCount++;
-          }
-          
-          // Check for struggles
-          if (ex.actualRPE && ex.targetRPE && ex.actualRPE > ex.targetRPE + 1) {
-            struggleCount++;
-          }
-          if (ex.actualRIR && ex.targetRIR && ex.actualRIR < ex.targetRIR - 1) {
-            struggleCount++;
-          }
-          if (ex.actualStability && ex.targetStability && ex.actualStability < ex.targetStability - 1) {
-            struggleCount++;
-          }
-        });
-        
-        const successRate = exercises.length > 0 ? Math.round((qualityCount / exercises.length) * 100) : 0;
-        
-        return { successRate, struggleCount };
-      };
-      
-      return workouts.map((workout) => {
-        const isExpanded = expandedWorkout === workout.id;
-        const workoutDate = new Date(workout.date);
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-        
-        let dateDisplay = workoutDate.toLocaleDateString(undefined, {
-          weekday: 'short',
-          month: 'short',
-          day: 'numeric'
-        });
-        
-        if (workoutDate.toDateString() === today.toDateString()) {
-          dateDisplay = "Today";
-        } else if (workoutDate.toDateString() === yesterday.toDateString()) {
-          dateDisplay = "Yesterday";
-        }
-        
-        const { successRate, struggleCount } = getWorkoutSummary(workout.exercises);
-        
-        // Determine emoji based on success rate
-        let statusEmoji = "✅";
-        let statusColor = "var(--accent)";
-        if (successRate >= 80) {
-          statusEmoji = "🔥";
-          statusColor = "#4caf50";
-        } else if (successRate >= 60) {
-          statusEmoji = "💪";
-          statusColor = "var(--accent)";
-        } else if (successRate >= 40) {
-          statusEmoji = "⚠️";
-          statusColor = "#ffaa44";
-        } else {
-          statusEmoji = "😓";
-          statusColor = "#ff5555";
-        }
-        
-        return (
-          <div key={workout.id} style={{ 
-            marginBottom: 16, 
-            borderBottom: "1px solid var(--border)", 
-            paddingBottom: 12 
-          }}>
-            <div 
-              onClick={() => setExpandedWorkout(isExpanded ? null : workout.id)}
-              style={{ 
-                display: "flex", 
-                justifyContent: "space-between", 
-                alignItems: "center",
-                cursor: "pointer",
-                padding: "8px",
-                borderRadius: "8px",
-                background: isExpanded ? "var(--card-hover)" : "transparent"
-              }}
-            >
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: 4 }}>
-                  <span style={{ fontSize: "1.2rem" }}>{statusEmoji}</span>
-                  <h3 style={{ color: statusColor, margin: 0, fontSize: "1rem" }}>
-                    {dateDisplay} - Week {workout.week}, Day {workout.day}
-                  </h3>
-                </div>
-                <div style={{ display: "flex", gap: "12px", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                  <span>📋 {workout.exercises.length} exercises</span>
-                  <span>⭐ {successRate}% quality</span>
-                  {struggleCount > 0 && <span>⚠️ {struggleCount} struggled</span>}
-                </div>
-              </div>
-              <span style={{ fontSize: "1.2rem" }}>{isExpanded ? "▲" : "▼"}</span>
-            </div>
-            
-            {isExpanded && (
-              <div style={{ marginTop: 12, paddingLeft: 8 }}>
-                {workout.exercises.map((s, idx) => {
-                  // Determine if this specific exercise was good or bad
-                  let exerciseEmoji = "✓";
-                  let exerciseColor = "#888";
-                  
-                  if (s.actualRPE && s.targetRPE) {
-                    if (s.actualRPE <= s.targetRPE + 0.5) {
-                      exerciseEmoji = "✅";
-                      exerciseColor = "#4caf50";
-                    } else if (s.actualRPE > s.targetRPE + 1) {
-                      exerciseEmoji = "⚠️";
-                      exerciseColor = "#ffaa44";
-                    }
+        <div className="card">
+          <h2>Recent Activity</h2>
+          {recentSessions.length === 0 ? (
+            <p>No sessions logged yet.</p>
+          ) : (
+            (() => {
+              const workoutMap = new Map();
+              
+              recentSessions.forEach(session => {
+                const date = new Date(session.createdAt);
+                const dateKey = date.toDateString();
+                const workoutKey = `${dateKey}_w${session.week}_d${session.day}`;
+                
+                if (!workoutMap.has(workoutKey)) {
+                  workoutMap.set(workoutKey, {
+                    id: workoutKey,
+                    date: session.createdAt,
+                    week: session.week,
+                    day: session.day,
+                    focus: session.programName || "Workout",
+                    exercises: [],
+                    isExpanded: false
+                  });
+                }
+                workoutMap.get(workoutKey).exercises.push(session);
+              });
+              
+              const workouts = Array.from(workoutMap.values())
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 4);
+              
+              const getWorkoutSummary = (exercises) => {
+                let qualityCount = 0;
+                let struggleCount = 0;
+                
+                exercises.forEach(ex => {
+                  if (ex.actualRPE && ex.targetRPE && ex.actualRPE <= ex.targetRPE + 0.5) {
+                    qualityCount++;
                   }
-                  if (s.actualRIR && s.targetRIR) {
-                    if (s.actualRIR <= s.targetRIR) {
-                      exerciseEmoji = "✅";
-                      exerciseColor = "#4caf50";
-                    } else if (s.actualRIR > s.targetRIR + 1) {
-                      exerciseEmoji = "⚠️";
-                      exerciseColor = "#ffaa44";
-                    }
+                  if (ex.actualRIR && ex.targetRIR && ex.actualRIR <= ex.targetRIR) {
+                    qualityCount++;
+                  }
+                  if (ex.actualStability && ex.targetStability && ex.actualStability >= ex.targetStability) {
+                    qualityCount++;
+                  }
+                  if (ex.actualQuality && ex.targetQuality && ex.actualQuality >= ex.targetQuality) {
+                    qualityCount++;
                   }
                   
-                  return (
-                    <div key={idx} style={{ 
-                      fontSize: "0.85rem", 
-                      marginBottom: 8,
-                      padding: "4px 8px",
-                      borderRadius: "6px",
-                      background: "var(--bg-light)"
-                    }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <span style={{ color: exerciseColor }}>{exerciseEmoji}</span>
-                        <strong>{s.liftName}</strong>
-                        <span style={{ color: "var(--text-gray)", fontSize: "0.75rem" }}>
-                          {s.repsPerSet && s.repsPerSet.length > 0 
-                            ? `Sets: [${s.repsPerSet.join(", ")}]`
-                            : `${s.setsCompleted || 1} × ${s.repsCompleted} reps`
-                          }
-                          {s.actualWeight && ` @ ${s.actualWeight}kg`}
-                        </span>
+                  if (ex.actualRPE && ex.targetRPE && ex.actualRPE > ex.targetRPE + 1) {
+                    struggleCount++;
+                  }
+                  if (ex.actualRIR && ex.targetRIR && ex.actualRIR < ex.targetRIR - 1) {
+                    struggleCount++;
+                  }
+                  if (ex.actualStability && ex.targetStability && ex.actualStability < ex.targetStability - 1) {
+                    struggleCount++;
+                  }
+                });
+                
+                const successRate = exercises.length > 0 ? Math.round((qualityCount / exercises.length) * 100) : 0;
+                return { successRate, struggleCount };
+              };
+              
+              return workouts.map((workout) => {
+                const isExpanded = expandedWorkout === workout.id;
+                const workoutDate = new Date(workout.date);
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                let dateDisplay = workoutDate.toLocaleDateString(undefined, {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric'
+                });
+                
+                if (workoutDate.toDateString() === today.toDateString()) {
+                  dateDisplay = "Today";
+                } else if (workoutDate.toDateString() === yesterday.toDateString()) {
+                  dateDisplay = "Yesterday";
+                }
+                
+                const { successRate, struggleCount } = getWorkoutSummary(workout.exercises);
+                
+                let statusEmoji = "✅";
+                let statusColor = "var(--accent)";
+                if (successRate >= 80) {
+                  statusEmoji = "🔥";
+                  statusColor = "#4caf50";
+                } else if (successRate >= 60) {
+                  statusEmoji = "💪";
+                  statusColor = "var(--accent)";
+                } else if (successRate >= 40) {
+                  statusEmoji = "⚠️";
+                  statusColor = "#ffaa44";
+                } else {
+                  statusEmoji = "😓";
+                  statusColor = "#ff5555";
+                }
+                
+                return (
+                  <div key={workout.id} style={{ marginBottom: 16, borderBottom: "1px solid var(--border)", paddingBottom: 12 }}>
+                    <div 
+                      onClick={() => setExpandedWorkout(isExpanded ? null : workout.id)}
+                      style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", padding: "8px", borderRadius: "8px", background: isExpanded ? "var(--card-hover)" : "transparent" }}
+                    >
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: 4 }}>
+                          <span style={{ fontSize: "1.2rem" }}>{statusEmoji}</span>
+                          <h3 style={{ color: statusColor, margin: 0, fontSize: "1rem" }}>
+                            {dateDisplay} - Week {workout.week}, Day {workout.day}
+                          </h3>
+                        </div>
+                        <div style={{ display: "flex", gap: "12px", fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                          <span>📋 {workout.exercises.length} exercises</span>
+                          <span>⭐ {successRate}% quality</span>
+                          {struggleCount > 0 && <span>⚠️ {struggleCount} struggled</span>}
+                        </div>
                       </div>
-                      <div style={{ fontSize: "0.7rem", color: "var(--text-gray)", paddingLeft: "24px" }}>
-                        {s.actualRPE && <span>Target RPE: {s.targetRPE} → Actual: {s.actualRPE}</span>}
-                        {s.actualRIR && <span>Target RIR: {s.targetRIR} → Actual: {s.actualRIR}</span>}
-                        {s.actualStability && <span>Stability: {s.actualStability}/10</span>}
-                        {s.actualPain && <span>Pain: {s.actualPain}/10</span>}
-                      </div>
+                      <span style={{ fontSize: "1.2rem" }}>{isExpanded ? "▲" : "▼"}</span>
                     </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        );
-      });
-    })()
-  )}
-</div>
+                    
+                    {isExpanded && (
+                      <div style={{ marginTop: 12, paddingLeft: 8 }}>
+                        {workout.exercises.map((s, idx) => {
+                          let exerciseEmoji = "✓";
+                          let exerciseColor = "#888";
+                          
+                          if (s.actualRPE && s.targetRPE) {
+                            if (s.actualRPE <= s.targetRPE + 0.5) {
+                              exerciseEmoji = "✅";
+                              exerciseColor = "#4caf50";
+                            } else if (s.actualRPE > s.targetRPE + 1) {
+                              exerciseEmoji = "⚠️";
+                              exerciseColor = "#ffaa44";
+                            }
+                          }
+                          if (s.actualRIR && s.targetRIR) {
+                            if (s.actualRIR <= s.targetRIR) {
+                              exerciseEmoji = "✅";
+                              exerciseColor = "#4caf50";
+                            } else if (s.actualRIR > s.targetRIR + 1) {
+                              exerciseEmoji = "⚠️";
+                              exerciseColor = "#ffaa44";
+                            }
+                          }
+                          
+                          return (
+                            <div key={idx} style={{ fontSize: "0.85rem", marginBottom: 8, padding: "4px 8px", borderRadius: "6px", background: "var(--bg-light)" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <span style={{ color: exerciseColor }}>{exerciseEmoji}</span>
+                                <strong>{s.liftName}</strong>
+                                <span style={{ color: "var(--text-gray)", fontSize: "0.75rem" }}>
+                                  {s.repsPerSet && s.repsPerSet.length > 0 
+                                    ? `Sets: [${s.repsPerSet.join(", ")}]`
+                                    : `${s.setsCompleted || 1} × ${s.repsCompleted} reps`
+                                  }
+                                  {s.actualWeight && ` @ ${s.actualWeight}kg`}
+                                </span>
+                              </div>
+                              <div style={{ fontSize: "0.7rem", color: "var(--text-gray)", paddingLeft: "24px" }}>
+                                {s.actualRPE && <span>Target RPE: {s.targetRPE} → Actual: {s.actualRPE}</span>}
+                                {s.actualRIR && <span>Target RIR: {s.targetRIR} → Actual: {s.actualRIR}</span>}
+                                {s.actualStability && <span>Stability: {s.actualStability}/10</span>}
+                                {s.actualPain && <span>Pain: {s.actualPain}/10</span>}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              });
+            })()
+          )}
+        </div>
 
         {/* Workout Streak Card */}
         <div className="card">
@@ -497,6 +511,60 @@ export default function Dashboard() {
             {localStorage.getItem("streak") || 0} 🔥
           </p>
           <p>Consecutive workout days</p>
+        </div>
+
+        {/* Daily Motivation Quote - shows at streak 3+ */}
+        {dailyQuote && (
+          <div className="card" style={{ textAlign: "center" }}>
+            <h2>💪 Daily Motivation</h2>
+            <p style={{ fontStyle: "italic", fontSize: "1.1rem", marginBottom: "8px" }}>"{dailyQuote.text}"</p>
+            <p style={{ color: "var(--text-gray)", fontSize: "0.85rem" }}>— {dailyQuote.author}</p>
+          </div>
+        )}
+
+        {/* Streak Rewards Card */}
+        <div className="card">
+          <h2>🏆 Streak Rewards</h2>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+            <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent)", margin: 0 }}>
+              {localStorage.getItem("streak") || 0} days 🔥
+            </p>
+            {nextMilestone && (
+              <div style={{ textAlign: "right" }}>
+                <span style={{ fontSize: "12px", color: "var(--text-gray)" }}>Next reward in</span>
+                <div style={{ fontWeight: "bold", color: "var(--accent)" }}>{nextMilestone.daysNeeded} days</div>
+              </div>
+            )}
+          </div>
+          
+          {/* Progress bar to next milestone */}
+          {nextMilestone && (
+            <div style={{ marginBottom: "16px" }}>
+              <div style={{ background: "var(--bg-light)", borderRadius: "10px", height: "8px", overflow: "hidden" }}>
+                <div style={{ 
+                  width: `${((parseInt(localStorage.getItem("streak") || 0) - (nextMilestone.days - nextMilestone.daysNeeded)) / nextMilestone.daysNeeded * 100)}%`, 
+                  background: "var(--accent)", 
+                  height: "100%" 
+                }} />
+              </div>
+              <div style={{ fontSize: "12px", color: "var(--text-gray)", marginTop: "4px" }}>
+                {nextMilestone.daysNeeded} days until {nextMilestone.reward}
+              </div>
+            </div>
+          )}
+          
+          {/* Unlocked rewards */}
+          <details>
+            <summary style={{ cursor: "pointer", color: "var(--accent)", fontSize: "14px" }}>View unlocked rewards ({unlockedRewards.length})</summary>
+            <div style={{ marginTop: "12px" }}>
+              {unlockedRewards.map(reward => (
+                <div key={reward.rewardId} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", fontSize: "13px" }}>
+                  <span>✅</span>
+                  <span><strong>{reward.days} days:</strong> {reward.name}</span>
+                </div>
+              ))}
+            </div>
+          </details>
         </div>
 
         {/* Admin Panel – only visible to admin */}
