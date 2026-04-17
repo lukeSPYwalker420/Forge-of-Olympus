@@ -166,6 +166,27 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB error:", err));
 
+const findProgramFile = (programName) => {
+  const dataDir = path.join(__dirname, "data");
+  const files = fs.readdirSync(dataDir);
+  
+  // Normalize the search name: remove spaces, hyphens, parentheses, lowercase
+  const normalize = (str) => {
+    return str.toLowerCase().replace(/[\s\-\(\)]/g, '');
+  };
+  
+  const searchName = normalize(programName);
+  
+  for (const file of files) {
+    if (file.endsWith('.json')) {
+      const fileNameWithoutExt = file.replace('.json', '');
+      if (normalize(fileNameWithoutExt) === searchName) {
+        return path.join(dataDir, file);
+      }
+    }
+  }
+  return null;
+};
 // ==================== Program Loader ====================
 const loadProgram = (programName) => {
   const safeName = programName.replace(/\s+/g, '-');
