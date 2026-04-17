@@ -6,9 +6,9 @@ export default function ProgramSelect() {
   const purchased = JSON.parse(localStorage.getItem("purchasedPrograms") || "[]");
 
   const handleSelect = (programName) => {
-  // Clean the program name
-  const cleanName = programName.replace(/ –.*$/, '').replace(/ -.*$/, '');
-  localStorage.setItem("program", cleanName);
+  // For admin-assigned programs, store exactly as is
+  // For Stripe programs, the name is already normalized
+  localStorage.setItem("program", programName);
   localStorage.setItem("programJustSelected", "true");
   navigate("/dashboard");
 };
