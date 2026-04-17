@@ -13,13 +13,28 @@ const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-02-24.acacia", // Use the latest stable version
 });
-// Helper function to decode and normalize program names
+// Helper function to decode and normalize program names (for Stripe only)
 function normalizeProgramName(encodedName) {
   try {
     let decoded = decodeURIComponent(encodedName);
-    // Remove any " – Strength Program" or similar suffixes
-    decoded = decoded.replace(/ –.*$/, '');
-    decoded = decoded.replace(/ -.*$/, '');
+    // Only remove specific suffixes that come from Stripe product descriptions
+    // Don't remove dashes that are part of the actual program name
+    const suffixesToRemove = [
+      " – Strength Program",
+      " – Strength",
+      " – Power", 
+      " – Mobility",
+      " - Strength Program",
+      " - Strength",
+      " - Power",
+      " - Mobility"
+    ];
+    for (const suffix of suffixesToRemove) {
+      if (decoded.includes(suffix)) {
+        decoded = decoded.replace(suffix, '');
+        break;
+      }
+    }
     return decoded.trim();
   } catch (e) {
     return encodedName;
@@ -188,13 +203,28 @@ const findProgramFile = (programName) => {
   return null;
 };
 // ==================== Program Loader ====================
+// ==================== Program Loader ====================
 const loadProgram = (programName) => {
-  const safeName = programName.replace(/\s+/g, '-');
-  const filePath = path.join(__dirname, "data", `${safeName}.json`);
+  // First try to find by normalized matching (for admin-assigned programs with spaces/parentheses)
+  let filePath = findProgramFile(programName);
+  
+  // If not found, try original logic (for Stripe programs with hyphens)
+  if (!filePath) {
+    const safeName = programName.replace(/\s+/g, '-');
+    filePath = path.join(__dirname, "data", `${safeName}.json`);
+  }
+  
   console.log(`[DEBUG] Looking for program file: ${filePath}`);
-  console.log(`[DEBUG] __dirname = ${__dirname}`);
   console.log(`[DEBUG] Does file exist? ${fs.existsSync(filePath)}`);
-  if (!fs.existsSync(filePath)) throw new Error(`Program file not found: ${filePath}`);
+  
+  if (!fs.existsSync(filePath)) {
+    // List all available files for debugging
+    const dataDir = path.join(__dirname, "data");
+    const availableFiles = fs.readdirSync(dataDir);
+    console.log(`[DEBUG] Available files: ${availableFiles.join(', ')}`);
+    throw new Error(`Program file not found: ${filePath}`);
+  }
+  
   const raw = JSON.parse(fs.readFileSync(filePath, "utf-8"));
   if (raw.sessions && Array.isArray(raw.sessions)) return { name: raw.name, logic: raw.logic, sessions: raw.sessions };
   if (Array.isArray(raw)) return { sessions: raw, logic: "STRENGTH_RPE" };
