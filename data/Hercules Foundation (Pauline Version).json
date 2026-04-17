@@ -7,48 +7,11 @@
       "day": 1,
       "focus": "Recognition & Positional Control - Strength (Squat Bias)",
       "exercises": [
-        {
-          "liftName": "Box-Constrained Back Squat",
-          "sets": 4,
-          "reps": "6-8",
-          "rpeTarget": 7,
-          "progressionType": "strength",
-          "notes": "Technique bar. Vertical torso priority. Box defines depth. No collapse forward."
-        },
-        {
-          "liftName": "Flat Barbell Bench Press (Fixed Load)",
-          "sets": 4,
-          "reps": "6-8",
-          "rpeTarget": 7,
-          "progressionType": "strength",
-          "notes": "Terminate set if hips rise. Rib control priority."
-        },
-        {
-          "liftName": "Romanian Deadlift",
-          "sets": 3,
-          "reps": "8-10",
-          "rpeTarget": 7,
-          "progressionType": "strength",
-          "notes": "Maintain neutral spine. Use as hinge reinforcement."
-        },
-        {
-          "liftName": "Behind-the-Neck Lat Pulldown (Constrained)",
-          "sets": 3,
-          "reps": "8-10",
-          "rpeTarget": 6,
-          "progressionType": "volume",
-          "notes": "Very light load. Stop before rib flare or head jut. Focus scap depression + ER.",
-          "rirTarget": 2
-        },
-        {
-          "liftName": "Barbell Side Bends (Back Loaded)",
-          "sets": 3,
-          "reps": "10-12",
-          "stabilityTarget": 7,
-          "painTarget": 4,
-          "progressionType": "mobility",
-          "notes": "Light technique bar. Controlled lateral movement, no collapse."
-        }
+        { "liftName": "Box-Constrained Back Squat", "sets": 4, "reps": "6-8", "rpeTarget": 7, "progressionType": "strength", "notes": "Technique bar. Vertical torso priority. Box defines depth. No collapse forward." },
+        { "liftName": "Flat Barbell Bench Press (Fixed Load)", "sets": 4, "reps": "6-8", "rpeTarget": 7, "progressionType": "strength", "notes": "Terminate set if hips rise. Rib control priority." },
+        { "liftName": "Romanian Deadlift", "sets": 3, "reps": "8-10", "rpeTarget": 7, "progressionType": "strength", "notes": "Maintain neutral spine. Use as hinge reinforcement." },
+        { "liftName": "Behind-the-Neck Lat Pulldown (Constrained)", "sets": 3, "reps": "8-10", "rpeTarget": 6, "progressionType": "volume", "notes": "Very light load. Stop before rib flare or head jut. Focus scap depression + ER.", "rirTarget": 2 },
+        { "liftName": "Barbell Side Bends (Back Loaded)", "sets": 3, "reps": "10-12", "stabilityTarget": 7, "painTarget": 4, "progressionType": "mobility", "notes": "Light technique bar. Controlled lateral movement, no collapse." }
       ]
     },
     {
@@ -56,38 +19,10 @@
       "day": 2,
       "focus": "Power (Intent-Based)",
       "exercises": [
-        {
-          "liftName": "Sit-to-Stand (Speed Focus)",
-          "sets": 5,
-          "reps": "5",
-          "qualityTarget": 8,
-          "progressionType": "power",
-          "notes": "Explode up, control down. Maintain balance."
-        },
-        {
-          "liftName": "Low Box Step-Off to Stick Landing",
-          "sets": 4,
-          "reps": "3",
-          "qualityTarget": 8,
-          "progressionType": "power",
-          "notes": "Step off, absorb force quietly. No collapse."
-        },
-        {
-          "liftName": "Kettlebell Deadlift (Fast Intent)",
-          "sets": 4,
-          "reps": "5",
-          "qualityTarget": 8,
-          "progressionType": "power",
-          "notes": "Light load. Fast concentric, controlled eccentric."
-        },
-        {
-          "liftName": "Light Romanian Deadlift (Speed Emphasis)",
-          "sets": 4,
-          "reps": "5",
-          "qualityTarget": 8,
-          "progressionType": "power",
-          "notes": "Reinforce hinge with speed, not load."
-        }
+        { "liftName": "Sit-to-Stand (Speed Focus)", "sets": 5, "reps": "5", "qualityTarget": 8, "progressionType": "power", "notes": "Explode up, control down. Maintain balance." },
+        { "liftName": "Low Box Step-Off to Stick Landing", "sets": 4, "reps": "3", "qualityTarget": 8, "progressionType": "power", "notes": "Step off, absorb force quietly. No collapse." },
+        { "liftName": "Kettlebell Deadlift (Fast Intent)", "sets": 4, "reps": "5", "qualityTarget": 8, "progressionType": "power", "notes": "Light load. Fast concentric, controlled eccentric." },
+        { "liftName": "Light Romanian Deadlift (Speed Emphasis)", "sets": 4, "reps": "5", "qualityTarget": 8, "progressionType": "power", "notes": "Reinforce hinge with speed, not load." }
       ]
     },
     {
@@ -95,65 +30,13 @@
       "day": 3,
       "focus": "Structure (Zercher Bias)",
       "exercises": [
-        {
-          "liftName": "Zercher Squat (Partial ROM)",
-          "sets": 4,
-          "reps": "5-6",
-          "rpeTarget": 7,
-          "progressionType": "strength",
-          "notes": "Technique bar. Stop above loss of position. Rib stack priority."
-        },
-        {
-          "liftName": "World's Greatest Stretch",
-          "sets": 2,
-          "reps": "5",
-          "stabilityTarget": 7,
-          "painTarget": 4,
-          "progressionType": "mobility",
-          "notes": "Per side"
-        },
-        {
-          "liftName": "90/90 Hip Rotations",
-          "sets": 2,
-          "reps": "8",
-          "stabilityTarget": 7,
-          "painTarget": 4,
-          "progressionType": "mobility"
-        },
-        {
-          "liftName": "Thoracic Extensions (Foam Roller)",
-          "sets": 2,
-          "reps": "10",
-          "stabilityTarget": 7,
-          "painTarget": 4,
-          "progressionType": "mobility"
-        },
-        {
-          "liftName": "Supported Single-Leg Romanian Deadlift",
-          "sets": 3,
-          "reps": "8",
-          "stabilityTarget": 7,
-          "painTarget": 4,
-          "progressionType": "stability",
-          "notes": "Per leg, light support allowed"
-        },
-        {
-          "liftName": "Cable Face Pulls (Strict)",
-          "sets": 3,
-          "reps": "12-15",
-          "qualityTarget": 8,
-          "progressionType": "power",
-          "notes": "Pause at peak. Enforce scap retraction."
-        },
-        {
-          "liftName": "Regressed Dead Bug (Heel Taps)",
-          "sets": 3,
-          "reps": "8",
-          "stabilityTarget": 8,
-          "painTarget": 4,
-          "progressionType": "stability",
-          "notes": "Per side, maintain spinal control"
-        }
+        { "liftName": "Zercher Squat (Partial ROM)", "sets": 4, "reps": "5-6", "rpeTarget": 7, "progressionType": "strength", "notes": "Technique bar. Stop above loss of position. Rib stack priority." },
+        { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "stabilityTarget": 7, "painTarget": 4, "progressionType": "mobility", "notes": "Per side" },
+        { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "stabilityTarget": 7, "painTarget": 4, "progressionType": "mobility" },
+        { "liftName": "Thoracic Extensions (Foam Roller)", "sets": 2, "reps": "10", "stabilityTarget": 7, "painTarget": 4, "progressionType": "mobility" },
+        { "liftName": "Supported Single-Leg Romanian Deadlift", "sets": 3, "reps": "8", "stabilityTarget": 7, "painTarget": 4, "progressionType": "stability", "notes": "Per leg, light support allowed" },
+        { "liftName": "Cable Face Pulls (Strict)", "sets": 3, "reps": "12-15", "qualityTarget": 8, "progressionType": "power", "notes": "Pause at peak. Enforce scap retraction." },
+        { "liftName": "Regressed Dead Bug (Heel Taps)", "sets": 3, "reps": "8", "stabilityTarget": 8, "painTarget": 4, "progressionType": "stability", "notes": "Per side, maintain spinal control" }
       ]
     },
     {
@@ -161,44 +44,11 @@
       "day": 1,
       "focus": "Pattern Reinforcement - Strength",
       "exercises": [
-        {
-          "liftName": "Box-Constrained Back Squat",
-          "sets": 4,
-          "reps": "6-8",
-          "rpeTarget": 7.5,
-          "progressionType": "strength",
-          "notes": "Slight load increase only if positional control maintained"
-        },
-        {
-          "liftName": "Flat Barbell Bench Press (Fixed Load)",
-          "sets": 4,
-          "reps": "6-8",
-          "rpeTarget": 7.5,
-          "progressionType": "strength"
-        },
-        {
-          "liftName": "Romanian Deadlift",
-          "sets": 3,
-          "reps": "8-10",
-          "rpeTarget": 7.5,
-          "progressionType": "strength"
-        },
-        {
-          "liftName": "Behind-the-Neck Lat Pulldown (Constrained)",
-          "sets": 3,
-          "reps": "8-10",
-          "rpeTarget": 6.5,
-          "progressionType": "volume",
-          "rirTarget": 2
-        },
-        {
-          "liftName": "Barbell Side Bends (Back Loaded)",
-          "sets": 3,
-          "reps": "10-12",
-          "stabilityTarget": 7,
-          "painTarget": 4,
-          "progressionType": "mobility"
-        }
+        { "liftName": "Box-Constrained Back Squat", "sets": 4, "reps": "6-8", "rpeTarget": 7.5, "progressionType": "strength", "notes": "Slight load increase only if positional control maintained" },
+        { "liftName": "Flat Barbell Bench Press (Fixed Load)", "sets": 4, "reps": "6-8", "rpeTarget": 7.5, "progressionType": "strength" },
+        { "liftName": "Romanian Deadlift", "sets": 3, "reps": "8-10", "rpeTarget": 7.5, "progressionType": "strength" },
+        { "liftName": "Behind-the-Neck Lat Pulldown (Constrained)", "sets": 3, "reps": "8-10", "rpeTarget": 6.5, "progressionType": "volume", "rirTarget": 2 },
+        { "liftName": "Barbell Side Bends (Back Loaded)", "sets": 3, "reps": "10-12", "stabilityTarget": 7, "painTarget": 4, "progressionType": "mobility" }
       ]
     },
     {
@@ -206,34 +56,10 @@
       "day": 2,
       "focus": "Pattern Reinforcement - Power",
       "exercises": [
-        {
-          "liftName": "Sit-to-Stand (Speed Focus)",
-          "sets": 5,
-          "reps": "5",
-          "qualityTarget": 8,
-          "progressionType": "power"
-        },
-        {
-          "liftName": "Low Box Step-Off to Stick Landing",
-          "sets": 4,
-          "reps": "3",
-          "qualityTarget": 8,
-          "progressionType": "power"
-        },
-        {
-          "liftName": "Kettlebell Deadlift (Fast Intent)",
-          "sets": 4,
-          "reps": "5",
-          "qualityTarget": 8,
-          "progressionType": "power"
-        },
-        {
-          "liftName": "Light Romanian Deadlift (Speed Emphasis)",
-          "sets": 4,
-          "reps": "5",
-          "qualityTarget": 8,
-          "progressionType": "power"
-        }
+        { "liftName": "Sit-to-Stand (Speed Focus)", "sets": 5, "reps": "5", "qualityTarget": 8, "progressionType": "power" },
+        { "liftName": "Low Box Step-Off to Stick Landing", "sets": 4, "reps": "3", "qualityTarget": 8, "progressionType": "power" },
+        { "liftName": "Kettlebell Deadlift (Fast Intent)", "sets": 4, "reps": "5", "qualityTarget": 8, "progressionType": "power" },
+        { "liftName": "Light Romanian Deadlift (Speed Emphasis)", "sets": 4, "reps": "5", "qualityTarget": 8, "progressionType": "power" }
       ]
     },
     {
@@ -241,64 +67,13 @@
       "day": 3,
       "focus": "Pattern Reinforcement - Zercher Bias",
       "exercises": [
-        {
-          "liftName": "Zercher Squat (Extended ROM)",
-          "sets": 4,
-          "reps": "5-6",
-          "rpeTarget": 7.5,
-          "progressionType": "strength",
-          "notes": "Extend Zercher ROM slightly if stable"
-        },
-        {
-          "liftName": "World's Greatest Stretch",
-          "sets": 2,
-          "reps": "5",
-          "stabilityTarget": 7,
-          "painTarget": 4,
-          "progressionType": "mobility",
-          "notes": "Per side"
-        },
-        {
-          "liftName": "90/90 Hip Rotations",
-          "sets": 2,
-          "reps": "8",
-          "stabilityTarget": 7,
-          "painTarget": 4,
-          "progressionType": "mobility"
-        },
-        {
-          "liftName": "Thoracic Extensions (Foam Roller)",
-          "sets": 2,
-          "reps": "10",
-          "stabilityTarget": 7,
-          "painTarget": 4,
-          "progressionType": "mobility"
-        },
-        {
-          "liftName": "Supported Single-Leg Romanian Deadlift",
-          "sets": 3,
-          "reps": "8",
-          "stabilityTarget": 7,
-          "painTarget": 4,
-          "progressionType": "stability",
-          "notes": "Per leg"
-        },
-        {
-          "liftName": "Cable Face Pulls (Strict)",
-          "sets": 3,
-          "reps": "12-15",
-          "qualityTarget": 8,
-          "progressionType": "power"
-        },
-        {
-          "liftName": "Regressed Dead Bug (Heel Taps)",
-          "sets": 3,
-          "reps": "8",
-          "stabilityTarget": 8,
-          "painTarget": 4,
-          "progressionType": "stability",
-          "notes": "Per side"
-        }
+        { "liftName": "Zercher Squat (Extended ROM)", "sets": 4, "reps": "5-6", "rpeTarget": 7.5, "progressionType": "strength", "notes": "Extend Zercher ROM slightly if stable" },
+        { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "stabilityTarget": 7, "painTarget": 4, "progressionType": "mobility", "notes": "Per side" },
+        { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "stabilityTarget": 7, "painTarget": 4, "progressionType": "mobility" },
+        { "liftName": "Thoracic Extensions (Foam Roller)", "sets": 2, "reps": "10", "stabilityTarget": 7, "painTarget": 4, "progressionType": "mobility" },
+        { "liftName": "Supported Single-Leg Romanian Deadlift", "sets": 3, "reps": "8", "stabilityTarget": 7, "painTarget": 4, "progressionType": "stability", "notes": "Per leg" },
+        { "liftName": "Cable Face Pulls (Strict)", "sets": 3, "reps": "12-15", "qualityTarget": 8, "progressionType": "power" },
+        { "liftName": "Regressed Dead Bug (Heel Taps)", "sets": 3, "reps": "8", "stabilityTarget": 8, "painTarget": 4, "progressionType": "stability", "notes": "Per side" }
       ]
     },
     {
@@ -306,45 +81,11 @@
       "day": 1,
       "focus": "Controlled Load Exposure - Strength",
       "exercises": [
-        {
-          "liftName": "Box-Constrained Back Squat",
-          "sets": 4,
-          "reps": "5-7",
-          "rpeTarget": 8,
-          "progressionType": "strength",
-          "notes": "Increase load. Introduce deeper squat range where possible"
-        },
-        {
-          "liftName": "Flat Barbell Bench Press (Fixed Load)",
-          "sets": 4,
-          "reps": "5-7",
-          "rpeTarget": 8,
-          "progressionType": "strength"
-        },
-        {
-          "liftName": "Romanian Deadlift",
-          "sets": 3,
-          "reps": "6-8",
-          "rpeTarget": 8,
-          "progressionType": "strength",
-          "notes": "Increase load"
-        },
-        {
-          "liftName": "Behind-the-Neck Lat Pulldown (Constrained)",
-          "sets": 3,
-          "reps": "8-10",
-          "rpeTarget": 7,
-          "progressionType": "volume",
-          "rirTarget": 2
-        },
-        {
-          "liftName": "Barbell Side Bends (Back Loaded)",
-          "sets": 3,
-          "reps": "10-12",
-          "stabilityTarget": 8,
-          "painTarget": 4,
-          "progressionType": "mobility"
-        }
+        { "liftName": "Box-Constrained Back Squat", "sets": 4, "reps": "5-7", "rpeTarget": 8, "progressionType": "strength", "notes": "Increase load. Introduce deeper squat range where possible" },
+        { "liftName": "Flat Barbell Bench Press (Fixed Load)", "sets": 4, "reps": "5-7", "rpeTarget": 8, "progressionType": "strength" },
+        { "liftName": "Romanian Deadlift", "sets": 3, "reps": "6-8", "rpeTarget": 8, "progressionType": "strength", "notes": "Increase load" },
+        { "liftName": "Behind-the-Neck Lat Pulldown (Constrained)", "sets": 3, "reps": "8-10", "rpeTarget": 7, "progressionType": "volume", "rirTarget": 2 },
+        { "liftName": "Barbell Side Bends (Back Loaded)", "sets": 3, "reps": "10-12", "stabilityTarget": 8, "painTarget": 4, "progressionType": "mobility" }
       ]
     },
     {
@@ -352,34 +93,10 @@
       "day": 2,
       "focus": "Controlled Load Exposure - Power",
       "exercises": [
-        {
-          "liftName": "Sit-to-Stand (Speed Focus)",
-          "sets": 5,
-          "reps": "5",
-          "qualityTarget": 8,
-          "progressionType": "power"
-        },
-        {
-          "liftName": "Low Box Step-Off to Stick Landing",
-          "sets": 4,
-          "reps": "3",
-          "qualityTarget": 8,
-          "progressionType": "power"
-        },
-        {
-          "liftName": "Kettlebell Deadlift (Fast Intent)",
-          "sets": 4,
-          "reps": "5",
-          "qualityTarget": 8,
-          "progressionType": "power"
-        },
-        {
-          "liftName": "Light Romanian Deadlift (Speed Emphasis)",
-          "sets": 4,
-          "reps": "5",
-          "qualityTarget": 8,
-          "progressionType": "power"
-        }
+        { "liftName": "Sit-to-Stand (Speed Focus)", "sets": 5, "reps": "5", "qualityTarget": 8, "progressionType": "power" },
+        { "liftName": "Low Box Step-Off to Stick Landing", "sets": 4, "reps": "3", "qualityTarget": 8, "progressionType": "power" },
+        { "liftName": "Kettlebell Deadlift (Fast Intent)", "sets": 4, "reps": "5", "qualityTarget": 8, "progressionType": "power" },
+        { "liftName": "Light Romanian Deadlift (Speed Emphasis)", "sets": 4, "reps": "5", "qualityTarget": 8, "progressionType": "power" }
       ]
     },
     {
@@ -387,63 +104,13 @@
       "day": 3,
       "focus": "Controlled Load Exposure - Zercher Bias",
       "exercises": [
-        {
-          "liftName": "Zercher Squat (Extended ROM)",
-          "sets": 4,
-          "reps": "5-6",
-          "rpeTarget": 8,
-          "progressionType": "strength"
-        },
-        {
-          "liftName": "World's Greatest Stretch",
-          "sets": 2,
-          "reps": "5",
-          "stabilityTarget": 8,
-          "painTarget": 4,
-          "progressionType": "mobility",
-          "notes": "Per side"
-        },
-        {
-          "liftName": "90/90 Hip Rotations",
-          "sets": 2,
-          "reps": "8",
-          "stabilityTarget": 8,
-          "painTarget": 4,
-          "progressionType": "mobility"
-        },
-        {
-          "liftName": "Thoracic Extensions (Foam Roller)",
-          "sets": 2,
-          "reps": "10",
-          "stabilityTarget": 8,
-          "painTarget": 4,
-          "progressionType": "mobility"
-        },
-        {
-          "liftName": "Supported Single-Leg Romanian Deadlift",
-          "sets": 3,
-          "reps": "8",
-          "stabilityTarget": 8,
-          "painTarget": 4,
-          "progressionType": "stability",
-          "notes": "Per leg"
-        },
-        {
-          "liftName": "Cable Face Pulls (Strict)",
-          "sets": 3,
-          "reps": "12-15",
-          "qualityTarget": 9,
-          "progressionType": "power"
-        },
-        {
-          "liftName": "Regressed Dead Bug (Heel Taps)",
-          "sets": 3,
-          "reps": "8",
-          "stabilityTarget": 9,
-          "painTarget": 4,
-          "progressionType": "stability",
-          "notes": "Per side"
-        }
+        { "liftName": "Zercher Squat (Extended ROM)", "sets": 4, "reps": "5-6", "rpeTarget": 8, "progressionType": "strength" },
+        { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "stabilityTarget": 8, "painTarget": 4, "progressionType": "mobility", "notes": "Per side" },
+        { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "stabilityTarget": 8, "painTarget": 4, "progressionType": "mobility" },
+        { "liftName": "Thoracic Extensions (Foam Roller)", "sets": 2, "reps": "10", "stabilityTarget": 8, "painTarget": 4, "progressionType": "mobility" },
+        { "liftName": "Supported Single-Leg Romanian Deadlift", "sets": 3, "reps": "8", "stabilityTarget": 8, "painTarget": 4, "progressionType": "stability", "notes": "Per leg" },
+        { "liftName": "Cable Face Pulls (Strict)", "sets": 3, "reps": "12-15", "qualityTarget": 9, "progressionType": "power" },
+        { "liftName": "Regressed Dead Bug (Heel Taps)", "sets": 3, "reps": "8", "stabilityTarget": 9, "painTarget": 4, "progressionType": "stability", "notes": "Per side" }
       ]
     },
     {
@@ -451,44 +118,11 @@
       "day": 1,
       "focus": "Stability Under Load - Strength",
       "exercises": [
-        {
-          "liftName": "Box-Constrained Back Squat",
-          "sets": 4,
-          "reps": "4-6",
-          "rpeTarget": 8.5,
-          "progressionType": "strength",
-          "notes": "Increase intensity moderately. Reduce constraints slightly if movement quality holds"
-        },
-        {
-          "liftName": "Flat Barbell Bench Press (Fixed Load)",
-          "sets": 4,
-          "reps": "4-6",
-          "rpeTarget": 8.5,
-          "progressionType": "strength"
-        },
-        {
-          "liftName": "Romanian Deadlift",
-          "sets": 3,
-          "reps": "6-8",
-          "rpeTarget": 8.5,
-          "progressionType": "strength"
-        },
-        {
-          "liftName": "Behind-the-Neck Lat Pulldown (Constrained)",
-          "sets": 3,
-          "reps": "8-10",
-          "rpeTarget": 7.5,
-          "progressionType": "volume",
-          "rirTarget": 2
-        },
-        {
-          "liftName": "Barbell Side Bends (Back Loaded)",
-          "sets": 3,
-          "reps": "10-12",
-          "stabilityTarget": 8,
-          "painTarget": 4,
-          "progressionType": "mobility"
-        }
+        { "liftName": "Box-Constrained Back Squat", "sets": 4, "reps": "4-6", "rpeTarget": 8.5, "progressionType": "strength", "notes": "Increase intensity moderately. Reduce constraints slightly if movement quality holds" },
+        { "liftName": "Flat Barbell Bench Press (Fixed Load)", "sets": 4, "reps": "4-6", "rpeTarget": 8.5, "progressionType": "strength" },
+        { "liftName": "Romanian Deadlift", "sets": 3, "reps": "6-8", "rpeTarget": 8.5, "progressionType": "strength" },
+        { "liftName": "Behind-the-Neck Lat Pulldown (Constrained)", "sets": 3, "reps": "8-10", "rpeTarget": 7.5, "progressionType": "volume", "rirTarget": 2 },
+        { "liftName": "Barbell Side Bends (Back Loaded)", "sets": 3, "reps": "10-12", "stabilityTarget": 8, "painTarget": 4, "progressionType": "mobility" }
       ]
     },
     {
@@ -496,34 +130,10 @@
       "day": 2,
       "focus": "Stability Under Load - Power",
       "exercises": [
-        {
-          "liftName": "Sit-to-Stand (Speed Focus)",
-          "sets": 5,
-          "reps": "5",
-          "qualityTarget": 9,
-          "progressionType": "power"
-        },
-        {
-          "liftName": "Low Box Step-Off to Stick Landing",
-          "sets": 4,
-          "reps": "3",
-          "qualityTarget": 9,
-          "progressionType": "power"
-        },
-        {
-          "liftName": "Kettlebell Deadlift (Fast Intent)",
-          "sets": 4,
-          "reps": "5",
-          "qualityTarget": 9,
-          "progressionType": "power"
-        },
-        {
-          "liftName": "Light Romanian Deadlift (Speed Emphasis)",
-          "sets": 4,
-          "reps": "5",
-          "qualityTarget": 9,
-          "progressionType": "power"
-        }
+        { "liftName": "Sit-to-Stand (Speed Focus)", "sets": 5, "reps": "5", "qualityTarget": 9, "progressionType": "power" },
+        { "liftName": "Low Box Step-Off to Stick Landing", "sets": 4, "reps": "3", "qualityTarget": 9, "progressionType": "power" },
+        { "liftName": "Kettlebell Deadlift (Fast Intent)", "sets": 4, "reps": "5", "qualityTarget": 9, "progressionType": "power" },
+        { "liftName": "Light Romanian Deadlift (Speed Emphasis)", "sets": 4, "reps": "5", "qualityTarget": 9, "progressionType": "power" }
       ]
     },
     {
@@ -531,63 +141,13 @@
       "day": 3,
       "focus": "Stability Under Load - Zercher Bias",
       "exercises": [
-        {
-          "liftName": "Zercher Squat (Extended ROM)",
-          "sets": 4,
-          "reps": "4-5",
-          "rpeTarget": 8.5,
-          "progressionType": "strength"
-        },
-        {
-          "liftName": "World's Greatest Stretch",
-          "sets": 2,
-          "reps": "5",
-          "stabilityTarget": 8,
-          "painTarget": 4,
-          "progressionType": "mobility",
-          "notes": "Per side"
-        },
-        {
-          "liftName": "90/90 Hip Rotations",
-          "sets": 2,
-          "reps": "8",
-          "stabilityTarget": 8,
-          "painTarget": 4,
-          "progressionType": "mobility"
-        },
-        {
-          "liftName": "Thoracic Extensions (Foam Roller)",
-          "sets": 2,
-          "reps": "10",
-          "stabilityTarget": 8,
-          "painTarget": 4,
-          "progressionType": "mobility"
-        },
-        {
-          "liftName": "Supported Single-Leg Romanian Deadlift",
-          "sets": 3,
-          "reps": "8",
-          "stabilityTarget": 8,
-          "painTarget": 4,
-          "progressionType": "stability",
-          "notes": "Per leg"
-        },
-        {
-          "liftName": "Cable Face Pulls (Strict)",
-          "sets": 3,
-          "reps": "12-15",
-          "qualityTarget": 9,
-          "progressionType": "power"
-        },
-        {
-          "liftName": "Regressed Dead Bug (Heel Taps)",
-          "sets": 3,
-          "reps": "8",
-          "stabilityTarget": 9,
-          "painTarget": 4,
-          "progressionType": "stability",
-          "notes": "Per side"
-        }
+        { "liftName": "Zercher Squat (Extended ROM)", "sets": 4, "reps": "4-5", "rpeTarget": 8.5, "progressionType": "strength" },
+        { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "stabilityTarget": 8, "painTarget": 4, "progressionType": "mobility", "notes": "Per side" },
+        { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "stabilityTarget": 8, "painTarget": 4, "progressionType": "mobility" },
+        { "liftName": "Thoracic Extensions (Foam Roller)", "sets": 2, "reps": "10", "stabilityTarget": 8, "painTarget": 4, "progressionType": "mobility" },
+        { "liftName": "Supported Single-Leg Romanian Deadlift", "sets": 3, "reps": "8", "stabilityTarget": 8, "painTarget": 4, "progressionType": "stability", "notes": "Per leg" },
+        { "liftName": "Cable Face Pulls (Strict)", "sets": 3, "reps": "12-15", "qualityTarget": 9, "progressionType": "power" },
+        { "liftName": "Regressed Dead Bug (Heel Taps)", "sets": 3, "reps": "8", "stabilityTarget": 9, "painTarget": 4, "progressionType": "stability", "notes": "Per side" }
       ]
     },
     {
@@ -595,35 +155,10 @@
       "day": 1,
       "focus": "Deload & Reassessment - Strength",
       "exercises": [
-        {
-          "liftName": "Box-Constrained Back Squat",
-          "sets": 3,
-          "reps": "8-10",
-          "rpeTarget": 5,
-          "progressionType": "deload",
-          "notes": "Reduce volume by ~40%"
-        },
-        {
-          "liftName": "Flat Barbell Bench Press (Fixed Load)",
-          "sets": 3,
-          "reps": "8-10",
-          "rpeTarget": 5,
-          "progressionType": "deload"
-        },
-        {
-          "liftName": "Romanian Deadlift",
-          "sets": 2,
-          "reps": "8-10",
-          "rpeTarget": 5,
-          "progressionType": "deload"
-        },
-        {
-          "liftName": "Behind-the-Neck Lat Pulldown (Constrained)",
-          "sets": 2,
-          "reps": "8-10",
-          "rpeTarget": 5,
-          "progressionType": "deload"
-        }
+        { "liftName": "Box-Constrained Back Squat", "sets": 3, "reps": "8-10", "rpeTarget": 5, "progressionType": "deload", "notes": "Reduce volume by ~40%" },
+        { "liftName": "Flat Barbell Bench Press (Fixed Load)", "sets": 3, "reps": "8-10", "rpeTarget": 5, "progressionType": "deload" },
+        { "liftName": "Romanian Deadlift", "sets": 2, "reps": "8-10", "rpeTarget": 5, "progressionType": "deload" },
+        { "liftName": "Behind-the-Neck Lat Pulldown (Constrained)", "sets": 2, "reps": "8-10", "rpeTarget": 5, "progressionType": "deload" }
       ]
     },
     {
@@ -631,27 +166,9 @@
       "day": 2,
       "focus": "Deload & Reassessment - Power",
       "exercises": [
-        {
-          "liftName": "Sit-to-Stand (Speed Focus)",
-          "sets": 3,
-          "reps": "5",
-          "qualityTarget": 7,
-          "progressionType": "deload"
-        },
-        {
-          "liftName": "Low Box Step-Off to Stick Landing",
-          "sets": 3,
-          "reps": "3",
-          "qualityTarget": 7,
-          "progressionType": "deload"
-        },
-        {
-          "liftName": "Kettlebell Deadlift (Fast Intent)",
-          "sets": 3,
-          "reps": "5",
-          "qualityTarget": 7,
-          "progressionType": "deload"
-        }
+        { "liftName": "Sit-to-Stand (Speed Focus)", "sets": 3, "reps": "5", "qualityTarget": 7, "progressionType": "deload" },
+        { "liftName": "Low Box Step-Off to Stick Landing", "sets": 3, "reps": "3", "qualityTarget": 7, "progressionType": "deload" },
+        { "liftName": "Kettlebell Deadlift (Fast Intent)", "sets": 3, "reps": "5", "qualityTarget": 7, "progressionType": "deload" }
       ]
     },
     {
@@ -659,48 +176,11 @@
       "day": 3,
       "focus": "Deload & Reassessment - Assessment",
       "exercises": [
-        {
-          "liftName": "World's Greatest Stretch",
-          "sets": 2,
-          "reps": "5",
-          "stabilityTarget": 6,
-          "painTarget": 3,
-          "progressionType": "deload",
-          "notes": "Re-test squat hold, side plank, and push-up pattern"
-        },
-        {
-          "liftName": "90/90 Hip Rotations",
-          "sets": 2,
-          "reps": "8",
-          "stabilityTarget": 6,
-          "painTarget": 3,
-          "progressionType": "deload"
-        },
-        {
-          "liftName": "Supported Single-Leg Romanian Deadlift",
-          "sets": 2,
-          "reps": "8",
-          "stabilityTarget": 6,
-          "painTarget": 3,
-          "progressionType": "deload",
-          "notes": "Per leg"
-        },
-        {
-          "liftName": "Cable Face Pulls (Strict)",
-          "sets": 2,
-          "reps": "12-15",
-          "qualityTarget": 7,
-          "progressionType": "deload"
-        },
-        {
-          "liftName": "Regressed Dead Bug (Heel Taps)",
-          "sets": 2,
-          "reps": "8",
-          "stabilityTarget": 6,
-          "painTarget": 3,
-          "progressionType": "deload",
-          "notes": "Per side"
-        }
+        { "liftName": "World's Greatest Stretch", "sets": 2, "reps": "5", "stabilityTarget": 6, "painTarget": 3, "progressionType": "deload", "notes": "Re-test squat hold, side plank, and push-up pattern" },
+        { "liftName": "90/90 Hip Rotations", "sets": 2, "reps": "8", "stabilityTarget": 6, "painTarget": 3, "progressionType": "deload" },
+        { "liftName": "Supported Single-Leg Romanian Deadlift", "sets": 2, "reps": "8", "stabilityTarget": 6, "painTarget": 3, "progressionType": "deload", "notes": "Per leg" },
+        { "liftName": "Cable Face Pulls (Strict)", "sets": 2, "reps": "12-15", "qualityTarget": 7, "progressionType": "deload" },
+        { "liftName": "Regressed Dead Bug (Heel Taps)", "sets": 2, "reps": "8", "stabilityTarget": 6, "painTarget": 3, "progressionType": "deload", "notes": "Per side" }
       ]
     }
   ]
