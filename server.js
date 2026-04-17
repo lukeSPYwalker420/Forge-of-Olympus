@@ -177,6 +177,30 @@ const LeadSchema = new mongoose.Schema({
 });
 const Lead = mongoose.model("Lead", LeadSchema);
 
+const StreakRewardSchema = new mongoose.Schema({
+  userId: { type: String, required: true },
+  streakDays: { type: Number, required: true },
+  rewardsUnlocked: [{
+    rewardId: String,
+    unlockedAt: { type: Date, default: Date.now }
+  }],
+  lastRewardCheck: { type: Date, default: Date.now }
+});
+const StreakReward = mongoose.model("StreakReward", StreakRewardSchema);
+
+// Streak milestone rewards
+const streakMilestones = [
+  { days: 3, rewardId: "motivation_quote", name: "Daily Motivation Quote", description: "Get a new motivational quote each day", type: "feature" },
+  { days: 7, rewardId: "workout_summary", name: "Advanced Workout Stats", description: "View detailed workout summaries", type: "feature" },
+  { days: 14, rewardId: "accessory_swap_1", name: "Accessory Swap", description: "Swap 1 accessory exercise per workout", type: "feature", swapsAllowed: 1 },
+  { days: 21, rewardId: "social_share_image", name: "Share Workout Image", description: "Share your workout as an image", type: "feature" },
+  { days: 30, rewardId: "coaching_discount_10", name: "10% Off Coaching", description: "10% discount on coaching add-on", type: "discount", discountPercent: 10 },
+  { days: 45, rewardId: "accessory_swap_2", name: "Accessory Swap (2 exercises)", description: "Swap 2 accessory exercises per workout", type: "feature", swapsAllowed: 2 },
+  { days: 60, rewardId: "bronze_badge", name: "Bronze Warrior Badge", description: "Bronze profile badge", type: "badge", badgeTier: "bronze" },
+  { days: 90, rewardId: "coaching_discount_20", name: "20% Off Coaching", description: "20% discount on coaching add-on", type: "discount", discountPercent: 20 },
+  { days: 100, rewardId: "free_coaching_month", name: "Free Coaching Month", description: "One free month of coaching", type: "free" }
+];
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB error:", err));
@@ -997,6 +1021,147 @@ app.delete("/api/admin/remove-program", async (req, res) => {
   
   console.log(`✅ Admin removed ${programName} from ${userEmail}`);
   res.json({ message: `Removed ${programName} from ${userEmail}` });
+});
+// Workout summary endpoint
+app.get("/api/workout-summary/:userId", async (req, res) => {
+  const { userId } = req.params;
+  const { program, week, day } = req.query;
+  
+  // Get today's sessions
+  const sessions = await Session.find({ 
+    userId, programName: program, week: Number(week), day: Number(day) 
+  });
+  
+  // Calculate total volume
+  let totalVolume = 0;
+  const prs = [];
+  const underRPE = [];
+  
+  for (const s of sessions) {
+    if (s.actualWeight && s.repsPerSet && s.repsPerSet.length) {
+      const setVolume = s.repsPerSet.reduce((sum, reps) => sum + (reps * s.actualWeight), 0);
+      totalVolume += setVolume;
+    } else if (s.actualWeight && s.repsCompleted) {
+      totalVolume += s.repsCompleted * s.actualWeight;
+    }
+    
+    // Check for RPE success
+    if (s.actualRPE && s.targetRPE && s.actualRPE <= s.targetRPE) {
+      underRPE.push(`${s.liftName}: ${s.actualRPE} ≤ ${s.targetRPE}`);
+    }
+    
+    // Check for rep PR (simplified - compare with previous sessions of same lift)
+    const previousSessions = await Session.find({ 
+      userId, liftName: s.liftName 
+    }).sort({ createdAt: -1 }).limit(2);
+    
+    if (previousSessions.length >= 2) {
+      const prev = previousSessions[1];
+      let currentReps = s.repsPerSet ? Math.max(...s.repsPerSet) : s.repsCompleted;
+      let prevReps = prev.repsPerSet ? Math.max(...prev.repsPerSet) : prev.repsCompleted;
+      if (currentReps > prevReps) {
+        prs.push(`${s.liftName}: ${prevReps} → ${currentReps} reps`);
+      }
+    }
+  }
+  
+  // Calculate time to complete (rough estimate based on session count)
+  const timeToComplete = `${sessions.length * 8 + 10} min`; // 8 min per exercise + warmup
+  
+  // Get user streak
+  const user = await User.findById(userId);
+  
+  res.json({
+    exercisesCompleted: sessions.length,
+    totalVolume,
+    timeToComplete,
+    prs: prs.slice(0, 3),
+    underRPE: underRPE.slice(0, 3),
+    streak: user?.streak || 0,
+    nextFocus: "Keep building on today's momentum. Focus on form as weight increases."
+  });
+});
+
+// Get user's unlocked rewards
+app.get("/api/user-rewards/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    
+    let rewardRecord = await StreakReward.findOne({ userId });
+    if (!rewardRecord) {
+      rewardRecord = await StreakReward.create({ userId, streakDays: 0, rewardsUnlocked: [] });
+    }
+    
+    // Calculate newly unlocked rewards
+    const newlyUnlocked = [];
+    for (const milestone of streakMilestones) {
+      const alreadyUnlocked = rewardRecord.rewardsUnlocked.some(r => r.rewardId === milestone.rewardId);
+      if (!alreadyUnlocked && user.streak >= milestone.days) {
+        newlyUnlocked.push(milestone);
+        rewardRecord.rewardsUnlocked.push({ rewardId: milestone.rewardId });
+      }
+    }
+    
+    if (newlyUnlocked.length > 0) {
+      await rewardRecord.save();
+      console.log(`🎁 User ${userId} unlocked: ${newlyUnlocked.map(r => r.name).join(', ')}`);
+    }
+    
+    const unlockedRewards = streakMilestones
+      .filter(m => user.streak >= m.days)
+      .map(m => ({ ...m, unlocked: true }));
+    
+    const nextMilestone = streakMilestones.find(m => user.streak < m.days);
+    
+    res.json({
+      streak: user.streak,
+      unlockedRewards,
+      nextMilestone: nextMilestone ? {
+        days: nextMilestone.days,
+        daysNeeded: nextMilestone.days - user.streak,
+        reward: nextMilestone.name,
+        description: nextMilestone.description
+      } : null,
+      newlyUnlocked
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get daily motivation quote (for streak day 3+)
+app.get("/api/daily-quote", async (req, res) => {
+  const quotes = [
+    { text: "The only bad workout is the one that didn't happen.", author: "Unknown" },
+    { text: "Strength doesn't come from what you can do. It comes from overcoming the things you once thought you couldn't.", author: "Rikki Rogers" },
+    { text: "The pain you feel today will be the strength you feel tomorrow.", author: "Unknown" },
+    { text: "Discipline is choosing between what you want now and what you want most.", author: "Unknown" },
+    { text: "Your body can stand almost anything. It's your mind that you have to convince.", author: "Unknown" },
+    { text: "The only easy day was yesterday.", author: "Navy SEALs" },
+    { text: "Don't count the days, make the days count.", author: "Muhammad Ali" }
+  ];
+  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+  res.json(randomQuote);
+});
+
+// Check if user can swap exercises (returns number of swaps allowed)
+app.get("/api/swap-permission/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    if (!user) return res.json({ swapsAllowed: 0 });
+    
+    let swapsAllowed = 0;
+    if (user.streak >= 45) swapsAllowed = 2;
+    else if (user.streak >= 14) swapsAllowed = 1;
+    
+    res.json({ swapsAllowed, streak: user.streak });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Serve static files from the public directory (images)
