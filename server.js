@@ -715,7 +715,8 @@ app.get("/api/estimate-1rm/:userId/:liftName", async (req, res) => {
 app.get("/api/recent-sessions/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
-    const sessions = await Session.find({ userId }).sort({ createdAt: -1 }).limit(20);
+    const limit = parseInt(req.query.limit) || 20;
+    const sessions = await Session.find({ userId }).sort({ createdAt: -1 }).limit(limit);
     res.json(sessions);
   } catch (err) {
     res.status(500).json({ error: err.message });
