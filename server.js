@@ -14,33 +14,57 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-02-24.acacia",
 });
 
-// Helper function to decode and normalize program names
+// Helper function to decode and normalize program names - FIXED for JSON file matching
 function normalizeProgramName(encodedName) {
   try {
     let decoded = decodeURIComponent(encodedName);
-    const suffixesToRemove = [
-      " – Strength Program",
-      " – Strength",
-      " – Power", 
-      " – Mobility",
-      " - Strength Program",
-      " - Strength",
-      " - Power",
-      " - Mobility"
+    
+    // First, try to extract the core program name from Stripe descriptions
+    const validPrograms = [
+      "Ares Protocol",
+      "Apollo Physique", 
+      "Hephaestus Framework",
+      "Hercules Foundation"
     ];
+    
+    // Check if the decoded name contains any of our valid program names
+    for (const validName of validPrograms) {
+      if (decoded.includes(validName)) {
+        console.log(`[NORMALIZE] "${decoded}" → "${validName}"`);
+        return validName;
+      }
+    }
+    
+    // Fallback: remove common suffixes
+    const suffixesToRemove = [
+      " – Strength Program", " – Strength", " – Power", " – Mobility",
+      " – Hypertrophy Program", " – Hypertrophy",
+      " - Strength Program", " - Strength", " - Power", " - Mobility",
+      " - Hypertrophy Program", " - Hypertrophy",
+      " Strength Program", " Strength", " Power", " Mobility",
+      " Hypertrophy Program", " Hypertrophy"
+    ];
+    
     for (const suffix of suffixesToRemove) {
       if (decoded.includes(suffix)) {
         decoded = decoded.replace(suffix, '');
         break;
       }
     }
+    
     return decoded.trim();
   } catch (e) {
+    console.error(`[NORMALIZE ERROR] ${encodedName}:`, e);
     return encodedName;
   }
 }
 
-// ==================== MongoDB Schemas (DEFINED BEFORE WEBHOOK) ====================
+// Helper function to convert program name to filename (spaces to hyphens)
+function programNameToFilename(programName) {
+  return programName.replace(/\s+/g, '-');
+}
+
+// ==================== MongoDB Schemas ====================
 const LiftStateSchema = new mongoose.Schema({
   userId: String,
   liftName: String,
@@ -160,8 +184,10 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
 
     try {
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-      const programName = lineItems.data[0]?.description || session.metadata?.programName || "Unknown Program";
-      const normalizedProgramName = normalizeProgramName(programName);
+      const rawProgramName = lineItems.data[0]?.description || session.metadata?.programName || "Unknown Program";
+      const normalizedProgramName = normalizeProgramName(rawProgramName);
+
+      console.log(`[WEBHOOK] Raw: "${rawProgramName}" → Normalized: "${normalizedProgramName}"`);
 
       let user = await User.findOne({ email: customerEmail });
       if (!user) {
@@ -204,7 +230,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB error:", err));
 
-// ==================== Helper Functions ====================
+// ==================== Program Loader Functions ====================
 const findProgramFile = (programName) => {
   const dataDir = path.join(__dirname, "data");
   if (!fs.existsSync(dataDir)) {
@@ -213,46 +239,69 @@ const findProgramFile = (programName) => {
   }
   
   const files = fs.readdirSync(dataDir);
+  const normalizedSearch = programName.toLowerCase().replace(/[\s\-]/g, '');
   
-  const normalize = (str) => {
-    return str.toLowerCase().replace(/[\s\-\(\)]/g, '');
-  };
-  
-  const searchName = normalize(programName);
+  console.log(`[FIND] Looking for program: "${programName}" (normalized: "${normalizedSearch}")`);
+  console.log(`[FIND] Available files: ${files.join(', ')}`);
   
   for (const file of files) {
     if (file.endsWith('.json')) {
       const fileNameWithoutExt = file.replace('.json', '');
-      if (normalize(fileNameWithoutExt) === searchName) {
-        return path.join(dataDir, file);
+      const normalizedFile = fileNameWithoutExt.toLowerCase().replace(/[\s\-]/g, '');
+      
+      if (normalizedFile === normalizedSearch) {
+        const foundPath = path.join(dataDir, file);
+        console.log(`[FIND] Matched: "${file}" → "${foundPath}"`);
+        return foundPath;
       }
     }
   }
+  
+  console.log(`[FIND] No match found for "${programName}"`);
   return null;
 };
 
 const loadProgram = (programName) => {
+  // First, try to find by normalized name matching
   let filePath = findProgramFile(programName);
   
+  // If not found, try converting spaces to hyphens (for direct filename match)
   if (!filePath) {
-    const safeName = programName.replace(/\s+/g, '-');
-    filePath = path.join(__dirname, "data", `${safeName}.json`);
+    const hyphenatedName = programNameToFilename(programName);
+    filePath = path.join(__dirname, "data", `${hyphenatedName}.json`);
+    console.log(`[LOAD] Trying hyphenated path: ${filePath}`);
   }
   
-  if (!fs.existsSync(filePath)) {
+  // If still not found, try original program name as-is
+  if (!filePath || !fs.existsSync(filePath)) {
+    const asIsPath = path.join(__dirname, "data", `${programName}.json`);
+    console.log(`[LOAD] Trying as-is path: ${asIsPath}`);
+    if (fs.existsSync(asIsPath)) {
+      filePath = asIsPath;
+    }
+  }
+  
+  if (!filePath || !fs.existsSync(filePath)) {
     const dataDir = path.join(__dirname, "data");
     const availableFiles = fs.existsSync(dataDir) ? fs.readdirSync(dataDir) : [];
-    console.error(`Program file not found: ${filePath}`);
-    console.error(`Available files: ${availableFiles.join(', ')}`);
+    console.error(`❌ Program file not found for: "${programName}"`);
+    console.error(`   Available files: ${availableFiles.join(', ')}`);
     throw new Error(`Program file not found: ${programName}`);
   }
   
+  console.log(`✅ Loading program from: ${filePath}`);
   const raw = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-  if (raw.sessions && Array.isArray(raw.sessions)) return { name: raw.name, logic: raw.logic, sessions: raw.sessions };
-  if (Array.isArray(raw)) return { sessions: raw, logic: "STRENGTH_RPE" };
+  
+  if (raw.sessions && Array.isArray(raw.sessions)) {
+    return { name: raw.name, logic: raw.logic, sessions: raw.sessions };
+  }
+  if (Array.isArray(raw)) {
+    return { sessions: raw, logic: "STRENGTH_RPE" };
+  }
   throw new Error(`Invalid program format`);
 };
 
+// ==================== Helper Functions ====================
 function estimate1RM(weight, reps, actualRPE) {
   if (!weight || !reps || !actualRPE || actualRPE <= 0) return weight || 0;
   const rpeToPercent = {
@@ -520,6 +569,41 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: Date.now() });
 });
 
+// Debug endpoint to check program files
+app.get("/api/debug/programs", (req, res) => {
+  const dataDir = path.join(__dirname, "data");
+  if (!fs.existsSync(dataDir)) {
+    return res.json({ error: "Data directory not found", path: dataDir });
+  }
+  
+  const files = fs.readdirSync(dataDir).filter(f => f.endsWith('.json'));
+  const programs = files.map(file => {
+    const filePath = path.join(dataDir, file);
+    try {
+      const raw = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+      return {
+        filename: file,
+        name: raw.name || file.replace('.json', ''),
+        logic: raw.logic || "unknown"
+      };
+    } catch (e) {
+      return { filename: file, name: file.replace('.json', ''), error: e.message };
+    }
+  });
+  
+  res.json({ 
+    dataDir, 
+    filesExist: files.length,
+    programs,
+    expectedMappings: {
+      "Ares Protocol": "Ares-Protocol.json",
+      "Apollo Physique": "Apollo-Physique.json",
+      "Hephaestus Framework": "Hephaestus-Framework.json",
+      "Hercules Foundation": "Hercules-Foundation.json"
+    }
+  });
+});
+
 app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
   try {
     const week = Number(req.params.week);
@@ -583,6 +667,9 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// The rest of your routes remain the same (session-log, progression/apply, history, etc.)
+// ... (keep all your existing routes from here)
 
 app.post("/api/session-log", async (req, res) => {
   try {
