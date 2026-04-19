@@ -19,8 +19,6 @@ export default function SessionView() {
   const [history, setHistory] = useState({});
   const [showReadiness, setShowReadiness] = useState(true);
   const [adjustments, setAdjustments] = useState({ rpeAdjustment: 0, rirAdjustment: 0 });
-  
-  // Completion modal state - MOVED INSIDE component
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [workoutSummary, setWorkoutSummary] = useState(null);
   const [completedExerciseCount, setCompletedExerciseCount] = useState(0);
@@ -76,16 +74,18 @@ export default function SessionView() {
     }
   };
 
+  // FIXED: Auto-fill now fills reps AND targets correctly
   const handleAutoFill = (lift) => {
     const newInputs = { ...inputs };
     const liftInputs = newInputs[lift.liftName] || {};
     
+    // Fill reps per set based on target reps
     const targetRepsPerSet = [];
     const targetRepsValue = lift.reps;
     
     let targetRepsNumber = 8;
     if (targetRepsValue) {
-      if (targetRepsValue.includes('-')) {
+      if (typeof targetRepsValue === 'string' && targetRepsValue.includes('-')) {
         const parts = targetRepsValue.split('-').map(Number);
         targetRepsNumber = parts[1] || parts[0];
       } else {
@@ -98,7 +98,13 @@ export default function SessionView() {
     }
     liftInputs.repsPerSet = targetRepsPerSet;
     
-    if (lift.progressionType === "strength" || data.logic === "STRENGTH_RPE") {
+    // Fill weight if available from current weight
+    if (lift.currentWeight && lift.currentWeight > 0) {
+      liftInputs.weight = lift.currentWeight;
+    }
+    
+    // Fill RPE for strength programs
+    if (lift.progressionType === "strength" || data?.logic === "STRENGTH_RPE") {
       let targetRPE = lift.rpeTarget;
       if (adjustments.rpeAdjustment) {
         targetRPE = Math.min(10, Math.max(1, targetRPE + adjustments.rpeAdjustment));
@@ -106,7 +112,8 @@ export default function SessionView() {
       liftInputs.rpe = targetRPE;
     }
     
-    if (data.logic === "HYPERTROPHY_VOLUME" || lift.progressionType === "volume") {
+    // Fill RIR for hypertrophy programs
+    if (data?.logic === "HYPERTROPHY_VOLUME" || lift.progressionType === "volume") {
       let targetRIR = lift.rirTarget;
       if (adjustments.rirAdjustment) {
         targetRIR = Math.min(5, Math.max(0, targetRIR + adjustments.rirAdjustment));
@@ -114,10 +121,12 @@ export default function SessionView() {
       liftInputs.rir = targetRIR;
     }
     
+    // Fill quality for power programs
     if (lift.progressionType === "power" && lift.qualityTarget) {
       liftInputs.quality = lift.qualityTarget;
     }
     
+    // Fill stability/pain for mobility programs
     if (lift.progressionType === "mobility") {
       liftInputs.stability = lift.stabilityTarget || 7;
       liftInputs.pain = lift.painTarget || 4;
@@ -127,23 +136,23 @@ export default function SessionView() {
     setInputs(newInputs);
   };
 
-  // Track when an exercise is logged
-const markExerciseComplete = () => {
-  const newCount = completedExerciseCount + 1;
-  setCompletedExerciseCount(newCount);
-  
-  if (newCount === data?.projected?.length) {
-    generateWorkoutSummary();
-  }
-};
+  const markExerciseComplete = () => {
+    const newCount = completedExerciseCount + 1;
+    setCompletedExerciseCount(newCount);
+    
+    if (newCount === data?.projected?.length) {
+      generateWorkoutSummary();
+    }
+  };
 
-  // Generate workout summary
   const generateWorkoutSummary = async () => {
     try {
       const res = await fetch(`/api/workout-summary/${userId}?program=${encodeURIComponent(program)}&week=${week}&day=${day}`);
-      const summary = await res.json();
-      setWorkoutSummary(summary);
-      setShowCompletionModal(true);
+      if (res.ok) {
+        const summary = await res.json();
+        setWorkoutSummary(summary);
+        setShowCompletionModal(true);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -163,10 +172,10 @@ const markExerciseComplete = () => {
     const logic = data.logic;
     
     if (adjustments.rpeAdjustment && (progressionType === "strength" || logic === "STRENGTH_RPE")) {
-      targetRPE = Math.min(10, Math.max(1, targetRPE + adjustments.rpeAdjustment));
+      targetRPE = Math.min(10, Math.max(1, (targetRPE || 7) + adjustments.rpeAdjustment));
     }
     if (adjustments.rirAdjustment && (logic === "HYPERTROPHY_VOLUME" || progressionType === "volume")) {
-      targetRIR = Math.min(5, Math.max(0, targetRIR + adjustments.rirAdjustment));
+      targetRIR = Math.min(5, Math.max(0, (targetRIR || 2) + adjustments.rirAdjustment));
     }
     
     const streakRes = await fetch(`/api/streak/${userId}`);
@@ -177,7 +186,7 @@ const markExerciseComplete = () => {
 
     try {
       const weight = inputs[liftName]?.weight;
-      if (!weight && progressionType !== "mobility") {
+      if (!weight && progressionType !== "mobility" && progressionType !== "power") {
         alert("Enter weight first");
         return;
       }
@@ -201,6 +210,9 @@ const markExerciseComplete = () => {
         actualRIR = Number(inputs[liftName]?.rir || targetRIR);
       }
 
+      // Calculate repsCompleted from repsPerSet
+      const repsCompleted = repsPerSet.reduce((sum, r) => sum + (parseInt(r) || 0), 0);
+
       await fetch("/api/session-log", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -210,9 +222,10 @@ const markExerciseComplete = () => {
           week: data.program?.week,
           day: data.program?.day,
           liftName,
-          targetReps,
+          targetReps: typeof targetReps === 'string' ? targetReps : String(targetReps),
           targetSets,
           repsPerSet: repsPerSet.map(r => parseInt(r) || 0),
+          repsCompleted,
           targetRPE,
           targetRIR,
           targetQuality,
@@ -249,6 +262,7 @@ const markExerciseComplete = () => {
       markExerciseComplete();
     } catch (err) {
       console.error(err);
+      alert("Error logging set: " + err.message);
     }
   };
 
@@ -296,16 +310,16 @@ const markExerciseComplete = () => {
     else if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") target = lift.rirTarget;
     else target = lift.rpeTarget;
     
-    if (adjustments.rpeAdjustment && (pt === "strength" || data.logic === "STRENGTH_RPE")) {
+    if (adjustments.rpeAdjustment && (pt === "strength" || data.logic === "STRENGTH_RPE") && target) {
       const adjusted = Math.min(10, Math.max(1, target + adjustments.rpeAdjustment));
       target = `${target} → ${adjusted} (adjusted)`;
     }
-    if (adjustments.rirAdjustment && (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume")) {
+    if (adjustments.rirAdjustment && (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") && target) {
       const adjusted = Math.min(5, Math.max(0, target + adjustments.rirAdjustment));
       target = `${target} → ${adjusted} (adjusted)`;
     }
     
-    return target;
+    return target || "—";
   };
 
   return (
@@ -340,19 +354,20 @@ const markExerciseComplete = () => {
           return (
             <div key={i} style={{ border: "1px solid #e5e5e5", borderRadius: 12, padding: 20 }}>
               <h3>{lift.liftName}</h3>
-              <div style={{ display: "flex", gap: 20, marginBottom: 10 }}>
+              <div style={{ display: "flex", gap: 20, marginBottom: 10, flexWrap: "wrap" }}>
                 <span>Sets: {lift.sets}</span>
                 <span>Reps: {lift.reps}</span>
                 <span>{getMetricLabel(lift)} Target: {getTargetValue(lift)}</span>
               </div>
-              <div style={{ display: "flex", gap: 20, marginBottom: 15, fontWeight: "bold" }}>
-                <span>Current: {lift.currentWeight ?? 0}</span>
-                <span>Next: {lift.projectedNextWeight ?? 0}</span>
+              <div style={{ display: "flex", gap: 20, marginBottom: 15, fontWeight: "bold", flexWrap: "wrap" }}>
+                <span>Current: {lift.currentWeight ?? 0}kg</span>
+                <span>Next: {lift.projectedNextWeight ?? 0}kg</span>
               </div>
               
               <div style={{ display: "flex", gap: 10, marginBottom: 15, flexWrap: "wrap" }}>
                 {pt !== "mobility" && (
                   <input
+                    type="number"
                     placeholder="Weight (kg)"
                     style={{ padding: 8, width: "100px" }}
                     value={inputs[lift.liftName]?.weight || ""}
@@ -362,6 +377,7 @@ const markExerciseComplete = () => {
                 
                 {pt === "power" && (
                   <input
+                    type="number"
                     placeholder="Quality (1-10)"
                     style={{ padding: 8, width: "100px" }}
                     value={inputs[lift.liftName]?.quality || ""}
@@ -372,18 +388,21 @@ const markExerciseComplete = () => {
                 {pt === "mobility" && (
                   <>
                     <input
+                      type="number"
                       placeholder="Weight (kg)"
                       style={{ padding: 8, width: "100px" }}
                       value={inputs[lift.liftName]?.weight || ""}
                       onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
                     />
                     <input
+                      type="number"
                       placeholder="Stability (1-10)"
                       style={{ padding: 8, width: "100px" }}
                       value={inputs[lift.liftName]?.stability || ""}
                       onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], stability: e.target.value } }))}
                     />
                     <input
+                      type="number"
                       placeholder="Pain (1-10)"
                       style={{ padding: 8, width: "100px" }}
                       value={inputs[lift.liftName]?.pain || ""}
@@ -394,6 +413,8 @@ const markExerciseComplete = () => {
                 
                 {(pt === "strength" || data.logic === "STRENGTH_RPE") && (
                   <input
+                    type="number"
+                    step="0.5"
                     placeholder="RPE"
                     style={{ padding: 8, width: "80px" }}
                     value={inputs[lift.liftName]?.rpe || ""}
@@ -403,6 +424,7 @@ const markExerciseComplete = () => {
                 
                 {(data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") && (
                   <input
+                    type="number"
                     placeholder="RIR"
                     style={{ padding: 8, width: "80px" }}
                     value={inputs[lift.liftName]?.rir || ""}
@@ -413,7 +435,7 @@ const markExerciseComplete = () => {
 
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 15 }}>
                 <span style={{ fontWeight: "bold", minWidth: "50px" }}>Sets:</span>
-                {[...Array(lift.sets)].map((_, idx) => (
+                {[...Array(lift.sets || 3)].map((_, idx) => (
                   <input
                     key={idx}
                     type="number"
@@ -451,8 +473,8 @@ const markExerciseComplete = () => {
                 </button>
               </div>
               
-              {history[lift.liftName] && (
-                <div style={{ marginTop: 10, background: "#f5f5f5", padding: 10, color: "#000" }}>
+              {history[lift.liftName] && history[lift.liftName].length > 0 && (
+                <div style={{ marginTop: 10, background: "#f5f5f5", padding: 10, color: "#000", borderRadius: 8 }}>
                   <strong>History:</strong>
                   {history[lift.liftName].map((entry, idx) => {
                     let metricStr = "";
@@ -461,7 +483,7 @@ const markExerciseComplete = () => {
                     else if (entry.actualStability && entry.actualPain) metricStr = `Stability ${entry.actualStability} / Pain ${entry.actualPain}`;
                     else if (entry.actualStability) metricStr = `Stability ${entry.actualStability}`;
                     else if (entry.actualROM) metricStr = `ROM ${entry.actualROM}% / Pain ${entry.actualPain}`;
-                    const setsInfo = entry.repsPerSet ? `Sets: [${entry.repsPerSet.join(", ")}]` : `${entry.repsCompleted} reps`;
+                    const setsInfo = entry.repsPerSet && entry.repsPerSet.length ? `Sets: [${entry.repsPerSet.join(", ")}]` : `${entry.repsCompleted || 0} reps`;
                     return (
                       <div key={idx} style={{ fontSize: 14 }}>
                         {new Date(entry.createdAt).toLocaleDateString()} — {entry.actualWeight ? `${entry.actualWeight}kg x ` : ""}{setsInfo} {metricStr}
@@ -484,36 +506,36 @@ const markExerciseComplete = () => {
           overflowY: "auto"
         }}>
           <div style={{
-            background: "var(--card-bg)", borderRadius: "24px", padding: "30px",
-            maxWidth: "500px", width: "100%", border: "1px solid var(--accent)",
+            background: "var(--card-bg, #1e1e2a)", borderRadius: "24px", padding: "30px",
+            maxWidth: "500px", width: "100%", border: "1px solid var(--accent, #d4af37)",
             maxHeight: "90vh", overflowY: "auto"
           }}>
-            <h2 style={{ color: "var(--accent)", marginBottom: "8px" }}>Workout Complete! 🎉</h2>
-            <p style={{ color: "var(--text-gray)", marginBottom: "20px" }}>Great work today</p>
+            <h2 style={{ color: "var(--accent, #d4af37)", marginBottom: "8px" }}>Workout Complete! 🎉</h2>
+            <p style={{ color: "var(--text-gray, #a1a1aa)", marginBottom: "20px" }}>Great work today</p>
             
             <div style={{ marginBottom: "24px" }}>
               <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>📊 Session Stats</h3>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                <div style={{ background: "var(--bg-light)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.timeToComplete}</div>
-                  <div style={{ fontSize: "12px", color: "var(--text-gray)" }}>Time</div>
+                <div style={{ background: "var(--bg-light, #2a2a35)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent, #d4af37)" }}>{workoutSummary.timeToComplete}</div>
+                  <div style={{ fontSize: "12px", color: "var(--text-gray, #a1a1aa)" }}>Time</div>
                 </div>
-                <div style={{ background: "var(--bg-light)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.totalVolume}kg</div>
-                  <div style={{ fontSize: "12px", color: "var(--text-gray)" }}>Total Volume</div>
+                <div style={{ background: "var(--bg-light, #2a2a35)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent, #d4af37)" }}>{workoutSummary.totalVolume}kg</div>
+                  <div style={{ fontSize: "12px", color: "var(--text-gray, #a1a1aa)" }}>Total Volume</div>
                 </div>
-                <div style={{ background: "var(--bg-light)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.exercisesCompleted}</div>
-                  <div style={{ fontSize: "12px", color: "var(--text-gray)" }}>Exercises</div>
+                <div style={{ background: "var(--bg-light, #2a2a35)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent, #d4af37)" }}>{workoutSummary.exercisesCompleted}</div>
+                  <div style={{ fontSize: "12px", color: "var(--text-gray, #a1a1aa)" }}>Exercises</div>
                 </div>
-                <div style={{ background: "var(--bg-light)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.streak} 🔥</div>
-                  <div style={{ fontSize: "12px", color: "var(--text-gray)" }}>Day Streak</div>
+                <div style={{ background: "var(--bg-light, #2a2a35)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent, #d4af37)" }}>{workoutSummary.streak} 🔥</div>
+                  <div style={{ fontSize: "12px", color: "var(--text-gray, #a1a1aa)" }}>Day Streak</div>
                 </div>
               </div>
             </div>
             
-            {workoutSummary.prs.length > 0 && (
+            {workoutSummary.prs && workoutSummary.prs.length > 0 && (
               <div style={{ marginBottom: "24px" }}>
                 <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>🏆 Personal Records</h3>
                 <ul style={{ listStyle: "none", padding: 0 }}>
@@ -524,28 +546,28 @@ const markExerciseComplete = () => {
               </div>
             )}
             
-            {workoutSummary.underRPE.length > 0 && (
+            {workoutSummary.underRPE && workoutSummary.underRPE.length > 0 && (
               <div style={{ marginBottom: "24px" }}>
                 <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>💪 Nailed It</h3>
                 <ul style={{ listStyle: "none", padding: 0 }}>
                   {workoutSummary.underRPE.map((r, i) => (
-                    <li key={i} style={{ padding: "4px 0", color: "var(--accent)" }}>✓ {r}</li>
+                    <li key={i} style={{ padding: "4px 0", color: "var(--accent, #d4af37)" }}>✓ {r}</li>
                   ))}
                 </ul>
               </div>
             )}
             
             {workoutSummary.nextFocus && (
-              <div style={{ marginBottom: "24px", background: "var(--bg-light)", padding: "16px", borderRadius: "8px" }}>
+              <div style={{ marginBottom: "24px", background: "var(--bg-light, #2a2a35)", padding: "16px", borderRadius: "8px" }}>
                 <h3 style={{ fontSize: "1rem", marginBottom: "8px" }}>📝 Next Session Focus</h3>
-                <p style={{ fontSize: "14px", color: "var(--text-gray)" }}>{workoutSummary.nextFocus}</p>
+                <p style={{ fontSize: "14px", color: "var(--text-gray, #a1a1aa)" }}>{workoutSummary.nextFocus}</p>
               </div>
             )}
             
             <div style={{ display: "flex", gap: "12px", marginTop: "20px", flexWrap: "wrap" }}>
               <button 
                 onClick={() => {
-                  const shareText = `🔥 Just crushed my ${program} workout on Forge of Olympus!\n\nWeek ${week}, Day ${day}\n✅ ${workoutSummary.exercisesCompleted} exercises completed\n💪 ${workoutSummary.prs.length} personal records\n⏱️ ${workoutSummary.timeToComplete}\n\nJoin me: forge-of-olympus.onrender.com`;
+                  const shareText = `🔥 Just crushed my ${program} workout on Forge of Olympus!\n\nWeek ${week}, Day ${day}\n✅ ${workoutSummary.exercisesCompleted} exercises completed\n💪 ${workoutSummary.prs?.length || 0} personal records\n⏱️ ${workoutSummary.timeToComplete}\n\nJoin me: forge-of-olympus.onrender.com`;
                   const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
                   window.open(tweetUrl, '_blank');
                 }}
@@ -555,7 +577,7 @@ const markExerciseComplete = () => {
               </button>
               <button 
                 onClick={() => {
-                  const shareText = `🔥 Just crushed my ${program} workout on Forge of Olympus!\n\nWeek ${week}, Day ${day}\n✅ ${workoutSummary.exercisesCompleted} exercises completed\n💪 ${workoutSummary.prs.length} personal records\n⏱️ ${workoutSummary.timeToComplete}`;
+                  const shareText = `🔥 Just crushed my ${program} workout on Forge of Olympus!\n\nWeek ${week}, Day ${day}\n✅ ${workoutSummary.exercisesCompleted} exercises completed\n💪 ${workoutSummary.prs?.length || 0} personal records\n⏱️ ${workoutSummary.timeToComplete}`;
                   const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=https://forge-of-olympus.onrender.com&quote=${encodeURIComponent(shareText)}`;
                   window.open(fbUrl, '_blank');
                 }}
@@ -568,7 +590,7 @@ const markExerciseComplete = () => {
                   setShowCompletionModal(false);
                   window.location.href = "/dashboard";
                 }}
-                style={{ flex: 1, padding: "12px", background: "var(--accent)", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" }}
+                style={{ flex: 1, padding: "12px", background: "var(--accent, #d4af37)", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" }}
               >
                 Go to Dashboard
               </button>
