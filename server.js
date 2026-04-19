@@ -11,14 +11,13 @@ dotenv.config();
 
 const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-02-24.acacia", // Use the latest stable version
+  apiVersion: "2025-02-24.acacia",
 });
-// Helper function to decode and normalize program names (for Stripe only)
+
+// Helper function to decode and normalize program names
 function normalizeProgramName(encodedName) {
   try {
     let decoded = decodeURIComponent(encodedName);
-    // Only remove specific suffixes that come from Stripe product descriptions
-    // Don't remove dashes that are part of the actual program name
     const suffixesToRemove = [
       " – Strength Program",
       " – Strength",
@@ -41,77 +40,7 @@ function normalizeProgramName(encodedName) {
   }
 }
 
-// ==================== IMPORTANT: Webhook must be BEFORE express.json() ====================
-app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async (req, res) => {
-  const sig = req.headers["stripe-signature"];
-  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-  } catch (err) {
-    console.error(`Webhook signature failed: ${err.message}`);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    
-    // Get email from multiple possible sources
-    const customerEmail = session.customer_details?.email || session.customer_email || session.metadata?.userEmail;
-    
-    if (!customerEmail) {
-      console.error("No email found in session:", session.id);
-      return res.status(400).send("No email");
-    }
-
-    try {
-      // Fetch line items to get program name
-      const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-      const programName = lineItems.data[0]?.description || session.metadata?.programName || "Unknown Program";
-      
-      // Normalize the program name
-      const normalizedProgramName = normalizeProgramName(programName);
-
-      // Ensure user exists
-      let user = await User.findOne({ email: customerEmail });
-      if (!user) {
-        user = await User.create({ email: customerEmail });
-        console.log(`📝 Created new user: ${customerEmail}`);
-      }
-
-      // Create or update purchase record
-      const purchase = await Purchase.findOneAndUpdate(
-        { stripePaymentIntentId: session.payment_intent },
-        { 
-          email: customerEmail, 
-          programName, 
-          stripePaymentIntentId: session.payment_intent,
-          purchasedAt: new Date()
-        },
-        { upsert: true, new: true }
-      );
-      
-      console.log(`✅ Purchase recorded: ${purchase.email} → ${purchase.programName}`);
-      
-    } catch (dbError) {
-      console.error("Database error in webhook:", dbError);
-      return res.status(500).send("Database error");
-    }
-  }
-
-  res.json({ received: true });
-});
-
-// ==================== Normal middleware AFTER webhook ====================
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// ==================== MongoDB Schemas ====================
+// ==================== MongoDB Schemas (DEFINED BEFORE WEBHOOK) ====================
 const LiftStateSchema = new mongoose.Schema({
   userId: String,
   liftName: String,
@@ -201,15 +130,90 @@ const streakMilestones = [
   { days: 100, rewardId: "free_coaching_month", name: "Free Coaching Month", description: "One free month of coaching", type: "free" }
 ];
 
+// ==================== IMPORTANT: Webhook must be BEFORE express.json() ====================
+app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async (req, res) => {
+  const sig = req.headers["stripe-signature"];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  let event;
+
+  if (!endpointSecret) {
+    console.error("⚠️ STRIPE_WEBHOOK_SECRET not set in environment variables");
+    return res.status(500).send("Webhook secret not configured");
+  }
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    console.error(`Webhook signature failed: ${err.message}`);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    
+    const customerEmail = session.customer_details?.email || session.customer_email || session.metadata?.userEmail;
+    
+    if (!customerEmail) {
+      console.error("No email found in session:", session.id);
+      return res.status(400).send("No email");
+    }
+
+    try {
+      const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+      const programName = lineItems.data[0]?.description || session.metadata?.programName || "Unknown Program";
+      const normalizedProgramName = normalizeProgramName(programName);
+
+      let user = await User.findOne({ email: customerEmail });
+      if (!user) {
+        user = await User.create({ email: customerEmail });
+        console.log(`📝 Created new user: ${customerEmail}`);
+      }
+
+      await Purchase.findOneAndUpdate(
+        { stripePaymentIntentId: session.payment_intent },
+        { 
+          email: customerEmail, 
+          programName: normalizedProgramName, 
+          stripePaymentIntentId: session.payment_intent,
+          purchasedAt: new Date()
+        },
+        { upsert: true, new: true }
+      );
+      
+      console.log(`✅ Purchase recorded: ${customerEmail} → ${normalizedProgramName}`);
+      
+    } catch (dbError) {
+      console.error("Database error in webhook:", dbError);
+      return res.status(500).send("Database error");
+    }
+  }
+
+  res.json({ received: true });
+});
+
+// ==================== Normal middleware AFTER webhook ====================
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB error:", err));
 
+// ==================== Helper Functions ====================
 const findProgramFile = (programName) => {
   const dataDir = path.join(__dirname, "data");
+  if (!fs.existsSync(dataDir)) {
+    console.error(`Data directory not found: ${dataDir}`);
+    return null;
+  }
+  
   const files = fs.readdirSync(dataDir);
   
-  // Normalize the search name: remove spaces, hyphens, parentheses, lowercase
   const normalize = (str) => {
     return str.toLowerCase().replace(/[\s\-\(\)]/g, '');
   };
@@ -226,27 +230,21 @@ const findProgramFile = (programName) => {
   }
   return null;
 };
-// ==================== Program Loader ====================
-// ==================== Program Loader ====================
+
 const loadProgram = (programName) => {
-  // First try to find by normalized matching (for admin-assigned programs with spaces/parentheses)
   let filePath = findProgramFile(programName);
   
-  // If not found, try original logic (for Stripe programs with hyphens)
   if (!filePath) {
     const safeName = programName.replace(/\s+/g, '-');
     filePath = path.join(__dirname, "data", `${safeName}.json`);
   }
   
-  console.log(`[DEBUG] Looking for program file: ${filePath}`);
-  console.log(`[DEBUG] Does file exist? ${fs.existsSync(filePath)}`);
-  
   if (!fs.existsSync(filePath)) {
-    // List all available files for debugging
     const dataDir = path.join(__dirname, "data");
-    const availableFiles = fs.readdirSync(dataDir);
-    console.log(`[DEBUG] Available files: ${availableFiles.join(', ')}`);
-    throw new Error(`Program file not found: ${filePath}`);
+    const availableFiles = fs.existsSync(dataDir) ? fs.readdirSync(dataDir) : [];
+    console.error(`Program file not found: ${filePath}`);
+    console.error(`Available files: ${availableFiles.join(', ')}`);
+    throw new Error(`Program file not found: ${programName}`);
   }
   
   const raw = JSON.parse(fs.readFileSync(filePath, "utf-8"));
@@ -255,7 +253,6 @@ const loadProgram = (programName) => {
   throw new Error(`Invalid program format`);
 };
 
-// ==================== Helper Functions ====================
 function estimate1RM(weight, reps, actualRPE) {
   if (!weight || !reps || !actualRPE || actualRPE <= 0) return weight || 0;
   const rpeToPercent = {
@@ -376,7 +373,6 @@ function enduranceDensityProgression(state, sessionData) {
   return { currentWeight: state.currentWeight, consecutiveSuccesses: 0, stallCounter: 0 };
 }
 
-// MOBILITY progression - using Stability rating (how controlled the movement is)
 function mobilityRangeProgression(state, sessionData) {
   let newWeight = state.currentWeight || sessionData.actualWeight || 0;
   let successStreak = state.consecutiveSuccesses || 0;
@@ -397,7 +393,6 @@ function mobilityRangeProgression(state, sessionData) {
     successStreak += 1;
     stallCounter = 0;
     
-    // After 3 stable sessions, increase weight
     if (successStreak >= 3) {
       const increment = 2.5;
       newWeight += increment;
@@ -408,7 +403,6 @@ function mobilityRangeProgression(state, sessionData) {
     successStreak = 0;
     stallCounter += 1;
     
-    // After 2 unstable sessions, decrease weight
     if (stallCounter >= 2 && newWeight > 0) {
       newWeight = Math.max(0, newWeight - 2.5);
       stallCounter = 0;
@@ -420,7 +414,7 @@ function mobilityRangeProgression(state, sessionData) {
     currentWeight: Math.round(newWeight * 2) / 2,
     consecutiveSuccesses: successStreak,
     stallCounter,
-    lastROM: state.lastROM  // Keep existing ROM value for backward compatibility
+    lastROM: state.lastROM
   };
 }
 
@@ -534,9 +528,7 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     let programName = req.query.program;
     if (!programName) return res.status(400).json({ error: "Missing program name" });
 
-    // Normalize the program name
     programName = normalizeProgramName(programName);
-    console.log(`[DEBUG] Normalized program name: ${programName}`);
 
     const programData = loadProgram(programName);
     const session = programData.sessions.find(p => p.week === week && p.day === day);
@@ -577,6 +569,8 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
         rirTarget: ex.rirTarget,
         romTarget: ex.romTarget,
         painTarget: ex.painTarget,
+        stabilityTarget: ex.stabilityTarget,
+        qualityTarget: ex.qualityTarget,
         progressionType: ex.progressionType,
         currentWeight,
         projectedNextWeight
@@ -753,9 +747,7 @@ app.get("/api/next-session/:userId", async (req, res) => {
     let programName = req.query.program;
     if (!programName) return res.status(400).json({ error: "Missing program name" });
 
-    // Normalize the program name
     programName = normalizeProgramName(programName);
-    console.log(`[DEBUG] Normalized program name: ${programName}`);
 
     const programData = loadProgram(programName);
     const sessions = programData.sessions;
@@ -856,14 +848,14 @@ app.post("/api/leads", async (req, res) => {
 });
 
 app.get("/api/admin/leads", async (req, res) => {
-  const { adminEmail, adminPassword } = req.headers;
+  const { adminemail, adminpassword } = req.headers;
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   
-  if (adminEmail !== ADMIN_EMAIL) {
+  if (adminemail !== ADMIN_EMAIL) {
     return res.status(403).json({ error: "Not authorized" });
   }
-  if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
+  if (ADMIN_PASSWORD && adminpassword !== ADMIN_PASSWORD) {
     return res.status(403).json({ error: "Invalid admin password" });
   }
   
@@ -872,14 +864,14 @@ app.get("/api/admin/leads", async (req, res) => {
 });
 
 app.get("/api/admin/leads/export", async (req, res) => {
-  const { adminEmail, adminPassword } = req.headers;
+  const { adminemail, adminpassword } = req.headers;
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   
-  if (adminEmail !== ADMIN_EMAIL) {
+  if (adminemail !== ADMIN_EMAIL) {
     return res.status(403).json({ error: "Not authorized" });
   }
-  if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
+  if (ADMIN_PASSWORD && adminpassword !== ADMIN_PASSWORD) {
     return res.status(403).json({ error: "Invalid admin password" });
   }
   
@@ -954,7 +946,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
-      customer_email: email,  // This ensures Stripe knows the email
+      customer_email: email,
       line_items: [{ price: priceId, quantity: 1 }],
       subscription_data: {
         trial_period_days: 30,
@@ -965,7 +957,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
       cancel_url: "https://forge-of-olympus.onrender.com/cancel",
       metadata: {
         programName: programName,
-        userEmail: email  // Store email in metadata as backup
+        userEmail: email
       }
     });
 
@@ -1012,7 +1004,6 @@ app.delete("/api/admin/remove-program", async (req, res) => {
     return res.status(400).json({ error: "Email and program name required" });
   }
   
-  // Remove the purchase record
   const result = await Purchase.deleteOne({ email: userEmail, programName });
   
   if (result.deletedCount === 0) {
@@ -1022,67 +1013,64 @@ app.delete("/api/admin/remove-program", async (req, res) => {
   console.log(`✅ Admin removed ${programName} from ${userEmail}`);
   res.json({ message: `Removed ${programName} from ${userEmail}` });
 });
-// Workout summary endpoint
+
 app.get("/api/workout-summary/:userId", async (req, res) => {
-  const { userId } = req.params;
-  const { program, week, day } = req.query;
-  
-  // Get today's sessions
-  const sessions = await Session.find({ 
-    userId, programName: program, week: Number(week), day: Number(day) 
-  });
-  
-  // Calculate total volume
-  let totalVolume = 0;
-  const prs = [];
-  const underRPE = [];
-  
-  for (const s of sessions) {
-    if (s.actualWeight && s.repsPerSet && s.repsPerSet.length) {
-      const setVolume = s.repsPerSet.reduce((sum, reps) => sum + (reps * s.actualWeight), 0);
-      totalVolume += setVolume;
-    } else if (s.actualWeight && s.repsCompleted) {
-      totalVolume += s.repsCompleted * s.actualWeight;
-    }
+  try {
+    const { userId } = req.params;
+    const { program, week, day } = req.query;
     
-    // Check for RPE success
-    if (s.actualRPE && s.targetRPE && s.actualRPE <= s.targetRPE) {
-      underRPE.push(`${s.liftName}: ${s.actualRPE} ≤ ${s.targetRPE}`);
-    }
+    const sessions = await Session.find({ 
+      userId, programName: program, week: Number(week), day: Number(day) 
+    });
     
-    // Check for rep PR (simplified - compare with previous sessions of same lift)
-    const previousSessions = await Session.find({ 
-      userId, liftName: s.liftName 
-    }).sort({ createdAt: -1 }).limit(2);
+    let totalVolume = 0;
+    const prs = [];
+    const underRPE = [];
     
-    if (previousSessions.length >= 2) {
-      const prev = previousSessions[1];
-      let currentReps = s.repsPerSet ? Math.max(...s.repsPerSet) : s.repsCompleted;
-      let prevReps = prev.repsPerSet ? Math.max(...prev.repsPerSet) : prev.repsCompleted;
-      if (currentReps > prevReps) {
-        prs.push(`${s.liftName}: ${prevReps} → ${currentReps} reps`);
+    for (const s of sessions) {
+      if (s.actualWeight && s.repsPerSet && s.repsPerSet.length) {
+        const setVolume = s.repsPerSet.reduce((sum, reps) => sum + (reps * s.actualWeight), 0);
+        totalVolume += setVolume;
+      } else if (s.actualWeight && s.repsCompleted) {
+        totalVolume += s.repsCompleted * s.actualWeight;
+      }
+      
+      if (s.actualRPE && s.targetRPE && s.actualRPE <= s.targetRPE) {
+        underRPE.push(`${s.liftName}: ${s.actualRPE} ≤ ${s.targetRPE}`);
+      }
+      
+      const previousSessions = await Session.find({ 
+        userId, liftName: s.liftName 
+      }).sort({ createdAt: -1 }).limit(2);
+      
+      if (previousSessions.length >= 2) {
+        const prev = previousSessions[1];
+        let currentReps = s.repsPerSet ? Math.max(...s.repsPerSet) : s.repsCompleted;
+        let prevReps = prev.repsPerSet ? Math.max(...prev.repsPerSet) : prev.repsCompleted;
+        if (currentReps > prevReps) {
+          prs.push(`${s.liftName}: ${prevReps} → ${currentReps} reps`);
+        }
       }
     }
+    
+    const timeToComplete = `${sessions.length * 8 + 10} min`;
+    const user = await User.findById(userId);
+    
+    res.json({
+      exercisesCompleted: sessions.length,
+      totalVolume,
+      timeToComplete,
+      prs: prs.slice(0, 3),
+      underRPE: underRPE.slice(0, 3),
+      streak: user?.streak || 0,
+      nextFocus: "Keep building on today's momentum. Focus on form as weight increases."
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-  
-  // Calculate time to complete (rough estimate based on session count)
-  const timeToComplete = `${sessions.length * 8 + 10} min`; // 8 min per exercise + warmup
-  
-  // Get user streak
-  const user = await User.findById(userId);
-  
-  res.json({
-    exercisesCompleted: sessions.length,
-    totalVolume,
-    timeToComplete,
-    prs: prs.slice(0, 3),
-    underRPE: underRPE.slice(0, 3),
-    streak: user?.streak || 0,
-    nextFocus: "Keep building on today's momentum. Focus on form as weight increases."
-  });
 });
 
-// Get user's unlocked rewards
 app.get("/api/user-rewards/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
@@ -1094,7 +1082,6 @@ app.get("/api/user-rewards/:userId", async (req, res) => {
       rewardRecord = await StreakReward.create({ userId, streakDays: 0, rewardsUnlocked: [] });
     }
     
-    // Calculate newly unlocked rewards
     const newlyUnlocked = [];
     for (const milestone of streakMilestones) {
       const alreadyUnlocked = rewardRecord.rewardsUnlocked.some(r => r.rewardId === milestone.rewardId);
@@ -1132,7 +1119,6 @@ app.get("/api/user-rewards/:userId", async (req, res) => {
   }
 });
 
-// Get daily motivation quote (for streak day 3+)
 app.get("/api/daily-quote", async (req, res) => {
   const quotes = [
     { text: "The only bad workout is the one that didn't happen.", author: "Unknown" },
@@ -1147,7 +1133,6 @@ app.get("/api/daily-quote", async (req, res) => {
   res.json(randomQuote);
 });
 
-// Check if user can swap exercises (returns number of swaps allowed)
 app.get("/api/swap-permission/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
@@ -1166,14 +1151,21 @@ app.get("/api/swap-permission/:userId", async (req, res) => {
 
 // Serve static files from the public directory (images)
 const publicPath = path.join(__dirname, "frontend", "public");
-app.use(express.static(publicPath));
+if (fs.existsSync(publicPath)) {
+  app.use(express.static(publicPath));
+}
 
 // Serve React build
 const distPath = path.join(__dirname, "frontend", "dist");
-app.use(express.static(distPath));
-app.get("*", (req, res) => res.sendFile(path.join(distPath, "index.html")));
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  app.get("*", (req, res) => res.sendFile(path.join(distPath, "index.html")));
+} else {
+  console.log("⚠️ React build not found. Run 'npm run build' in frontend directory");
+  app.get("*", (req, res) => res.status(404).send("Build not found. Please run build first."));
+}
 
-// Global error handler (must be AFTER all routes)
+// Global error handler
 app.use((err, req, res, next) => {
   console.error("Global error:", err);
   res.status(500).json({ error: err.message || "Internal server error" });
