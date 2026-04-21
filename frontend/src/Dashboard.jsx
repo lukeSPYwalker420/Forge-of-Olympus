@@ -162,34 +162,49 @@ export default function Dashboard() {
   };
 
   const assignProgramToUser = async () => {
-    if (!assignEmail || !assignProgram) {
-      setAdminMessage("Please fill in email and program");
-      return;
-    }
-    try {
-      const res = await fetch("/api/admin/assign-program", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          adminEmail: userEmail,
-          adminPassword,
-          userEmail: assignEmail,
-          programName: assignProgram
-        })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setAdminMessage(`✅ ${data.message}`);
-        setAssignEmail("");
-        setAssignProgram("");
-        setAdminPassword("");
-      } else {
-        setAdminMessage(`❌ ${data.error}`);
+  if (!assignEmail || !assignProgram) {
+    setAdminMessage("Please fill in email and program");
+    return;
+  }
+  try {
+    const res = await fetch("/api/admin/assign-program", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        adminEmail: userEmail,
+        adminPassword,
+        userEmail: assignEmail,
+        programName: assignProgram
+      })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setAdminMessage(`✅ ${data.message}`);
+      
+      // If assigning to current user, refresh their data
+      if (assignEmail === userEmail) {
+        const loginRes = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: userEmail })
+        });
+        const loginData = await loginRes.json();
+        if (loginRes.ok) {
+          localStorage.setItem("purchasedPrograms", JSON.stringify(loginData.purchasedPrograms));
+          setPurchasedPrograms(loginData.purchasedPrograms);
+        }
       }
-    } catch (err) {
-      setAdminMessage(`❌ Error: ${err.message}`);
+      
+      setAssignEmail("");
+      setAssignProgram("");
+      setAdminPassword("");
+    } else {
+      setAdminMessage(`❌ ${data.error}`);
     }
-  };
+  } catch (err) {
+    setAdminMessage(`❌ Error: ${err.message}`);
+  }
+};
 
   const removeProgramFromUser = async () => {
     if (!removeEmail || !removeProgram) {
