@@ -1,4 +1,4 @@
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useEffect, useState } from 'react';
 
 export default function DashboardChart({ userId, liftName }) {
@@ -28,7 +28,7 @@ export default function DashboardChart({ userId, liftName }) {
           const predictions = [];
           for (let i = 1; i <= 4; i++) {
             const nextX = recent.length - 1 + i;
-            const predicted = Math.round(slope * nextX + intercept);
+            const predicted = Math.round(slope * nextX + intercept);  // FIXED: was "slope"
             predictions.push({ week: i, predicted });
           }
           setPrediction(predictions);

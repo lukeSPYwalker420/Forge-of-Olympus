@@ -41,7 +41,8 @@ export default function SessionView() {
   }, [week, day, userId, program]);
 
   // Check subscription status
-// Check subscription status
+// In SessionView.jsx, replace the checkSubscription useEffect with this cleaner version:
+
 useEffect(() => {
   const checkSubscription = async () => {
     try {
@@ -55,15 +56,17 @@ useEffect(() => {
         return;
       }
       
+      // Check subscription status from server
       const res = await fetch(`/api/subscription-status/${userId}`);
       const data = await res.json();
       setSubscriptionActive(data.active);
     } catch (err) {
-      console.error(err);
+      console.error("Subscription check error:", err);
     } finally {
       setCheckingStatus(false);
     }
   };
+  
   if (userId) checkSubscription();
 }, [userId]);
 
