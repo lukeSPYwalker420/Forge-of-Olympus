@@ -90,11 +90,13 @@ function normalizeProgramName(encodedName) {
     
     // First, try to extract the core program name from Stripe descriptions
     const validPrograms = [
-      "Ares Protocol",
-      "Apollo Physique", 
-      "Hephaestus Framework",
-      "Hercules Foundation"
-    ];
+  "Ares Protocol",
+  "Apollo Physique", 
+  "Hephaestus Framework",
+  "Hercules Foundation",
+  "Mark Training",        // ADD THIS
+  "Hercules Foundation - Pauline Version"  // ADD THIS
+];
     
     // Check if the decoded name contains any of our valid program names
     for (const validName of validPrograms) {
@@ -1137,9 +1139,19 @@ app.post("/api/admin/assign-program", async (req, res) => {
     user = await User.create({ email: userEmail });
   }
   
+  // FIXED: Add active: true and all required fields
   await Purchase.findOneAndUpdate(
     { email: userEmail, programName },
-    { email: userEmail, programName, stripePaymentIntentId: `admin_${Date.now()}` },
+    { 
+      email: userEmail, 
+      programName, 
+      stripePaymentIntentId: `admin_${Date.now()}`,
+      active: true,
+      purchasedAt: new Date(),
+      canceledAt: null,
+      lastPaymentFailure: null,
+      gracePeriodEnds: null
+    },
     { upsert: true }
   );
   
