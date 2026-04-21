@@ -1384,10 +1384,19 @@ app.get("/api/swap-permission/:userId", async (req, res) => {
 });
 
 // Subscription status endpoint
+// Subscription status endpoint
 app.get("/api/subscription-status/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) return res.json({ active: false, everHadSubscription: false });
+    
+    // Check if this is the admin email
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
+    const isAdmin = user.email === ADMIN_EMAIL;
+    
+    if (isAdmin) {
+      return res.json({ active: true, everHadSubscription: true, programName: "Admin Access" });
+    }
     
     const activePurchase = await Purchase.findOne({ email: user.email, active: true });
     const anyPurchase = await Purchase.findOne({ email: user.email });
