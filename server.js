@@ -1009,6 +1009,8 @@ app.get("/api/next-session/:userId", async (req, res) => {
   }
 });
 
+// In server.js, replace the /api/login route (around line 812-848)
+
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
   if (!email) return res.status(400).json({ error: "Email required" });
@@ -1018,8 +1020,14 @@ app.post("/api/login", async (req, res) => {
 
   let isAdmin = false;
   if (email === ADMIN_EMAIL) {
-    if (ADMIN_PASSWORD && password !== ADMIN_PASSWORD) {
-      return res.status(401).json({ error: "Invalid admin password" });
+    // Admin MUST provide correct password if one is set
+    if (ADMIN_PASSWORD) {
+      if (!password || password !== ADMIN_PASSWORD) {
+        return res.status(401).json({ error: "Invalid admin password" });
+      }
+    } else {
+      // If no admin password set in env, warn but allow (only in dev)
+      console.warn("⚠️ No ADMIN_PASSWORD set in .env - admin access unprotected!");
     }
     isAdmin = true;
   }
@@ -1035,7 +1043,8 @@ app.post("/api/login", async (req, res) => {
   if (isAdmin) {
     purchasedPrograms = [
       "Ares Protocol", "Apollo Physique",
-      "Hephaestus Framework", "Hercules Foundation"
+      "Hephaestus Framework", "Hercules Foundation",
+      "Mark Training", "Hercules Foundation - Pauline Version"
     ];
     hasActiveSubscription = true;
   } else {
@@ -1049,7 +1058,7 @@ app.post("/api/login", async (req, res) => {
     email,
     purchasedPrograms,
     streak: user.streak || 0,
-    hasActiveSubscription  // NEW
+    hasActiveSubscription
   });
 });
 
