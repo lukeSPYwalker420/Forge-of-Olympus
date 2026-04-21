@@ -49,6 +49,16 @@ export default function Dashboard() {
   useEffect(() => {
   const checkSubscription = async () => {
     if (!userId) return;
+    
+    // Check if user is admin
+    const userEmail = localStorage.getItem("userEmail");
+    const isAdmin = userEmail === "kieren2203@googlemail.com";
+    
+    if (isAdmin) {
+      setSubscriptionActive(true);
+      return;
+    }
+    
     try {
       const res = await fetch(`/api/subscription-status/${userId}`);
       const data = await res.json();

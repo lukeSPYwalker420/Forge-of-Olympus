@@ -41,9 +41,20 @@ export default function SessionView() {
   }, [week, day, userId, program]);
 
   // Check subscription status
+// Check subscription status
 useEffect(() => {
   const checkSubscription = async () => {
     try {
+      // First check if user is admin
+      const userEmail = localStorage.getItem("userEmail");
+      const isAdmin = userEmail === "kieren2203@googlemail.com";
+      
+      if (isAdmin) {
+        setSubscriptionActive(true);
+        setCheckingStatus(false);
+        return;
+      }
+      
       const res = await fetch(`/api/subscription-status/${userId}`);
       const data = await res.json();
       setSubscriptionActive(data.active);
