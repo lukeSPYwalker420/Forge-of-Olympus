@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import Stripe from "stripe";
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
@@ -13,6 +14,74 @@ const app = express();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-02-24.acacia",
 });
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // or your email provider
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+// ==================== Email Helper Functions ====================
+async function sendCancellationEmail(email, programName) {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Your Forge of Olympus Subscription Has Ended",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #d4af37;">Your Journey Continues</h2>
+        <p>Your subscription to <strong>${programName}</strong> has ended.</p>
+        <p>You can still:</p>
+        <ul>
+          <li>✓ View your workout history</li>
+          <li>✓ See your 1RM progression charts</li>
+          <li>✓ Log workouts manually</li>
+        </ul>
+        <p>To get weight recommendations and adaptive progression again, simply <a href="https://forge-of-olympus.onrender.com" style="color: #d4af37;">resubscribe</a>.</p>
+        <hr />
+        <p style="font-size: 12px; color: #666;">Forge of Olympus – Train Without Guessing</p>
+      </div>
+    `
+  };
+  
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`📧 Cancellation email sent to ${email}`);
+  } catch (err) {
+    console.error(`Failed to send cancellation email: ${err.message}`);
+  }
+}
+
+async function sendPaymentFailureEmail(email, programName, gracePeriodEnds) {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "⚠️ Payment Failed – Action Required",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #ffaa44;">Payment Failed</h2>
+        <p>We couldn't process your payment for <strong>${programName}</strong>.</p>
+        <p>You have until <strong>${gracePeriodEnds.toLocaleDateString()}</strong> to update your payment method.</p>
+        <p>During this grace period, your training recommendations are hidden, but you can still log workouts.</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="https://forge-of-olympus.onrender.com" style="background: #d4af37; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+            Update Payment Method
+          </a>
+        </div>
+        <hr />
+        <p style="font-size: 12px; color: #666;">Forge of Olympus – Train Without Guessing</p>
+      </div>
+    `
+  };
+  
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`📧 Payment failure email sent to ${email}`);
+  } catch (err) {
+    console.error(`Failed to send payment failure email: ${err.message}`);
+  }
+}
 
 // Helper function to decode and normalize program names - FIXED for JSON file matching
 function normalizeProgramName(encodedName) {
@@ -107,11 +176,17 @@ const SessionSchema = new mongoose.Schema({
 });
 const Session = mongoose.model("Session", SessionSchema);
 
+// Replace the existing PurchaseSchema with this:
 const PurchaseSchema = new mongoose.Schema({
   email: { type: String, required: true },
   programName: { type: String, required: true },
-  stripePaymentIntentId: { type: String, unique: true },
-  purchasedAt: { type: Date, default: Date.now }
+  stripePaymentIntentId: { type: String, unique: true, sparse: true },
+  stripeSubscriptionId: { type: String, unique: true, sparse: true },
+  active: { type: Boolean, default: true },
+  purchasedAt: { type: Date, default: Date.now },
+  canceledAt: { type: Date },
+  lastPaymentFailure: { type: Date },
+  gracePeriodEnds: { type: Date }
 });
 const Purchase = mongoose.model("Purchase", PurchaseSchema);
 
@@ -161,7 +236,7 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
   let event;
 
   if (!endpointSecret) {
-    console.error("⚠️ STRIPE_WEBHOOK_SECRET not set in environment variables");
+    console.error("⚠️ STRIPE_WEBHOOK_SECRET not set");
     return res.status(500).send("Webhook secret not configured");
   }
 
@@ -172,9 +247,9 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
+  // Handle checkout.session.completed
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
-    
     const customerEmail = session.customer_details?.email || session.customer_email || session.metadata?.userEmail;
     
     if (!customerEmail) {
@@ -187,7 +262,7 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
       const rawProgramName = lineItems.data[0]?.description || session.metadata?.programName || "Unknown Program";
       const normalizedProgramName = normalizeProgramName(rawProgramName);
 
-      console.log(`[WEBHOOK] Raw: "${rawProgramName}" → Normalized: "${normalizedProgramName}"`);
+      console.log(`[WEBHOOK] Purchase: "${rawProgramName}" → "${normalizedProgramName}"`);
 
       let user = await User.findOne({ email: customerEmail });
       if (!user) {
@@ -201,7 +276,12 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
           email: customerEmail, 
           programName: normalizedProgramName, 
           stripePaymentIntentId: session.payment_intent,
-          purchasedAt: new Date()
+          stripeSubscriptionId: session.subscription,
+          active: true,
+          purchasedAt: new Date(),
+          canceledAt: null,
+          lastPaymentFailure: null,
+          gracePeriodEnds: null
         },
         { upsert: true, new: true }
       );
@@ -211,6 +291,65 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
     } catch (dbError) {
       console.error("Database error in webhook:", dbError);
       return res.status(500).send("Database error");
+    }
+  }
+
+  // Handle subscription cancellation
+  if (event.type === "customer.subscription.deleted") {
+    const subscription = event.data.object;
+    const subscriptionId = subscription.id;
+    
+    const purchase = await Purchase.findOneAndUpdate(
+      { stripeSubscriptionId: subscriptionId },
+      { active: false, canceledAt: new Date() }
+    );
+    
+    if (purchase) {
+      console.log(`❌ Subscription cancelled for ${purchase.email}`);
+      await sendCancellationEmail(purchase.email, purchase.programName);
+    }
+  }
+  
+  // Handle payment failure
+  if (event.type === "invoice.payment_failed") {
+    const invoice = event.data.object;
+    const subscriptionId = invoice.subscription;
+    
+    const purchase = await Purchase.findOne({ stripeSubscriptionId: subscriptionId });
+    if (purchase) {
+      const gracePeriodEnds = new Date();
+      gracePeriodEnds.setDate(gracePeriodEnds.getDate() + 7);
+      
+      await Purchase.updateOne(
+        { stripeSubscriptionId: subscriptionId },
+        { 
+          lastPaymentFailure: new Date(),
+          gracePeriodEnds: gracePeriodEnds,
+          active: false
+        }
+      );
+      
+      console.log(`⚠️ Payment failed for ${purchase.email}, grace until ${gracePeriodEnds}`);
+      await sendPaymentFailureEmail(purchase.email, purchase.programName, gracePeriodEnds);
+    }
+  }
+  
+  // Handle successful payment (reactivate)
+  if (event.type === "invoice.paid") {
+    const invoice = event.data.object;
+    const subscriptionId = invoice.subscription;
+    
+    const result = await Purchase.findOneAndUpdate(
+      { stripeSubscriptionId: subscriptionId },
+      { 
+        active: true, 
+        lastPaymentFailure: null,
+        gracePeriodEnds: null,
+        canceledAt: null
+      }
+    );
+    if (result) {
+      console.log(`✅ Payment received, subscription ${subscriptionId} reactivated`);
     }
   }
 
@@ -889,21 +1028,26 @@ app.post("/api/login", async (req, res) => {
   }
 
   let purchasedPrograms = [];
+  let hasActiveSubscription = false;
+  
   if (isAdmin) {
     purchasedPrograms = [
       "Ares Protocol", "Apollo Physique",
       "Hephaestus Framework", "Hercules Foundation"
     ];
+    hasActiveSubscription = true;
   } else {
-    const purchases = await Purchase.find({ email });
-    purchasedPrograms = purchases.map(p => p.programName);
+    const activePurchases = await Purchase.find({ email, active: true });
+    purchasedPrograms = activePurchases.map(p => p.programName);
+    hasActiveSubscription = activePurchases.length > 0;
   }
 
   res.json({
     userId: user._id.toString(),
     email,
     purchasedPrograms,
-    streak: user.streak || 0
+    streak: user.streak || 0,
+    hasActiveSubscription  // NEW
   });
 });
 
@@ -1003,19 +1147,15 @@ app.post("/api/admin/assign-program", async (req, res) => {
   res.json({ message: `Assigned ${programName} to ${userEmail}` });
 });
 
+// Update the create-checkout-session endpoint:
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
     const { programName, email } = req.body;
     
     console.log(`[DEBUG] Creating checkout session for ${programName}, email: ${email}`);
 
-    if (!programName) {
-      return res.status(400).json({ error: "Program name is required" });
-    }
-    
-    if (!email) {
-      return res.status(400).json({ error: "Email is required" });
-    }
+    if (!programName) return res.status(400).json({ error: "Program name is required" });
+    if (!email) return res.status(400).json({ error: "Email is required" });
 
     const priceIds = {
       "Ares Protocol": "price_1TJM36FywsnhFgWfMqo2H5no",
@@ -1025,20 +1165,28 @@ app.post("/api/create-checkout-session", async (req, res) => {
     };
 
     const priceId = priceIds[programName];
-    if (!priceId) {
-      return res.status(400).json({ error: `Program "${programName}" not found` });
-    }
+    if (!priceId) return res.status(400).json({ error: `Program "${programName}" not found` });
 
-    console.log(`[DEBUG] Using price ID: ${priceId}`);
+    // Check if this email has ever purchased before (used trial)
+    const existingPurchase = await Purchase.findOne({ email });
+    const hasUsedTrialBefore = !!existingPurchase;
+    
+    let subscriptionData = {};
+    if (!hasUsedTrialBefore) {
+      subscriptionData = {
+        trial_period_days: 30,
+        trial_settings: { end_behavior: { missing_payment_method: "cancel" } }
+      };
+      console.log(`[DEBUG] New user ${email} - offering 30-day trial`);
+    } else {
+      console.log(`[DEBUG] Existing user ${email} - no trial (already used)`);
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer_email: email,
       line_items: [{ price: priceId, quantity: 1 }],
-      subscription_data: {
-        trial_period_days: 30,
-        trial_settings: { end_behavior: { missing_payment_method: "cancel" } }
-      },
+      subscription_data: subscriptionData,
       payment_method_collection: "always",
       success_url: "https://forge-of-olympus.onrender.com/success?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "https://forge-of-olympus.onrender.com/cancel",
@@ -1048,7 +1196,6 @@ app.post("/api/create-checkout-session", async (req, res) => {
       }
     });
 
-    console.log(`[DEBUG] Session created: ${session.id}`);
     res.json({ url: session.url });
   } catch (error) {
     console.error("Checkout error:", error);
@@ -1231,6 +1378,25 @@ app.get("/api/swap-permission/:userId", async (req, res) => {
     else if (user.streak >= 14) swapsAllowed = 1;
     
     res.json({ swapsAllowed, streak: user.streak });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Subscription status endpoint
+app.get("/api/subscription-status/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.json({ active: false, everHadSubscription: false });
+    
+    const activePurchase = await Purchase.findOne({ email: user.email, active: true });
+    const anyPurchase = await Purchase.findOne({ email: user.email });
+    
+    res.json({ 
+      active: !!activePurchase, 
+      everHadSubscription: !!anyPurchase,
+      programName: activePurchase?.programName || null
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
