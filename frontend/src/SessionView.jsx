@@ -4,6 +4,8 @@ import Skeleton from "./Skeleton";
 import SessionReadiness from "./SessionReadiness";
 
 export default function SessionView() {
+  const [subscriptionActive, setSubscriptionActive] = useState(true);
+  const [checkingStatus, setCheckingStatus] = useState(true);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,6 +39,22 @@ export default function SessionView() {
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, [week, day, userId, program]);
+
+  // Check subscription status
+useEffect(() => {
+  const checkSubscription = async () => {
+    try {
+      const res = await fetch(`/api/subscription-status/${userId}`);
+      const data = await res.json();
+      setSubscriptionActive(data.active);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setCheckingStatus(false);
+    }
+  };
+  if (userId) checkSubscription();
+}, [userId]);
 
   const handleReadinessComplete = (readinessData) => {
     setAdjustments(readinessData.adjustments);
@@ -347,6 +365,19 @@ export default function SessionView() {
         </div>
       </div>
       <div style={{ display: "grid", gap: 20 }}>
+        {!subscriptionActive && !checkingStatus && (
+  <div style={{
+    background: "#ffaa4422",
+    border: "1px solid #ffaa44",
+    borderRadius: "8px",
+    padding: "12px",
+    marginBottom: "20px",
+    textAlign: "center"
+  }}>
+    <strong>⚠️ Your subscription has ended.</strong> You can still log workouts manually,
+    but recommended weights are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe</a> to unlock full guidance.
+  </div>
+)}
         {(data.projected || []).map((lift, i) => {
           const pt = lift.progressionType;
           const currentRepsInputs = inputs[lift.liftName]?.repsPerSet || [];
@@ -360,8 +391,16 @@ export default function SessionView() {
                 <span>{getMetricLabel(lift)} Target: {getTargetValue(lift)}</span>
               </div>
               <div style={{ display: "flex", gap: 20, marginBottom: 15, fontWeight: "bold", flexWrap: "wrap" }}>
-                <span>Current: {lift.currentWeight ?? 0}kg</span>
-                <span>Next: {lift.projectedNextWeight ?? 0}kg</span>
+                  {subscriptionActive ? (
+              <>
+              <span>Current: {lift.currentWeight ?? 0}kg</span>
+              <span>Next: {lift.projectedNextWeight ?? 0}kg</span>
+              </>
+              ) : (
+              <span style={{ color: "#ffaa44" }}>
+              ⚡ Subscribe to see recommended weights
+              </span>
+              )}
               </div>
               
               <div style={{ display: "flex", gap: 10, marginBottom: 15, flexWrap: "wrap" }}>
@@ -459,7 +498,19 @@ export default function SessionView() {
                 <button onClick={() => logSet(lift)} style={{ padding: "10px 15px", borderRadius: 8, border: "none", background: "#111", color: "#fff", cursor: "pointer" }}>
                   Log Set
                 </button>
-                <button onClick={() => handleAutoFill(lift)} style={{ padding: "10px 15px", borderRadius: 8, border: "1px solid #4caf50", background: "#4caf50", color: "#fff", cursor: "pointer" }}>
+                <button 
+                  onClick={() => handleAutoFill(lift)} 
+                  disabled={!subscriptionActive}
+                  style={{ 
+                  padding: "10px 15px", 
+                  borderRadius: 8, 
+                  border: "1px solid #4caf50", 
+                  background: subscriptionActive ? "#4caf50" : "#666", 
+                  color: "#fff", 
+                  cursor: subscriptionActive ? "pointer" : "not-allowed",
+                  opacity: subscriptionActive ? 1 : 0.5
+                }}
+                >
                   ⚡ Auto Fill
                 </button>
                 <button onClick={() => handleUndoLastEntry(lift.liftName)} style={{ padding: "10px 15px", borderRadius: 8, border: "1px solid #ff9800", background: "#ff9800", color: "#fff", cursor: "pointer" }}>

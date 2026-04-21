@@ -6,22 +6,23 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-  if (!email) return alert("Enter email");
-  const res = await fetch("/api/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email })
-  });
-  const data = await res.json();
-  if (res.ok) {
-    localStorage.setItem("userId", data.userId);
-    localStorage.setItem("userEmail", data.email);
-    localStorage.setItem("purchasedPrograms", JSON.stringify(data.purchasedPrograms));
-    navigate("/dashboard");
-  } else {
-    alert(data.error);
-  }
-};
+    if (!email) return alert("Enter email");
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("userEmail", data.email);
+      localStorage.setItem("purchasedPrograms", JSON.stringify(data.purchasedPrograms));
+      localStorage.setItem("hasActiveSubscription", data.hasActiveSubscription); // ADD THIS LINE
+      navigate("/dashboard");
+    } else {
+      alert(data.error);
+    }
+  };
 
   return (
     <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", fontFamily: "system-ui" }}>

@@ -12,6 +12,7 @@ export default function Dashboard() {
   const [recentSessions, setRecentSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedWorkout, setExpandedWorkout] = useState(null);
+  const [subscriptionActive, setSubscriptionActive] = useState(true);
   
   // Rewards state
   const [rewards, setRewards] = useState({ unlockedRewards: [], nextMilestone: null, streak: 0 });
@@ -44,6 +45,20 @@ export default function Dashboard() {
       setTimeout(() => setLoading(false), 100);
     }
   }, []);
+
+  useEffect(() => {
+  const checkSubscription = async () => {
+    if (!userId) return;
+    try {
+      const res = await fetch(`/api/subscription-status/${userId}`);
+      const data = await res.json();
+      setSubscriptionActive(data.active);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  checkSubscription();
+}, [userId]);
 
   useEffect(() => {
     if (!userId) {
@@ -293,6 +308,18 @@ export default function Dashboard() {
           )}
           <button onClick={handleStartWorkout} className="btn-workout">🏋️ Start Workout</button>
           <button onClick={() => navigate("/")} className="btn-secondary">Browse More Programs</button>
+          {!subscriptionActive && purchasedPrograms.length > 0 && (
+          <div style={{ 
+            background: "#ffaa4422", 
+            padding: "12px", 
+            borderRadius: "8px", 
+            marginBottom: "12px",
+            textAlign: "center"
+          }}>
+          <strong>⚠️ Your subscription has expired.</strong> You can still view your history,
+            but weight recommendations are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe now</a>
+          </div>
+          )}
           <button 
             onClick={() => {
               const shareText = `I'm training with Forge of Olympus! 🔥 Join me: forge-of-olympus.onrender.com`;
