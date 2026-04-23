@@ -15,7 +15,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-02-24.acacia",
 });
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // or your email provider
+  service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
@@ -83,22 +83,20 @@ async function sendPaymentFailureEmail(email, programName, gracePeriodEnds) {
   }
 }
 
-// Helper function to decode and normalize program names - FIXED for JSON file matching
+// Helper function to decode and normalize program names
 function normalizeProgramName(encodedName) {
   try {
     let decoded = decodeURIComponent(encodedName);
     
-    // First, try to extract the core program name from Stripe descriptions
     const validPrograms = [
-  "Ares Protocol",
-  "Apollo Physique", 
-  "Hephaestus Framework",
-  "Hercules Foundation",
-  "Mark Training",       
-  "Hercules Foundation - Pauline Version" 
-];
+      "Ares Protocol",
+      "Apollo Physique", 
+      "Hephaestus Framework",
+      "Hercules Foundation",
+      "Mark Training",       
+      "Hercules Foundation - Pauline Version" 
+    ];
     
-    // Check if the decoded name contains any of our valid program names
     const decodedLower = decoded.toLowerCase();
     for (const validName of validPrograms) {
       if (decodedLower.includes(validName.toLowerCase())) {
@@ -107,7 +105,6 @@ function normalizeProgramName(encodedName) {
       }
     }
     
-    // Fallback: remove common suffixes
     const suffixesToRemove = [
       " – Strength Program", " – Strength", " – Power", " – Mobility",
       " – Hypertrophy Program", " – Hypertrophy",
@@ -179,7 +176,6 @@ const SessionSchema = new mongoose.Schema({
 });
 const Session = mongoose.model("Session", SessionSchema);
 
-// Replace the existing PurchaseSchema with this:
 const PurchaseSchema = new mongoose.Schema({
   email: { type: String, required: true },
   programName: { type: String, required: true },
@@ -219,7 +215,6 @@ const StreakRewardSchema = new mongoose.Schema({
 });
 const StreakReward = mongoose.model("StreakReward", StreakRewardSchema);
 
-// Streak milestone rewards
 const streakMilestones = [
   { days: 3, rewardId: "motivation_quote", name: "Daily Motivation Quote", description: "Get a new motivational quote each day", type: "feature" },
   { days: 7, rewardId: "workout_summary", name: "Advanced Workout Stats", description: "View detailed workout summaries", type: "feature" },
@@ -253,11 +248,11 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
   // Handle checkout.session.completed
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
-    const customerEmail = session.customer_details?.email || session.customer_email || session.metadata?.userEmail;
+    let customerEmail = session.customer_details?.email || session.customer_email || session.metadata?.userEmail;
 
     if (customerEmail) {
-    customerEmail = customerEmail.toLowerCase().trim();
-  }
+      customerEmail = customerEmail.toLowerCase().trim();
+    }
     
     if (!customerEmail) {
       console.error("No email found in session:", session.id);
@@ -408,17 +403,14 @@ const findProgramFile = (programName) => {
 };
 
 const loadProgram = (programName) => {
-  // First, try to find by normalized name matching
   let filePath = findProgramFile(programName);
   
-  // If not found, try converting spaces to hyphens (for direct filename match)
   if (!filePath) {
     const hyphenatedName = programNameToFilename(programName);
     filePath = path.join(__dirname, "data", `${hyphenatedName}.json`);
     console.log(`[LOAD] Trying hyphenated path: ${filePath}`);
   }
   
-  // If still not found, try original program name as-is
   if (!filePath || !fs.existsSync(filePath)) {
     const asIsPath = path.join(__dirname, "data", `${programName}.json`);
     console.log(`[LOAD] Trying as-is path: ${asIsPath}`);
@@ -715,7 +707,6 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: Date.now() });
 });
 
-// Debug endpoint to check program files
 app.get("/api/debug/programs", (req, res) => {
   const dataDir = path.join(__dirname, "data");
   if (!fs.existsSync(dataDir)) {
@@ -813,9 +804,6 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-// The rest of your routes remain the same (session-log, progression/apply, history, etc.)
-// ... (keep all your existing routes from here)
 
 app.post("/api/session-log", async (req, res) => {
   try {
@@ -1014,10 +1002,8 @@ app.get("/api/next-session/:userId", async (req, res) => {
   }
 });
 
-// In server.js, replace the /api/login route (around line 812-848)
-
 app.post("/api/login", async (req, res) => {
-  const { email, password } = req.body;
+  let { email, password } = req.body;
   if (!email) return res.status(400).json({ error: "Email required" });
 
   email = email.toLowerCase().trim();
@@ -1027,13 +1013,11 @@ app.post("/api/login", async (req, res) => {
 
   let isAdmin = false;
   if (email === ADMIN_EMAIL) {
-    // Admin MUST provide correct password if one is set
     if (ADMIN_PASSWORD) {
       if (!password || password !== ADMIN_PASSWORD) {
         return res.status(401).json({ error: "Invalid admin password" });
       }
     } else {
-      // If no admin password set in env, warn but allow (only in dev)
       console.warn("⚠️ No ADMIN_PASSWORD set in .env - admin access unprotected!");
     }
     isAdmin = true;
@@ -1143,7 +1127,7 @@ app.post("/api/admin/assign-program", async (req, res) => {
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   
-  if (adminEmail !== ADMIN_EMAIL) {
+  if (normalizedAdminEmail !== ADMIN_EMAIL) {
     return res.status(403).json({ error: "Not authorized" });
   }
   if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
@@ -1153,16 +1137,15 @@ app.post("/api/admin/assign-program", async (req, res) => {
     return res.status(400).json({ error: "Email and program name required" });
   }
   
-  let user = await User.findOne({ email: userEmail });
+  let user = await User.findOne({ email: normalizedUserEmail });
   if (!user) {
-    user = await User.create({ email: userEmail });
+    user = await User.create({ email: normalizedUserEmail });
   }
   
-  // FIXED: Add active: true and all required fields
   await Purchase.findOneAndUpdate(
-    { email: userEmail, programName },
+    { email: normalizedUserEmail, programName },
     { 
-      email: userEmail, 
+      email: normalizedUserEmail, 
       programName, 
       stripePaymentIntentId: `admin_${Date.now()}`,
       active: true,
@@ -1174,15 +1157,17 @@ app.post("/api/admin/assign-program", async (req, res) => {
     { upsert: true }
   );
   
-  console.log(`✅ Admin assigned ${programName} to ${userEmail}`);
-  res.json({ message: `Assigned ${programName} to ${userEmail}` });
+  console.log(`✅ Admin assigned ${programName} to ${normalizedUserEmail}`);
+  res.json({ message: `Assigned ${programName} to ${normalizedUserEmail}` });
 });
 
-// Update the create-checkout-session endpoint:
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
-    const { programName, email } = req.body;
-    email = email.toLowerCase().trim();
+    let { programName, email } = req.body;
+    
+    if (email) {
+      email = email.toLowerCase().trim();
+    }
 
     console.log(`[DEBUG] Creating checkout session for ${programName}, email: ${email}`);
 
@@ -1199,7 +1184,6 @@ app.post("/api/create-checkout-session", async (req, res) => {
     const priceId = priceIds[programName];
     if (!priceId) return res.status(400).json({ error: `Program "${programName}" not found` });
 
-    // Check if this email has ever purchased before (used trial)
     const existingPurchase = await Purchase.findOne({ email });
     const hasUsedTrialBefore = !!existingPurchase;
     
@@ -1415,14 +1399,11 @@ app.get("/api/swap-permission/:userId", async (req, res) => {
   }
 });
 
-// Subscription status endpoint
-// Subscription status endpoint
 app.get("/api/subscription-status/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) return res.json({ active: false, everHadSubscription: false });
     
-    // Check if this is the admin email
     const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
     const isAdmin = user.email === ADMIN_EMAIL;
     
