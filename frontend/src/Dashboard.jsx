@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardChart from './DashboardChart';
 import "./Dashboard.css";
@@ -142,10 +142,11 @@ export default function Dashboard() {
 
   // Fetch manual premium users if admin
   useEffect(() => {
-  if (isAdmin) {
-    fetchManualPremiumUsers();
-  }
-}, [isAdmin, fetchManualPremiumUsers]);
+    if (isAdmin) {
+      fetchManualPremiumUsers();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
 
   const handleStartWorkout = async () => {
     const program = localStorage.getItem("program");
@@ -294,25 +295,25 @@ export default function Dashboard() {
     }
   };
 
-  const fetchManualPremiumUsers = useCallback(async () => {
-  if (!isAdmin) return;
-  setLoadingPremiumUsers(true);
-  try {
-    const res = await fetch("/api/admin/manual-premium-users", {
-      headers: {
-        adminEmail: userEmail
+  const fetchManualPremiumUsers = async () => {
+    if (!isAdmin) return;
+    setLoadingPremiumUsers(true);
+    try {
+      const res = await fetch("/api/admin/manual-premium-users", {
+        headers: {
+          adminEmail: userEmail
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setManualPremiumUsers(data);
       }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setManualPremiumUsers(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingPremiumUsers(false);
     }
-  } catch (err) {
-    console.error(err);
-  } finally {
-    setLoadingPremiumUsers(false);
-  }
-}, [isAdmin, userEmail]);
+  };
 
   function predictPR(history) {
     if (history.length < 2) return null;
