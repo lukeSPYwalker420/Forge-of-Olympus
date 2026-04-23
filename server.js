@@ -747,6 +747,12 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     const day = Number(req.params.day);
     const userId = req.params.userId;
     let programName = req.query.program;
+    
+    // Get readiness adjustments from query params
+    const rpeAdjustment = Number(req.query.rpeAdjustment) || 0;
+    const rirAdjustment = Number(req.query.rirAdjustment) || 0;
+    const qualityAdjustment = Number(req.query.qualityAdjustment) || 0;
+    
     if (!programName) return res.status(400).json({ error: "Missing program name" });
 
     programName = normalizeProgramName(programName);
@@ -768,15 +774,57 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
       const state = liftStates.find(s => s.liftName === ex.liftName);
       let currentWeight = 0;
       let projectedNextWeight = 0;
+      let adjustedRpeTarget = ex.rpeTarget;
+      let adjustedRirTarget = ex.rirTarget;
+      let adjustedQualityTarget = ex.qualityTarget;
+      let adjustedStabilityTarget = ex.stabilityTarget;
+      
+      // Apply readiness adjustments based on progression type
+      if (rpeAdjustment !== 0 && (ex.progressionType === "strength" || logic === "STRENGTH_RPE")) {
+        adjustedRpeTarget = Math.min(10, Math.max(1, (ex.rpeTarget || 7) + rpeAdjustment));
+      }
+      
+      if (rirAdjustment !== 0 && (ex.progressionType === "volume" || logic === "HYPERTROPHY_VOLUME")) {
+        adjustedRirTarget = Math.min(5, Math.max(0, (ex.rirTarget || 2) + rirAdjustment));
+      }
+      
+      if (qualityAdjustment !== 0 && ex.progressionType === "power") {
+        adjustedQualityTarget = Math.min(10, Math.max(1, (ex.qualityTarget || 7) + qualityAdjustment));
+      }
+      
+      if (ex.progressionType === "mobility" || ex.progressionType === "stability") {
+        // For mobility/stability, adjust targets based on overall readiness
+        const avgAdjustment = (rpeAdjustment + rirAdjustment) / 2;
+        if (avgAdjustment !== 0) {
+          adjustedStabilityTarget = Math.min(10, Math.max(1, (ex.stabilityTarget || 7) + avgAdjustment));
+        }
+      }
 
       if (state) {
         if (logic === "STRENGTH_RPE" && state.estimated1RM > 0) {
-          const targetRPE = ex.rpeTarget || 7;
+          // Use adjusted RPE for weight calculation
+          const targetRPE = adjustedRpeTarget;
           currentWeight = weightForRPE(state.estimated1RM, targetRPE, ex.reps);
           projectedNextWeight = weightForRPE(state.estimated1RM, targetRPE + 0.5, ex.reps);
         } 
         else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && state.currentWeight > 0) {
           currentWeight = state.currentWeight;
+          
+          // Apply weight modifiers based on readiness
+          let weightModifier = 1;
+          if (rirAdjustment !== 0) {
+            // RIR adjustment: +1 RIR = lighter (-8%), -1 RIR = heavier (+8%)
+            weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
+          }
+          if (rpeAdjustment !== 0) {
+            // RPE adjustment: +0.5 RPE = heavier (+2.5%), -0.5 RPE = lighter (-2.5%)
+            weightModifier *= (1 + (rpeAdjustment * 0.05));
+          }
+          
+          if (weightModifier !== 1) {
+            currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
+          }
+          
           const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
           projectedNextWeight = currentWeight + inc;
         }
@@ -794,11 +842,23 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
         qualityTarget: ex.qualityTarget,
         progressionType: ex.progressionType,
         currentWeight,
-        projectedNextWeight
+        projectedNextWeight,
+        // Send adjusted targets to frontend for display
+        adjustedRpeTarget: adjustedRpeTarget !== ex.rpeTarget ? adjustedRpeTarget : null,
+        adjustedRirTarget: adjustedRirTarget !== ex.rirTarget ? adjustedRirTarget : null,
+        adjustedQualityTarget: adjustedQualityTarget !== ex.qualityTarget ? adjustedQualityTarget : null,
+        adjustedStabilityTarget: adjustedStabilityTarget !== ex.stabilityTarget ? adjustedStabilityTarget : null
       };
     });
 
-    res.json({ program: session, logic, projected, availableWeeks, availableDaysPerWeek });
+    res.json({ 
+      program: session, 
+      logic, 
+      projected, 
+      availableWeeks, 
+      availableDaysPerWeek,
+      readinessApplied: { rpeAdjustment, rirAdjustment, qualityAdjustment }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
