@@ -193,7 +193,8 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   streak: { type: Number, default: 0 },
   lastWorkoutDate: { type: Date, default: null },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  manualPremium: { type: Boolean, default: false }
 });
 const User = mongoose.model("User", UserSchema);
 
@@ -245,7 +246,6 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // Handle checkout.session.completed
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
     let customerEmail = session.customer_details?.email || session.customer_email || session.metadata?.userEmail;
@@ -296,7 +296,6 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
     }
   }
 
-  // Handle subscription cancellation
   if (event.type === "customer.subscription.deleted") {
     const subscription = event.data.object;
     const subscriptionId = subscription.id;
@@ -312,7 +311,6 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
     }
   }
   
-  // Handle payment failure
   if (event.type === "invoice.payment_failed") {
     const invoice = event.data.object;
     const subscriptionId = invoice.subscription;
@@ -336,7 +334,6 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
     }
   }
   
-  // Handle successful payment (reactivate)
   if (event.type === "invoice.paid") {
     const invoice = event.data.object;
     const subscriptionId = invoice.subscription;
@@ -748,7 +745,6 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     const userId = req.params.userId;
     let programName = req.query.program;
     
-    // Get readiness adjustments from query params
     const rpeAdjustment = Number(req.query.rpeAdjustment) || 0;
     const rirAdjustment = Number(req.query.rirAdjustment) || 0;
     const qualityAdjustment = Number(req.query.qualityAdjustment) || 0;
@@ -779,7 +775,6 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
       let adjustedQualityTarget = ex.qualityTarget;
       let adjustedStabilityTarget = ex.stabilityTarget;
       
-      // Apply readiness adjustments based on progression type
       if (rpeAdjustment !== 0 && (ex.progressionType === "strength" || logic === "STRENGTH_RPE")) {
         adjustedRpeTarget = Math.min(10, Math.max(1, (ex.rpeTarget || 7) + rpeAdjustment));
       }
@@ -793,7 +788,6 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
       }
       
       if (ex.progressionType === "mobility" || ex.progressionType === "stability") {
-        // For mobility/stability, adjust targets based on overall readiness
         const avgAdjustment = (rpeAdjustment + rirAdjustment) / 2;
         if (avgAdjustment !== 0) {
           adjustedStabilityTarget = Math.min(10, Math.max(1, (ex.stabilityTarget || 7) + avgAdjustment));
@@ -802,7 +796,6 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
 
       if (state) {
         if (logic === "STRENGTH_RPE" && state.estimated1RM > 0) {
-          // Use adjusted RPE for weight calculation
           const targetRPE = adjustedRpeTarget;
           currentWeight = weightForRPE(state.estimated1RM, targetRPE, ex.reps);
           projectedNextWeight = weightForRPE(state.estimated1RM, targetRPE + 0.5, ex.reps);
@@ -810,14 +803,11 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
         else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && state.currentWeight > 0) {
           currentWeight = state.currentWeight;
           
-          // Apply weight modifiers based on readiness
           let weightModifier = 1;
           if (rirAdjustment !== 0) {
-            // RIR adjustment: +1 RIR = lighter (-8%), -1 RIR = heavier (+8%)
             weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
           }
           if (rpeAdjustment !== 0) {
-            // RPE adjustment: +0.5 RPE = heavier (+2.5%), -0.5 RPE = lighter (-2.5%)
             weightModifier *= (1 + (rpeAdjustment * 0.05));
           }
           
@@ -843,7 +833,6 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
         progressionType: ex.progressionType,
         currentWeight,
         projectedNextWeight,
-        // Send adjusted targets to frontend for display
         adjustedRpeTarget: adjustedRpeTarget !== ex.rpeTarget ? adjustedRpeTarget : null,
         adjustedRirTarget: adjustedRirTarget !== ex.rirTarget ? adjustedRirTarget : null,
         adjustedQualityTarget: adjustedQualityTarget !== ex.qualityTarget ? adjustedQualityTarget : null,
@@ -1099,7 +1088,7 @@ app.post("/api/login", async (req, res) => {
   } else {
     const activePurchases = await Purchase.find({ email, active: true });
     purchasedPrograms = activePurchases.map(p => p.programName);
-    hasActiveSubscription = activePurchases.length > 0;
+    hasActiveSubscription = activePurchases.length > 0 || user.manualPremium === true;
   }
 
   res.json({
@@ -1473,12 +1462,88 @@ app.get("/api/subscription-status/:userId", async (req, res) => {
     const anyPurchase = await Purchase.findOne({ email: user.email });
     
     res.json({ 
-      active: !!activePurchase, 
-      everHadSubscription: !!anyPurchase,
-      programName: activePurchase?.programName || null
+      active: !!activePurchase || user.manualPremium === true, 
+      everHadSubscription: !!anyPurchase || user.manualPremium === true,
+      programName: activePurchase?.programName || (user.manualPremium ? "Manual Premium Access" : null)
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// ==================== Manual Premium Admin Routes ====================
+app.get("/api/admin/manual-premium-users", async (req, res) => {
+  const { adminemail, adminpassword } = req.headers;
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+  
+  if (adminemail !== ADMIN_EMAIL) {
+    return res.status(403).json({ error: "Not authorized" });
+  }
+  if (ADMIN_PASSWORD && adminpassword !== ADMIN_PASSWORD) {
+    return res.status(403).json({ error: "Invalid admin password" });
+  }
+  
+  const users = await User.find({ manualPremium: true }).select("email manualPremium createdAt streak");
+  res.json(users);
+});
+
+app.post("/api/admin/grant-premium", async (req, res) => {
+  const { adminEmail, adminPassword, userEmail } = req.body;
+  
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+  
+  if (adminEmail !== ADMIN_EMAIL) {
+    return res.status(403).json({ error: "Not authorized" });
+  }
+  if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
+    return res.status(403).json({ error: "Invalid admin password" });
+  }
+  if (!userEmail) {
+    return res.status(400).json({ error: "Email required" });
+  }
+  
+  const normalizedEmail = userEmail.toLowerCase().trim();
+  
+  let user = await User.findOne({ email: normalizedEmail });
+  if (!user) {
+    user = await User.create({ email: normalizedEmail });
+  }
+  
+  user.manualPremium = true;
+  await user.save();
+  
+  console.log(`✅ Granted manual premium access to ${normalizedEmail}`);
+  res.json({ message: `Granted premium access to ${normalizedEmail}` });
+});
+
+app.post("/api/admin/revoke-premium", async (req, res) => {
+  const { adminEmail, adminPassword, userEmail } = req.body;
+  
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+  
+  if (adminEmail !== ADMIN_EMAIL) {
+    return res.status(403).json({ error: "Not authorized" });
+  }
+  if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
+    return res.status(403).json({ error: "Invalid admin password" });
+  }
+  if (!userEmail) {
+    return res.status(400).json({ error: "Email required" });
+  }
+  
+  const normalizedEmail = userEmail.toLowerCase().trim();
+  
+  const user = await User.findOne({ email: normalizedEmail });
+  if (user) {
+    user.manualPremium = false;
+    await user.save();
+    console.log(`❌ Revoked manual premium access from ${normalizedEmail}`);
+    res.json({ message: `Revoked premium access from ${normalizedEmail}` });
+  } else {
+    res.status(404).json({ error: "User not found" });
   }
 });
 
