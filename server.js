@@ -94,13 +94,14 @@ function normalizeProgramName(encodedName) {
   "Apollo Physique", 
   "Hephaestus Framework",
   "Hercules Foundation",
-  "Mark Training",        // ADD THIS
-  "Hercules Foundation - Pauline Version"  // ADD THIS
+  "Mark Training",       
+  "Hercules Foundation - Pauline Version" 
 ];
     
     // Check if the decoded name contains any of our valid program names
+    const decodedLower = decoded.toLowerCase();
     for (const validName of validPrograms) {
-      if (decoded.includes(validName)) {
+      if (decodedLower.includes(validName.toLowerCase())) {
         console.log(`[NORMALIZE] "${decoded}" → "${validName}"`);
         return validName;
       }
@@ -253,6 +254,10 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
     const customerEmail = session.customer_details?.email || session.customer_email || session.metadata?.userEmail;
+
+    if (customerEmail) {
+    customerEmail = customerEmail.toLowerCase().trim();
+  }
     
     if (!customerEmail) {
       console.error("No email found in session:", session.id);
@@ -1015,6 +1020,8 @@ app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
   if (!email) return res.status(400).json({ error: "Email required" });
 
+  email = email.toLowerCase().trim();
+
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
@@ -1129,6 +1136,9 @@ app.get("/api/admin/leads/export", async (req, res) => {
 
 app.post("/api/admin/assign-program", async (req, res) => {
   const { adminEmail, adminPassword, userEmail, programName } = req.body;
+
+  const normalizedAdminEmail = adminEmail.toLowerCase().trim();
+  const normalizedUserEmail = userEmail.toLowerCase().trim();
   
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -1171,8 +1181,9 @@ app.post("/api/admin/assign-program", async (req, res) => {
 // Update the create-checkout-session endpoint:
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
-    const { programName, email } = req.body;
-    
+    let { programName, email } = req.body;
+    email = email.toLowerCase().trim();
+
     console.log(`[DEBUG] Creating checkout session for ${programName}, email: ${email}`);
 
     if (!programName) return res.status(400).json({ error: "Program name is required" });
