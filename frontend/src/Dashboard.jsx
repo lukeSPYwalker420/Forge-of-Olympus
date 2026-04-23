@@ -21,7 +21,6 @@ export default function Dashboard() {
   // Admin state
   const [assignEmail, setAssignEmail] = useState("");
   const [assignProgram, setAssignProgram] = useState("");
-  const [adminPassword, setAdminPassword] = useState("");
   const [adminMessage, setAdminMessage] = useState("");
   const [leads, setLeads] = useState([]);
   const [loadingLeads, setLoadingLeads] = useState(false);
@@ -207,7 +206,6 @@ export default function Dashboard() {
         
         setAssignEmail("");
         setAssignProgram("");
-        setAdminPassword("");
       } else {
         setAdminMessage(`❌ ${data.error}`);
       }
@@ -332,60 +330,60 @@ export default function Dashboard() {
   }
 
   const fetchLeads = async () => {
-    if (!isAdmin) return;
-    setLoadingLeads(true);
-    try {
-      const res = await fetch("/api/admin/leads", {
-        headers: {
-          adminEmail: userEmail,
-          adminPassword: adminPassword || ""
-        }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setLeads(data);
-      } else {
-        console.error("Failed to fetch leads");
-        setAdminMessage("❌ Failed to fetch leads – check admin password");
+  if (!isAdmin) return;
+  setLoadingLeads(true);
+  try {
+    const res = await fetch("/api/admin/leads", {
+      headers: {
+        adminEmail: userEmail
+        // Remove adminPassword
       }
-    } catch (err) {
-      console.error(err);
-      setAdminMessage("❌ Network error fetching leads");
-    } finally {
-      setLoadingLeads(false);
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setLeads(data);
+    } else {
+      console.error("Failed to fetch leads");
+      setAdminMessage("❌ Failed to fetch leads");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setAdminMessage("❌ Network error fetching leads");
+  } finally {
+    setLoadingLeads(false);
+  }
+};
 
-  const exportLeads = async () => {
-    if (!isAdmin) return;
-    setExporting(true);
-    try {
-      const res = await fetch("/api/admin/leads/export", {
-        headers: {
-          adminEmail: userEmail,
-          adminPassword: adminPassword || ""
-        }
-      });
-      if (res.ok) {
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "forge_leads.csv";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      } else {
-        alert("Export failed – check admin password");
+const exportLeads = async () => {
+  if (!isAdmin) return;
+  setExporting(true);
+  try {
+    const res = await fetch("/api/admin/leads/export", {
+      headers: {
+        adminEmail: userEmail
+        // Remove adminPassword
       }
-    } catch (err) {
-      console.error(err);
+    });
+    if (res.ok) {
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "forge_leads.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } else {
       alert("Export failed");
-    } finally {
-      setExporting(false);
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Export failed");
+  } finally {
+    setExporting(false);
+  }
+};
 
   if (loading) return <div className="dashboard-loading">Loading your data...</div>;
 
