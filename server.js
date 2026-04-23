@@ -1181,7 +1181,7 @@ app.post("/api/admin/assign-program", async (req, res) => {
 // Update the create-checkout-session endpoint:
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
-    let { programName, email } = req.body;
+    const { programName, email } = req.body;
     email = email.toLowerCase().trim();
 
     console.log(`[DEBUG] Creating checkout session for ${programName}, email: ${email}`);
