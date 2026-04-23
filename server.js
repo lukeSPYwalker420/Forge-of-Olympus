@@ -1017,8 +1017,6 @@ app.post("/api/login", async (req, res) => {
       if (!password || password !== ADMIN_PASSWORD) {
         return res.status(401).json({ error: "Invalid admin password" });
       }
-    } else {
-      console.warn("⚠️ No ADMIN_PASSWORD set in .env - admin access unprotected!");
     }
     isAdmin = true;
   }
