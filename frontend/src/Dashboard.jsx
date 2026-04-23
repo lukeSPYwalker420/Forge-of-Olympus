@@ -30,7 +30,6 @@ export default function Dashboard() {
   // Remove program state
   const [removeEmail, setRemoveEmail] = useState("");
   const [removeProgram, setRemoveProgram] = useState("");
-  const [removePassword, setRemovePassword] = useState("");
   const [removeMessage, setRemoveMessage] = useState("");
 
   const isAdmin = userEmail === "kieren2203@googlemail.com";
@@ -172,7 +171,6 @@ export default function Dashboard() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         adminEmail: userEmail,
-        adminPassword,
         userEmail: assignEmail,
         programName: assignProgram
       })
@@ -217,7 +215,6 @@ export default function Dashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           adminEmail: userEmail,
-          adminPassword: removePassword,
           userEmail: removeEmail,
           programName: removeProgram
         })
@@ -227,7 +224,6 @@ export default function Dashboard() {
         setRemoveMessage(`✅ ${data.message}`);
         setRemoveEmail("");
         setRemoveProgram("");
-        setRemovePassword("");
       } else {
         setRemoveMessage(`❌ ${data.error}`);
       }
@@ -620,122 +616,109 @@ export default function Dashboard() {
         </div>
 
         {/* Admin Panel – only visible to admin */}
-        {isAdmin && (
-          <div className="card admin-card">
-            <h2>🔧 Admin Panel</h2>
-            {/* Assign Program Section */}
-            <div className="admin-form">
-              <input
-                type="email"
-                placeholder="User Email"
-                value={assignEmail}
-                onChange={e => setAssignEmail(e.target.value)}
-                className="admin-input"
-              />
-              <select
-                value={assignProgram}
-                onChange={e => setAssignProgram(e.target.value)}
-                className="admin-input"
-              >
-                <option value="">Select Program</option>
-                <option value="Ares Protocol">Ares Protocol</option>
-                <option value="Apollo Physique">Apollo Physique</option>
-                <option value="Hercules Foundation">Hercules Foundation</option>
-                <option value="Hephaestus Framework">Hephaestus Framework</option>
-                <option value="Mark Training">Mark Training</option>
-                <option value="Hercules-Foundation-Pauline-Version">Hercules Foundation - Pauline Version</option>
-              </select>
-              <input
-                type="password"
-                placeholder="Admin Password (if set)"
-                value={adminPassword}
-                onChange={e => setAdminPassword(e.target.value)}
-                className="admin-input"
-              />
-              <button onClick={assignProgramToUser} className="btn-primary">Assign Program</button>
-              {adminMessage && <p className="admin-message">{adminMessage}</p>}
-            </div>
+{isAdmin && (
+  <div className="card admin-card">
+    <h2>🔧 Admin Panel</h2>
+    
+    {/* Assign Program Section */}
+    <div className="admin-form">
+      <input
+        type="email"
+        placeholder="User Email"
+        value={assignEmail}
+        onChange={e => setAssignEmail(e.target.value)}
+        className="admin-input"
+      />
+      <select
+        value={assignProgram}
+        onChange={e => setAssignProgram(e.target.value)}
+        className="admin-input"
+      >
+        <option value="">Select Program</option>
+        <option value="Ares Protocol">Ares Protocol</option>
+        <option value="Apollo Physique">Apollo Physique</option>
+        <option value="Hercules Foundation">Hercules Foundation</option>
+        <option value="Hephaestus Framework">Hephaestus Framework</option>
+        <option value="Mark Training">Mark Training</option>
+        <option value="Hercules-Foundation-Pauline-Version">Hercules Foundation - Pauline Version</option>
+      </select>
+      <button onClick={assignProgramToUser} className="btn-primary">Assign Program</button>
+      {adminMessage && <p className="admin-message">{adminMessage}</p>}
+    </div>
 
-            {/* Remove Program Section */}
-            <div style={{ marginTop: "20px", borderTop: "1px solid #333", paddingTop: "20px" }}>
-              <h3>🗑️ Remove Program from User</h3>
-              <div className="admin-form">
-                <input
-                  type="email"
-                  placeholder="User Email"
-                  value={removeEmail}
-                  onChange={e => setRemoveEmail(e.target.value)}
-                  className="admin-input"
-                />
-                <select
-                  value={removeProgram}
-                  onChange={e => setRemoveProgram(e.target.value)}
-                  className="admin-input"
-                >
-                  <option value="">Select Program to Remove</option>
-                  <option value="Ares Protocol">Ares Protocol</option>
-                  <option value="Apollo Physique">Apollo Physique</option>
-                  <option value="Hercules Foundation">Hercules Foundation</option>
-                  <option value="Hephaestus Framework">Hephaestus Framework</option>
-                </select>
-                <input
-                  type="password"
-                  placeholder="Admin Password (if set)"
-                  value={removePassword}
-                  onChange={e => setRemovePassword(e.target.value)}
-                  className="admin-input"
-                />
-                <button onClick={removeProgramFromUser} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer" }}>
-                  Remove Program
-                </button>
-                {removeMessage && <p className="admin-message">{removeMessage}</p>}
-              </div>
-            </div>
+    {/* Remove Program Section */}
+    <div style={{ marginTop: "20px", borderTop: "1px solid #333", paddingTop: "20px" }}>
+      <h3>🗑️ Remove Program from User</h3>
+      <div className="admin-form">
+        <input
+          type="email"
+          placeholder="User Email"
+          value={removeEmail}
+          onChange={e => setRemoveEmail(e.target.value)}
+          className="admin-input"
+        />
+        <select
+          value={removeProgram}
+          onChange={e => setRemoveProgram(e.target.value)}
+          className="admin-input"
+        >
+          <option value="">Select Program to Remove</option>
+          <option value="Ares Protocol">Ares Protocol</option>
+          <option value="Apollo Physique">Apollo Physique</option>
+          <option value="Hercules Foundation">Hercules Foundation</option>
+          <option value="Hephaestus Framework">Hephaestus Framework</option>
+        </select>
+        <button onClick={removeProgramFromUser} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer" }}>
+          Remove Program
+        </button>
+        {removeMessage && <p className="admin-message">{removeMessage}</p>}
+      </div>
+    </div>
 
-            <hr style={{ margin: "20px 0", borderColor: "#333" }} />
+    <hr style={{ margin: "20px 0", borderColor: "#333" }} />
 
-            {/* Leads Section */}
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                <h3>📧 Captured Leads ({leads.length})</h3>
-                <div>
-                  <button onClick={fetchLeads} className="btn-secondary" style={{ marginRight: "10px" }}>
-                    Refresh
-                  </button>
-                  <button onClick={exportLeads} className="btn-primary" disabled={exporting}>
-                    {exporting ? "Exporting..." : "Export CSV"}
-                  </button>
-                </div>
-              </div>
-              {loadingLeads ? (
-                <p>Loading leads...</p>
-              ) : leads.length === 0 ? (
-                <p>No leads yet. Ask users to register on the homepage.</p>
-              ) : (
-                <div style={{ maxHeight: "300px", overflowY: "auto", marginTop: "10px" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
-                    <thead>
-                      <tr>
-                        <th>Email</th>
-                        <th>Source</th>
-                        <th>Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {leads.map((lead, idx) => (
-                        <tr key={idx} style={{ borderTop: "1px solid #333" }}>
-                          <td style={{ padding: "8px 4px" }}>{lead.email}</td>
-                          <td style={{ padding: "8px 4px" }}>{lead.source || "register_modal"}</td>
-                          <td style={{ padding: "8px 4px" }}>{new Date(lead.createdAt).toLocaleDateString()}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+    {/* Leads Section */}
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+        <h3>📧 Captured Leads ({leads.length})</h3>
+        <div>
+          <button onClick={fetchLeads} className="btn-secondary" style={{ marginRight: "10px" }}>
+            Refresh
+          </button>
+          <button onClick={exportLeads} className="btn-primary" disabled={exporting}>
+            {exporting ? "Exporting..." : "Export CSV"}
+          </button>
+        </div>
+      </div>
+      {loadingLeads ? (
+        <p>Loading leads...</p>
+      ) : leads.length === 0 ? (
+        <p>No leads yet. Ask users to register on the homepage.</p>
+      ) : (
+        <div style={{ maxHeight: "300px", overflowY: "auto", marginTop: "10px" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Source</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leads.map((lead, idx) => (
+                <tr key={idx} style={{ borderTop: "1px solid #333" }}>
+                  <td style={{ padding: "8px 4px" }}>{lead.email}</td>
+                  <td style={{ padding: "8px 4px" }}>{lead.source || "register_modal"}</td>
+                  <td style={{ padding: "8px 4px" }}>{new Date(lead.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  </div>
+)}
       </div>
     </div>
   );
