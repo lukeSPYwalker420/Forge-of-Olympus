@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardChart from './DashboardChart';
 import "./Dashboard.css";
@@ -32,6 +32,12 @@ export default function Dashboard() {
   const [removeProgram, setRemoveProgram] = useState("");
   const [removeMessage, setRemoveMessage] = useState("");
 
+  // Manual premium state
+  const [premiumEmail, setPremiumEmail] = useState("");
+  const [premiumMessage, setPremiumMessage] = useState("");
+  const [manualPremiumUsers, setManualPremiumUsers] = useState([]);
+  const [loadingPremiumUsers, setLoadingPremiumUsers] = useState(false);
+
   const isAdmin = userEmail === "kieren2203@googlemail.com";
   
   const { unlockedRewards = [], nextMilestone = null } = rewards;
@@ -46,28 +52,27 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-  const checkSubscription = async () => {
-    if (!userId) return;
-    
-    // Check if user is admin
-    const userEmail = localStorage.getItem("userEmail");
-    const isAdmin = userEmail === "kieren2203@googlemail.com";
-    
-    if (isAdmin) {
-      setSubscriptionActive(true);
-      return;
-    }
-    
-    try {
-      const res = await fetch(`/api/subscription-status/${userId}`);
-      const data = await res.json();
-      setSubscriptionActive(data.active);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  checkSubscription();
-}, [userId]);
+    const checkSubscription = async () => {
+      if (!userId) return;
+      
+      const userEmail = localStorage.getItem("userEmail");
+      const isAdmin = userEmail === "kieren2203@googlemail.com";
+      
+      if (isAdmin) {
+        setSubscriptionActive(true);
+        return;
+      }
+      
+      try {
+        const res = await fetch(`/api/subscription-status/${userId}`);
+        const data = await res.json();
+        setSubscriptionActive(data.active);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    checkSubscription();
+  }, [userId]);
 
   useEffect(() => {
     if (!userId) {
@@ -135,6 +140,13 @@ export default function Dashboard() {
     }
   }, [rewards.streak]);
 
+  // Fetch manual premium users if admin
+  useEffect(() => {
+  if (isAdmin) {
+    fetchManualPremiumUsers();
+  }
+}, [isAdmin, fetchManualPremiumUsers]);
+
   const handleStartWorkout = async () => {
     const program = localStorage.getItem("program");
     if (!program) {
@@ -161,48 +173,47 @@ export default function Dashboard() {
   };
 
   const assignProgramToUser = async () => {
-  if (!assignEmail || !assignProgram) {
-    setAdminMessage("Please fill in email and program");
-    return;
-  }
-  try {
-    const res = await fetch("/api/admin/assign-program", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        adminEmail: userEmail,
-        userEmail: assignEmail,
-        programName: assignProgram
-      })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      setAdminMessage(`✅ ${data.message}`);
-      
-      // If assigning to current user, refresh their data
-      if (assignEmail === userEmail) {
-        const loginRes = await fetch("/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: userEmail })
-        });
-        const loginData = await loginRes.json();
-        if (loginRes.ok) {
-          localStorage.setItem("purchasedPrograms", JSON.stringify(loginData.purchasedPrograms));
-          setPurchasedPrograms(loginData.purchasedPrograms);
-        }
-      }
-      
-      setAssignEmail("");
-      setAssignProgram("");
-      setAdminPassword("");
-    } else {
-      setAdminMessage(`❌ ${data.error}`);
+    if (!assignEmail || !assignProgram) {
+      setAdminMessage("Please fill in email and program");
+      return;
     }
-  } catch (err) {
-    setAdminMessage(`❌ Error: ${err.message}`);
-  }
-};
+    try {
+      const res = await fetch("/api/admin/assign-program", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail: userEmail,
+          userEmail: assignEmail,
+          programName: assignProgram
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setAdminMessage(`✅ ${data.message}`);
+        
+        if (assignEmail === userEmail) {
+          const loginRes = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: userEmail })
+          });
+          const loginData = await loginRes.json();
+          if (loginRes.ok) {
+            localStorage.setItem("purchasedPrograms", JSON.stringify(loginData.purchasedPrograms));
+            setPurchasedPrograms(loginData.purchasedPrograms);
+          }
+        }
+        
+        setAssignEmail("");
+        setAssignProgram("");
+        setAdminPassword("");
+      } else {
+        setAdminMessage(`❌ ${data.error}`);
+      }
+    } catch (err) {
+      setAdminMessage(`❌ Error: ${err.message}`);
+    }
+  };
 
   const removeProgramFromUser = async () => {
     if (!removeEmail || !removeProgram) {
@@ -231,6 +242,77 @@ export default function Dashboard() {
       setRemoveMessage(`❌ Error: ${err.message}`);
     }
   };
+
+  // Manual premium functions
+  const grantManualPremium = async () => {
+    if (!premiumEmail) {
+      setPremiumMessage("Please enter an email");
+      return;
+    }
+    try {
+      const res = await fetch("/api/admin/grant-premium", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail: userEmail,
+          userEmail: premiumEmail
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPremiumMessage(`✅ ${data.message}`);
+        setPremiumEmail("");
+        fetchManualPremiumUsers();
+      } else {
+        setPremiumMessage(`❌ ${data.error}`);
+      }
+    } catch (err) {
+      setPremiumMessage(`❌ Error: ${err.message}`);
+    }
+  };
+
+  const revokeManualPremium = async (emailToRevoke) => {
+    if (!confirm(`Remove premium access from ${emailToRevoke}?`)) return;
+    try {
+      const res = await fetch("/api/admin/revoke-premium", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail: userEmail,
+          userEmail: emailToRevoke
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPremiumMessage(`✅ ${data.message}`);
+        fetchManualPremiumUsers();
+      } else {
+        setPremiumMessage(`❌ ${data.error}`);
+      }
+    } catch (err) {
+      setPremiumMessage(`❌ Error: ${err.message}`);
+    }
+  };
+
+  const fetchManualPremiumUsers = useCallback(async () => {
+  if (!isAdmin) return;
+  setLoadingPremiumUsers(true);
+  try {
+    const res = await fetch("/api/admin/manual-premium-users", {
+      headers: {
+        adminEmail: userEmail
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setManualPremiumUsers(data);
+    }
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoadingPremiumUsers(false);
+  }
+}, [isAdmin, userEmail]);
 
   function predictPR(history) {
     if (history.length < 2) return null;
@@ -330,16 +412,16 @@ export default function Dashboard() {
           <button onClick={handleStartWorkout} className="btn-workout">🏋️ Start Workout</button>
           <button onClick={() => navigate("/")} className="btn-secondary">Browse More Programs</button>
           {!subscriptionActive && purchasedPrograms.length > 0 && (
-          <div style={{ 
-            background: "#ffaa4422", 
-            padding: "12px", 
-            borderRadius: "8px", 
-            marginBottom: "12px",
-            textAlign: "center"
-          }}>
-          <strong>⚠️ Your subscription has expired.</strong> You can still view your history,
-            but weight recommendations are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe now</a>
-          </div>
+            <div style={{ 
+              background: "#ffaa4422", 
+              padding: "12px", 
+              borderRadius: "8px", 
+              marginBottom: "12px",
+              textAlign: "center"
+            }}>
+              <strong>⚠️ Your subscription has expired.</strong> You can still view your history,
+              but weight recommendations are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe now</a>
+            </div>
           )}
           <button 
             onClick={() => {
@@ -616,109 +698,173 @@ export default function Dashboard() {
         </div>
 
         {/* Admin Panel – only visible to admin */}
-{isAdmin && (
-  <div className="card admin-card">
-    <h2>🔧 Admin Panel</h2>
-    
-    {/* Assign Program Section */}
-    <div className="admin-form">
-      <input
-        type="email"
-        placeholder="User Email"
-        value={assignEmail}
-        onChange={e => setAssignEmail(e.target.value)}
-        className="admin-input"
-      />
-      <select
-        value={assignProgram}
-        onChange={e => setAssignProgram(e.target.value)}
-        className="admin-input"
-      >
-        <option value="">Select Program</option>
-        <option value="Ares Protocol">Ares Protocol</option>
-        <option value="Apollo Physique">Apollo Physique</option>
-        <option value="Hercules Foundation">Hercules Foundation</option>
-        <option value="Hephaestus Framework">Hephaestus Framework</option>
-        <option value="Mark Training">Mark Training</option>
-        <option value="Hercules-Foundation-Pauline-Version">Hercules Foundation - Pauline Version</option>
-      </select>
-      <button onClick={assignProgramToUser} className="btn-primary">Assign Program</button>
-      {adminMessage && <p className="admin-message">{adminMessage}</p>}
-    </div>
+        {isAdmin && (
+          <div className="card admin-card">
+            <h2>🔧 Admin Panel</h2>
+            
+            {/* Assign Program Section */}
+            <div className="admin-form">
+              <input
+                type="email"
+                placeholder="User Email"
+                value={assignEmail}
+                onChange={e => setAssignEmail(e.target.value)}
+                className="admin-input"
+              />
+              <select
+                value={assignProgram}
+                onChange={e => setAssignProgram(e.target.value)}
+                className="admin-input"
+              >
+                <option value="">Select Program</option>
+                <option value="Ares Protocol">Ares Protocol</option>
+                <option value="Apollo Physique">Apollo Physique</option>
+                <option value="Hercules Foundation">Hercules Foundation</option>
+                <option value="Hephaestus Framework">Hephaestus Framework</option>
+                <option value="Mark Training">Mark Training</option>
+                <option value="Hercules-Foundation-Pauline-Version">Hercules Foundation - Pauline Version</option>
+              </select>
+              <button onClick={assignProgramToUser} className="btn-primary">Assign Program</button>
+              {adminMessage && <p className="admin-message">{adminMessage}</p>}
+            </div>
 
-    {/* Remove Program Section */}
-    <div style={{ marginTop: "20px", borderTop: "1px solid #333", paddingTop: "20px" }}>
-      <h3>🗑️ Remove Program from User</h3>
-      <div className="admin-form">
-        <input
-          type="email"
-          placeholder="User Email"
-          value={removeEmail}
-          onChange={e => setRemoveEmail(e.target.value)}
-          className="admin-input"
-        />
-        <select
-          value={removeProgram}
-          onChange={e => setRemoveProgram(e.target.value)}
-          className="admin-input"
-        >
-          <option value="">Select Program to Remove</option>
-          <option value="Ares Protocol">Ares Protocol</option>
-          <option value="Apollo Physique">Apollo Physique</option>
-          <option value="Hercules Foundation">Hercules Foundation</option>
-          <option value="Hephaestus Framework">Hephaestus Framework</option>
-        </select>
-        <button onClick={removeProgramFromUser} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer" }}>
-          Remove Program
-        </button>
-        {removeMessage && <p className="admin-message">{removeMessage}</p>}
-      </div>
-    </div>
+            {/* Remove Program Section */}
+            <div style={{ marginTop: "20px", borderTop: "1px solid #333", paddingTop: "20px" }}>
+              <h3>🗑️ Remove Program from User</h3>
+              <div className="admin-form">
+                <input
+                  type="email"
+                  placeholder="User Email"
+                  value={removeEmail}
+                  onChange={e => setRemoveEmail(e.target.value)}
+                  className="admin-input"
+                />
+                <select
+                  value={removeProgram}
+                  onChange={e => setRemoveProgram(e.target.value)}
+                  className="admin-input"
+                >
+                  <option value="">Select Program to Remove</option>
+                  <option value="Ares Protocol">Ares Protocol</option>
+                  <option value="Apollo Physique">Apollo Physique</option>
+                  <option value="Hercules Foundation">Hercules Foundation</option>
+                  <option value="Hephaestus Framework">Hephaestus Framework</option>
+                </select>
+                <button onClick={removeProgramFromUser} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer" }}>
+                  Remove Program
+                </button>
+                {removeMessage && <p className="admin-message">{removeMessage}</p>}
+              </div>
+            </div>
 
-    <hr style={{ margin: "20px 0", borderColor: "#333" }} />
+            <hr style={{ margin: "20px 0", borderColor: "#333" }} />
 
-    {/* Leads Section */}
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-        <h3>📧 Captured Leads ({leads.length})</h3>
-        <div>
-          <button onClick={fetchLeads} className="btn-secondary" style={{ marginRight: "10px" }}>
-            Refresh
-          </button>
-          <button onClick={exportLeads} className="btn-primary" disabled={exporting}>
-            {exporting ? "Exporting..." : "Export CSV"}
-          </button>
-        </div>
-      </div>
-      {loadingLeads ? (
-        <p>Loading leads...</p>
-      ) : leads.length === 0 ? (
-        <p>No leads yet. Ask users to register on the homepage.</p>
-      ) : (
-        <div style={{ maxHeight: "300px", overflowY: "auto", marginTop: "10px" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
-            <thead>
-              <tr>
-                <th>Email</th>
-                <th>Source</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leads.map((lead, idx) => (
-                <tr key={idx} style={{ borderTop: "1px solid #333" }}>
-                  <td style={{ padding: "8px 4px" }}>{lead.email}</td>
-                  <td style={{ padding: "8px 4px" }}>{lead.source || "register_modal"}</td>
-                  <td style={{ padding: "8px 4px" }}>{new Date(lead.createdAt).toLocaleDateString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  </div>
-)}
+            {/* Leads Section */}
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                <h3>📧 Captured Leads ({leads.length})</h3>
+                <div>
+                  <button onClick={fetchLeads} className="btn-secondary" style={{ marginRight: "10px" }}>
+                    Refresh
+                  </button>
+                  <button onClick={exportLeads} className="btn-primary" disabled={exporting}>
+                    {exporting ? "Exporting..." : "Export CSV"}
+                  </button>
+                </div>
+              </div>
+              {loadingLeads ? (
+                <p>Loading leads...</p>
+              ) : leads.length === 0 ? (
+                <p>No leads yet. Ask users to register on the homepage.</p>
+              ) : (
+                <div style={{ maxHeight: "300px", overflowY: "auto", marginTop: "10px" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
+                    <thead>
+                      <tr>
+                        <th>Email</th>
+                        <th>Source</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {leads.map((lead, idx) => (
+                        <tr key={idx} style={{ borderTop: "1px solid #333" }}>
+                          <td style={{ padding: "8px 4px" }}>{lead.email}</td>
+                          <td style={{ padding: "8px 4px" }}>{lead.source || "register_modal"}</td>
+                          <td style={{ padding: "8px 4px" }}>{new Date(lead.createdAt).toLocaleDateString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            <hr style={{ margin: "20px 0", borderColor: "#333" }} />
+
+            {/* Manual Premium Access Section */}
+            <div>
+              <h3>👑 Manual Premium Access</h3>
+              <p style={{ fontSize: "12px", color: "var(--text-gray)", marginBottom: "10px" }}>
+                Grant full app access to users who pay you directly (offline/paired sessions)
+              </p>
+              <div className="admin-form">
+                <input
+                  type="email"
+                  placeholder="User Email"
+                  value={premiumEmail}
+                  onChange={e => setPremiumEmail(e.target.value)}
+                  className="admin-input"
+                />
+                <div style={{ display: "flex", gap: "10px" }}>
+                  <button onClick={grantManualPremium} style={{ background: "#10b981", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer", flex: 1 }}>
+                    Grant Premium Access
+                  </button>
+                  <button onClick={fetchManualPremiumUsers} className="btn-secondary" style={{ flex: 0.5 }}>
+                    Refresh List
+                  </button>
+                </div>
+                {premiumMessage && <p className="admin-message">{premiumMessage}</p>}
+              </div>
+              
+              {loadingPremiumUsers ? (
+                <p>Loading premium users...</p>
+              ) : manualPremiumUsers.length > 0 ? (
+                <div style={{ marginTop: "15px", maxHeight: "200px", overflowY: "auto" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+                    <thead>
+                      <tr>
+                        <th>Email</th>
+                        <th>Granted</th>
+                        <th>Streak</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {manualPremiumUsers.map((user, idx) => (
+                        <tr key={idx} style={{ borderTop: "1px solid #333" }}>
+                          <td style={{ padding: "8px 4px" }}>{user.email}</td>
+                          <td style={{ padding: "8px 4px" }}>{new Date(user.createdAt).toLocaleDateString()}</td>
+                          <td style={{ padding: "8px 4px" }}>{user.streak || 0}🔥</td>
+                          <td style={{ padding: "8px 4px" }}>
+                            <button 
+                              onClick={() => revokeManualPremium(user.email)}
+                              style={{ background: "#dc2626", color: "#fff", border: "none", padding: "4px 8px", borderRadius: "4px", cursor: "pointer", fontSize: "11px" }}
+                            >
+                              Revoke
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p style={{ fontSize: "12px", color: "var(--text-gray)", marginTop: "10px" }}>No manual premium users yet</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
