@@ -20,7 +20,7 @@ export default function SessionView() {
   });
   const [history, setHistory] = useState({});
   const [showReadiness, setShowReadiness] = useState(true);
-  const [adjustments, setAdjustments] = useState({ rpeAdjustment: 0, rirAdjustment: 0 });
+  const [adjustments, setAdjustments] = useState({ rpeAdjustment: 0, rirAdjustment: 0, qualityAdjustment: 0 });
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [workoutSummary, setWorkoutSummary] = useState(null);
   const [completedExerciseCount, setCompletedExerciseCount] = useState(0);
@@ -28,9 +28,17 @@ export default function SessionView() {
   const userId = localStorage.getItem("userId");
   const program = localStorage.getItem("program");
 
+  // Fetch session data WITH readiness adjustments included
   useEffect(() => {
     if (!userId || !program) return;
-    fetch(`/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`)
+    
+    const rpeAdj = adjustments.rpeAdjustment || 0;
+    const rirAdj = adjustments.rirAdjustment || 0;
+    const qualityAdj = adjustments.qualityAdjustment || 0;
+    
+    const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`;
+    
+    fetch(url)
       .then(res => {
         if (!res.ok) throw new Error("Failed to fetch");
         return res.json();
@@ -38,37 +46,33 @@ export default function SessionView() {
       .then(setData)
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
-  }, [week, day, userId, program]);
+  }, [week, day, userId, program, adjustments]);
 
   // Check subscription status
-// In SessionView.jsx, replace the checkSubscription useEffect with this cleaner version:
-
-useEffect(() => {
-  const checkSubscription = async () => {
-    try {
-      // First check if user is admin
-      const userEmail = localStorage.getItem("userEmail");
-      const isAdmin = userEmail === "kieren2203@googlemail.com";
-      
-      if (isAdmin) {
-        setSubscriptionActive(true);
+  useEffect(() => {
+    const checkSubscription = async () => {
+      try {
+        const userEmail = localStorage.getItem("userEmail");
+        const isAdmin = userEmail === "kieren2203@googlemail.com";
+        
+        if (isAdmin) {
+          setSubscriptionActive(true);
+          setCheckingStatus(false);
+          return;
+        }
+        
+        const res = await fetch(`/api/subscription-status/${userId}`);
+        const data = await res.json();
+        setSubscriptionActive(data.active);
+      } catch (err) {
+        console.error("Subscription check error:", err);
+      } finally {
         setCheckingStatus(false);
-        return;
       }
-      
-      // Check subscription status from server
-      const res = await fetch(`/api/subscription-status/${userId}`);
-      const data = await res.json();
-      setSubscriptionActive(data.active);
-    } catch (err) {
-      console.error("Subscription check error:", err);
-    } finally {
-      setCheckingStatus(false);
-    }
-  };
-  
-  if (userId) checkSubscription();
-}, [userId]);
+    };
+    
+    if (userId) checkSubscription();
+  }, [userId]);
 
   const handleReadinessComplete = (readinessData) => {
     setAdjustments(readinessData.adjustments);
@@ -95,7 +99,12 @@ useEffect(() => {
       
       await fetchHistory(liftName);
       
-      const res = await fetch(`/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`);
+      // Refresh data without adjustments (or keep same adjustments)
+      const rpeAdj = adjustments.rpeAdjustment || 0;
+      const rirAdj = adjustments.rirAdjustment || 0;
+      const qualityAdj = adjustments.qualityAdjustment || 0;
+      const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`;
+      const res = await fetch(url);
       const json = await res.json();
       setData(json);
       
@@ -106,7 +115,6 @@ useEffect(() => {
     }
   };
 
-  // FIXED: Auto-fill now fills reps AND targets correctly
   const handleAutoFill = (lift) => {
     const newInputs = { ...inputs };
     const liftInputs = newInputs[lift.liftName] || {};
@@ -130,37 +138,32 @@ useEffect(() => {
     }
     liftInputs.repsPerSet = targetRepsPerSet;
     
-    // Fill weight if available from current weight
+    // Fill weight from server-calculated current weight (already adjusted by server)
     if (lift.currentWeight && lift.currentWeight > 0) {
       liftInputs.weight = lift.currentWeight;
     }
     
-    // Fill RPE for strength programs
+    // Fill RPE for strength programs (use adjusted target if available)
     if (lift.progressionType === "strength" || data?.logic === "STRENGTH_RPE") {
-      let targetRPE = lift.rpeTarget;
-      if (adjustments.rpeAdjustment) {
-        targetRPE = Math.min(10, Math.max(1, targetRPE + adjustments.rpeAdjustment));
-      }
+      const targetRPE = lift.adjustedRpeTarget || lift.rpeTarget;
       liftInputs.rpe = targetRPE;
     }
     
     // Fill RIR for hypertrophy programs
     if (data?.logic === "HYPERTROPHY_VOLUME" || lift.progressionType === "volume") {
-      let targetRIR = lift.rirTarget;
-      if (adjustments.rirAdjustment) {
-        targetRIR = Math.min(5, Math.max(0, targetRIR + adjustments.rirAdjustment));
-      }
+      const targetRIR = lift.adjustedRirTarget || lift.rirTarget;
       liftInputs.rir = targetRIR;
     }
     
     // Fill quality for power programs
-    if (lift.progressionType === "power" && lift.qualityTarget) {
-      liftInputs.quality = lift.qualityTarget;
+    if (lift.progressionType === "power") {
+      const targetQuality = lift.adjustedQualityTarget || lift.qualityTarget;
+      liftInputs.quality = targetQuality;
     }
     
     // Fill stability/pain for mobility programs
     if (lift.progressionType === "mobility") {
-      liftInputs.stability = lift.stabilityTarget || 7;
+      liftInputs.stability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
       liftInputs.pain = lift.painTarget || 4;
     }
     
@@ -194,21 +197,15 @@ useEffect(() => {
     const liftName = lift.liftName;
     const targetReps = lift.reps;
     const targetSets = lift.sets;
-    let targetRPE = lift.rpeTarget;
-    let targetRIR = lift.rirTarget;
-    const targetQuality = lift.qualityTarget;
+    // Use adjusted targets if available (from server)
+    let targetRPE = lift.adjustedRpeTarget || lift.rpeTarget;
+    let targetRIR = lift.adjustedRirTarget || lift.rirTarget;
+    const targetQuality = lift.adjustedQualityTarget || lift.qualityTarget;
     const targetROM = lift.romTarget;
     const targetPain = lift.painTarget || 4;
-    const targetStability = lift.stabilityTarget || 7;
+    const targetStability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
     const progressionType = lift.progressionType;
     const logic = data.logic;
-    
-    if (adjustments.rpeAdjustment && (progressionType === "strength" || logic === "STRENGTH_RPE")) {
-      targetRPE = Math.min(10, Math.max(1, (targetRPE || 7) + adjustments.rpeAdjustment));
-    }
-    if (adjustments.rirAdjustment && (logic === "HYPERTROPHY_VOLUME" || progressionType === "volume")) {
-      targetRIR = Math.min(5, Math.max(0, (targetRIR || 2) + adjustments.rirAdjustment));
-    }
     
     const streakRes = await fetch(`/api/streak/${userId}`);
     if (streakRes.ok) {
@@ -242,7 +239,6 @@ useEffect(() => {
         actualRIR = Number(inputs[liftName]?.rir || targetRIR);
       }
 
-      // Calculate repsCompleted from repsPerSet
       const repsCompleted = repsPerSet.reduce((sum, r) => sum + (parseInt(r) || 0), 0);
 
       await fetch("/api/session-log", {
@@ -284,7 +280,12 @@ useEffect(() => {
         body: JSON.stringify({ userId, liftName, logic })
       });
 
-      const res = await fetch(`/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`);
+      // Refresh data (keep same adjustments)
+      const rpeAdj = adjustments.rpeAdjustment || 0;
+      const rirAdj = adjustments.rirAdjustment || 0;
+      const qualityAdj = adjustments.qualityAdjustment || 0;
+      const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`;
+      const res = await fetch(url);
       const json = await res.json();
       setData(json);
 
@@ -334,24 +335,25 @@ useEffect(() => {
 
   const getTargetValue = (lift) => {
     const pt = lift.progressionType;
-    let target = null;
     
-    if (pt === "power") target = lift.qualityTarget;
-    else if (pt === "mobility") target = `Stability ≥${lift.stabilityTarget || 7} / Pain ≤${lift.painTarget || 4}`;
-    else if (pt === "strength" || data.logic === "STRENGTH_RPE") target = lift.rpeTarget;
-    else if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") target = lift.rirTarget;
-    else target = lift.rpeTarget;
-    
-    if (adjustments.rpeAdjustment && (pt === "strength" || data.logic === "STRENGTH_RPE") && target) {
-      const adjusted = Math.min(10, Math.max(1, target + adjustments.rpeAdjustment));
-      target = `${target} → ${adjusted} (adjusted)`;
+    if (pt === "power") {
+      const target = lift.adjustedQualityTarget || lift.qualityTarget;
+      return target || "—";
     }
-    if (adjustments.rirAdjustment && (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") && target) {
-      const adjusted = Math.min(5, Math.max(0, target + adjustments.rirAdjustment));
-      target = `${target} → ${adjusted} (adjusted)`;
+    if (pt === "mobility") {
+      const stability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
+      const pain = lift.painTarget || 4;
+      return `Stability ≥${stability} / Pain ≤${pain}`;
     }
-    
-    return target || "—";
+    if (pt === "strength" || data.logic === "STRENGTH_RPE") {
+      const target = lift.adjustedRpeTarget || lift.rpeTarget;
+      return target || "—";
+    }
+    if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") {
+      const target = lift.adjustedRirTarget || lift.rirTarget;
+      return target || "—";
+    }
+    return "—";
   };
 
   return (
@@ -378,20 +380,22 @@ useEffect(() => {
           </select>
         </div>
       </div>
+      
+      {!subscriptionActive && !checkingStatus && (
+        <div style={{
+          background: "#ffaa4422",
+          border: "1px solid #ffaa44",
+          borderRadius: "8px",
+          padding: "12px",
+          marginBottom: "20px",
+          textAlign: "center"
+        }}>
+          <strong>⚠️ Your subscription has ended.</strong> You can still log workouts manually,
+          but recommended weights are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe</a> to unlock full guidance.
+        </div>
+      )}
+      
       <div style={{ display: "grid", gap: 20 }}>
-        {!subscriptionActive && !checkingStatus && (
-  <div style={{
-    background: "#ffaa4422",
-    border: "1px solid #ffaa44",
-    borderRadius: "8px",
-    padding: "12px",
-    marginBottom: "20px",
-    textAlign: "center"
-  }}>
-    <strong>⚠️ Your subscription has ended.</strong> You can still log workouts manually,
-    but recommended weights are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe</a> to unlock full guidance.
-  </div>
-)}
         {(data.projected || []).map((lift, i) => {
           const pt = lift.progressionType;
           const currentRepsInputs = inputs[lift.liftName]?.repsPerSet || [];
@@ -405,16 +409,16 @@ useEffect(() => {
                 <span>{getMetricLabel(lift)} Target: {getTargetValue(lift)}</span>
               </div>
               <div style={{ display: "flex", gap: 20, marginBottom: 15, fontWeight: "bold", flexWrap: "wrap" }}>
-                  {subscriptionActive ? (
-              <>
-              <span>Current: {lift.currentWeight ?? 0}kg</span>
-              <span>Next: {lift.projectedNextWeight ?? 0}kg</span>
-              </>
-              ) : (
-              <span style={{ color: "#ffaa44" }}>
-              ⚡ Subscribe to see recommended weights
-              </span>
-              )}
+                {subscriptionActive ? (
+                  <>
+                    <span>Current: {lift.currentWeight ?? 0}kg</span>
+                    <span>Next: {lift.projectedNextWeight ?? 0}kg</span>
+                  </>
+                ) : (
+                  <span style={{ color: "#ffaa44" }}>
+                    ⚡ Subscribe to see recommended weights
+                  </span>
+                )}
               </div>
               
               <div style={{ display: "flex", gap: 10, marginBottom: 15, flexWrap: "wrap" }}>
@@ -516,14 +520,14 @@ useEffect(() => {
                   onClick={() => handleAutoFill(lift)} 
                   disabled={!subscriptionActive}
                   style={{ 
-                  padding: "10px 15px", 
-                  borderRadius: 8, 
-                  border: "1px solid #4caf50", 
-                  background: subscriptionActive ? "#4caf50" : "#666", 
-                  color: "#fff", 
-                  cursor: subscriptionActive ? "pointer" : "not-allowed",
-                  opacity: subscriptionActive ? 1 : 0.5
-                }}
+                    padding: "10px 15px", 
+                    borderRadius: 8, 
+                    border: "1px solid #4caf50", 
+                    background: subscriptionActive ? "#4caf50" : "#666", 
+                    color: "#fff", 
+                    cursor: subscriptionActive ? "pointer" : "not-allowed",
+                    opacity: subscriptionActive ? 1 : 0.5
+                  }}
                 >
                   ⚡ Auto Fill
                 </button>
