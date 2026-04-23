@@ -1128,15 +1128,11 @@ app.post("/api/leads", async (req, res) => {
 });
 
 app.get("/api/admin/leads", async (req, res) => {
-  const { adminemail, adminpassword } = req.headers;
+  const { adminemail } = req.headers;
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   
   if (adminemail !== ADMIN_EMAIL) {
     return res.status(403).json({ error: "Not authorized" });
-  }
-  if (ADMIN_PASSWORD && adminpassword !== ADMIN_PASSWORD) {
-    return res.status(403).json({ error: "Invalid admin password" });
   }
   
   const leads = await Lead.find().sort({ createdAt: -1 });
@@ -1144,15 +1140,11 @@ app.get("/api/admin/leads", async (req, res) => {
 });
 
 app.get("/api/admin/leads/export", async (req, res) => {
-  const { adminemail, adminpassword } = req.headers;
+  const { adminemail } = req.headers;
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   
   if (adminemail !== ADMIN_EMAIL) {
     return res.status(403).json({ error: "Not authorized" });
-  }
-  if (ADMIN_PASSWORD && adminpassword !== ADMIN_PASSWORD) {
-    return res.status(403).json({ error: "Invalid admin password" });
   }
   
   const leads = await Lead.find().sort({ createdAt: -1 });
@@ -1166,19 +1158,15 @@ app.get("/api/admin/leads/export", async (req, res) => {
 });
 
 app.post("/api/admin/assign-program", async (req, res) => {
-  const { adminEmail, adminPassword, userEmail, programName } = req.body;
+  const { adminEmail, userEmail, programName } = req.body;
 
   const normalizedAdminEmail = adminEmail.toLowerCase().trim();
   const normalizedUserEmail = userEmail.toLowerCase().trim();
   
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   
   if (normalizedAdminEmail !== ADMIN_EMAIL) {
     return res.status(403).json({ error: "Not authorized" });
-  }
-  if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
-    return res.status(403).json({ error: "Invalid admin password" });
   }
   if (!userEmail || !programName) {
     return res.status(400).json({ error: "Email and program name required" });
@@ -1286,16 +1274,12 @@ app.delete("/api/session-log/:id", async (req, res) => {
 });
 
 app.delete("/api/admin/remove-program", async (req, res) => {
-  const { adminEmail, adminPassword, userEmail, programName } = req.body;
+  const { adminEmail, userEmail, programName } = req.body;
   
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   
   if (adminEmail !== ADMIN_EMAIL) {
     return res.status(403).json({ error: "Not authorized" });
-  }
-  if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
-    return res.status(403).json({ error: "Invalid admin password" });
   }
   if (!userEmail || !programName) {
     return res.status(400).json({ error: "Email and program name required" });
@@ -1473,15 +1457,11 @@ app.get("/api/subscription-status/:userId", async (req, res) => {
 
 // ==================== Manual Premium Admin Routes ====================
 app.get("/api/admin/manual-premium-users", async (req, res) => {
-  const { adminemail, adminpassword } = req.headers;
+  const { adminemail } = req.headers;
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   
   if (adminemail !== ADMIN_EMAIL) {
     return res.status(403).json({ error: "Not authorized" });
-  }
-  if (ADMIN_PASSWORD && adminpassword !== ADMIN_PASSWORD) {
-    return res.status(403).json({ error: "Invalid admin password" });
   }
   
   const users = await User.find({ manualPremium: true }).select("email manualPremium createdAt streak");
@@ -1489,16 +1469,12 @@ app.get("/api/admin/manual-premium-users", async (req, res) => {
 });
 
 app.post("/api/admin/grant-premium", async (req, res) => {
-  const { adminEmail, adminPassword, userEmail } = req.body;
+  const { adminEmail, userEmail } = req.body;
   
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   
   if (adminEmail !== ADMIN_EMAIL) {
     return res.status(403).json({ error: "Not authorized" });
-  }
-  if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
-    return res.status(403).json({ error: "Invalid admin password" });
   }
   if (!userEmail) {
     return res.status(400).json({ error: "Email required" });
@@ -1519,16 +1495,12 @@ app.post("/api/admin/grant-premium", async (req, res) => {
 });
 
 app.post("/api/admin/revoke-premium", async (req, res) => {
-  const { adminEmail, adminPassword, userEmail } = req.body;
+  const { adminEmail, userEmail } = req.body;
   
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   
   if (adminEmail !== ADMIN_EMAIL) {
     return res.status(403).json({ error: "Not authorized" });
-  }
-  if (ADMIN_PASSWORD && adminPassword !== ADMIN_PASSWORD) {
-    return res.status(403).json({ error: "Invalid admin password" });
   }
   if (!userEmail) {
     return res.status(400).json({ error: "Email required" });
