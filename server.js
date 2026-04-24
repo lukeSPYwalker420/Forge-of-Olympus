@@ -470,23 +470,42 @@ function strengthRPEProgression(state, sessionData) {
   const repsPerSet = sessionData.repsPerSet || [];
   const targetReps = parseInt(sessionData.targetReps, 10);
   const targetSets = sessionData.targetSets || 1;
+
+  // Define what a "good" session means
   const allSetsCompleted = repsPerSet.length === targetSets && repsPerSet.every(r => r >= targetReps);
   const rpeOk = sessionData.actualRPE <= sessionData.targetRPE + 0.5;
   const isGoodSession = completed && allSetsCompleted && rpeOk;
 
-  let fresh1RM = null;
+  // Only attempt to update 1RM if we have valid data
   if (completed && sessionData.actualWeight && repsPerSet.length && sessionData.actualRPE) {
     const bestReps = Math.max(...repsPerSet);
-    fresh1RM = estimate1RM(sessionData.actualWeight, bestReps, sessionData.actualRPE);
+    const fresh1RM = estimate1RM(sessionData.actualWeight, bestReps, sessionData.actualRPE);
+
+    if (isGoodSession) {
+      // Good session: increase 1RM if the fresh estimate is higher (never decrease)
+      if (fresh1RM > new1RM) {
+        new1RM = fresh1RM;
+        console.log(`📈 Good session for ${sessionData.liftName}: 1RM increased from ${state.estimated1RM} to ${new1RM}`);
+      } else {
+        console.log(`✅ Good session for ${sessionData.liftName}: 1RM unchanged (${new1RM})`);
+      }
+    } else {
+      // Bad session: do NOT increase 1RM. Optionally decrease slightly (e.g., 2%)
+      // This prevents false progress and reflects regression
+      if (new1RM > 0) {
+        const decreased = Math.round(new1RM * 0.98);
+        if (decreased < new1RM) {
+          new1RM = decreased;
+          console.log(`⚠️ Bad session for ${sessionData.liftName}: 1RM decreased to ${new1RM}`);
+        }
+      } else {
+        console.log(`⚠️ Bad session for ${sessionData.liftName}: 1RM unchanged (no prior data)`);
+      }
+    }
+  } else {
+    console.log(`❓ Incomplete data for ${sessionData.liftName}, no 1RM update`);
   }
 
-  if (fresh1RM !== null) {
-    if (isGoodSession) {
-      new1RM = Math.max(new1RM, fresh1RM);
-    } else {
-      new1RM = fresh1RM;
-    }
-  }
   return { estimated1RM: Math.round(new1RM) };
 }
 
@@ -613,23 +632,31 @@ function generalFitnessProgression(state, sessionData) {
   const progressionType = sessionData.progressionType || "strength";
 
   if (progressionType === "strength") {
-    const targetReps = parseInt(sessionData.targetReps, 10);
-    const actualReps = sessionData.repsCompleted || 0;
-    const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
-    const rpeOk = sessionData.actualRPE <= sessionData.targetRPE + 1;
-    const isGoodSession = completed && repsMet && rpeOk;
+  const targetReps = parseInt(sessionData.targetReps, 10);
+  const actualReps = sessionData.repsCompleted || 0;
+  const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
+  const rpeOk = sessionData.actualRPE <= sessionData.targetRPE + 1;
+  const isGoodSession = completed && repsMet && rpeOk;
 
-    if (isGoodSession) {
-      successStreak += 1;
-      stallCounter = 0;
-      if (successStreak >= 3) {
-        newWeight += (sessionData.liftName?.toLowerCase().includes("squat") || sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-        successStreak = 0;
-      }
-    } else {
+  if (isGoodSession) {
+    successStreak += 1;
+    stallCounter = 0;
+    if (successStreak >= 3) {
+      const increment = (sessionData.liftName?.toLowerCase().includes("squat") || sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+      newWeight += increment;
       successStreak = 0;
-      stallCounter += 1;
+      console.log(`📈 Good strength session: ${sessionData.liftName} increased to ${newWeight}kg`);
     }
+  } else {
+    successStreak = 0;
+    stallCounter += 1;
+    // optional: decrease after 2 bad sessions
+    if (stallCounter >= 2 && newWeight > 0) {
+      newWeight = Math.max(0, newWeight - 2.5);
+      stallCounter = 0;
+      console.log(`⚠️ Bad strength sessions: ${sessionData.liftName} decreased to ${newWeight}kg`);
+    }
+  }
   } else if (progressionType === "power") {
     const qualityOk = (sessionData.actualQuality || 0) >= (sessionData.targetQuality || 7);
     const isGoodPowerSession = completed && qualityOk;
