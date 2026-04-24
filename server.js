@@ -464,58 +464,69 @@ function weightForRPE(oneRM, targetRPE, targetReps) {
 }
 
 // ==================== Progression Functions ====================
+// ==================== Robust Progression Logic ====================
+
+/**
+ * STRENGTH_RPE progression (for Ares Protocol)
+ * - Good session: 1RM increases if fresh estimate is higher (never decreases)
+ * - Bad session: 1RM decreases by 2% (reflects regression), never increases
+ */
 function strengthRPEProgression(state, sessionData) {
   let new1RM = state.estimated1RM || 0;
-  const completed = sessionData.completed === true;
+  const completed = !!sessionData.completed;
   const repsPerSet = sessionData.repsPerSet || [];
   const targetReps = parseInt(sessionData.targetReps, 10);
   const targetSets = sessionData.targetSets || 1;
 
-  // Define what a "good" session means
+  // Guard: no valid data → no change
+  if (!completed || !sessionData.actualWeight || !repsPerSet.length || !sessionData.actualRPE) {
+    console.log(`⚠️ [STRENGTH] Incomplete data for ${sessionData.liftName}, skipping update`);
+    return { estimated1RM: new1RM };
+  }
+
+  const bestReps = Math.max(...repsPerSet);
+  const fresh1RM = estimate1RM(sessionData.actualWeight, bestReps, sessionData.actualRPE);
+
   const allSetsCompleted = repsPerSet.length === targetSets && repsPerSet.every(r => r >= targetReps);
-  const rpeOk = sessionData.actualRPE <= sessionData.targetRPE + 0.5;
-  const isGoodSession = completed && allSetsCompleted && rpeOk;
+  const rpeOk = sessionData.actualRPE <= (sessionData.targetRPE || 7) + 0.5;
+  const isGoodSession = allSetsCompleted && rpeOk;
 
-  // Only attempt to update 1RM if we have valid data
-  if (completed && sessionData.actualWeight && repsPerSet.length && sessionData.actualRPE) {
-    const bestReps = Math.max(...repsPerSet);
-    const fresh1RM = estimate1RM(sessionData.actualWeight, bestReps, sessionData.actualRPE);
-
-    if (isGoodSession) {
-      // Good session: increase 1RM if the fresh estimate is higher (never decrease)
-      if (fresh1RM > new1RM) {
-        new1RM = fresh1RM;
-        console.log(`📈 Good session for ${sessionData.liftName}: 1RM increased from ${state.estimated1RM} to ${new1RM}`);
-      } else {
-        console.log(`✅ Good session for ${sessionData.liftName}: 1RM unchanged (${new1RM})`);
-      }
+  if (isGoodSession) {
+    // Good session: 1RM only goes up
+    if (fresh1RM > new1RM) {
+      new1RM = fresh1RM;
+      console.log(`📈 [STRENGTH] Good session ${sessionData.liftName}: 1RM ↑ ${state.estimated1RM || '?'} → ${new1RM}`);
     } else {
-      // Bad session: do NOT increase 1RM. Optionally decrease slightly (e.g., 2%)
-      // This prevents false progress and reflects regression
-      if (new1RM > 0) {
-        const decreased = Math.round(new1RM * 0.98);
-        if (decreased < new1RM) {
-          new1RM = decreased;
-          console.log(`⚠️ Bad session for ${sessionData.liftName}: 1RM decreased to ${new1RM}`);
-        }
-      } else {
-        console.log(`⚠️ Bad session for ${sessionData.liftName}: 1RM unchanged (no prior data)`);
-      }
+      console.log(`✅ [STRENGTH] Good session ${sessionData.liftName}: 1RM unchanged (${new1RM})`);
     }
   } else {
-    console.log(`❓ Incomplete data for ${sessionData.liftName}, no 1RM update`);
+    // Bad session: never increase, optionally decrease by 2%
+    if (new1RM > 0) {
+      const decreased = Math.round(new1RM * 0.98);
+      if (decreased < new1RM) {
+        new1RM = decreased;
+        console.log(`⚠️ [STRENGTH] Bad session ${sessionData.liftName}: 1RM ↓ to ${new1RM}`);
+      }
+    } else {
+      console.log(`⚠️ [STRENGTH] Bad session ${sessionData.liftName}: 1RM unchanged (no prior 1RM)`);
+    }
   }
 
   return { estimated1RM: Math.round(new1RM) };
 }
 
+/**
+ * HYPERTROPHY_VOLUME progression (for Apollo Physique)
+ * - Good session: increases weight after lastReps reaches maxReps
+ * - Bad session: after 3 stalls, decreases weight
+ */
 function hypertrophyVolumeProgression(state, sessionData) {
   let newWeight = state.currentWeight || sessionData.actualWeight || 0;
   let lastReps = state.lastRepsAchieved || 0;
   let successStreak = state.consecutiveSuccesses || 0;
   let stallCounter = state.stallCounter || 0;
 
-  const completed = sessionData.completed === true;
+  const completed = !!sessionData.completed;
   const repsPerSet = sessionData.repsPerSet || [];
   const targetRepsStr = sessionData.targetReps || "8-12";
   let minReps = 8, maxReps = 12;
@@ -526,7 +537,6 @@ function hypertrophyVolumeProgression(state, sessionData) {
   } else {
     minReps = maxReps = parseInt(targetRepsStr, 10);
   }
-  
   const targetSets = sessionData.targetSets || 3;
   const allSetsCompleted = repsPerSet.length === targetSets && repsPerSet.every(r => r >= minReps);
   const actualReps = Math.max(...repsPerSet);
@@ -537,27 +547,25 @@ function hypertrophyVolumeProgression(state, sessionData) {
   const isGoodSession = completed && allSetsCompleted && rirGood;
 
   if (isGoodSession) {
-    if (actualReps > lastReps && actualReps <= maxReps) {
-      lastReps = actualReps;
-    }
+    if (actualReps > lastReps && actualReps <= maxReps) lastReps = actualReps;
     successStreak += 1;
     stallCounter = 0;
     if (lastReps >= maxReps) {
-      const increment = (sessionData.liftName?.toLowerCase().includes("squat") ||
-                         sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-      newWeight += increment;
+      const inc = (sessionData.liftName?.toLowerCase().includes("squat") || sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+      newWeight += inc;
       lastReps = minReps;
       successStreak = 0;
+      console.log(`📈 [HYPERTROPHY] Good session ${sessionData.liftName}: weight ↑ to ${newWeight}kg`);
     }
   } else {
     successStreak = 0;
     stallCounter += 1;
     if (stallCounter >= 3 && newWeight > 0) {
-      const decrement = (sessionData.liftName?.toLowerCase().includes("squat") ||
-                         sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-      newWeight = Math.max(0, newWeight - decrement);
+      const dec = (sessionData.liftName?.toLowerCase().includes("squat") || sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+      newWeight = Math.max(0, newWeight - dec);
       stallCounter = 0;
       lastReps = minReps;
+      console.log(`⚠️ [HYPERTROPHY] 3 bad sessions ${sessionData.liftName}: weight ↓ to ${newWeight}kg`);
     }
   }
 
@@ -569,48 +577,54 @@ function hypertrophyVolumeProgression(state, sessionData) {
   };
 }
 
+/**
+ * EXPLOSIVE_POWER progression – placeholder, no auto‑adjustment
+ */
 function explosivePowerProgression(state, sessionData) {
   return { currentWeight: state.currentWeight, consecutiveSuccesses: 0, stallCounter: 0 };
 }
 
+/**
+ * ENDURANCE_DENSITY progression – placeholder
+ */
 function enduranceDensityProgression(state, sessionData) {
   return { currentWeight: state.currentWeight, consecutiveSuccesses: 0, stallCounter: 0 };
 }
 
+/**
+ * MOBILITY progression (for Hephaestus Framework)
+ * - Good session: after 3 consecutive good sessions, increase weight by 2.5kg
+ * - Bad session: after 2 consecutive bad sessions, decrease weight by 2.5kg
+ */
 function mobilityRangeProgression(state, sessionData) {
   let newWeight = state.currentWeight || sessionData.actualWeight || 0;
   let successStreak = state.consecutiveSuccesses || 0;
   let stallCounter = state.stallCounter || 0;
 
-  const completed = sessionData.completed === true;
+  const completed = !!sessionData.completed;
   const actualStability = sessionData.actualStability || 0;
   const targetStability = sessionData.targetStability || 7;
   const stabilityMet = actualStability >= targetStability;
-  
   const actualPain = sessionData.actualPain || 0;
   const targetPain = sessionData.targetPain || 4;
   const painOk = actualPain <= targetPain;
-  
   const isGoodSession = completed && stabilityMet && painOk;
 
   if (isGoodSession) {
     successStreak += 1;
     stallCounter = 0;
-    
     if (successStreak >= 3) {
-      const increment = 2.5;
-      newWeight += increment;
+      newWeight += 2.5;
       successStreak = 0;
-      console.log(`💪 Mobility progression (stability): ${sessionData.liftName} increased to ${newWeight}kg`);
+      console.log(`💪 [MOBILITY] Good streak ${sessionData.liftName}: weight ↑ to ${newWeight}kg`);
     }
   } else {
     successStreak = 0;
     stallCounter += 1;
-    
     if (stallCounter >= 2 && newWeight > 0) {
       newWeight = Math.max(0, newWeight - 2.5);
       stallCounter = 0;
-      console.log(`⚠️ Mobility regression: ${sessionData.liftName} decreased to ${newWeight}kg`);
+      console.log(`⚠️ [MOBILITY] Bad streak ${sessionData.liftName}: weight ↓ to ${newWeight}kg`);
     }
   }
 
@@ -618,85 +632,109 @@ function mobilityRangeProgression(state, sessionData) {
     currentWeight: Math.round(newWeight * 2) / 2,
     consecutiveSuccesses: successStreak,
     stallCounter,
-    lastROM: state.lastROM
+    lastROM: state.lastROM  // unchanged
   };
 }
 
+/**
+ * GENERAL_FITNESS_HYBRID progression (for Hercules Foundation, Mark Training, etc.)
+ * Supports multiple progression types: strength, power, mobility, volume/stability, deload
+ */
 function generalFitnessProgression(state, sessionData) {
   let newWeight = state.currentWeight || sessionData.actualWeight || 0;
   let newROM = state.lastROM || sessionData.actualROM || 0;
   let successStreak = state.consecutiveSuccesses || 0;
   let stallCounter = state.stallCounter || 0;
-
-  const completed = sessionData.completed === true;
+  const completed = !!sessionData.completed;
   const progressionType = sessionData.progressionType || "strength";
 
-  if (progressionType === "strength") {
-  const targetReps = parseInt(sessionData.targetReps, 10);
-  const actualReps = sessionData.repsCompleted || 0;
-  const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
-  const rpeOk = sessionData.actualRPE <= sessionData.targetRPE + 1;
-  const isGoodSession = completed && repsMet && rpeOk;
+  // Helper to increment weight (5kg for squat/deadlift, else 2.5kg)
+  const getIncrement = (liftName) => (liftName?.toLowerCase().includes("squat") || liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+  const getDecrement = (liftName) => (liftName?.toLowerCase().includes("squat") || liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
 
-  if (isGoodSession) {
-    successStreak += 1;
-    stallCounter = 0;
-    if (successStreak >= 3) {
-      const increment = (sessionData.liftName?.toLowerCase().includes("squat") || sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-      newWeight += increment;
-      successStreak = 0;
-      console.log(`📈 Good strength session: ${sessionData.liftName} increased to ${newWeight}kg`);
-    }
-  } else {
-    successStreak = 0;
-    stallCounter += 1;
-    // optional: decrease after 2 bad sessions
-    if (stallCounter >= 2 && newWeight > 0) {
-      newWeight = Math.max(0, newWeight - 2.5);
-      stallCounter = 0;
-      console.log(`⚠️ Bad strength sessions: ${sessionData.liftName} decreased to ${newWeight}kg`);
-    }
-  }
-  } else if (progressionType === "power") {
-    const qualityOk = (sessionData.actualQuality || 0) >= (sessionData.targetQuality || 7);
-    const isGoodPowerSession = completed && qualityOk;
-    if (isGoodPowerSession) {
-      successStreak += 1;
-      if (successStreak >= 2) {
-        newWeight += 2.5;
+  switch (progressionType) {
+    case "strength":
+      const targetReps = parseInt(sessionData.targetReps, 10);
+      const actualReps = sessionData.repsCompleted || 0;
+      const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
+      const rpeOk = sessionData.actualRPE <= (sessionData.targetRPE || 7) + 1;
+      const isGoodStrength = completed && repsMet && rpeOk;
+
+      if (isGoodStrength) {
+        successStreak++;
+        stallCounter = 0;
+        if (successStreak >= 3) {
+          newWeight += getIncrement(sessionData.liftName);
+          successStreak = 0;
+          console.log(`📈 [GF-strength] Good streak ${sessionData.liftName}: weight ↑ to ${newWeight}kg`);
+        }
+      } else {
+        successStreak = 0;
+        stallCounter++;
+        if (stallCounter >= 2 && newWeight > 0) {
+          newWeight = Math.max(0, newWeight - getDecrement(sessionData.liftName));
+          stallCounter = 0;
+          console.log(`⚠️ [GF-strength] Bad streak ${sessionData.liftName}: weight ↓ to ${newWeight}kg`);
+        }
+      }
+      break;
+
+    case "power":
+      const qualityOk = (sessionData.actualQuality || 0) >= (sessionData.targetQuality || 7);
+      const isGoodPower = completed && qualityOk;
+      if (isGoodPower) {
+        successStreak++;
+        if (successStreak >= 2) {
+          newWeight += 2.5;
+          successStreak = 0;
+          console.log(`📈 [GF-power] Good streak ${sessionData.liftName}: weight ↑ to ${newWeight}kg`);
+        }
+      } else {
+        successStreak = 0;
+        // no auto‑decrease for power, just reset streak
+      }
+      break;
+
+    case "mobility":
+      const romMet = (sessionData.actualROM || 0) >= (sessionData.targetROM || 0);
+      const painOkMob = (sessionData.actualPain || 0) <= (sessionData.targetPain || 2);
+      const isGoodMobility = completed && romMet && painOkMob;
+      if (isGoodMobility) {
+        successStreak++;
+        if (successStreak >= 2) {
+          newROM += 5;
+          successStreak = 0;
+          console.log(`📈 [GF-mobility] Good streak ${sessionData.liftName}: ROM ↑ to ${newROM}%`);
+        }
+      } else {
         successStreak = 0;
       }
-    } else {
-      successStreak = 0;
-    }
-  } else if (progressionType === "mobility") {
-    const romMet = (sessionData.actualROM || 0) >= (sessionData.targetROM || 0);
-    const painOk = (sessionData.actualPain || 0) <= (sessionData.targetPain || 2);
-    const isGoodMobilitySession = completed && romMet && painOk;
-    if (isGoodMobilitySession) {
-      successStreak += 1;
-      if (successStreak >= 2) {
-        newROM += 5;
+      break;
+
+    case "volume":
+    case "stability":
+      const targetVolReps = parseInt(sessionData.targetReps, 10);
+      const actualVolReps = sessionData.repsCompleted || 0;
+      const repsMetVol = !isNaN(targetVolReps) && actualVolReps >= targetVolReps;
+      const isGoodVolume = completed && repsMetVol;
+      if (isGoodVolume) {
+        successStreak++;
+        if (successStreak >= 3) {
+          // volume progress does not change weight, just records success
+          successStreak = 0;
+          console.log(`✅ [GF-volume] Good session ${sessionData.liftName}`);
+        }
+      } else {
         successStreak = 0;
       }
-    } else {
-      successStreak = 0;
-    }
-  } else if (progressionType === "volume" || progressionType === "stability") {
-    const targetReps = parseInt(sessionData.targetReps, 10);
-    const actualReps = sessionData.repsCompleted || 0;
-    const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
-    const isGoodVolumeSession = completed && repsMet;
-    if (isGoodVolumeSession) {
-      successStreak += 1;
-      if (successStreak >= 3) {
-        successStreak = 0;
-      }
-    } else {
-      successStreak = 0;
-    }
-  } else if (progressionType === "deload") {
-    // Do nothing
+      break;
+
+    case "deload":
+      // Deload weeks do nothing
+      break;
+
+    default:
+      console.warn(`⚠️ Unknown progression type ${progressionType} in generalFitnessProgression`);
   }
 
   return {
@@ -707,6 +745,9 @@ function generalFitnessProgression(state, sessionData) {
   };
 }
 
+/**
+ * Main dispatcher – selects the correct progression function based on program logic
+ */
 function calculateProgression(state, sessionData, logic) {
   switch (logic) {
     case "STRENGTH_RPE":
@@ -722,6 +763,7 @@ function calculateProgression(state, sessionData, logic) {
     case "GENERAL_FITNESS_HYBRID":
       return generalFitnessProgression(state, sessionData);
     default:
+      console.warn(`⚠️ Unknown logic "${logic}", falling back to STRENGTH_RPE`);
       return strengthRPEProgression(state, sessionData);
   }
 }
