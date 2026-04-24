@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardChart from './DashboardChart';
 import "./Dashboard.css";
 import html2canvas from 'html2canvas';
+import ProgressLog from './ProgressLog';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -473,6 +474,7 @@ export default function Dashboard() {
           >
             📸 Share My Progress
           </button>
+          <ProgressLog userId={userId} />
         </div>
 
         {/* Estimated 1RM Card */}

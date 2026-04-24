@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
+/* global gtag */
 
 export default function Home() {
   const navigate = useNavigate();
@@ -92,6 +93,12 @@ export default function Home() {
     });
     
     const data = await response.json();
+
+    // Inside handleSubscribe, after getting the session URL but before redirect:
+if (window.gtag) {
+  gtag('event', 'conversion', { 'send_to': 'AW-XXXXXXXX/XXXXXXX' });
+}
+window.location.href = data.url;
     
     if (!response.ok) {
       throw new Error(data.error || "Checkout failed");
