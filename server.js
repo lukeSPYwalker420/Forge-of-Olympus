@@ -7,6 +7,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import Stripe from "stripe";
 import nodemailer from 'nodemailer';
+import cron from 'node-cron';
 
 dotenv.config();
 
@@ -1538,6 +1539,170 @@ app.post("/api/admin/revoke-premium", async (req, res) => {
     res.status(404).json({ error: "User not found" });
   }
 });
+
+// Progress comparison endpoint
+app.get("/api/progress-comparison/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    // Get all sessions grouped by week
+    const sessions = await Session.find({ userId }).sort({ week: 1, day: 1, createdAt: 1 });
+    if (sessions.length === 0) return res.json({ weeks: [], lifts: [] });
+
+    const weeksMap = new Map();
+    for (const s of sessions) {
+      if (!weeksMap.has(s.week)) weeksMap.set(s.week, []);
+      weeksMap.get(s.week).push(s);
+    }
+    const weeks = Array.from(weeksMap.keys()).sort((a,b)=>a-b);
+    if (weeks.length < 2) return res.json({ weeks, lifts: [] });
+
+    const firstWeek = weeks[0];
+    const lastWeek = weeks[weeks.length-1];
+
+    const firstWeekSessions = weeksMap.get(firstWeek);
+    const lastWeekSessions = weeksMap.get(lastWeek);
+
+    // Map lifts to their first and last weight (average or last session per lift)
+    const liftMap = new Map();
+    for (const s of firstWeekSessions) {
+      if (!liftMap.has(s.liftName)) liftMap.set(s.liftName, { firstWeight: null, lastWeight: null });
+      if (liftMap.get(s.liftName).firstWeight === null && s.actualWeight)
+        liftMap.get(s.liftName).firstWeight = s.actualWeight;
+    }
+    for (const s of lastWeekSessions) {
+      if (!liftMap.has(s.liftName)) liftMap.set(s.liftName, { firstWeight: null, lastWeight: null });
+      if (s.actualWeight) liftMap.get(s.liftName).lastWeight = s.actualWeight;
+    }
+
+    const lifts = [];
+    for (const [name, data] of liftMap.entries()) {
+      const change = (data.lastWeight && data.firstWeight) ? data.lastWeight - data.firstWeight : null;
+      lifts.push({
+        name,
+        firstWeight: data.firstWeight,
+        lastWeight: data.lastWeight,
+        change: change !== null ? Math.round(change * 10) / 10 : null
+      });
+    }
+
+    res.json({ weeks, lifts });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Email templates
+async function sendWelcomeEmail1(email) {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Welcome to Forge of Olympus – Your First Workout",
+    html: `<h2>Welcome to the Forge</h2>
+           <p>You’ve taken the first step toward training without guessing.</p>
+           <p><strong>Your first workout is ready.</strong> Log in and start your program.</p>
+           <p>👉 <a href="https://forge-of-olympus.onrender.com/login">Start your first session</a></p>
+           <p>Here’s a quick tip: use the “Auto Fill” button to pre‑fill your recommended weights and RPE targets.</p>
+           <hr /><p style="font-size:12px;">Forge of Olympus – Train Without Guessing</p>`
+  };
+  try { await transporter.sendMail(mailOptions); console.log(`📧 Day1 email to ${email}`); } catch(e) { console.error(e); }
+}
+
+async function sendWelcomeEmail2(email) {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Why RPE beats percentages (and how you’re already benefiting)",
+    html: `<h2>Why guessing your weights is over</h2>
+           <p>Most apps give you fixed percentages. Forge of Olympus adapts to <strong>you</strong>.</p>
+           <p>Every set you log with RPE (or RIR) teaches the engine your true strength on that day.</p>
+           <p>👉 <a href="https://forge-of-olympus.onrender.com/dashboard">Check your 1RM progression</a></p>
+           <hr /><p style="font-size:12px;">Forge of Olympus – Train Without Guessing</p>`
+  };
+  try { await transporter.sendMail(mailOptions); console.log(`📧 Day7 email to ${email}`); } catch(e) { console.error(e); }
+}
+
+async function sendWelcomeEmail3(email) {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Your free trial ends in 5 days – lock in your progress",
+    html: `<h2>Don’t lose your adaptive training</h2>
+           <p>Your 30‑day free trial is almost over. After that, your personalised weight recommendations will be hidden.</p>
+           <p>Subscribe now to keep every lift optimised – <strong>£19.99/month</strong>.</p>
+           <p>👉 <a href="https://forge-of-olympus.onrender.com">Subscribe now</a></p>
+           <hr /><p style="font-size:12px;">Forge of Olympus – Train Without Guessing</p>`
+  };
+  try { await transporter.sendMail(mailOptions); console.log(`📧 Day25 email to ${email}`); } catch(e) { console.error(e); }
+}
+
+// Cron job – runs daily at 09:00
+cron.schedule('0 9 * * *', async () => {
+  console.log('🔁 Running welcome email cron job');
+  const now = new Date();
+  const day1Ago = new Date(now); day1Ago.setDate(now.getDate() - 1);
+  const day7Ago = new Date(now); day7Ago.setDate(now.getDate() - 7);
+  const day25Ago = new Date(now); day25Ago.setDate(now.getDate() - 25);
+
+  // Users who signed up exactly 1 day ago
+  const day1Users = await User.find({ createdAt: { $gte: day1Ago, $lt: now } });
+  for (const user of day1Users) await sendWelcomeEmail1(user.email);
+
+  // Users who signed up exactly 7 days ago
+  const day7Users = await User.find({ createdAt: { $gte: day7Ago, $lt: day7Ago.setHours(24,0,0,0) } });
+  for (const user of day7Users) await sendWelcomeEmail2(user.email);
+
+  // Users who signed up exactly 25 days ago
+  const day25Users = await User.find({ createdAt: { $gte: day25Ago, $lt: day25Ago.setHours(24,0,0,0) } });
+  for (const user of day25Users) await sendWelcomeEmail3(user.email);
+});
+
+app.post("/api/run-email-cron", async (req, res) => {
+  // This endpoint will be called by Render Cron Job
+  console.log("🕐 Running email cron job");
+  const now = new Date();
+  const day1Ago = new Date(now); day1Ago.setDate(now.getDate() - 1);
+  const day7Ago = new Date(now); day7Ago.setDate(now.getDate() - 7);
+  const day25Ago = new Date(now); day25Ago.setDate(now.getDate() - 25);
+
+  // Day 1 (users created exactly 1 day ago)
+  const day1Users = await User.find({ createdAt: { $gte: day1Ago, $lt: now } });
+  for (const user of day1Users) await sendWelcomeEmail1(user.email);
+
+  // Day 7 (users created exactly 7 days ago – careful with time calculation)
+  const day7Start = new Date(now); day7Start.setDate(now.getDate() - 7);
+  const day7End = new Date(day7Start); day7End.setHours(24,0,0,0);
+  const day7Users = await User.find({ createdAt: { $gte: day7Start, $lt: day7End } });
+  for (const user of day7Users) await sendWelcomeEmail2(user.email);
+
+  // Day 25
+  const day25Start = new Date(now); day25Start.setDate(now.getDate() - 25);
+  const day25End = new Date(day25Start); day25End.setHours(24,0,0,0);
+  const day25Users = await User.find({ createdAt: { $gte: day25Start, $lt: day25End } });
+  for (const user of day25Users) await sendWelcomeEmail3(user.email);
+
+  res.json({ message: "Cron job executed" });
+});
+
+app.post("/api/check-stalls", async (req, res) => {
+  const stalled = await LiftState.find({ stallCounter: { $gte: 3 } }).populate("userId");
+  for (const s of stalled) {
+    await sendStallAlert(s.userId.email, s.liftName, s.stallCounter);
+  }
+  res.json({ checked: stalled.length });
+});
+
+async function sendStallAlert(email, liftName, stallCounter) {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: process.env.ADMIN_EMAIL || "kieren2203@googlemail.com",
+    subject: `⚠️ Stall detected on ${liftName}`,
+    html: `<p>User: ${email}</p><p>Lift: ${liftName}</p><p>Stall counter: ${stallCounter}</p><p>Consider outreach: "I noticed your ${liftName} progression has stalled – want a free form check?"</p>`
+  };
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`📧 Stall alert sent for ${email} – ${liftName}`);
+  } catch (err) { console.error(err); }
+}
 
 // Serve static files from the public directory (images)
 const publicPath = path.join(__dirname, "frontend", "public");
