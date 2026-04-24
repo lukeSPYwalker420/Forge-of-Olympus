@@ -1,0 +1,75 @@
+RPE Cheat Sheet – Forge of Olympus
+What is RPE?
+RPE = Rating of Perceived Exertion.
+It’s a subjective score (usually 1–10) of how hard a set felt.
+
+RPE 10 – Absolutely maximal. Cannot do another rep, even if threatened.
+
+RPE 9 – Very hard. Could maybe do one more rep, but it would be a grind.
+
+RPE 8 – Hard but manageable. Could definitely do two more reps.
+
+RPE 7 – Moderate. Could do three more reps with good form.
+
+RPE 6 – Light. Could do four more reps.
+
+RPE depends on how you feel – not just the number of reps left. A slow, grinding rep at RPE 8 might feel worse than fast, smooth reps at RPE 8.
+
+What is RIR?
+RIR = Reps in Reserve.
+It’s a more objective count of how many more reps you could have performed with perfect form.
+
+RIR 0 – No reps left. You physically cannot do another rep.
+
+RIR 1 – Exactly 1 rep left.
+
+RIR 2 – 2 reps left.
+
+RIR 3 – 3 reps left.
+
+RIR is easier for beginners to estimate, while advanced lifters often prefer RPE because it incorporates form breakdown and fatigue.
+
+How RPE and RIR are related (but not the same)
+In many programs, they are used interchangeably with a simple approximation:
+
+RPE	Approx. RIR
+10	0
+9	1
+8	2
+7	3
+6	4
+But this is only a rule of thumb.
+RPE can be influenced by:
+
+Rep speed (a slow rep at RPE 8 might feel like RPE 9)
+
+Mental state (stress makes the same weight feel harder)
+
+Discomfort or pain
+
+The app uses your logged RPE to adjust next session’s weights, not a fixed formula. That’s what makes it adaptive.
+
+Why RPE (and RIR) beat fixed percentages
+Fixed percentages ignore how you feel today.
+
+RPE/RIR accounts for sleep, recovery, stress, and soreness.
+
+The app learns from your performance – if you over‑ or under‑shoot, the next session corrects automatically.
+
+Common mistakes (and how the app fixes them)
+Mistake	App solution
+“I think I had one more rep” – you log RPE 9	The app treats it as 1 RIR (approx.) and adjusts next weight.
+“I went too heavy on a bad day”	Session readiness lowers target RPE automatically.
+“I have no idea what weight to use”	The app calculates it from your previous 1RM or logged weights.
+“My progress stalled”	The app increases weight when you hit RPE targets consistently.
+Your free trial includes
+✅ Full adaptive training (RPE for strength, RIR for hypertrophy)
+
+✅ 1RM tracking and prediction
+
+✅ Session readiness that modifies workout intensity
+
+✅ All four programs (Ares, Apollo, Hephaestus, Hercules)
+
+Start your 30‑day free trial now:
+forge-of-olympus.onrender.com
