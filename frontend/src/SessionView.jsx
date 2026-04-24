@@ -25,19 +25,24 @@ export default function SessionView() {
   const [workoutSummary, setWorkoutSummary] = useState(null);
   const [completedExerciseCount, setCompletedExerciseCount] = useState(0);
 
+  // +++ NEW +++
+  const [missedOpportunityBanner, setMissedOpportunityBanner] = useState(null);
+  const [nextPreview, setNextPreview] = useState(null);
+  // +++ END NEW +++
+
   const userId = localStorage.getItem("userId");
   const program = localStorage.getItem("program");
 
   // Fetch session data WITH readiness adjustments included
   useEffect(() => {
     if (!userId || !program) return;
-    
+
     const rpeAdj = adjustments.rpeAdjustment || 0;
     const rirAdj = adjustments.rirAdjustment || 0;
     const qualityAdj = adjustments.qualityAdjustment || 0;
-    
+
     const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`;
-    
+
     fetch(url)
       .then(res => {
         if (!res.ok) throw new Error("Failed to fetch");
@@ -54,13 +59,13 @@ export default function SessionView() {
       try {
         const userEmail = localStorage.getItem("userEmail");
         const isAdmin = userEmail === "kieren2203@googlemail.com";
-        
+
         if (isAdmin) {
           setSubscriptionActive(true);
           setCheckingStatus(false);
           return;
         }
-        
+
         const res = await fetch(`/api/subscription-status/${userId}`);
         const data = await res.json();
         setSubscriptionActive(data.active);
@@ -70,7 +75,7 @@ export default function SessionView() {
         setCheckingStatus(false);
       }
     };
-    
+
     if (userId) checkSubscription();
   }, [userId]);
 
@@ -81,25 +86,25 @@ export default function SessionView() {
 
   const handleUndoLastEntry = async (liftName) => {
     if (!confirm("Undo the last entry for this exercise?")) return;
-    
+
     try {
       const historyRes = await fetch(`/api/history/${userId}/${encodeURIComponent(liftName)}`);
       const hist = await historyRes.json();
-      
+
       if (hist.length === 0) {
         alert("No entries to undo");
         return;
       }
-      
+
       const lastEntry = hist[0];
-      
+
       await fetch(`/api/session-log/${lastEntry._id}`, {
         method: "DELETE"
       });
-      
+
       await fetchHistory(liftName);
-      
-      // Refresh data without adjustments (or keep same adjustments)
+
+      // Refresh data (keep same adjustments)
       const rpeAdj = adjustments.rpeAdjustment || 0;
       const rirAdj = adjustments.rirAdjustment || 0;
       const qualityAdj = adjustments.qualityAdjustment || 0;
@@ -107,7 +112,7 @@ export default function SessionView() {
       const res = await fetch(url);
       const json = await res.json();
       setData(json);
-      
+
       alert("Last entry undone!");
     } catch (err) {
       console.error(err);
@@ -115,14 +120,37 @@ export default function SessionView() {
     }
   };
 
+  // +++ NEW +++
+  const loadNextPreview = async () => {
+    try {
+      const nextRes = await fetch(`/api/next-session/${userId}?program=${encodeURIComponent(program)}`);
+      if (!nextRes.ok) return;
+      const { week: nextWeek, day: nextDay } = await nextRes.json();
+      if (nextWeek && nextDay) {
+        const rpeAdj = adjustments.rpeAdjustment || 0;
+        const rirAdj = adjustments.rirAdjustment || 0;
+        const qualityAdj = adjustments.qualityAdjustment || 0;
+        const previewUrl = `/api/session-view/${nextWeek}/${nextDay}/${userId}?program=${encodeURIComponent(program)}&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`;
+        const previewRes = await fetch(previewUrl);
+        const previewData = await previewRes.json();
+        if (previewData.projected && previewData.projected.length) {
+          setNextPreview(previewData.projected.slice(0, 2));
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load next preview", err);
+    }
+  };
+  // +++ END NEW +++
+
   const handleAutoFill = (lift) => {
     const newInputs = { ...inputs };
     const liftInputs = newInputs[lift.liftName] || {};
-    
+
     // Fill reps per set based on target reps
     const targetRepsPerSet = [];
     const targetRepsValue = lift.reps;
-    
+
     let targetRepsNumber = 8;
     if (targetRepsValue) {
       if (typeof targetRepsValue === 'string' && targetRepsValue.includes('-')) {
@@ -132,41 +160,41 @@ export default function SessionView() {
         targetRepsNumber = parseInt(targetRepsValue, 10);
       }
     }
-    
+
     for (let i = 0; i < (lift.sets || 1); i++) {
       targetRepsPerSet.push(targetRepsNumber);
     }
     liftInputs.repsPerSet = targetRepsPerSet;
-    
+
     // Fill weight from server-calculated current weight (already adjusted by server)
     if (lift.currentWeight && lift.currentWeight > 0) {
       liftInputs.weight = lift.currentWeight;
     }
-    
+
     // Fill RPE for strength programs (use adjusted target if available)
     if (lift.progressionType === "strength" || data?.logic === "STRENGTH_RPE") {
       const targetRPE = lift.adjustedRpeTarget || lift.rpeTarget;
       liftInputs.rpe = targetRPE;
     }
-    
+
     // Fill RIR for hypertrophy programs
     if (data?.logic === "HYPERTROPHY_VOLUME" || lift.progressionType === "volume") {
       const targetRIR = lift.adjustedRirTarget || lift.rirTarget;
       liftInputs.rir = targetRIR;
     }
-    
+
     // Fill quality for power programs
     if (lift.progressionType === "power") {
       const targetQuality = lift.adjustedQualityTarget || lift.qualityTarget;
       liftInputs.quality = targetQuality;
     }
-    
+
     // Fill stability/pain for mobility programs
     if (lift.progressionType === "mobility") {
       liftInputs.stability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
       liftInputs.pain = lift.painTarget || 4;
     }
-    
+
     newInputs[lift.liftName] = liftInputs;
     setInputs(newInputs);
   };
@@ -174,9 +202,10 @@ export default function SessionView() {
   const markExerciseComplete = () => {
     const newCount = completedExerciseCount + 1;
     setCompletedExerciseCount(newCount);
-    
+
     if (newCount === data?.projected?.length) {
       generateWorkoutSummary();
+      loadNextPreview(); // +++ NEW +++
     }
   };
 
@@ -206,7 +235,7 @@ export default function SessionView() {
     const targetStability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
     const progressionType = lift.progressionType;
     const logic = data.logic;
-    
+
     const streakRes = await fetch(`/api/streak/${userId}`);
     if (streakRes.ok) {
       const { streak } = await streakRes.json();
@@ -272,6 +301,20 @@ export default function SessionView() {
         })
       });
 
+      // +++ NEW: “You would have missed this” moment +++
+      if (weight && targetRPE && lift.rpeTarget && lift.currentWeight) {
+        const staticWeight = Math.round((lift.currentWeight / 0.82) * 0.82 / 2.5) * 2.5;
+        if (staticWeight > 0 && staticWeight !== weight) {
+          setMissedOpportunityBanner({
+            liftName: lift.liftName,
+            staticWeight,
+            actualWeight: weight
+          });
+          setTimeout(() => setMissedOpportunityBanner(null), 5000);
+        }
+      }
+      // +++ END NEW +++
+
       await new Promise(resolve => setTimeout(resolve, 500));
 
       await fetch("/api/progression/apply", {
@@ -290,7 +333,7 @@ export default function SessionView() {
       setData(json);
 
       await fetchHistory(liftName);
-      
+
       setInputs(prev => ({ ...prev, [liftName]: {} }));
       markExerciseComplete();
     } catch (err) {
@@ -335,7 +378,7 @@ export default function SessionView() {
 
   const getTargetValue = (lift) => {
     const pt = lift.progressionType;
-    
+
     if (pt === "power") {
       const target = lift.adjustedQualityTarget || lift.qualityTarget;
       return target || "—";
@@ -358,6 +401,21 @@ export default function SessionView() {
 
   return (
     <div style={{ padding: 30, fontFamily: "system-ui", maxWidth: 900, margin: "0 auto" }}>
+      {/* +++ NEW: missed opportunity banner +++ */}
+      {missedOpportunityBanner && (
+        <div style={{
+          background: "#ffaa4422",
+          borderLeft: "4px solid #ffaa44",
+          padding: "12px",
+          marginBottom: "20px",
+          borderRadius: "8px"
+        }}>
+          <strong>💡 You would have missed this lift!</strong><br />
+          A static plan would have told you {missedOpportunityBanner.staticWeight}kg for {missedOpportunityBanner.liftName}, but you did {missedOpportunityBanner.actualWeight}kg – that’s {Math.abs(missedOpportunityBanner.actualWeight - missedOpportunityBanner.staticWeight)}kg more!
+        </div>
+      )}
+      {/* +++ END NEW +++ */}
+
       <div style={{ marginBottom: 25 }}>
         <h1>Week {data.program?.week ?? "?"} — Day {data.program?.day ?? "?"}</h1>
         <p style={{ opacity: 0.7 }}>{data.program?.focus ?? "No focus found"}</p>
@@ -380,7 +438,7 @@ export default function SessionView() {
           </select>
         </div>
       </div>
-      
+
       {!subscriptionActive && !checkingStatus && (
         <div style={{
           background: "#ffaa4422",
@@ -394,12 +452,12 @@ export default function SessionView() {
           but recommended weights are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe</a> to unlock full guidance.
         </div>
       )}
-      
+
       <div style={{ display: "grid", gap: 20 }}>
         {(data.projected || []).map((lift, i) => {
           const pt = lift.progressionType;
           const currentRepsInputs = inputs[lift.liftName]?.repsPerSet || [];
-          
+
           return (
             <div key={i} style={{ border: "1px solid #e5e5e5", borderRadius: 12, padding: 20 }}>
               <h3>{lift.liftName}</h3>
@@ -420,7 +478,7 @@ export default function SessionView() {
                   </span>
                 )}
               </div>
-              
+
               <div style={{ display: "flex", gap: 10, marginBottom: 15, flexWrap: "wrap" }}>
                 {pt !== "mobility" && (
                   <input
@@ -431,7 +489,7 @@ export default function SessionView() {
                     onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
                   />
                 )}
-                
+
                 {pt === "power" && (
                   <input
                     type="number"
@@ -441,7 +499,7 @@ export default function SessionView() {
                     onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], quality: e.target.value } }))}
                   />
                 )}
-                
+
                 {pt === "mobility" && (
                   <>
                     <input
@@ -467,7 +525,7 @@ export default function SessionView() {
                     />
                   </>
                 )}
-                
+
                 {(pt === "strength" || data.logic === "STRENGTH_RPE") && (
                   <input
                     type="number"
@@ -478,7 +536,7 @@ export default function SessionView() {
                     onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], rpe: e.target.value } }))}
                   />
                 )}
-                
+
                 {(data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") && (
                   <input
                     type="number"
@@ -516,15 +574,15 @@ export default function SessionView() {
                 <button onClick={() => logSet(lift)} style={{ padding: "10px 15px", borderRadius: 8, border: "none", background: "#111", color: "#fff", cursor: "pointer" }}>
                   Log Set
                 </button>
-                <button 
-                  onClick={() => handleAutoFill(lift)} 
+                <button
+                  onClick={() => handleAutoFill(lift)}
                   disabled={!subscriptionActive}
-                  style={{ 
-                    padding: "10px 15px", 
-                    borderRadius: 8, 
-                    border: "1px solid #4caf50", 
-                    background: subscriptionActive ? "#4caf50" : "#666", 
-                    color: "#fff", 
+                  style={{
+                    padding: "10px 15px",
+                    borderRadius: 8,
+                    border: "1px solid #4caf50",
+                    background: subscriptionActive ? "#4caf50" : "#666",
+                    color: "#fff",
                     cursor: subscriptionActive ? "pointer" : "not-allowed",
                     opacity: subscriptionActive ? 1 : 0.5
                   }}
@@ -541,7 +599,7 @@ export default function SessionView() {
                   Clear
                 </button>
               </div>
-              
+
               {history[lift.liftName] && history[lift.liftName].length > 0 && (
                 <div style={{ marginTop: 10, background: "#f5f5f5", padding: 10, color: "#000", borderRadius: 8 }}>
                   <strong>History:</strong>
@@ -565,7 +623,21 @@ export default function SessionView() {
           );
         })}
       </div>
-      
+
+      {/* +++ NEW: next workout preview +++ */}
+      {nextPreview && (
+        <div style={{ marginTop: "30px", padding: "16px", background: "#1e1e2a", borderRadius: "12px", border: "1px solid var(--accent)" }}>
+          <h4>🔮 Next workout preview</h4>
+          {nextPreview.map(lift => (
+            <div key={lift.liftName} style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+              <span>{lift.liftName}</span>
+              <strong>{lift.currentWeight}kg</strong>
+            </div>
+          ))}
+        </div>
+      )}
+      {/* +++ END NEW +++ */}
+
       {/* Workout Completion Modal */}
       {showCompletionModal && workoutSummary && (
         <div style={{
@@ -581,7 +653,7 @@ export default function SessionView() {
           }}>
             <h2 style={{ color: "var(--accent, #d4af37)", marginBottom: "8px" }}>Workout Complete! 🎉</h2>
             <p style={{ color: "var(--text-gray, #a1a1aa)", marginBottom: "20px" }}>Great work today</p>
-            
+
             <div style={{ marginBottom: "24px" }}>
               <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>📊 Session Stats</h3>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
@@ -603,7 +675,7 @@ export default function SessionView() {
                 </div>
               </div>
             </div>
-            
+
             {workoutSummary.prs && workoutSummary.prs.length > 0 && (
               <div style={{ marginBottom: "24px" }}>
                 <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>🏆 Personal Records</h3>
@@ -614,7 +686,7 @@ export default function SessionView() {
                 </ul>
               </div>
             )}
-            
+
             {workoutSummary.underRPE && workoutSummary.underRPE.length > 0 && (
               <div style={{ marginBottom: "24px" }}>
                 <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>💪 Nailed It</h3>
@@ -625,36 +697,34 @@ export default function SessionView() {
                 </ul>
               </div>
             )}
-            
+
             {workoutSummary.nextFocus && (
               <div style={{ marginBottom: "24px", background: "var(--bg-light, #2a2a35)", padding: "16px", borderRadius: "8px" }}>
                 <h3 style={{ fontSize: "1rem", marginBottom: "8px" }}>📝 Next Session Focus</h3>
                 <p style={{ fontSize: "14px", color: "var(--text-gray, #a1a1aa)" }}>{workoutSummary.nextFocus}</p>
               </div>
             )}
-            
+
             <div style={{ display: "flex", gap: "12px", marginTop: "20px", flexWrap: "wrap" }}>
-              <button 
+              <button
                 onClick={() => {
-                  const shareText = `🔥 Just crushed my ${program} workout on Forge of Olympus!\n\nWeek ${week}, Day ${day}\n✅ ${workoutSummary.exercisesCompleted} exercises completed\n💪 ${workoutSummary.prs?.length || 0} personal records\n⏱️ ${workoutSummary.timeToComplete}\n\nJoin me: forge-of-olympus.onrender.com`;
-                  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
-                  window.open(tweetUrl, '_blank');
+                  const shareText = `I finally stopped guessing my weights. @ForgeOfOlympus calculates every set based on my actual performance. 30 days free.`;
+                  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
                 }}
                 style={{ flex: 1, padding: "12px", background: "#1da1f2", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}
               >
                 🐦 Share on X
               </button>
-              <button 
+              <button
                 onClick={() => {
                   const shareText = `🔥 Just crushed my ${program} workout on Forge of Olympus!\n\nWeek ${week}, Day ${day}\n✅ ${workoutSummary.exercisesCompleted} exercises completed\n💪 ${workoutSummary.prs?.length || 0} personal records\n⏱️ ${workoutSummary.timeToComplete}`;
-                  const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=https://forge-of-olympus.onrender.com&quote=${encodeURIComponent(shareText)}`;
-                  window.open(fbUrl, '_blank');
+                  window.open(`https://www.facebook.com/sharer/sharer.php?u=https://forge-of-olympus.onrender.com&quote=${encodeURIComponent(shareText)}`, '_blank');
                 }}
                 style={{ flex: 1, padding: "12px", background: "#4267B2", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}
               >
                 📘 Share on Facebook
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setShowCompletionModal(false);
                   window.location.href = "/dashboard";

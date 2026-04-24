@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardChart from './DashboardChart';
 import "./Dashboard.css";
+import html2canvas from 'html2canvas';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [expandedWorkout, setExpandedWorkout] = useState(null);
   const [subscriptionActive, setSubscriptionActive] = useState(true);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
   
   // Rewards state
   const [rewards, setRewards] = useState({ unlockedRewards: [], nextMilestone: null, streak: 0 });
@@ -49,6 +52,24 @@ export default function Dashboard() {
       setTimeout(() => setLoading(false), 100);
     }
   }, []);
+
+  useEffect(() => {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBanner(true);
+    });
+  }, []);
+
+  const handleInstallClick = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => {
+        setDeferredPrompt(null);
+        setShowInstallBanner(false);
+      });
+    }
+  };
 
   useEffect(() => {
     const checkSubscription = async () => {
@@ -170,6 +191,16 @@ export default function Dashboard() {
       localStorage.setItem("nextDay", 1);
     }
     navigate("/session");
+  };
+
+  const shareProgress = async () => {
+    const element = document.querySelector('.progress-share-card');
+    if (!element) return;
+    const canvas = await html2canvas(element);
+    const link = document.createElement('a');
+    link.download = 'forge-progress.png';
+    link.href = canvas.toDataURL();
+    link.click();
   };
 
   const assignProgramToUser = async () => {
@@ -330,60 +361,58 @@ export default function Dashboard() {
   }
 
   const fetchLeads = async () => {
-  if (!isAdmin) return;
-  setLoadingLeads(true);
-  try {
-    const res = await fetch("/api/admin/leads", {
-      headers: {
-        adminEmail: userEmail
-        // Remove adminPassword
+    if (!isAdmin) return;
+    setLoadingLeads(true);
+    try {
+      const res = await fetch("/api/admin/leads", {
+        headers: {
+          adminEmail: userEmail
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLeads(data);
+      } else {
+        console.error("Failed to fetch leads");
+        setAdminMessage("❌ Failed to fetch leads");
       }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setLeads(data);
-    } else {
-      console.error("Failed to fetch leads");
-      setAdminMessage("❌ Failed to fetch leads");
+    } catch (err) {
+      console.error(err);
+      setAdminMessage("❌ Network error fetching leads");
+    } finally {
+      setLoadingLeads(false);
     }
-  } catch (err) {
-    console.error(err);
-    setAdminMessage("❌ Network error fetching leads");
-  } finally {
-    setLoadingLeads(false);
-  }
-};
+  };
 
-const exportLeads = async () => {
-  if (!isAdmin) return;
-  setExporting(true);
-  try {
-    const res = await fetch("/api/admin/leads/export", {
-      headers: {
-        adminEmail: userEmail
-        // Remove adminPassword
+  const exportLeads = async () => {
+    if (!isAdmin) return;
+    setExporting(true);
+    try {
+      const res = await fetch("/api/admin/leads/export", {
+        headers: {
+          adminEmail: userEmail
+        }
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "forge_leads.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        alert("Export failed");
       }
-    });
-    if (res.ok) {
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "forge_leads.csv";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } else {
+    } catch (err) {
+      console.error(err);
       alert("Export failed");
+    } finally {
+      setExporting(false);
     }
-  } catch (err) {
-    console.error(err);
-    alert("Export failed");
-  } finally {
-    setExporting(false);
-  }
-};
+  };
 
   if (loading) return <div className="dashboard-loading">Loading your data...</div>;
 
@@ -395,6 +424,13 @@ const exportLeads = async () => {
         </span>
         <button onClick={() => { localStorage.clear(); navigate("/"); }} className="logout-btn">Logout</button>
       </div>
+
+      {showInstallBanner && (
+        <div className="install-banner" style={{ background: "#2a2a35", padding: "12px", borderRadius: "8px", marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>📲 Install Forge of Olympus as an app</span>
+          <button onClick={handleInstallClick} style={{ background: "var(--accent)", border: "none", padding: "8px 16px", borderRadius: "6px", cursor: "pointer" }}>Install</button>
+        </div>
+      )}
 
       <div className="dashboard-grid">
         {/* Your Program Card */}
@@ -424,12 +460,18 @@ const exportLeads = async () => {
           )}
           <button 
             onClick={() => {
-              const shareText = `I'm training with Forge of Olympus! 🔥 Join me: forge-of-olympus.onrender.com`;
+              const shareText = `I finally stopped guessing my weights. @ForgeOfOlympus calculates every set based on my actual performance. 30 days free.`;
               window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
             }}
             style={{ background: "#1da1f2", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer" }}
           >
             🐦 Share
+          </button>
+          <button 
+            onClick={shareProgress}
+            style={{ background: "#10b981", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", marginTop: "8px", cursor: "pointer" }}
+          >
+            📸 Share My Progress
           </button>
         </div>
 
@@ -864,6 +906,16 @@ const exportLeads = async () => {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Hidden progress-share-card for screenshot */}
+      <div className="progress-share-card" style={{ position: 'absolute', left: '-9999px', top: 0, width: '400px', background: '#1e1e2a', padding: '20px', borderRadius: '16px' }}>
+        <h3 style={{ color: '#d4af37' }}>My Forge of Olympus Progress</h3>
+        <p>🔥 Streak: {localStorage.getItem("streak") || 0} days</p>
+        <p>🏋️ Squat 1RM: {estimates["Squat (Top Set)"] || "—"} kg</p>
+        <p>💪 Bench 1RM: {estimates["Bench (Top Set)"] || "—"} kg</p>
+        <p>🏆 Deadlift 1RM: {estimates["Deadlift (Top Set)"] || "—"} kg</p>
+        <p>📅 Last workout: {recentSessions[0] ? new Date(recentSessions[0].createdAt).toLocaleDateString() : "—"}</p>
       </div>
     </div>
   );

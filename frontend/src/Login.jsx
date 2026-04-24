@@ -71,7 +71,7 @@ export default function Login() {
   return (
     <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", fontFamily: "system-ui", background: "#0a0c10" }}>
       <div style={{ padding: 30, border: "1px solid #333", borderRadius: 12, width: 320, background: "#1e1e2a" }}>
-        <h2 style={{ color: "#d4af37", textAlign: "center", marginBottom: 20 }}>Forge of Olympus</h2>
+        <h2 style={{ color: "#d4af37", textAlign: "center", marginBottom: 20 }}>Access Your System</h2>
         
         <input 
           placeholder="Email" 

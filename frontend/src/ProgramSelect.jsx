@@ -25,7 +25,7 @@ export default function ProgramSelect() {
 
   return (
     <div className="program-select-container">
-      <h1>Select Your Program</h1>
+      <h1>Choose Your Weapon</h1>
       <div className="program-select-grid">
         {purchased.map(p => (
           <button

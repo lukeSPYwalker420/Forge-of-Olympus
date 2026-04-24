@@ -38,6 +38,14 @@ export default function Home() {
       } else {
         setModalMessage("Something went wrong. Please try again.");
       }
+      if (response.ok) {
+  await fetch("/api/send-cheatsheet", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email })
+  });
+  setModalMessage("Thanks! Check your email for the RPE cheat sheet and free trial link.");
+}
     } catch (err) {
       console.error(err);
       setModalMessage("Network error. Please try again.");
@@ -116,25 +124,19 @@ export default function Home() {
           </span>
           <div className="nav-links">
             {userId ? (
-              <button onClick={() => navigate("/dashboard")} className="nav-btn primary">
-                Dashboard
-              </button>
-            ) : (
-              <button onClick={() => navigate("/login")} className="nav-btn">
-                Login
-              </button>
-            )}
-            <button onClick={handleRegister} className="nav-btn primary">
-              Register
-            </button>
+            <button onClick={() => navigate("/dashboard")} className="nav-btn primary">Your Training System</button>
+          ) : (
+            <button onClick={() => navigate("/login")} className="nav-btn">Get Access</button>
+          )}
+            <button onClick={handleRegister} className="nav-btn primary">Join the Forge</button>
           </div>
         </div>
       </nav>
 
       <section className="hero">
         <div className="hero-content">
-          <h1>Train Without Guessing.<br />Every Weight You Lift Is Calculated.</h1>
-          <p>Adaptive training systems that adjust to your performance in real time. No spreadsheets. No plateaus. Just progression.</p>
+          <h1>Stop Guessing Your Working Weights.<br />Your Program Adjusts When You Do.</h1>
+          <p>Adaptive periodisation that learns from every rep. No spreadsheets. No plateaus.</p>
           <div className="hero-buttons">
             <button onClick={() => document.getElementById("programs")?.scrollIntoView({ behavior: "smooth" })} className="btn btn-gold">
               Explore Programs
@@ -230,7 +232,7 @@ const programs = [
     title: "Ares Protocol",
     image: "/Ares Protocol.jpg",
     coachingLink: "https://buy.stripe.com/14A28r1y63BT6WS6mV4sE0k",
-    features: ["Maximal strength progression system", "Adaptive overload based on performance", "Peak strength development", "Built for serious lifters"]
+    features: ["No more RPE math", "Auto‑calculated top sets", "Never stall from bad load selection again", "Peak strength development", "Built for serious lifters"]
   },
   {
     title: "Apollo Physique",
