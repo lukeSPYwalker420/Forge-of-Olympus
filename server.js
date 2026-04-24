@@ -1100,6 +1100,26 @@ app.post("/api/login", async (req, res) => {
   });
 });
 
+app.post("/api/send-cheatsheet", async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: "Email required" });
+  const pdfUrl = "https://forge-of-olympus.onrender.com/RPE-Cheat-Sheet.pdf";
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Your RPE Cheat Sheet & Free Trial",
+    html: `<p>Thanks for joining the Forge.</p>
+           <p>Download your RPE Cheat Sheet: <a href="${pdfUrl}">Click here</a></p>
+           <p>Start your 30‑day free trial now: <a href="https://forge-of-olympus.onrender.com">Start Free Trial</a></p>`
+  };
+  try {
+    await transporter.sendMail(mailOptions);
+    res.json({ message: "Cheat sheet sent" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/api/streak/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
