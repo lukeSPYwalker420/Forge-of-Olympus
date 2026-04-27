@@ -1251,7 +1251,8 @@ app.post("/api/login", async (req, res) => {
     purchasedPrograms = [
       "Ares Protocol", "Apollo Physique",
       "Hephaestus Framework", "Hercules Foundation",
-      "Mark Training", "Hercules Foundation - Pauline Version"
+      "Mark Training", "Hercules Foundation - Pauline Version",
+      "6-Week Wave Powerlifting"
     ];
     hasActiveSubscription = true;
   } else {
