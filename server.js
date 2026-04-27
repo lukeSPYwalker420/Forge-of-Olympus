@@ -95,7 +95,8 @@ function normalizeProgramName(encodedName) {
       "Hephaestus Framework",
       "Hercules Foundation",
       "Mark Training",       
-      "Hercules Foundation - Pauline Version" 
+      "Hercules Foundation - Pauline Version",
+      "6-Week Wave Powerlifting" 
     ];
     
     const decodedLower = decoded.toLowerCase();
