@@ -170,6 +170,13 @@ export default function SessionView() {
     if (lift.currentWeight && lift.currentWeight > 0) {
       liftInputs.weight = lift.currentWeight;
     }
+    <input
+  type="number"
+  placeholder={lift.currentWeight > 0 ? `${lift.currentWeight} kg` : "Weight (kg)"}
+  style={{ padding: 8, width: "100px" }}
+  value={inputs[lift.liftName]?.weight || ""}
+  onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
+/>
 
     // Fill RPE for strength programs (use adjusted target if available)
     if (lift.progressionType === "strength" || data?.logic === "STRENGTH_RPE") {
