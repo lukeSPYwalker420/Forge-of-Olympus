@@ -9,6 +9,8 @@ import Stripe from "stripe";
 import nodemailer from 'nodemailer';
 import cron from 'node-cron';
 import { getCoachingPrompts } from './coaching.js';
+import LiftState from "./models/LiftState.js";
+import Session from "./models/Session.js";
 
 dotenv.config();
 
@@ -137,48 +139,6 @@ function programNameToFilename(programName) {
 }
 
 // ==================== MongoDB Schemas ====================
-const LiftStateSchema = new mongoose.Schema({
-  userId: String,
-  liftName: String,
-  estimated1RM: { type: Number, default: 0 },
-  currentWeight: { type: Number, default: 0 },
-  lastROM: { type: Number, default: 0 },
-  lastRepsAchieved: { type: Number, default: 0 },
-  consecutiveSuccesses: { type: Number, default: 0 },
-  stallCounter: { type: Number, default: 0 },
-  updatedAt: { type: Date, default: Date.now }
-});
-const LiftState = mongoose.model("LiftState", LiftStateSchema);
-
-const SessionSchema = new mongoose.Schema({
-  userId: String,
-  week: Number,
-  day: Number,
-  liftName: String,
-  targetReps: String,
-  targetSets: Number,
-  repsPerSet: [Number],
-  repsCompleted: Number,
-  targetRPE: Number,
-  actualRPE: Number,
-  actualWeight: Number,
-  targetRIR: Number,
-  actualRIR: Number,
-  completed: Boolean,
-  progressionType: String,
-  actualQuality: Number,
-  targetQuality: Number,
-  targetStability: Number,
-  actualStability: Number,
-  actualROM: Number,
-  targetROM: Number,
-  actualPain: Number,
-  targetPain: Number,
-  programName: String,
-  createdAt: { type: Date, default: Date.now }
-});
-const Session = mongoose.model("Session", SessionSchema);
-
 const PurchaseSchema = new mongoose.Schema({
   email: { type: String, required: true },
   programName: { type: String, required: true },
