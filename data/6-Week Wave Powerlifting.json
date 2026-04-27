@@ -11,7 +11,8 @@
         { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "4", "rpeTarget": 5.5, "baseLift": "Squat (Top Set)" },
         { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 4, "reps": "6", "rpeTarget": 6, "baseLift": "Bench (Top Set)" },
         { "liftName": "Leg Press", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12", "rirTarget": 2 },
-        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10 E/L", "rirTarget": 2 }
+        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10 E/L", "rirTarget": 2 },
+        { "liftName": "Banded Monster Walks", "role": "hip", "progressionType": "mobility", "sets": 2, "reps": "15 steps each direction", "stabilityTarget": 7, "painTarget": 3 }
       ]
     },
     {
@@ -35,7 +36,7 @@
         { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 5.5, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 6, "baseLift": "Bench (Top Set)" },
         { "liftName": "Hamstring Curl", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12", "rirTarget": 2 },
-        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12", "rirTarget": 2 }
+        { "liftName": "Hip Airplane", "role": "hip", "progressionType": "mobility", "sets": 3, "reps": "5 each side", "stabilityTarget": 8, "painTarget": 3 }
       ]
     },
     {
@@ -58,7 +59,8 @@
         { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 5, "reps": "3", "rpeTarget": 5, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 6, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Lat Pulldown", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10-12", "rirTarget": 2 },
-        { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12-15", "rirTarget": 2 }
+        { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12-15", "rirTarget": 2 },
+        { "liftName": "Copenhagen Plank", "role": "hip", "progressionType": "stability", "sets": 2, "reps": "15-30 sec hold each side", "stabilityTarget": 8, "painTarget": 3 }
       ]
     },
 
@@ -71,7 +73,8 @@
         { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "4", "rpeTarget": 6.5, "baseLift": "Squat (Top Set)" },
         { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 4, "reps": "6", "rpeTarget": 7, "baseLift": "Bench (Top Set)" },
         { "liftName": "Leg Press", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12", "rirTarget": 2 },
-        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10 E/L", "rirTarget": 2 }
+        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10 E/L", "rirTarget": 2 },
+        { "liftName": "Banded Monster Walks", "role": "hip", "progressionType": "mobility", "sets": 2, "reps": "15 steps each direction", "stabilityTarget": 7, "painTarget": 3 }
       ]
     },
     {
@@ -95,7 +98,7 @@
         { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 6.5, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 7, "baseLift": "Bench (Top Set)" },
         { "liftName": "Hamstring Curl", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12", "rirTarget": 2 },
-        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12", "rirTarget": 2 }
+        { "liftName": "Hip Airplane", "role": "hip", "progressionType": "mobility", "sets": 3, "reps": "5 each side", "stabilityTarget": 8, "painTarget": 3 }
       ]
     },
     {
@@ -118,7 +121,8 @@
         { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 5, "reps": "3", "rpeTarget": 5.5, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 6.5, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Lat Pulldown", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10-12", "rirTarget": 2 },
-        { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12-15", "rirTarget": 2 }
+        { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12-15", "rirTarget": 2 },
+        { "liftName": "Copenhagen Plank", "role": "hip", "progressionType": "stability", "sets": 2, "reps": "15-30 sec hold each side", "stabilityTarget": 8, "painTarget": 3 }
       ]
     },
 
@@ -131,7 +135,8 @@
         { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 6, "descending": true, "baseLift": "Squat (Top Set)" },
         { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)" },
         { "liftName": "Leg Press", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 },
-        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8 E/L", "rirTarget": 3 }
+        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8 E/L", "rirTarget": 3 },
+        { "liftName": "Banded Monster Walks", "role": "hip", "progressionType": "mobility", "sets": 2, "reps": "15 steps each direction", "stabilityTarget": 7, "painTarget": 3 }
       ]
     },
     {
@@ -155,7 +160,7 @@
         { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 2, "reps": "2", "rpeTarget": 6, "descending": true, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "4", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)" },
         { "liftName": "Hamstring Curl", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 },
-        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 }
+        { "liftName": "Hip Airplane", "role": "hip", "progressionType": "mobility", "sets": 3, "reps": "5 each side", "stabilityTarget": 8, "painTarget": 3 }
       ]
     },
     {
@@ -178,7 +183,8 @@
         { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 4, "reps": "3", "rpeTarget": 5, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "8", "rpeTarget": 6, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Lat Pulldown", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10-12", "rirTarget": 3 },
-        { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12-15", "rirTarget": 3 }
+        { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12-15", "rirTarget": 3 },
+        { "liftName": "Copenhagen Plank", "role": "hip", "progressionType": "stability", "sets": 2, "reps": "15-30 sec hold each side", "stabilityTarget": 8, "painTarget": 3 }
       ]
     },
 
@@ -191,7 +197,8 @@
         { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "3", "rpeTarget": 7, "baseLift": "Squat (Top Set)" },
         { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 7.5, "baseLift": "Bench (Top Set)" },
         { "liftName": "Leg Press", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10", "rirTarget": 2 },
-        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "8 E/L", "rirTarget": 2 }
+        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "8 E/L", "rirTarget": 2 },
+        { "liftName": "Banded Monster Walks", "role": "hip", "progressionType": "mobility", "sets": 2, "reps": "15 steps each direction", "stabilityTarget": 7, "painTarget": 3 }
       ]
     },
     {
@@ -215,7 +222,7 @@
         { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "2", "rpeTarget": 7, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 7.5, "baseLift": "Bench (Top Set)" },
         { "liftName": "Hamstring Curl", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10", "rirTarget": 2 },
-        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 2 }
+        { "liftName": "Hip Airplane", "role": "hip", "progressionType": "mobility", "sets": 3, "reps": "5 each side", "stabilityTarget": 8, "painTarget": 3 }
       ]
     },
     {
@@ -238,7 +245,8 @@
         { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 5, "reps": "3", "rpeTarget": 6, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 7, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Lat Pulldown", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10-12", "rirTarget": 2 },
-        { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12-15", "rirTarget": 2 }
+        { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12-15", "rirTarget": 2 },
+        { "liftName": "Copenhagen Plank", "role": "hip", "progressionType": "stability", "sets": 2, "reps": "15-30 sec hold each side", "stabilityTarget": 8, "painTarget": 3 }
       ]
     },
 
@@ -251,7 +259,8 @@
         { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 6.5, "descending": true, "baseLift": "Squat (Top Set)" },
         { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 7, "baseLift": "Bench (Top Set)" },
         { "liftName": "Leg Press", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 },
-        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8 E/L", "rirTarget": 3 }
+        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8 E/L", "rirTarget": 3 },
+        { "liftName": "Banded Monster Walks", "role": "hip", "progressionType": "mobility", "sets": 2, "reps": "15 steps each direction", "stabilityTarget": 7, "painTarget": 3 }
       ]
     },
     {
@@ -275,7 +284,7 @@
         { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 2, "reps": "2", "rpeTarget": 6.5, "descending": true, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "5", "rpeTarget": 7, "baseLift": "Bench (Top Set)" },
         { "liftName": "Hamstring Curl", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 },
-        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 }
+        { "liftName": "Hip Airplane", "role": "hip", "progressionType": "mobility", "sets": 3, "reps": "5 each side", "stabilityTarget": 8, "painTarget": 3 }
       ]
     },
     {
@@ -298,7 +307,8 @@
         { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 5, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "8", "rpeTarget": 6, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Lat Pulldown", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10-12", "rirTarget": 3 },
-        { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12-15", "rirTarget": 3 }
+        { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12-15", "rirTarget": 3 },
+        { "liftName": "Copenhagen Plank", "role": "hip", "progressionType": "stability", "sets": 2, "reps": "15-30 sec hold each side", "stabilityTarget": 8, "painTarget": 3 }
       ]
     },
 
@@ -311,7 +321,8 @@
         { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 2, "reps": "2", "rpeTarget": 7.5, "descending": true, "baseLift": "Squat (Top Set)" },
         { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "3", "rpeTarget": 8, "baseLift": "Bench (Top Set)" },
         { "liftName": "Leg Press", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8", "rirTarget": 3 },
-        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "6 E/L", "rirTarget": 3 }
+        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "6 E/L", "rirTarget": 3 },
+        { "liftName": "Banded Monster Walks", "role": "hip", "progressionType": "mobility", "sets": 2, "reps": "15 steps each direction", "stabilityTarget": 7, "painTarget": 3 }
       ]
     },
     {
@@ -335,7 +346,7 @@
         { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 2, "reps": "1", "rpeTarget": 7.5, "descending": true, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "3", "rpeTarget": 8, "baseLift": "Bench (Top Set)" },
         { "liftName": "Hamstring Curl", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8", "rirTarget": 3 },
-        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8", "rirTarget": 3 }
+        { "liftName": "Hip Airplane", "role": "hip", "progressionType": "mobility", "sets": 3, "reps": "5 each side", "stabilityTarget": 8, "painTarget": 3 }
       ]
     },
     {
@@ -358,7 +369,8 @@
         { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 6, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "6", "rpeTarget": 7, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Lat Pulldown", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10-12", "rirTarget": 3 },
-        { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12-15", "rirTarget": 3 }
+        { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12-15", "rirTarget": 3 },
+        { "liftName": "Copenhagen Plank", "role": "hip", "progressionType": "stability", "sets": 2, "reps": "15-30 sec hold each side", "stabilityTarget": 8, "painTarget": 3 }
       ]
     }
   ]
