@@ -58,21 +58,21 @@ async function callGPT4(userId) {
  * Main function – returns cached AI prompts or fetches new ones.
  */
 export async function getCoachingPrompts(userId) {
-  // Check cache
   const cached = await AiCoachCache.findOne({ userId });
   if (cached) return cached.prompts;
 
+  const rulePrompts = await getRuleBasedPrompts(userId);
+
   let prompts;
   if (OPENAI_API_KEY) {
-    prompts = await callGPT4(userId);
+    prompts = await callGPT4(rulePrompts);
   } else {
-    prompts = await getRuleBasedPrompts(userId);
+    prompts = rulePrompts;
   }
 
-  // Save to cache (even if fallback)
   await AiCoachCache.findOneAndUpdate(
     { userId },
-    { userId, prompts },
+    { userId, prompts },       // prompts is already an array of objects
     { upsert: true, new: true }
   );
 
