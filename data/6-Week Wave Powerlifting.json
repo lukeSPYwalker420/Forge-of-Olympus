@@ -9,7 +9,7 @@
       "exercises": [
         { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 6 },
         { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "4", "rpeTarget": 5.5 },
-        { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 4, "reps": "6", "rpeTarget": 6 },
+        { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 4, "reps": "6", "rpeTarget": 6, "baseLift": "Bench (Top Set)" },
         { "liftName": "Leg Press", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12", "rirTarget": 2 },
         { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10 E/L", "rirTarget": 2 }
       ]
@@ -33,7 +33,7 @@
       "exercises": [
         { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 6 },
         { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 5.5 },
-        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 6 },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 6, "baseLift": "Bench (Top Set)" },
         { "liftName": "Hamstring Curl", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12", "rirTarget": 2 },
         { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12", "rirTarget": 2 }
       ]
@@ -43,8 +43,8 @@
       "day": 4,
       "focus": "Bench Volume",
       "exercises": [
-        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 6 },
-        { "liftName": "Squat Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 6 },
+        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 6, "baseLift": "Bench (Top Set)" },
+        { "liftName": "Squat Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 6, "baseLift": "Squat (Top Set)" },
         { "liftName": "Incline DB Press", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10", "rirTarget": 2 },
         { "liftName": "Seated OHP", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10", "rirTarget": 2 },
         { "liftName": "Tricep Extension", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12", "rirTarget": 2 }
@@ -55,8 +55,8 @@
       "day": 5,
       "focus": "Deadlift Speed/Volume",
       "exercises": [
-        { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 5, "reps": "3", "rpeTarget": 5 },
-        { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 6 },
+        { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 5, "reps": "3", "rpeTarget": 5, "baseLift": "Deadlift (Top Set)" },
+        { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 6, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Lat Pulldown", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10-12", "rirTarget": 2 },
         { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12-15", "rirTarget": 2 }
       ]
@@ -69,7 +69,7 @@
       "exercises": [
         { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 7 },
         { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "4", "rpeTarget": 6.5 },
-        { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 4, "reps": "6", "rpeTarget": 7 },
+        { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 4, "reps": "6", "rpeTarget": 7, "baseLift": "Bench (Top Set)" },
         { "liftName": "Leg Press", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12", "rirTarget": 2 },
         { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10 E/L", "rirTarget": 2 }
       ]
@@ -93,7 +93,7 @@
       "exercises": [
         { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 7 },
         { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 6.5 },
-        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 7 },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 7, "baseLift": "Bench (Top Set)" },
         { "liftName": "Hamstring Curl", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12", "rirTarget": 2 },
         { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12", "rirTarget": 2 }
       ]
@@ -103,8 +103,8 @@
       "day": 4,
       "focus": "Bench Volume (Load Increase)",
       "exercises": [
-        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 7 },
-        { "liftName": "Squat Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 7 },
+        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 7, "baseLift": "Bench (Top Set)" },
+        { "liftName": "Squat Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 7, "baseLift": "Squat (Top Set)" },
         { "liftName": "Incline DB Press", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10", "rirTarget": 2 },
         { "liftName": "Seated OHP", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10", "rirTarget": 2 },
         { "liftName": "Tricep Extension", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12", "rirTarget": 2 }
@@ -115,8 +115,8 @@
       "day": 5,
       "focus": "Deadlift Speed/Volume – Load Increase",
       "exercises": [
-        { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 5, "reps": "3", "rpeTarget": 5.5 },
-        { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 6.5 },
+        { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 5, "reps": "3", "rpeTarget": 5.5, "baseLift": "Deadlift (Top Set)" },
+        { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 6.5, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Lat Pulldown", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10-12", "rirTarget": 2 },
         { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12-15", "rirTarget": 2 }
       ]
@@ -129,7 +129,7 @@
       "exercises": [
         { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 6.5 },
         { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 6, "descending": true },
-        { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 6.5 },
+        { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)" },
         { "liftName": "Leg Press", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 },
         { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8 E/L", "rirTarget": 3 }
       ]
@@ -153,7 +153,7 @@
       "exercises": [
         { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 6.5 },
         { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 2, "reps": "2", "rpeTarget": 6, "descending": true },
-        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "4", "rpeTarget": 6.5 },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "4", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)" },
         { "liftName": "Hamstring Curl", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 },
         { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 }
       ]
@@ -163,8 +163,8 @@
       "day": 4,
       "focus": "Bench Volume (Reduced)",
       "exercises": [
-        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 2, "reps": "6", "rpeTarget": 6.5 },
-        { "liftName": "Squat Paused", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "3", "rpeTarget": 6.5 },
+        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 2, "reps": "6", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)" },
+        { "liftName": "Squat Paused", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "3", "rpeTarget": 6.5, "baseLift": "Squat (Top Set)" },
         { "liftName": "Incline DB Press", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8", "rirTarget": 3 },
         { "liftName": "Seated OHP", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8", "rirTarget": 3 },
         { "liftName": "Tricep Extension", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 }
@@ -175,8 +175,8 @@
       "day": 5,
       "focus": "Deadlift Speed/Volume – Reduced",
       "exercises": [
-        { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 4, "reps": "3", "rpeTarget": 5 },
-        { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "8", "rpeTarget": 6 },
+        { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 4, "reps": "3", "rpeTarget": 5, "baseLift": "Deadlift (Top Set)" },
+        { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "8", "rpeTarget": 6, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Lat Pulldown", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10-12", "rirTarget": 3 },
         { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12-15", "rirTarget": 3 }
       ]
@@ -189,7 +189,7 @@
       "exercises": [
         { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 7.5 },
         { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "3", "rpeTarget": 7 },
-        { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 7.5 },
+        { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 7.5, "baseLift": "Bench (Top Set)" },
         { "liftName": "Leg Press", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10", "rirTarget": 2 },
         { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "8 E/L", "rirTarget": 2 }
       ]
@@ -213,7 +213,7 @@
       "exercises": [
         { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "2", "rpeTarget": 7.5 },
         { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "2", "rpeTarget": 7 },
-        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 7.5 },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 7.5, "baseLift": "Bench (Top Set)" },
         { "liftName": "Hamstring Curl", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10", "rirTarget": 2 },
         { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 2 }
       ]
@@ -223,8 +223,8 @@
       "day": 4,
       "focus": "Bench Volume (Peak)",
       "exercises": [
-        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 7.5 },
-        { "liftName": "Squat Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 7.5 },
+        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 7.5, "baseLift": "Bench (Top Set)" },
+        { "liftName": "Squat Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 7.5, "baseLift": "Squat (Top Set)" },
         { "liftName": "Incline DB Press", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "8", "rirTarget": 2 },
         { "liftName": "Seated OHP", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "8", "rirTarget": 2 },
         { "liftName": "Tricep Extension", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10", "rirTarget": 2 }
@@ -235,8 +235,8 @@
       "day": 5,
       "focus": "Deadlift Speed/Volume – Peak",
       "exercises": [
-        { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 5, "reps": "3", "rpeTarget": 6 },
-        { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 7 },
+        { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 5, "reps": "3", "rpeTarget": 6, "baseLift": "Deadlift (Top Set)" },
+        { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 7, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Lat Pulldown", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "10-12", "rirTarget": 2 },
         { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 3, "reps": "12-15", "rirTarget": 2 }
       ]
@@ -249,7 +249,7 @@
       "exercises": [
         { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 7 },
         { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 6.5, "descending": true },
-        { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 7 },
+        { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 7, "baseLift": "Bench (Top Set)" },
         { "liftName": "Leg Press", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 },
         { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8 E/L", "rirTarget": 3 }
       ]
@@ -273,7 +273,7 @@
       "exercises": [
         { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "2", "rpeTarget": 7 },
         { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 2, "reps": "2", "rpeTarget": 6.5, "descending": true },
-        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "5", "rpeTarget": 7 },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "5", "rpeTarget": 7, "baseLift": "Bench (Top Set)" },
         { "liftName": "Hamstring Curl", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 },
         { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 }
       ]
@@ -283,8 +283,8 @@
       "day": 4,
       "focus": "Bench Volume (Down Week)",
       "exercises": [
-        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 2, "reps": "6", "rpeTarget": 7 },
-        { "liftName": "Squat Paused", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "3", "rpeTarget": 7 },
+        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 2, "reps": "6", "rpeTarget": 7, "baseLift": "Bench (Top Set)" },
+        { "liftName": "Squat Paused", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "3", "rpeTarget": 7, "baseLift": "Squat (Top Set)" },
         { "liftName": "Incline DB Press", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8", "rirTarget": 3 },
         { "liftName": "Seated OHP", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8", "rirTarget": 3 },
         { "liftName": "Tricep Extension", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10", "rirTarget": 3 }
@@ -295,8 +295,8 @@
       "day": 5,
       "focus": "Deadlift Speed/Volume – Down Week",
       "exercises": [
-        { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 5 },
-        { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "8", "rpeTarget": 6 },
+        { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 5, "baseLift": "Deadlift (Top Set)" },
+        { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "8", "rpeTarget": 6, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Lat Pulldown", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10-12", "rirTarget": 3 },
         { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12-15", "rirTarget": 3 }
       ]
@@ -309,7 +309,7 @@
       "exercises": [
         { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "2", "rpeTarget": 8 },
         { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 2, "reps": "2", "rpeTarget": 7.5, "descending": true },
-        { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "3", "rpeTarget": 8 },
+        { "liftName": "Bench Paused", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "3", "rpeTarget": 8, "baseLift": "Bench (Top Set)" },
         { "liftName": "Leg Press", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8", "rirTarget": 3 },
         { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "6 E/L", "rirTarget": 3 }
       ]
@@ -333,7 +333,7 @@
       "exercises": [
         { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "1", "rpeTarget": 8 },
         { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 2, "reps": "1", "rpeTarget": 7.5, "descending": true },
-        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "3", "rpeTarget": 8 },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "3", "rpeTarget": 8, "baseLift": "Bench (Top Set)" },
         { "liftName": "Hamstring Curl", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8", "rirTarget": 3 },
         { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8", "rirTarget": 3 }
       ]
@@ -343,8 +343,8 @@
       "day": 4,
       "focus": "Bench Volume (Peak – Low Volume)",
       "exercises": [
-        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 2, "reps": "5", "rpeTarget": 8 },
-        { "liftName": "Squat Paused", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "2", "rpeTarget": 8 },
+        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 2, "reps": "5", "rpeTarget": 8, "baseLift": "Bench (Top Set)" },
+        { "liftName": "Squat Paused", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "2", "rpeTarget": 8, "baseLift": "Squat (Top Set)" },
         { "liftName": "Incline DB Press", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "6", "rirTarget": 3 },
         { "liftName": "Seated OHP", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "6", "rirTarget": 3 },
         { "liftName": "Tricep Extension", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "8", "rirTarget": 3 }
@@ -355,8 +355,8 @@
       "day": 5,
       "focus": "Deadlift Speed/Volume – Peak Low Volume",
       "exercises": [
-        { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 6 },
-        { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "6", "rpeTarget": 7 },
+        { "liftName": "Speed Deadlift", "role": "speed", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 6, "baseLift": "Deadlift (Top Set)" },
+        { "liftName": "Romanian Deadlift", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "6", "rpeTarget": 7, "baseLift": "Deadlift (Top Set)" },
         { "liftName": "Lat Pulldown", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "10-12", "rirTarget": 3 },
         { "liftName": "Face Pulls", "role": "accessory", "progressionType": "volume", "sets": 2, "reps": "12-15", "rirTarget": 3 }
       ]
