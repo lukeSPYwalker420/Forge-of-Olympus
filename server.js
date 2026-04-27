@@ -863,14 +863,14 @@ function applyDescendingSets(exercises, descendingFlag, weekRpe) {
   const newExercises = [];
   for (const ex of exercises) {
     if (ex.descending === true) {
-      // For descending sets, we need to split into multiple exercises with decreasing RPE
       const sets = ex.sets || 3;
       const baseRPE = ex.rpeTarget !== undefined ? ex.rpeTarget : weekRpe;
-      const dropPerSet = 0.5; // each set RPE drops by 0.5
+      const dropPerSet = 0.5;
       for (let i = 0; i < sets; i++) {
         const newEx = { ...ex, sets: 1 };
         newEx.rpeTarget = Math.max(5, baseRPE - (i * dropPerSet));
-        newEx.liftName = `${ex.liftName} (Set ${i+1})`; // differentiate for history
+        newEx.liftName = `${ex.liftName} (Set ${i + 1})`;
+        newEx._descendingSet = true;   // ← new flag
         newExercises.push(newEx);
       }
     } else {
@@ -898,9 +898,9 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     let session = programData.sessions.find(p => p.week === week && p.day === day);
     if (!session) return res.status(404).json({ error: "Session not found" });
 
-    // Get week metadata for modifiers
-    const weekMeta = getWeekMetadata(programData.weeks, week);
-    let exercises = session.exercises || [];
+    // Remove the weekMeta condition – always process any exercise that has descending: true
+// Also capture which exercises were transformed for frontend display.
+exercises = applyDescendingSets(exercises, true, weekMeta?.rpe || 7);
 
     // Apply volume modifier
     if (weekMeta?.volumeModifier && weekMeta.volumeModifier !== 1.0) {
@@ -997,23 +997,24 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
       }
 
       return {
-        liftName: ex.liftName,
-        sets: ex.sets,
-        reps: ex.reps,
-        rpeTarget: ex.rpeTarget,
-        rirTarget: ex.rirTarget,
-        romTarget: ex.romTarget,
-        painTarget: ex.painTarget,
-        stabilityTarget: ex.stabilityTarget,
-        qualityTarget: ex.qualityTarget,
-        progressionType: ex.progressionType,
-        currentWeight,
-        projectedNextWeight,
-        adjustedRpeTarget: adjustedRpeTarget !== ex.rpeTarget ? adjustedRpeTarget : null,
-        adjustedRirTarget: adjustedRirTarget !== ex.rirTarget ? adjustedRirTarget : null,
-        adjustedQualityTarget: adjustedQualityTarget !== ex.qualityTarget ? adjustedQualityTarget : null,
-        adjustedStabilityTarget: adjustedStabilityTarget !== ex.stabilityTarget ? adjustedStabilityTarget : null
-      };
+  liftName: ex.liftName,
+  sets: ex.sets,
+  reps: ex.reps,
+  rpeTarget: ex.rpeTarget,
+  rirTarget: ex.rirTarget,
+  romTarget: ex.romTarget,
+  painTarget: ex.painTarget,
+  stabilityTarget: ex.stabilityTarget,
+  qualityTarget: ex.qualityTarget,
+  progressionType: ex.progressionType,
+  currentWeight,
+  projectedNextWeight,
+  adjustedRpeTarget: adjustedRpeTarget !== ex.rpeTarget ? adjustedRpeTarget : null,
+  adjustedRirTarget: adjustedRirTarget !== ex.rirTarget ? adjustedRirTarget : null,
+  adjustedQualityTarget: adjustedQualityTarget !== ex.qualityTarget ? adjustedQualityTarget : null,
+  adjustedStabilityTarget: adjustedStabilityTarget !== ex.stabilityTarget ? adjustedStabilityTarget : null,
+  descendingSet: ex._descendingSet || false   // ← new
+};
     });
 
     res.json({ program: adjustedSession, logic, projected, availableWeeks, availableDaysPerWeek, readinessApplied: { rpeAdjustment, rirAdjustment, qualityAdjustment } });
