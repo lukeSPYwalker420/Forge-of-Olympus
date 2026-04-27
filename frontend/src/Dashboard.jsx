@@ -474,7 +474,6 @@ export default function Dashboard() {
           >
             📸 Share My Progress
           </button>
-          <ProgressLog userId={userId} />
         </div>
 
         {/* Estimated 1RM Card */}
@@ -562,117 +561,127 @@ export default function Dashboard() {
                 return { successRate, struggleCount };
               };
               
-              return workouts.map((workout) => {
-                const isExpanded = expandedWorkout === workout.id;
-                const workoutDate = new Date(workout.date);
-                const today = new Date();
-                const yesterday = new Date(today);
-                yesterday.setDate(yesterday.getDate() - 1);
-                
-                let dateDisplay = workoutDate.toLocaleDateString(undefined, {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric'
-                });
-                
-                if (workoutDate.toDateString() === today.toDateString()) {
-                  dateDisplay = "Today";
-                } else if (workoutDate.toDateString() === yesterday.toDateString()) {
-                  dateDisplay = "Yesterday";
-                }
-                
-                const { successRate, struggleCount } = getWorkoutSummary(workout.exercises);
-                
-                let statusEmoji = "✅";
-                let statusColor = "var(--accent)";
-                if (successRate >= 80) {
-                  statusEmoji = "🔥";
-                  statusColor = "#4caf50";
-                } else if (successRate >= 60) {
-                  statusEmoji = "💪";
-                  statusColor = "var(--accent)";
-                } else if (successRate >= 40) {
-                  statusEmoji = "⚠️";
-                  statusColor = "#ffaa44";
-                } else {
-                  statusEmoji = "😓";
-                  statusColor = "#ff5555";
-                }
-                
-                return (
-                  <div key={workout.id} style={{ marginBottom: 16, borderBottom: "1px solid var(--border)", paddingBottom: 12 }}>
-                    <div 
-                      onClick={() => setExpandedWorkout(isExpanded ? null : workout.id)}
-                      style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", padding: "8px", borderRadius: "8px", background: isExpanded ? "var(--card-hover)" : "transparent" }}
-                    >
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: 4 }}>
-                          <span style={{ fontSize: "1.2rem" }}>{statusEmoji}</span>
-                          <h3 style={{ color: statusColor, margin: 0, fontSize: "1rem" }}>
-                            {dateDisplay} - Week {workout.week}, Day {workout.day}
-                          </h3>
-                        </div>
-                        <div style={{ display: "flex", gap: "12px", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                          <span>📋 {workout.exercises.length} exercises</span>
-                          <span>⭐ {successRate}% quality</span>
-                          {struggleCount > 0 && <span>⚠️ {struggleCount} struggled</span>}
-                        </div>
-                      </div>
-                      <span style={{ fontSize: "1.2rem" }}>{isExpanded ? "▲" : "▼"}</span>
-                    </div>
+              return (
+                <>
+                  {workouts.map((workout) => {
+                    const isExpanded = expandedWorkout === workout.id;
+                    const workoutDate = new Date(workout.date);
+                    const today = new Date();
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
                     
-                    {isExpanded && (
-                      <div style={{ marginTop: 12, paddingLeft: 8 }}>
-                        {workout.exercises.map((s, idx) => {
-                          let exerciseEmoji = "✓";
-                          let exerciseColor = "#888";
-                          
-                          if (s.actualRPE && s.targetRPE) {
-                            if (s.actualRPE <= s.targetRPE + 0.5) {
-                              exerciseEmoji = "✅";
-                              exerciseColor = "#4caf50";
-                            } else if (s.actualRPE > s.targetRPE + 1) {
-                              exerciseEmoji = "⚠️";
-                              exerciseColor = "#ffaa44";
-                            }
-                          }
-                          if (s.actualRIR && s.targetRIR) {
-                            if (s.actualRIR <= s.targetRIR) {
-                              exerciseEmoji = "✅";
-                              exerciseColor = "#4caf50";
-                            } else if (s.actualRIR > s.targetRIR + 1) {
-                              exerciseEmoji = "⚠️";
-                              exerciseColor = "#ffaa44";
-                            }
-                          }
-                          
-                          return (
-                            <div key={idx} style={{ fontSize: "0.85rem", marginBottom: 8, padding: "4px 8px", borderRadius: "6px", background: "var(--bg-light)" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                <span style={{ color: exerciseColor }}>{exerciseEmoji}</span>
-                                <strong>{s.liftName}</strong>
-                                <span style={{ color: "var(--text-gray)", fontSize: "0.75rem" }}>
-                                  {s.repsPerSet && s.repsPerSet.length > 0 
-                                    ? `Sets: [${s.repsPerSet.join(", ")}]`
-                                    : `${s.setsCompleted || 1} × ${s.repsCompleted} reps`
-                                  }
-                                  {s.actualWeight && ` @ ${s.actualWeight}kg`}
-                                </span>
-                              </div>
-                              <div style={{ fontSize: "0.7rem", color: "var(--text-gray)", paddingLeft: "24px" }}>
-                                {s.actualRPE && <span>Target RPE: {s.targetRPE} → Actual: {s.actualRPE}</span>}
-                                {s.actualRIR && <span>Target RIR: {s.targetRIR} → Actual: {s.actualRIR}</span>}
-                                {s.actualStability && <span>Stability: {s.actualStability}/10</span>}
-                                {s.actualPain && <span>Pain: {s.actualPain}/10</span>}
-                              </div>
+                    let dateDisplay = workoutDate.toLocaleDateString(undefined, {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric'
+                    });
+                    
+                    if (workoutDate.toDateString() === today.toDateString()) {
+                      dateDisplay = "Today";
+                    } else if (workoutDate.toDateString() === yesterday.toDateString()) {
+                      dateDisplay = "Yesterday";
+                    }
+                    
+                    const { successRate, struggleCount } = getWorkoutSummary(workout.exercises);
+                    
+                    let statusEmoji = "✅";
+                    let statusColor = "var(--accent)";
+                    if (successRate >= 80) {
+                      statusEmoji = "🔥";
+                      statusColor = "#4caf50";
+                    } else if (successRate >= 60) {
+                      statusEmoji = "💪";
+                      statusColor = "var(--accent)";
+                    } else if (successRate >= 40) {
+                      statusEmoji = "⚠️";
+                      statusColor = "#ffaa44";
+                    } else {
+                      statusEmoji = "😓";
+                      statusColor = "#ff5555";
+                    }
+                    
+                    return (
+                      <div key={workout.id} style={{ marginBottom: 16, borderBottom: "1px solid var(--border)", paddingBottom: 12 }}>
+                        <div 
+                          onClick={() => setExpandedWorkout(isExpanded ? null : workout.id)}
+                          style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", padding: "8px", borderRadius: "8px", background: isExpanded ? "var(--card-hover)" : "transparent" }}
+                        >
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: 4 }}>
+                              <span style={{ fontSize: "1.2rem" }}>{statusEmoji}</span>
+                              <h3 style={{ color: statusColor, margin: 0, fontSize: "1rem" }}>
+                                {dateDisplay} - Week {workout.week}, Day {workout.day}
+                              </h3>
                             </div>
-                          );
-                        })}
+                            <div style={{ display: "flex", gap: "12px", fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                              <span>📋 {workout.exercises.length} exercises</span>
+                              <span>⭐ {successRate}% quality</span>
+                              {struggleCount > 0 && <span>⚠️ {struggleCount} struggled</span>}
+                            </div>
+                          </div>
+                          <span style={{ fontSize: "1.2rem" }}>{isExpanded ? "▲" : "▼"}</span>
+                        </div>
+                        
+                        {isExpanded && (
+                          <div style={{ marginTop: 12, paddingLeft: 8 }}>
+                            {workout.exercises.map((s, idx) => {
+                              let exerciseEmoji = "✓";
+                              let exerciseColor = "#888";
+                              
+                              if (s.actualRPE && s.targetRPE) {
+                                if (s.actualRPE <= s.targetRPE + 0.5) {
+                                  exerciseEmoji = "✅";
+                                  exerciseColor = "#4caf50";
+                                } else if (s.actualRPE > s.targetRPE + 1) {
+                                  exerciseEmoji = "⚠️";
+                                  exerciseColor = "#ffaa44";
+                                }
+                              }
+                              if (s.actualRIR && s.targetRIR) {
+                                if (s.actualRIR <= s.targetRIR) {
+                                  exerciseEmoji = "✅";
+                                  exerciseColor = "#4caf50";
+                                } else if (s.actualRIR > s.targetRIR + 1) {
+                                  exerciseEmoji = "⚠️";
+                                  exerciseColor = "#ffaa44";
+                                }
+                              }
+                              
+                              return (
+                                <div key={idx} style={{ fontSize: "0.85rem", marginBottom: 8, padding: "4px 8px", borderRadius: "6px", background: "var(--bg-light)" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                    <span style={{ color: exerciseColor }}>{exerciseEmoji}</span>
+                                    <strong>{s.liftName}</strong>
+                                    <span style={{ color: "var(--text-gray)", fontSize: "0.75rem" }}>
+                                      {s.repsPerSet && s.repsPerSet.length > 0 
+                                        ? `Sets: [${s.repsPerSet.join(", ")}]`
+                                        : `${s.setsCompleted || 1} × ${s.repsCompleted} reps`
+                                      }
+                                      {s.actualWeight && ` @ ${s.actualWeight}kg`}
+                                    </span>
+                                  </div>
+                                  <div style={{ fontSize: "0.7rem", color: "var(--text-gray)", paddingLeft: "24px" }}>
+                                    {s.actualRPE && <span>Target RPE: {s.targetRPE} → Actual: {s.actualRPE}</span>}
+                                    {s.actualRIR && <span>Target RIR: {s.targetRIR} → Actual: {s.actualRIR}</span>}
+                                    {s.actualStability && <span>Stability: {s.actualStability}/10</span>}
+                                    {s.actualPain && <span>Pain: {s.actualPain}/10</span>}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                );
-              });
+                    );
+                  })}
+                  <details style={{ marginTop: "12px" }}>
+                    <summary style={{ cursor: "pointer", color: "var(--accent)", fontSize: "14px" }}>
+                      📈 View full progress comparison
+                    </summary>
+                    <ProgressLog userId={userId} />
+                  </details>
+                </>
+              );
             })()
           )}
         </div>
@@ -723,6 +732,7 @@ export default function Dashboard() {
               <div style={{ fontSize: "12px", color: "var(--text-gray)", marginTop: "4px" }}>
                 {nextMilestone.daysNeeded} days until {nextMilestone.reward}
               </div>
+              {/* ProgressLog moved to Recent Activity card */}
             </div>
           )}
           
@@ -766,6 +776,7 @@ export default function Dashboard() {
                 <option value="Hephaestus Framework">Hephaestus Framework</option>
                 <option value="Mark Training">Mark Training</option>
                 <option value="Hercules-Foundation-Pauline-Version">Hercules Foundation - Pauline Version</option>
+                <option value="6-Week Wave Powerlifting">6-Week Wave Powerlifting</option>
               </select>
               <button onClick={assignProgramToUser} className="btn-primary">Assign Program</button>
               {adminMessage && <p className="admin-message">{adminMessage}</p>}
@@ -792,6 +803,7 @@ export default function Dashboard() {
                   <option value="Apollo Physique">Apollo Physique</option>
                   <option value="Hercules Foundation">Hercules Foundation</option>
                   <option value="Hephaestus Framework">Hephaestus Framework</option>
+                  <option value="6-Week Wave Powerlifting">6-Week Wave Powerlifting</option>
                 </select>
                 <button onClick={removeProgramFromUser} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer" }}>
                   Remove Program
