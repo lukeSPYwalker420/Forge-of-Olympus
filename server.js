@@ -402,39 +402,39 @@ const findProgramFile = (programName) => {
 
 const loadProgram = (programName) => {
   let filePath = findProgramFile(programName);
-  
   if (!filePath) {
     const hyphenatedName = programNameToFilename(programName);
     filePath = path.join(__dirname, "data", `${hyphenatedName}.json`);
-    console.log(`[LOAD] Trying hyphenated path: ${filePath}`);
   }
-  
   if (!filePath || !fs.existsSync(filePath)) {
     const asIsPath = path.join(__dirname, "data", `${programName}.json`);
-    console.log(`[LOAD] Trying as-is path: ${asIsPath}`);
-    if (fs.existsSync(asIsPath)) {
-      filePath = asIsPath;
-    }
+    if (fs.existsSync(asIsPath)) filePath = asIsPath;
   }
-  
   if (!filePath || !fs.existsSync(filePath)) {
-    const dataDir = path.join(__dirname, "data");
-    const availableFiles = fs.existsSync(dataDir) ? fs.readdirSync(dataDir) : [];
-    console.error(`❌ Program file not found for: "${programName}"`);
-    console.error(`   Available files: ${availableFiles.join(', ')}`);
     throw new Error(`Program file not found: ${programName}`);
   }
-  
-  console.log(`✅ Loading program from: ${filePath}`);
+
   const raw = JSON.parse(fs.readFileSync(filePath, "utf-8"));
   
+  // Build sessions array (existing format)
+  let sessions = [];
+  let weeksMetadata = null;
+  
   if (raw.sessions && Array.isArray(raw.sessions)) {
-    return { name: raw.name, logic: raw.logic, sessions: raw.sessions };
+    sessions = raw.sessions;
+    weeksMetadata = raw.weeks || null;
+  } else if (Array.isArray(raw)) {
+    sessions = raw;
+  } else {
+    throw new Error(`Invalid program format`);
   }
-  if (Array.isArray(raw)) {
-    return { sessions: raw, logic: "STRENGTH_RPE" };
-  }
-  throw new Error(`Invalid program format`);
+  
+  return { 
+    name: raw.name, 
+    logic: raw.logic || "STRENGTH_RPE", 
+    sessions,
+    weeks: weeksMetadata   // <-- store weeks metadata
+  };
 };
 
 // ==================== Helper Functions ====================
@@ -808,6 +808,77 @@ app.get("/api/debug/programs", (req, res) => {
   });
 });
 
+/**
+ * Find week metadata for a given week number
+ */
+function getWeekMetadata(weeks, weekNumber) {
+  if (!weeks) return null;
+  return weeks.find(w => w.week === weekNumber);
+}
+
+/**
+ * Apply volume modifier (reduce sets and reps)
+ */
+function applyVolumeModifier(exercise, volumeModifier) {
+  if (!volumeModifier || volumeModifier === 1.0) return exercise;
+  const newSets = Math.max(1, Math.round((exercise.sets || 3) * volumeModifier));
+  let newReps = exercise.reps;
+  if (typeof newReps === 'string' && newReps.includes('-')) {
+    const [min, max] = newReps.split('-').map(Number);
+    const newMin = Math.max(1, Math.round(min * volumeModifier));
+    const newMax = Math.max(1, Math.round(max * volumeModifier));
+    newReps = `${newMin}-${newMax}`;
+  } else {
+    const numReps = parseInt(newReps, 10);
+    if (!isNaN(numReps)) newReps = Math.max(1, Math.round(numReps * volumeModifier)).toString();
+  }
+  return { ...exercise, sets: newSets, reps: newReps };
+}
+
+/**
+ * Apply rep drop (reduce reps by a fixed amount)
+ */
+function applyRepDrop(exercise, repDropAmount = 1) {
+  if (!repDropAmount) return exercise;
+  let newReps = exercise.reps;
+  if (typeof newReps === 'string' && newReps.includes('-')) {
+    let [min, max] = newReps.split('-').map(Number);
+    min = Math.max(1, min - repDropAmount);
+    max = Math.max(1, max - repDropAmount);
+    newReps = `${min}-${max}`;
+  } else {
+    let numReps = parseInt(newReps, 10);
+    if (!isNaN(numReps)) newReps = Math.max(1, numReps - repDropAmount).toString();
+  }
+  return { ...exercise, reps: newReps };
+}
+
+/**
+ * Apply descending back-off sets – generate multiple entries for the same lift with decreasing RPE
+ * This modifies the exercise list: one exercise becomes multiple (e.g., "Squat Back Offs" with descending RPE)
+ */
+function applyDescendingSets(exercises, descendingFlag, weekRpe) {
+  if (!descendingFlag) return exercises;
+  const newExercises = [];
+  for (const ex of exercises) {
+    if (ex.descending === true) {
+      // For descending sets, we need to split into multiple exercises with decreasing RPE
+      const sets = ex.sets || 3;
+      const baseRPE = ex.rpeTarget !== undefined ? ex.rpeTarget : weekRpe;
+      const dropPerSet = 0.5; // each set RPE drops by 0.5
+      for (let i = 0; i < sets; i++) {
+        const newEx = { ...ex, sets: 1 };
+        newEx.rpeTarget = Math.max(5, baseRPE - (i * dropPerSet));
+        newEx.liftName = `${ex.liftName} (Set ${i+1})`; // differentiate for history
+        newExercises.push(newEx);
+      }
+    } else {
+      newExercises.push(ex);
+    }
+  }
+  return newExercises;
+}
+
 app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
   try {
     const week = Number(req.params.week);
@@ -822,11 +893,58 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     if (!programName) return res.status(400).json({ error: "Missing program name" });
 
     programName = normalizeProgramName(programName);
-
     const programData = loadProgram(programName);
-    const session = programData.sessions.find(p => p.week === week && p.day === day);
+    let session = programData.sessions.find(p => p.week === week && p.day === day);
     if (!session) return res.status(404).json({ error: "Session not found" });
 
+    // Get week metadata for modifiers
+    const weekMeta = getWeekMetadata(programData.weeks, week);
+    let exercises = session.exercises || [];
+
+    // Apply volume modifier
+    if (weekMeta?.volumeModifier && weekMeta.volumeModifier !== 1.0) {
+      exercises = exercises.map(ex => applyVolumeModifier(ex, weekMeta.volumeModifier));
+    }
+    // Remove back-off sets if specified
+    if (weekMeta?.adjustments?.backOffSets) {
+      const removeCount = weekMeta.adjustments.backOffSets;
+  // Assume back-off sets are those with role "back-off"
+      exercises = exercises.filter(ex => {
+    if (ex.role === "back-off") {
+      // we need to keep a certain number? Actually "backOffSets: -1" means remove one set from back-off exercises.
+      // This is complex – simplest: for each back-off exercise, reduce its sets by removeCount (absolute value)
+      if (removeCount < 0) {
+        const newSets = Math.max(1, (ex.sets || 3) + removeCount); // removeCount is negative
+        return { ...ex, sets: newSets };
+      }
+      return ex;
+    }
+    return ex;
+    });
+    }
+    // Apply rep drop
+    if (weekMeta?.adjustments?.repDrop === true) {
+      const dropAmount = weekMeta.adjustments.repDropAmount || 1;
+      exercises = exercises.map(ex => applyRepDrop(ex, dropAmount));
+    }
+    // Apply descending sets
+    if (weekMeta?.adjustments?.descending === true) {
+      exercises = applyDescendingSets(exercises, true, weekMeta.rpe || 7);
+    }
+    // If there's a week-level RPE, apply it to exercises that don't have their own rpeTarget
+    if (weekMeta?.rpe) {
+      exercises = exercises.map(ex => {
+        if (ex.rpeTarget === undefined) {
+          return { ...ex, rpeTarget: weekMeta.rpe };
+        }
+        return ex;
+      });
+    }
+
+    // Now rebuild the session with adjusted exercises
+    const adjustedSession = { ...session, exercises };
+
+    // Remaining logic (available weeks, lift states, projected weights) stays exactly the same
     const availableWeeks = [...new Set(programData.sessions.map(s => s.week))].sort((a,b)=>a-b);
     const availableDaysPerWeek = {};
     availableWeeks.forEach(w => {
@@ -836,7 +954,7 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     const logic = programData.logic || "STRENGTH_RPE";
     const liftStates = await LiftState.find({ userId });
 
-    const projected = (session.exercises || []).map(ex => {
+    const projected = adjustedSession.exercises.map(ex => {
       const state = liftStates.find(s => s.liftName === ex.liftName);
       let currentWeight = 0;
       let projectedNextWeight = 0;
@@ -844,19 +962,16 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
       let adjustedRirTarget = ex.rirTarget;
       let adjustedQualityTarget = ex.qualityTarget;
       let adjustedStabilityTarget = ex.stabilityTarget;
-      
+
       if (rpeAdjustment !== 0 && (ex.progressionType === "strength" || logic === "STRENGTH_RPE")) {
         adjustedRpeTarget = Math.min(10, Math.max(1, (ex.rpeTarget || 7) + rpeAdjustment));
       }
-      
       if (rirAdjustment !== 0 && (ex.progressionType === "volume" || logic === "HYPERTROPHY_VOLUME")) {
         adjustedRirTarget = Math.min(5, Math.max(0, (ex.rirTarget || 2) + rirAdjustment));
       }
-      
       if (qualityAdjustment !== 0 && ex.progressionType === "power") {
         adjustedQualityTarget = Math.min(10, Math.max(1, (ex.qualityTarget || 7) + qualityAdjustment));
       }
-      
       if (ex.progressionType === "mobility" || ex.progressionType === "stability") {
         const avgAdjustment = (rpeAdjustment + rirAdjustment) / 2;
         if (avgAdjustment !== 0) {
@@ -866,25 +981,15 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
 
       if (state) {
         if (logic === "STRENGTH_RPE" && state.estimated1RM > 0) {
-          const targetRPE = adjustedRpeTarget;
-          currentWeight = weightForRPE(state.estimated1RM, targetRPE, ex.reps);
-          projectedNextWeight = weightForRPE(state.estimated1RM, targetRPE + 0.5, ex.reps);
+          currentWeight = weightForRPE(state.estimated1RM, adjustedRpeTarget, ex.reps);
+          projectedNextWeight = weightForRPE(state.estimated1RM, adjustedRpeTarget + 0.5, ex.reps);
         } 
         else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && state.currentWeight > 0) {
           currentWeight = state.currentWeight;
-          
           let weightModifier = 1;
-          if (rirAdjustment !== 0) {
-            weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
-          }
-          if (rpeAdjustment !== 0) {
-            weightModifier *= (1 + (rpeAdjustment * 0.05));
-          }
-          
-          if (weightModifier !== 1) {
-            currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
-          }
-          
+          if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
+          if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
+          if (weightModifier !== 1) currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
           const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
           projectedNextWeight = currentWeight + inc;
         }
@@ -910,14 +1015,7 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
       };
     });
 
-    res.json({ 
-      program: session, 
-      logic, 
-      projected, 
-      availableWeeks, 
-      availableDaysPerWeek,
-      readinessApplied: { rpeAdjustment, rirAdjustment, qualityAdjustment }
-    });
+    res.json({ program: adjustedSession, logic, projected, availableWeeks, availableDaysPerWeek, readinessApplied: { rpeAdjustment, rirAdjustment, qualityAdjustment } });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
