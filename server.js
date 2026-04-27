@@ -870,7 +870,7 @@ function applyDescendingSets(exercises, descendingFlag, weekRpe) {
         const newEx = { ...ex, sets: 1 };
         newEx.rpeTarget = Math.max(5, baseRPE - (i * dropPerSet));
         newEx.liftName = `${ex.liftName} (Set ${i + 1})`;
-        newEx._descendingSet = true;   // ← new flag
+        newEx._descendingSet = true;
         newExercises.push(newEx);
       }
     } else {
@@ -935,7 +935,7 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
       });
     }
     
-    // ✅ APPLY DESCENDING SETS (now always runs for any exercise with descending:true)
+    // ✅ APPLY DESCENDING SETS (always runs for any exercise with descending:true)
     exercises = applyDescendingSets(exercises, true, weekMeta?.rpe || 7);
 
     // Now rebuild the session with adjusted exercises
@@ -952,6 +952,14 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     const liftStates = await LiftState.find({ userId });
 
     const projected = adjustedSession.exercises.map(ex => {
+      // ========== NEW: Auto‑convert RIR → RPE for strength/hybrid programs ==========
+      if ((logic === "STRENGTH_RPE" || logic === "GENERAL_FITNESS_HYBRID") 
+          && ex.rirTarget !== undefined && ex.rpeTarget === undefined) {
+        // RPE ≈ 10 – RIR (clamp between 1 and 10)
+        ex.rpeTarget = Math.min(10, Math.max(1, 10 - ex.rirTarget));
+      }
+      // ============================================================================
+
       const state = liftStates.find(s => s.liftName === ex.liftName);
       let currentWeight = 0;
       let projectedNextWeight = 0;
@@ -976,13 +984,22 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
         }
       }
 
-      if (state) {
-        if (logic === "STRENGTH_RPE" && state.estimated1RM > 0) {
-          currentWeight = weightForRPE(state.estimated1RM, adjustedRpeTarget, ex.reps);
-          projectedNextWeight = weightForRPE(state.estimated1RM, adjustedRpeTarget + 0.5, ex.reps);
+      // ========== NEW: baseLift inheritance for weight suggestions ==========
+      let effectiveState = state;
+      if (!effectiveState || (logic === "STRENGTH_RPE" && !effectiveState.estimated1RM)) {
+        if (ex.baseLift) {
+          effectiveState = liftStates.find(s => s.liftName === ex.baseLift);
+        }
+      }
+      // ======================================================================
+
+      if (effectiveState) {
+        if (logic === "STRENGTH_RPE" && effectiveState.estimated1RM > 0) {
+          currentWeight = weightForRPE(effectiveState.estimated1RM, adjustedRpeTarget, ex.reps);
+          projectedNextWeight = weightForRPE(effectiveState.estimated1RM, adjustedRpeTarget + 0.5, ex.reps);
         } 
-        else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && state.currentWeight > 0) {
-          currentWeight = state.currentWeight;
+        else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && effectiveState.currentWeight > 0) {
+          currentWeight = effectiveState.currentWeight;
           let weightModifier = 1;
           if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
           if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
@@ -1009,7 +1026,8 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
         adjustedRirTarget: adjustedRirTarget !== ex.rirTarget ? adjustedRirTarget : null,
         adjustedQualityTarget: adjustedQualityTarget !== ex.qualityTarget ? adjustedQualityTarget : null,
         adjustedStabilityTarget: adjustedStabilityTarget !== ex.stabilityTarget ? adjustedStabilityTarget : null,
-        descendingSet: ex._descendingSet || false
+        descendingSet: ex._descendingSet || false,
+        baseLift: ex.baseLift || null          // forward to frontend if needed
       };
     });
 
