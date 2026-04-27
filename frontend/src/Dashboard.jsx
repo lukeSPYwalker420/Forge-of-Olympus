@@ -4,6 +4,7 @@ import DashboardChart from './DashboardChart';
 import "./Dashboard.css";
 import html2canvas from 'html2canvas';
 import ProgressLog from './ProgressLog';
+import CoachPrompts from './CoachPrompts';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -495,6 +496,8 @@ export default function Dashboard() {
             <DashboardChart userId={userId} liftName="Deadlift (Top Set)" />
           </details>
         </div>
+
+        <CoachPrompts userId={userId} />
 
         {/* Recent Activity Card */}
         <div className="card">
