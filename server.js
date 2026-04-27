@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import Stripe from "stripe";
 import nodemailer from 'nodemailer';
 import cron from 'node-cron';
+import { getCoachingPrompts } from './coaching.js';
 
 dotenv.config();
 
@@ -1775,6 +1776,16 @@ app.get("/api/progress-comparison/:userId", async (req, res) => {
   }
 });
 
+app.get("/api/coaching-prompt/:userId", async (req, res) => {
+  try {
+    const prompts = await getCoachingPrompts(req.params.userId);
+    res.json(prompts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Email templates
 async function sendWelcomeEmail1(email) {
   const mailOptions = {
@@ -1866,27 +1877,6 @@ app.post("/api/run-email-cron", async (req, res) => {
 
   res.json({ message: "Cron job executed" });
 });
-
-app.post("/api/check-stalls", async (req, res) => {
-  const stalled = await LiftState.find({ stallCounter: { $gte: 3 } }).populate("userId");
-  for (const s of stalled) {
-    await sendStallAlert(s.userId.email, s.liftName, s.stallCounter);
-  }
-  res.json({ checked: stalled.length });
-});
-
-async function sendStallAlert(email, liftName, stallCounter) {
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: process.env.ADMIN_EMAIL || "kieren2203@googlemail.com",
-    subject: `⚠️ Stall detected on ${liftName}`,
-    html: `<p>User: ${email}</p><p>Lift: ${liftName}</p><p>Stall counter: ${stallCounter}</p><p>Consider outreach: "I noticed your ${liftName} progression has stalled – want a free form check?"</p>`
-  };
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log(`📧 Stall alert sent for ${email} – ${liftName}`);
-  } catch (err) { console.error(err); }
-}
 
 // Serve static files from the public directory (images)
 const publicPath = path.join(__dirname, "frontend", "public");
