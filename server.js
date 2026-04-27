@@ -8,7 +8,7 @@ import { fileURLToPath } from "url";
 import Stripe from "stripe";
 import nodemailer from 'nodemailer';
 import cron from 'node-cron';
-import { getCoachingPrompts } from './coaching.js';
+import { getCoachingPrompts } from './aiCoach.js';
 import LiftState from "./models/LiftState.js";
 import Session from "./models/Session.js";
 
