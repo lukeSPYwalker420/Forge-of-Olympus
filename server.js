@@ -96,7 +96,7 @@ function normalizeProgramName(encodedName) {
       "Hercules Foundation",
       "Mark Training",       
       "Hercules Foundation - Pauline Version",
-      "6-Week Wave Powerlifting" 
+      "6-Week-Wave-Powerlifting" 
     ];
     
     const decodedLower = decoded.toLowerCase();
