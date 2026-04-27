@@ -898,9 +898,9 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     let session = programData.sessions.find(p => p.week === week && p.day === day);
     if (!session) return res.status(404).json({ error: "Session not found" });
 
-    // Remove the weekMeta condition – always process any exercise that has descending: true
-// Also capture which exercises were transformed for frontend display.
-exercises = applyDescendingSets(exercises, true, weekMeta?.rpe || 7);
+    // Define weekMeta and exercises BEFORE any use
+    const weekMeta = getWeekMetadata(programData.weeks, week);
+    let exercises = session.exercises || [];
 
     // Apply volume modifier
     if (weekMeta?.volumeModifier && weekMeta.volumeModifier !== 1.0) {
@@ -909,30 +909,23 @@ exercises = applyDescendingSets(exercises, true, weekMeta?.rpe || 7);
     // Remove back-off sets if specified
     if (weekMeta?.adjustments?.backOffSets) {
       const removeCount = weekMeta.adjustments.backOffSets;
-  // Assume back-off sets are those with role "back-off"
-      exercises = exercises.filter(ex => {
-    if (ex.role === "back-off") {
-      // we need to keep a certain number? Actually "backOffSets: -1" means remove one set from back-off exercises.
-      // This is complex – simplest: for each back-off exercise, reduce its sets by removeCount (absolute value)
-      if (removeCount < 0) {
-        const newSets = Math.max(1, (ex.sets || 3) + removeCount); // removeCount is negative
-        return { ...ex, sets: newSets };
-      }
-      return ex;
-    }
-    return ex;
-    });
+      exercises = exercises.map(ex => {
+        if (ex.role === "back-off") {
+          if (removeCount < 0) {
+            const newSets = Math.max(1, (ex.sets || 3) + removeCount);
+            return { ...ex, sets: newSets };
+          }
+          return ex;
+        }
+        return ex;
+      });
     }
     // Apply rep drop
     if (weekMeta?.adjustments?.repDrop === true) {
       const dropAmount = weekMeta.adjustments.repDropAmount || 1;
       exercises = exercises.map(ex => applyRepDrop(ex, dropAmount));
     }
-    // Apply descending sets
-    if (weekMeta?.adjustments?.descending === true) {
-      exercises = applyDescendingSets(exercises, true, weekMeta.rpe || 7);
-    }
-    // If there's a week-level RPE, apply it to exercises that don't have their own rpeTarget
+    // Week-level RPE override
     if (weekMeta?.rpe) {
       exercises = exercises.map(ex => {
         if (ex.rpeTarget === undefined) {
@@ -941,11 +934,14 @@ exercises = applyDescendingSets(exercises, true, weekMeta?.rpe || 7);
         return ex;
       });
     }
+    
+    // ✅ APPLY DESCENDING SETS (now always runs for any exercise with descending:true)
+    exercises = applyDescendingSets(exercises, true, weekMeta?.rpe || 7);
 
     // Now rebuild the session with adjusted exercises
     const adjustedSession = { ...session, exercises };
 
-    // Remaining logic (available weeks, lift states, projected weights) stays exactly the same
+    // Rest of the route remains unchanged …
     const availableWeeks = [...new Set(programData.sessions.map(s => s.week))].sort((a,b)=>a-b);
     const availableDaysPerWeek = {};
     availableWeeks.forEach(w => {
@@ -997,24 +993,24 @@ exercises = applyDescendingSets(exercises, true, weekMeta?.rpe || 7);
       }
 
       return {
-  liftName: ex.liftName,
-  sets: ex.sets,
-  reps: ex.reps,
-  rpeTarget: ex.rpeTarget,
-  rirTarget: ex.rirTarget,
-  romTarget: ex.romTarget,
-  painTarget: ex.painTarget,
-  stabilityTarget: ex.stabilityTarget,
-  qualityTarget: ex.qualityTarget,
-  progressionType: ex.progressionType,
-  currentWeight,
-  projectedNextWeight,
-  adjustedRpeTarget: adjustedRpeTarget !== ex.rpeTarget ? adjustedRpeTarget : null,
-  adjustedRirTarget: adjustedRirTarget !== ex.rirTarget ? adjustedRirTarget : null,
-  adjustedQualityTarget: adjustedQualityTarget !== ex.qualityTarget ? adjustedQualityTarget : null,
-  adjustedStabilityTarget: adjustedStabilityTarget !== ex.stabilityTarget ? adjustedStabilityTarget : null,
-  descendingSet: ex._descendingSet || false   // ← new
-};
+        liftName: ex.liftName,
+        sets: ex.sets,
+        reps: ex.reps,
+        rpeTarget: ex.rpeTarget,
+        rirTarget: ex.rirTarget,
+        romTarget: ex.romTarget,
+        painTarget: ex.painTarget,
+        stabilityTarget: ex.stabilityTarget,
+        qualityTarget: ex.qualityTarget,
+        progressionType: ex.progressionType,
+        currentWeight,
+        projectedNextWeight,
+        adjustedRpeTarget: adjustedRpeTarget !== ex.rpeTarget ? adjustedRpeTarget : null,
+        adjustedRirTarget: adjustedRirTarget !== ex.rirTarget ? adjustedRirTarget : null,
+        adjustedQualityTarget: adjustedQualityTarget !== ex.qualityTarget ? adjustedQualityTarget : null,
+        adjustedStabilityTarget: adjustedStabilityTarget !== ex.stabilityTarget ? adjustedStabilityTarget : null,
+        descendingSet: ex._descendingSet || false
+      };
     });
 
     res.json({ program: adjustedSession, logic, projected, availableWeeks, availableDaysPerWeek, readinessApplied: { rpeAdjustment, rirAdjustment, qualityAdjustment } });
