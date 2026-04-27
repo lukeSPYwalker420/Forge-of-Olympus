@@ -5,23 +5,14 @@ dotenv.config();
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-/**
- * Build a summary string for sending to GPT.
- */
-async function buildSummary(userId, prompts) {
-  // We'll just convert the rule-based prompts into a structured format
+async function buildSummary(prompts) {
   const parts = prompts.map(p => `${p.lift}: ${p.message}`).join("\n");
   return `Based on the following observations:\n${parts}\nProvide a concise, motivational, and personalised coaching tip for this lifter. Keep it under 3 sentences.`;
 }
 
-/**
- * Call GPT-4 with the user's data.
- */
-async function callGPT4(userId) {
-  const rulePrompts = await getRuleBasedPrompts(userId);
-  const summary = await buildSummary(userId, rulePrompts);
-
+async function callGPT4(rulePrompts) {
   try {
+    const summary = await buildSummary(rulePrompts);
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -41,8 +32,6 @@ async function callGPT4(userId) {
 
     const data = await response.json();
     const aiMessage = data.choices[0].message.content.trim();
-
-    // Combine with rule-based data? Actually we'll replace entirely
     return [{
       lift: "overall",
       type: "ai_coach",
@@ -50,31 +39,32 @@ async function callGPT4(userId) {
     }];
   } catch (err) {
     console.error("GPT-4 call failed, falling back to rules:", err);
-    return rulePrompts;
+    return rulePrompts;   // fallback to rule‑based prompts
   }
 }
 
-/**
- * Main function – returns cached AI prompts or fetches new ones.
- */
 export async function getCoachingPrompts(userId) {
+  // 1. Check cache
   const cached = await AiCoachCache.findOne({ userId });
   if (cached) return cached.prompts;
 
+  // 2. Always build rule‑based prompts first (uses real userId)
   const rulePrompts = await getRuleBasedPrompts(userId);
 
-  let prompts;
+  let finalPrompts;
   if (OPENAI_API_KEY) {
-    prompts = await callGPT4(rulePrompts);
+    // Pass the array of prompts to GPT‑4 (not the userId)
+    finalPrompts = await callGPT4(rulePrompts);
   } else {
-    prompts = rulePrompts;
+    finalPrompts = rulePrompts;
   }
 
+  // 3. Save to cache
   await AiCoachCache.findOneAndUpdate(
     { userId },
-    { userId, prompts },       // prompts is already an array of objects
+    { userId, prompts: finalPrompts },
     { upsert: true, new: true }
   );
 
-  return prompts;
+  return finalPrompts;
 }
