@@ -461,10 +461,29 @@ export default function SessionView() {
           return (
             <div key={i} style={{ border: "1px solid #e5e5e5", borderRadius: 12, padding: 20 }}>
               <h3>{lift.liftName}</h3>
+              {lift.descendingSet && (
+            <span style={{
+              fontSize: "0.7rem",
+              background: "#6a5acd",
+              color: "#fff",
+              padding: "2px 8px",
+              borderRadius: "12px",
+              marginLeft: "8px",
+              verticalAlign: "middle"
+            }}>⇊ Descending</span>
+            )}
               <div style={{ display: "flex", gap: 20, marginBottom: 10, flexWrap: "wrap" }}>
                 <span>Sets: {lift.sets}</span>
                 <span>Reps: {lift.reps}</span>
                 <span>{getMetricLabel(lift)} Target: {getTargetValue(lift)}</span>
+                {(lift.adjustedRpeTarget || lift.adjustedRirTarget || lift.adjustedQualityTarget || lift.adjustedStabilityTarget) && (
+                <span style={{
+                  fontSize: "0.65rem",
+                  color: "#a1a1aa",
+                  marginLeft: "6px",
+                  fontStyle: "italic"
+                }}>(auto‑adjusted)</span>
+              )}
               </div>
               <div style={{ display: "flex", gap: 20, marginBottom: 15, fontWeight: "bold", flexWrap: "wrap" }}>
                 {subscriptionActive ? (
