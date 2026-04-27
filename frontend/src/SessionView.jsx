@@ -25,10 +25,8 @@ export default function SessionView() {
   const [workoutSummary, setWorkoutSummary] = useState(null);
   const [completedExerciseCount, setCompletedExerciseCount] = useState(0);
 
-  // +++ NEW +++
   const [missedOpportunityBanner, setMissedOpportunityBanner] = useState(null);
   const [nextPreview, setNextPreview] = useState(null);
-  // +++ END NEW +++
 
   const userId = localStorage.getItem("userId");
   const program = localStorage.getItem("program");
@@ -120,7 +118,6 @@ export default function SessionView() {
     }
   };
 
-  // +++ NEW +++
   const loadNextPreview = async () => {
     try {
       const nextRes = await fetch(`/api/next-session/${userId}?program=${encodeURIComponent(program)}`);
@@ -141,7 +138,6 @@ export default function SessionView() {
       console.error("Failed to load next preview", err);
     }
   };
-  // +++ END NEW +++
 
   const handleAutoFill = (lift) => {
     const newInputs = { ...inputs };
@@ -170,13 +166,6 @@ export default function SessionView() {
     if (lift.currentWeight && lift.currentWeight > 0) {
       liftInputs.weight = lift.currentWeight;
     }
-    <input
-  type="number"
-  placeholder={lift.currentWeight > 0 ? `${lift.currentWeight} kg` : "Weight (kg)"}
-  style={{ padding: 8, width: "100px" }}
-  value={inputs[lift.liftName]?.weight || ""}
-  onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
-/>
 
     // Fill RPE for strength programs (use adjusted target if available)
     if (lift.progressionType === "strength" || data?.logic === "STRENGTH_RPE") {
@@ -212,7 +201,7 @@ export default function SessionView() {
 
     if (newCount === data?.projected?.length) {
       generateWorkoutSummary();
-      loadNextPreview(); // +++ NEW +++
+      loadNextPreview(); // loads the next workout preview
     }
   };
 
@@ -308,7 +297,7 @@ export default function SessionView() {
         })
       });
 
-      // +++ NEW: “You would have missed this” moment +++
+      // “You would have missed this” moment
       if (weight && targetRPE && lift.rpeTarget && lift.currentWeight) {
         const staticWeight = Math.round((lift.currentWeight / 0.82) * 0.82 / 2.5) * 2.5;
         if (staticWeight > 0 && staticWeight !== weight) {
@@ -320,7 +309,6 @@ export default function SessionView() {
           setTimeout(() => setMissedOpportunityBanner(null), 5000);
         }
       }
-      // +++ END NEW +++
 
       await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -408,7 +396,7 @@ export default function SessionView() {
 
   return (
     <div style={{ padding: 30, fontFamily: "system-ui", maxWidth: 900, margin: "0 auto" }}>
-      {/* +++ NEW: missed opportunity banner +++ */}
+      {/* missed opportunity banner */}
       {missedOpportunityBanner && (
         <div style={{
           background: "#ffaa4422",
@@ -421,7 +409,6 @@ export default function SessionView() {
           A static plan would have told you {missedOpportunityBanner.staticWeight}kg for {missedOpportunityBanner.liftName}, but you did {missedOpportunityBanner.actualWeight}kg – that’s {Math.abs(missedOpportunityBanner.actualWeight - missedOpportunityBanner.staticWeight)}kg more!
         </div>
       )}
-      {/* +++ END NEW +++ */}
 
       <div style={{ marginBottom: 25 }}>
         <h1>Week {data.program?.week ?? "?"} — Day {data.program?.day ?? "?"}</h1>
@@ -467,30 +454,32 @@ export default function SessionView() {
 
           return (
             <div key={i} style={{ border: "1px solid #e5e5e5", borderRadius: 12, padding: 20 }}>
-              <h3>{lift.liftName}</h3>
-              {lift.descendingSet && (
-            <span style={{
-              fontSize: "0.7rem",
-              background: "#6a5acd",
-              color: "#fff",
-              padding: "2px 8px",
-              borderRadius: "12px",
-              marginLeft: "8px",
-              verticalAlign: "middle"
-            }}>⇊ Descending</span>
-            )}
+              <h3>
+                {lift.liftName}
+                {lift.descendingSet && (
+                  <span style={{
+                    fontSize: "0.7rem",
+                    background: "#6a5acd",
+                    color: "#fff",
+                    padding: "2px 8px",
+                    borderRadius: "12px",
+                    marginLeft: "8px",
+                    verticalAlign: "middle"
+                  }}>⇊ Descending</span>
+                )}
+              </h3>
               <div style={{ display: "flex", gap: 20, marginBottom: 10, flexWrap: "wrap" }}>
                 <span>Sets: {lift.sets}</span>
                 <span>Reps: {lift.reps}</span>
                 <span>{getMetricLabel(lift)} Target: {getTargetValue(lift)}</span>
                 {(lift.adjustedRpeTarget || lift.adjustedRirTarget || lift.adjustedQualityTarget || lift.adjustedStabilityTarget) && (
-                <span style={{
-                  fontSize: "0.65rem",
-                  color: "#a1a1aa",
-                  marginLeft: "6px",
-                  fontStyle: "italic"
-                }}>(auto‑adjusted)</span>
-              )}
+                  <span style={{
+                    fontSize: "0.65rem",
+                    color: "#a1a1aa",
+                    marginLeft: "6px",
+                    fontStyle: "italic"
+                  }}>(auto‑adjusted)</span>
+                )}
               </div>
               <div style={{ display: "flex", gap: 20, marginBottom: 15, fontWeight: "bold", flexWrap: "wrap" }}>
                 {subscriptionActive ? (
@@ -509,7 +498,7 @@ export default function SessionView() {
                 {pt !== "mobility" && (
                   <input
                     type="number"
-                    placeholder="Weight (kg)"
+                    placeholder={lift.currentWeight > 0 ? `${lift.currentWeight} kg` : "Weight (kg)"}
                     style={{ padding: 8, width: "100px" }}
                     value={inputs[lift.liftName]?.weight || ""}
                     onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
@@ -530,7 +519,7 @@ export default function SessionView() {
                   <>
                     <input
                       type="number"
-                      placeholder="Weight (kg)"
+                      placeholder={lift.currentWeight > 0 ? `${lift.currentWeight} kg` : "Weight (kg)"}
                       style={{ padding: 8, width: "100px" }}
                       value={inputs[lift.liftName]?.weight || ""}
                       onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
@@ -650,7 +639,7 @@ export default function SessionView() {
         })}
       </div>
 
-      {/* +++ NEW: next workout preview +++ */}
+      {/* next workout preview */}
       {nextPreview && (
         <div style={{ marginTop: "30px", padding: "16px", background: "#1e1e2a", borderRadius: "12px", border: "1px solid var(--accent)" }}>
           <h4>🔮 Next workout preview</h4>
@@ -662,7 +651,6 @@ export default function SessionView() {
           ))}
         </div>
       )}
-      {/* +++ END NEW +++ */}
 
       {/* Workout Completion Modal */}
       {showCompletionModal && workoutSummary && (
