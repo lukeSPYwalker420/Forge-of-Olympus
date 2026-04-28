@@ -486,6 +486,14 @@ export default function SessionView() {
                   <>
                     <span>Current: {lift.currentWeight ?? 0}kg</span>
                     <span>Next: {lift.projectedNextWeight ?? 0}kg</span>
+                    {lift.fatigueAdjusted && (
+                    <span style={{
+                      fontSize: "0.65rem",
+                      color: "#ffaa44",
+                      marginLeft: "8px",
+                      fontStyle: "italic"
+                    }}>⚡ fatigue‑adjusted</span>
+                  )}
                   </>
                 ) : (
                   <span style={{ color: "#ffaa44" }}>
