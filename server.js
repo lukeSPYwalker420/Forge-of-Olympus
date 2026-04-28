@@ -947,28 +947,34 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
 
       // ========== NEW: baseLift inheritance for weight suggestions ==========
       let effectiveState = state;
-      if (!effectiveState || (logic === "STRENGTH_RPE" && !effectiveState.estimated1RM)) {
-        if (ex.baseLift) {
-          effectiveState = liftStates.find(s => s.liftName === ex.baseLift);
-        }
-      }
-      // ======================================================================
+if (!effectiveState || (logic === "STRENGTH_RPE" && !effectiveState.estimated1RM)) {
+  if (ex.baseLift) {
+    effectiveState = liftStates.find(s => s.liftName === ex.baseLift);
+  }
+}
 
-      if (effectiveState) {
-        if (logic === "STRENGTH_RPE" && effectiveState.estimated1RM > 0) {
-          currentWeight = weightForRPE(effectiveState.estimated1RM, adjustedRpeTarget, ex.reps);
-          projectedNextWeight = weightForRPE(effectiveState.estimated1RM, adjustedRpeTarget + 0.5, ex.reps);
-        } 
-        else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && effectiveState.currentWeight > 0) {
-          currentWeight = effectiveState.currentWeight;
-          let weightModifier = 1;
-          if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
-          if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
-          if (weightModifier !== 1) currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
-          const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-          projectedNextWeight = currentWeight + inc;
-        }
-      }
+// ===== Fatigue‑adjusted weight for flat back‑off sets =====
+let computed1RM = effectiveState?.estimated1RM || 0;
+if (ex.role === "back-off" && !ex._descendingSet && computed1RM > 0) {
+  computed1RM = Math.round(computed1RM * 0.95);   // 5% fatigue reduction
+  ex._fatigueAdjusted = true;
+}
+
+if (effectiveState) {
+  if (logic === "STRENGTH_RPE" && computed1RM > 0) {
+    currentWeight = weightForRPE(computed1RM, adjustedRpeTarget, ex.reps);
+    projectedNextWeight = weightForRPE(computed1RM, adjustedRpeTarget + 0.5, ex.reps);
+  } 
+  else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && effectiveState.currentWeight > 0) {
+    currentWeight = effectiveState.currentWeight;
+    let weightModifier = 1;
+    if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
+    if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
+    if (weightModifier !== 1) currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
+    const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+    projectedNextWeight = currentWeight + inc;
+  }
+}
 
       return {
         liftName: ex.liftName,
@@ -988,7 +994,8 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
         adjustedQualityTarget: adjustedQualityTarget !== ex.qualityTarget ? adjustedQualityTarget : null,
         adjustedStabilityTarget: adjustedStabilityTarget !== ex.stabilityTarget ? adjustedStabilityTarget : null,
         descendingSet: ex._descendingSet || false,
-        baseLift: ex.baseLift || null          // forward to frontend if needed
+        baseLift: ex.baseLift || null,          // forward to frontend if needed
+        fatigueAdjusted: ex._fatigueAdjusted || false,
       };
     });
 
