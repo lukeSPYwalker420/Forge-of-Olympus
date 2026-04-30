@@ -1,17 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import "./ProgramSelect.css"; // we'll create this
+import "./ProgramSelect.css";
 
 export default function ProgramSelect() {
   const navigate = useNavigate();
   const purchased = JSON.parse(localStorage.getItem("purchasedPrograms") || "[]");
 
   const handleSelect = (programName) => {
-  // For admin-assigned programs, store exactly as is
-  // For Stripe programs, the name is already normalized
-  localStorage.setItem("program", programName);
-  localStorage.setItem("programJustSelected", "true");
-  navigate("/dashboard");
-};
+    localStorage.setItem("program", programName);
+    localStorage.setItem("programJustSelected", "true");
+    // Notify App component about auth change
+    window.dispatchEvent(new Event("authChange"));
+    navigate("/dashboard");
+  };
 
   if (purchased.length === 0) {
     return (
@@ -28,11 +28,7 @@ export default function ProgramSelect() {
       <h1>Choose Your Weapon</h1>
       <div className="program-select-grid">
         {purchased.map(p => (
-          <button
-            key={p}
-            onClick={() => handleSelect(p)}
-            className="program-select-btn"
-          >
+          <button key={p} onClick={() => handleSelect(p)} className="program-select-btn">
             {p}
           </button>
         ))}
