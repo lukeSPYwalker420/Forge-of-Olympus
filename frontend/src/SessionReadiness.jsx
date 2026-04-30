@@ -7,51 +7,51 @@ export default function SessionReadiness({ onComplete, programLogic }) {
     mentalClarity: 5
   });
 
-  // Calculate adjustments based on readiness scores - use useMemo instead of useEffect
   const adjustments = useMemo(() => {
-  const avg = (readiness.sleep + (10 - readiness.soreness) + readiness.mentalClarity) / 3;
+    const avg = (readiness.sleep + (10 - readiness.soreness) + readiness.mentalClarity) / 3;
 
-  if (programLogic === "STRENGTH_RPE") {
-    let adj = 0;
-    if (avg <= 4) adj = -2;
-    else if (avg <= 6) adj = -1;
-    else if (avg >= 9) adj = 0.5;
-    return { rpeAdjustment: adj, rirAdjustment: null, painAdjustment: null, stabilityAdjustment: null };
-  } 
-  else if (programLogic === "HYPERTROPHY_VOLUME") {
-    let adj = 0;
-    if (avg <= 4) adj = 2;
-    else if (avg <= 6) adj = 1;
-    else if (avg >= 9) adj = -1;
-    return { rpeAdjustment: null, rirAdjustment: adj, painAdjustment: null, stabilityAdjustment: null };
-  } 
-  else if (programLogic === "GENERAL_FITNESS_HYBRID") {
-  let painAdj = 0;
-  let stabilityAdj = 0;
-  let intensityAdj = 0;   // ← new: adjusts RPE for strength/power exercises
-  if (avg <= 4) {
-    painAdj = 2;
-    stabilityAdj = -2;
-    intensityAdj = -1;    // lower readiness → easier (lower RPE)
-  } else if (avg <= 6) {
-    painAdj = 1;
-    stabilityAdj = -1;
-    intensityAdj = -0.5;
-  } else if (avg >= 9) {
-    painAdj = -1;
-    stabilityAdj = 1;
-    intensityAdj = 0.5;   // high readiness → push harder
-  }
-  // Use rpeAdjustment to carry the intensity modifier
-  return {
-    rpeAdjustment: intensityAdj,
-    rirAdjustment: null,
-    painAdjustment: painAdj,
-    stabilityAdjustment: stabilityAdj
-  };
-}
-  return { rpeAdjustment: 0, rirAdjustment: 0, painAdjustment: 0, stabilityAdjustment: 0 };
-}, [readiness, programLogic]);
+    if (programLogic === "STRENGTH_RPE") {
+      let adj = 0;
+      if (avg <= 4) adj = -2;
+      else if (avg <= 6) adj = -1;
+      else if (avg >= 9) adj = 0.5;
+      return { rpeAdjustment: adj, rirAdjustment: null, painAdjustment: null, stabilityAdjustment: null };
+    }
+
+    if (programLogic === "HYPERTROPHY_VOLUME") {
+      let adj = 0;
+      if (avg <= 4) adj = 2;
+      else if (avg <= 6) adj = 1;
+      else if (avg >= 9) adj = -1;
+      return { rpeAdjustment: null, rirAdjustment: adj, painAdjustment: null, stabilityAdjustment: null };
+    }
+
+    // GENERAL_FITNESS_HYBRID and any other logic
+    let painAdj = 0;
+    let stabilityAdj = 0;
+    let intensityAdj = 0;
+
+    if (avg <= 4) {
+      painAdj = 2;
+      stabilityAdj = -2;
+      intensityAdj = -1;
+    } else if (avg <= 6) {
+      painAdj = 1;
+      stabilityAdj = -1;
+      intensityAdj = -0.5;
+    } else if (avg >= 9) {
+      painAdj = -1;
+      stabilityAdj = 1;
+      intensityAdj = 0.5;
+    }
+
+    return {
+      rpeAdjustment: intensityAdj,
+      rirAdjustment: null,
+      painAdjustment: painAdj,
+      stabilityAdjustment: stabilityAdj
+    };
+  }, [readiness, programLogic]);
 
   const handleSubmit = () => {
     onComplete({
@@ -181,16 +181,16 @@ export default function SessionReadiness({ onComplete, programLogic }) {
 
         {programLogic === "GENERAL_FITNESS_HYBRID" && adjustments.rpeAdjustment !== null && (
           <div style={{ background: "#2a2a35", padding: "15px", borderRadius: "12px", marginBottom: "20px" }}>
-          <strong>Recommendation:</strong>
+            <strong>Recommendation:</strong>
             {adjustments.rpeAdjustment < 0 && (
-          <p style={{ color: "#ffaa44" }}>⚠️ Lower readiness detected. Reducing target RPE by {Math.abs(adjustments.rpeAdjustment)} point{Math.abs(adjustments.rpeAdjustment) !== 1 ? 's' : ''}.</p>
-        )}
+              <p style={{ color: "#ffaa44" }}>⚠️ Lower readiness detected. Reducing target RPE by {Math.abs(adjustments.rpeAdjustment)} point{Math.abs(adjustments.rpeAdjustment) !== 1 ? 's' : ''}.</p>
+            )}
             {adjustments.rpeAdjustment > 0 && (
-          <p style={{ color: "#44ffaa" }}>💪 Great readiness! You can push harder today. Increasing target RPE by {adjustments.rpeAdjustment} point{adjustments.rpeAdjustment !== 1 ? 's' : ''}.</p>
-        )}
+              <p style={{ color: "#44ffaa" }}>💪 Great readiness! You can push harder today. Increasing target RPE by {adjustments.rpeAdjustment} point{adjustments.rpeAdjustment !== 1 ? 's' : ''}.</p>
+            )}
             {adjustments.rpeAdjustment === 0 && <p>✅ Ready to train as planned.</p>}
           </div>
-      )}
+        )}
 
         <button
           onClick={handleSubmit}
