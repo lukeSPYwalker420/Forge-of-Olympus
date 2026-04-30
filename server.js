@@ -91,6 +91,7 @@ async function sendPaymentFailureEmail(email, programName, gracePeriodEnds) {
 function normalizeProgramName(encodedName) {
   try {
     let decoded = decodeURIComponent(encodedName);
+    decoded = decoded.replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-');
     
     const validPrograms = [
       "Ares Protocol",
@@ -195,10 +196,10 @@ const streakMilestones = [
 app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async (req, res) => {
   const sig = req.headers["stripe-signature"];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  let event;
+  console.log("🔔 Webhook received, signature present:", !!sig);
 
   if (!endpointSecret) {
-    console.error("⚠️ STRIPE_WEBHOOK_SECRET not set");
+    console.error("❌ STRIPE_WEBHOOK_SECRET not set");
     return res.status(500).send("Webhook secret not configured");
   }
 
@@ -658,20 +659,30 @@ function generalFitnessProgression(state, sessionData) {
       break;
 
     case "mobility":
-      const romMet = (sessionData.actualROM || 0) >= (sessionData.targetROM || 0);
-      const painOkMob = (sessionData.actualPain || 0) <= (sessionData.targetPain || 2);
-      const isGoodMobility = completed && romMet && painOkMob;
-      if (isGoodMobility) {
-        successStreak++;
-        if (successStreak >= 2) {
-          newROM += 5;
-          successStreak = 0;
-          console.log(`📈 [GF-mobility] Good streak ${sessionData.liftName}: ROM ↑ to ${newROM}%`);
-        }
-      } else {
-        successStreak = 0;
+  const romMetMob = (sessionData.actualROM || 0) >= (sessionData.targetROM || 0);
+  const painOkMob = (sessionData.actualPain || 0) <= (sessionData.targetPain || 4);
+  const isGoodMobility = !!sessionData.completed && romMetMob && painOkMob;
+
+  if (isGoodMobility) {
+    successStreak++;
+    stallCounter = 0;
+    if (successStreak >= 2) {
+      newROM += 5;
+      successStreak = 0;
+      console.log(`📈 [GF-mobility] Good streak ${sessionData.liftName}: ROM ↑ to ${newROM}%`);
+    }
+  } else {
+    successStreak = 0;
+    if (!painOkMob) {
+      stallCounter++;
+      if (stallCounter >= 2 && newWeight > 0) {
+        newWeight = Math.max(0, newWeight - 2.5);
+        stallCounter = 0;
+        console.log(`⚠️ [GF-mobility] Pain too high for ${sessionData.liftName}: weight ↓ to ${newWeight}kg`);
       }
-      break;
+    }
+  }
+  break;
 
     case "volume":
     case "stability":
@@ -851,6 +862,8 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     const rpeAdjustment = Number(req.query.rpeAdjustment) || 0;
     const rirAdjustment = Number(req.query.rirAdjustment) || 0;
     const qualityAdjustment = Number(req.query.qualityAdjustment) || 0;
+    const painAdjustment = Number(req.query.painAdjustment) || 0;
+    const stabilityAdjustment = Number(req.query.stabilityAdjustment) || 0;
     
     if (!programName) return res.status(400).json({ error: "Missing program name" });
 
@@ -938,12 +951,18 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
       if (qualityAdjustment !== 0 && ex.progressionType === "power") {
         adjustedQualityTarget = Math.min(10, Math.max(1, (ex.qualityTarget || 7) + qualityAdjustment));
       }
+      // Readiness adjustments for mobility/stability exercises in hybrid programs
       if (ex.progressionType === "mobility" || ex.progressionType === "stability") {
-        const avgAdjustment = (rpeAdjustment + rirAdjustment) / 2;
-        if (avgAdjustment !== 0) {
-          adjustedStabilityTarget = Math.min(10, Math.max(1, (ex.stabilityTarget || 7) + avgAdjustment));
-        }
+      // Apply readiness to mobility/stability exercises in hybrid programs
+      if (painAdjustment !== 0 && (ex.progressionType === "mobility" || ex.progressionType === "stability")) {
+        ex.painTarget = Math.max(0, (ex.painTarget || 4) + painAdjustment);
+        ex._readinessAdjustedPain = true;
       }
+      if (stabilityAdjustment !== 0 && (ex.progressionType === "mobility" || ex.progressionType === "stability")) {
+        ex.stabilityTarget = Math.min(10, Math.max(1, (ex.stabilityTarget || 7) + stabilityAdjustment));
+        ex._readinessAdjustedStability = true;
+      }
+    }
 
       // ========== NEW: baseLift inheritance for weight suggestions ==========
       let effectiveState = state;
@@ -953,17 +972,68 @@ if (!effectiveState || (logic === "STRENGTH_RPE" && !effectiveState.estimated1RM
   }
 }
 
-// ===== Fatigue‑adjusted weight for flat back‑off sets =====
+// ========== Weight calculation with back-off floor & ceiling ==========
 let computed1RM = effectiveState?.estimated1RM || 0;
-if (ex.role === "back-off" && !ex._descendingSet && computed1RM > 0) {
-  computed1RM = Math.round(computed1RM * 0.95);   // 5% fatigue reduction
-  ex._fatigueAdjusted = true;
+let topSetWeightForReference = 0;   // parent top set weight suggestion
+
+if (ex.role === "back-off" && !ex._descendingSet) {
+  // 5% fatigue reduction on 1RM (base)
+  if (computed1RM > 0) {
+    computed1RM = Math.round(computed1RM * 0.95);
+    ex._fatigueAdjusted = true;
+  }
+
+  // Find parent top set's suggested weight (without readiness adjustments for fair floor)
+  if (ex.baseLift) {
+    const parentLift = adjustedSession.exercises.find(
+      e => e.liftName === ex.baseLift && e.role === "top-set"
+    );
+    if (parentLift) {
+      const parentEff = liftStates.find(s => s.liftName === parentLift.liftName)
+        || (parentLift.baseLift ? liftStates.find(s => s.liftName === parentLift.baseLift) : null);
+      const parent1RM = parentEff?.estimated1RM || 0;
+      if (parent1RM > 0) {
+        const parentTargetRPE = parentLift.rpeTarget || 7;
+        topSetWeightForReference = weightForRPE(parent1RM, parentTargetRPE, parentLift.reps);
+      }
+    }
+  }
 }
 
 if (effectiveState) {
   if (logic === "STRENGTH_RPE" && computed1RM > 0) {
-    currentWeight = weightForRPE(computed1RM, adjustedRpeTarget, ex.reps);
-    projectedNextWeight = weightForRPE(computed1RM, adjustedRpeTarget + 0.5, ex.reps);
+    let rawWeight = weightForRPE(computed1RM, adjustedRpeTarget, ex.reps);
+    // Back-off floor: must be <= 94% of parent top set weight (unless parent weight unknown)
+    if (ex.role === "back-off" && !ex._descendingSet && topSetWeightForReference > 0) {
+  const liftType = ex.liftName?.toLowerCase() || "";
+  let percentOfTop;
+  if (liftType.includes("squat") || liftType.includes("deadlift")) {
+    percentOfTop = 0.88;   // 12% below
+  } else if (liftType.includes("bench")) {
+    percentOfTop = 0.94;   // 6% below
+  } else {
+    percentOfTop = 0.91;   // 9% below (default)
+  }
+  const maxBackoffWeight = Math.round(topSetWeightForReference * percentOfTop / 2.5) * 2.5;
+  if (rawWeight > maxBackoffWeight) rawWeight = maxBackoffWeight;
+}
+currentWeight = rawWeight;
+
+let nextRaw = weightForRPE(computed1RM, adjustedRpeTarget + 0.5, ex.reps);
+if (ex.role === "back-off" && !ex._descendingSet && topSetWeightForReference > 0) {
+  const liftType = ex.liftName?.toLowerCase() || "";
+  let percentOfTopNext;
+  if (liftType.includes("squat") || liftType.includes("deadlift")) {
+    percentOfTopNext = 0.88;
+  } else if (liftType.includes("bench")) {
+    percentOfTopNext = 0.94;
+  } else {
+    percentOfTopNext = 0.91;
+  }
+  const maxBackoffWeightNext = Math.round(topSetWeightForReference * percentOfTopNext / 2.5) * 2.5;
+  if (nextRaw > maxBackoffWeightNext) nextRaw = maxBackoffWeightNext;
+}
+projectedNextWeight = nextRaw;
   } 
   else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && effectiveState.currentWeight > 0) {
     currentWeight = effectiveState.currentWeight;
@@ -996,6 +1066,8 @@ if (effectiveState) {
         descendingSet: ex._descendingSet || false,
         baseLift: ex.baseLift || null,          // forward to frontend if needed
         fatigueAdjusted: ex._fatigueAdjusted || false,
+        readinessAdjustedPain: ex._readinessAdjustedPain || false,
+        readinessAdjustedStability: ex._readinessAdjustedStability || false,
       };
     });
 
@@ -1056,7 +1128,9 @@ app.post("/api/progression/apply", async (req, res) => {
         initialState.estimated1RM = initial1RM;
         initialState.currentWeight = 0;
       } else {
-        initialState.currentWeight = lastSession.actualWeight || 0;
+        const isMobility = lastSession.progressionType === "mobility";
+        const painOk = isMobility ? (lastSession.actualPain || 0) <= (lastSession.targetPain || 4) : true;
+        initialState.currentWeight = painOk ? (lastSession.actualWeight || 0) : 0;
         initialState.lastROM = 0;
         initialState.lastRepsAchieved = 0;
       }
@@ -1438,8 +1512,62 @@ app.get("/api/test-stripe", (req, res) => {
 app.delete("/api/session-log/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    await Session.findByIdAndDelete(id);
-    res.json({ message: "Session deleted" });
+    const deletedSession = await Session.findByIdAndDelete(id);
+    if (!deletedSession) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+
+    const { userId, liftName, logic } = deletedSession;
+    const previousSession = await Session.findOne({ userId, liftName, _id: { $ne: id } })
+      .sort({ createdAt: -1 });
+
+    let state = await LiftState.findOne({ userId, liftName });
+    if (!previousSession) {
+      // No session left → remove the LiftState entirely
+      if (state) await LiftState.findByIdAndDelete(state._id);
+      return res.json({ message: "Session deleted and LiftState removed (no previous session)" });
+    }
+
+    // Recalculate state from the previous session
+    if (!state) {
+      // Shouldn't normally happen after progression, but create if needed
+      state = new LiftState({ userId, liftName });
+    }
+
+    const sessionData = {
+      completed: previousSession.completed,
+      targetReps: previousSession.targetReps,
+      repsCompleted: previousSession.repsCompleted,
+      targetSets: previousSession.targetSets,
+      repsPerSet: previousSession.repsPerSet,
+      targetRPE: previousSession.targetRPE,
+      actualRPE: previousSession.actualRPE,
+      actualWeight: previousSession.actualWeight,
+      liftName,
+      progressionType: previousSession.progressionType,
+      actualQuality: previousSession.actualQuality,
+      targetQuality: previousSession.targetQuality,
+      actualROM: previousSession.actualROM,
+      targetROM: previousSession.targetROM,
+      actualPain: previousSession.actualPain,
+      targetPain: previousSession.targetPain,
+      targetRIR: previousSession.targetRIR,
+      actualRIR: previousSession.actualRIR
+    };
+
+    const result = calculateProgression(state, sessionData, logic || "STRENGTH_RPE");
+
+    // Update LiftState fields
+    if (result.estimated1RM !== undefined) state.estimated1RM = result.estimated1RM;
+    if (result.currentWeight !== undefined) state.currentWeight = result.currentWeight;
+    if (result.lastRepsAchieved !== undefined) state.lastRepsAchieved = result.lastRepsAchieved;
+    if (result.lastROM !== undefined) state.lastROM = result.lastROM;
+    state.consecutiveSuccesses = result.consecutiveSuccesses || 0;
+    state.stallCounter = result.stallCounter || 0;
+    state.updatedAt = new Date();
+    await state.save();
+
+    res.json({ message: "Session deleted and LiftState reverted" });
   } catch (err) {
     console.error("Delete error:", err);
     res.status(500).json({ error: err.message });
