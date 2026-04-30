@@ -9,32 +9,48 @@ export default function SessionReadiness({ onComplete, programLogic }) {
 
   // Calculate adjustments based on readiness scores - use useMemo instead of useEffect
   const adjustments = useMemo(() => {
-    const avgReadiness = (readiness.sleep + (10 - readiness.soreness) + readiness.mentalClarity) / 3;
-    
-    if (programLogic === "STRENGTH_RPE") {
-      let adjustment = 0;
-      if (avgReadiness <= 4) adjustment = -2;
-      else if (avgReadiness <= 6) adjustment = -1;
-      else if (avgReadiness >= 9) adjustment = 0.5;
-      else adjustment = 0;
-      return { rpeAdjustment: adjustment, rirAdjustment: null };
-    } else if (programLogic === "HYPERTROPHY_VOLUME") {
-      let adjustment = 0;
-      if (avgReadiness <= 4) adjustment = 2;
-      else if (avgReadiness <= 6) adjustment = 1;
-      else if (avgReadiness >= 9) adjustment = -1;
-      else adjustment = 0;
-      return { rpeAdjustment: null, rirAdjustment: adjustment };
+  const avg = (readiness.sleep + (10 - readiness.soreness) + readiness.mentalClarity) / 3;
+
+  if (programLogic === "STRENGTH_RPE") {
+    let adj = 0;
+    if (avg <= 4) adj = -2;
+    else if (avg <= 6) adj = -1;
+    else if (avg >= 9) adj = 0.5;
+    return { rpeAdjustment: adj, rirAdjustment: null, painAdjustment: null, stabilityAdjustment: null };
+  } 
+  else if (programLogic === "HYPERTROPHY_VOLUME") {
+    let adj = 0;
+    if (avg <= 4) adj = 2;
+    else if (avg <= 6) adj = 1;
+    else if (avg >= 9) adj = -1;
+    return { rpeAdjustment: null, rirAdjustment: adj, painAdjustment: null, stabilityAdjustment: null };
+  } 
+  else if (programLogic === "GENERAL_FITNESS_HYBRID") {
+    let painAdj = 0;
+    let stabilityAdj = 0;
+    if (avg <= 4) {
+      painAdj = 2;         // allow more pain (easier)
+      stabilityAdj = -2;   // require less stability (easier)
+    } else if (avg <= 6) {
+      painAdj = 1;
+      stabilityAdj = -1;
+    } else if (avg >= 9) {
+      painAdj = -1;
+      stabilityAdj = 1;
     }
-    return { rpeAdjustment: 0, rirAdjustment: 0 };
-  }, [readiness, programLogic]);
+    return { rpeAdjustment: null, rirAdjustment: null, painAdjustment: painAdj, stabilityAdjustment: stabilityAdj };
+  }
+  return { rpeAdjustment: 0, rirAdjustment: 0, painAdjustment: 0, stabilityAdjustment: 0 };
+}, [readiness, programLogic]);
 
   const handleSubmit = () => {
     onComplete({
       readiness,
       adjustments: {
         rpeAdjustment: adjustments.rpeAdjustment,
-        rirAdjustment: adjustments.rirAdjustment
+        rirAdjustment: adjustments.rirAdjustment,
+        painAdjustment: adjustments.painAdjustment,
+        stabilityAdjustment: adjustments.stabilityAdjustment,
       }
     });
   };

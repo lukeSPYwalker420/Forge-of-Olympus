@@ -7,21 +7,25 @@ export default function Success() {
 
   useEffect(() => {
     // Refresh user data to get new purchases
-    const refreshUserData = async () => {
-      const email = localStorage.getItem("userEmail");
-      if (email) {
-        const res = await fetch("/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          localStorage.setItem("userId", data.userId);
-          localStorage.setItem("purchasedPrograms", JSON.stringify(data.purchasedPrograms));
-        }
-      }
-    };
+    const refreshUserData = async (retries = 5) => {
+  const email = localStorage.getItem("userEmail");
+  if (!email) return false;
+  for (let i = 0; i < retries; i++) {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (res.ok && data.purchasedPrograms && data.purchasedPrograms.length > 0) {
+      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("purchasedPrograms", JSON.stringify(data.purchasedPrograms));
+      return true;
+    }
+    if (i < retries - 1) await new Promise(r => setTimeout(r, 1000)); // wait 1 sec
+  }
+  return false;
+};
     
     refreshUserData();
     

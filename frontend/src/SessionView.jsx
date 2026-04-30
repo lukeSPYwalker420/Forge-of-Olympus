@@ -20,10 +20,16 @@ export default function SessionView() {
   });
   const [history, setHistory] = useState({});
   const [showReadiness, setShowReadiness] = useState(true);
-  const [adjustments, setAdjustments] = useState({ rpeAdjustment: 0, rirAdjustment: 0, qualityAdjustment: 0 });
+  const [adjustments, setAdjustments] = useState({
+    rpeAdjustment: 0,
+    rirAdjustment: 0,
+    qualityAdjustment: 0,
+    painAdjustment: 0,
+    stabilityAdjustment: 0,
+  });
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [workoutSummary, setWorkoutSummary] = useState(null);
-  const [completedExerciseCount, setCompletedExerciseCount] = useState(0);
+  const [completedLifts, setCompletedLifts] = useState(new Set());
 
   const [missedOpportunityBanner, setMissedOpportunityBanner] = useState(null);
   const [nextPreview, setNextPreview] = useState(null);
@@ -31,15 +37,22 @@ export default function SessionView() {
   const userId = localStorage.getItem("userId");
   const program = localStorage.getItem("program");
 
-  // Fetch session data WITH readiness adjustments included
+  // Fetch session data WITH all readiness adjustments included
   useEffect(() => {
     if (!userId || !program) return;
 
     const rpeAdj = adjustments.rpeAdjustment || 0;
     const rirAdj = adjustments.rirAdjustment || 0;
     const qualityAdj = adjustments.qualityAdjustment || 0;
+    const painAdj = adjustments.painAdjustment || 0;
+    const stabAdj = adjustments.stabilityAdjustment || 0;
 
-    const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`;
+    const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`
+      + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
+      + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
+      + `&qualityAdjustment=${adjustments.qualityAdjustment}`
+      + `&painAdjustment=${adjustments.painAdjustment}`
+      + `&stabilityAdjustment=${adjustments.stabilityAdjustment}`;
 
     fetch(url)
       .then(res => {
@@ -78,7 +91,13 @@ export default function SessionView() {
   }, [userId]);
 
   const handleReadinessComplete = (readinessData) => {
-    setAdjustments(readinessData.adjustments);
+    setAdjustments({
+      rpeAdjustment: readinessData.adjustments.rpeAdjustment ?? 0,
+      rirAdjustment: readinessData.adjustments.rirAdjustment ?? 0,
+      qualityAdjustment: 0,
+      painAdjustment: readinessData.adjustments.painAdjustment ?? 0,
+      stabilityAdjustment: readinessData.adjustments.stabilityAdjustment ?? 0,
+    });
     setShowReadiness(false);
   };
 
@@ -106,7 +125,14 @@ export default function SessionView() {
       const rpeAdj = adjustments.rpeAdjustment || 0;
       const rirAdj = adjustments.rirAdjustment || 0;
       const qualityAdj = adjustments.qualityAdjustment || 0;
-      const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`;
+      const painAdj = adjustments.painAdjustment || 0;
+      const stabAdj = adjustments.stabilityAdjustment || 0;
+      const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`
+        + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
+        + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
+        + `&qualityAdjustment=${adjustments.qualityAdjustment}`
+        + `&painAdjustment=${adjustments.painAdjustment}`
+        + `&stabilityAdjustment=${adjustments.stabilityAdjustment}`;
       const res = await fetch(url);
       const json = await res.json();
       setData(json);
@@ -127,7 +153,11 @@ export default function SessionView() {
         const rpeAdj = adjustments.rpeAdjustment || 0;
         const rirAdj = adjustments.rirAdjustment || 0;
         const qualityAdj = adjustments.qualityAdjustment || 0;
-        const previewUrl = `/api/session-view/${nextWeek}/${nextDay}/${userId}?program=${encodeURIComponent(program)}&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`;
+        const painAdj = adjustments.painAdjustment || 0;
+        const stabAdj = adjustments.stabilityAdjustment || 0;
+        const previewUrl = `/api/session-view/${nextWeek}/${nextDay}/${userId}?program=${encodeURIComponent(program)}`
+          + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
+          + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
         const previewRes = await fetch(previewUrl);
         const previewData = await previewRes.json();
         if (previewData.projected && previewData.projected.length) {
@@ -195,13 +225,15 @@ export default function SessionView() {
     setInputs(newInputs);
   };
 
-  const markExerciseComplete = () => {
-    const newCount = completedExerciseCount + 1;
-    setCompletedExerciseCount(newCount);
+  const markExerciseComplete = (liftName) => {
+    const updated = new Set(completedLifts);
+    if (updated.has(liftName)) return;   // already counted
+    updated.add(liftName);
+    setCompletedLifts(updated);
 
-    if (newCount === data?.projected?.length) {
+    if (updated.size === data?.projected?.length) {
       generateWorkoutSummary();
-      loadNextPreview(); // loads the next workout preview
+      loadNextPreview();
     }
   };
 
@@ -322,7 +354,14 @@ export default function SessionView() {
       const rpeAdj = adjustments.rpeAdjustment || 0;
       const rirAdj = adjustments.rirAdjustment || 0;
       const qualityAdj = adjustments.qualityAdjustment || 0;
-      const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`;
+      const painAdj = adjustments.painAdjustment || 0;
+      const stabAdj = adjustments.stabilityAdjustment || 0;
+      const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`
+        + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
+        + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
+        + `&qualityAdjustment=${adjustments.qualityAdjustment}`
+        + `&painAdjustment=${adjustments.painAdjustment}`
+        + `&stabilityAdjustment=${adjustments.stabilityAdjustment}`;
       const res = await fetch(url);
       const json = await res.json();
       setData(json);
@@ -330,7 +369,7 @@ export default function SessionView() {
       await fetchHistory(liftName);
 
       setInputs(prev => ({ ...prev, [liftName]: {} }));
-      markExerciseComplete();
+      markExerciseComplete(lift.liftName);
     } catch (err) {
       console.error(err);
       alert("Error logging set: " + err.message);
