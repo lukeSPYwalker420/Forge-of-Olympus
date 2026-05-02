@@ -307,6 +307,7 @@ export default function SessionView() {
           week: data.program?.week,
           day: data.program?.day,
           liftName,
+          role: lift.role,
           targetReps: typeof targetReps === 'string' ? targetReps : String(targetReps),
           targetSets,
           repsPerSet: repsPerSet.map(r => parseInt(r) || 0),
