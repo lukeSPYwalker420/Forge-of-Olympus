@@ -26,6 +26,12 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Variation patterns (paused, tempo, etc.) – these are harder than competition lifts
+function isVariationLift(liftName) {
+  const lower = liftName.toLowerCase();
+  return lower.includes('paused') || lower.includes('tempo') || lower.includes('3s') || lower.includes('2s');
+}
+
 // ==================== Email Helper Functions ====================
 async function sendCancellationEmail(email, programName) {
   const mailOptions = {
@@ -436,46 +442,57 @@ function weightForRPE(oneRM, targetRPE, targetReps) {
  */
 function strengthRPEProgression(state, sessionData) {
   let new1RM = state.estimated1RM || 0;
+  let newVolumeWeight = state.currentWeight || sessionData.actualWeight || 0;
   const completed = !!sessionData.completed;
   const repsPerSet = sessionData.repsPerSet || [];
   const targetReps = parseInt(sessionData.targetReps, 10);
   const targetSets = sessionData.targetSets || 1;
+  const role = sessionData.role; // 'top-set', 'back-off', 'volume'
 
-  // Guard: no valid data → no change
+  // Guard: incomplete data
   if (!completed || !sessionData.actualWeight || !repsPerSet.length || !sessionData.actualRPE) {
-    console.log(`⚠️ [STRENGTH] Incomplete data for ${sessionData.liftName}, skipping update`);
-    return { estimated1RM: new1RM };
+    return { estimated1RM: new1RM, currentWeight: newVolumeWeight };
   }
 
   const bestReps = Math.max(...repsPerSet);
   const fresh1RM = estimate1RM(sessionData.actualWeight, bestReps, sessionData.actualRPE);
-
   const allSetsCompleted = repsPerSet.length === targetSets && repsPerSet.every(r => r >= targetReps);
   const rpeOk = sessionData.actualRPE <= (sessionData.targetRPE || 7) + 0.5;
   const isGoodSession = allSetsCompleted && rpeOk;
 
-  if (isGoodSession) {
-    // Good session: 1RM only goes up
-    if (fresh1RM > new1RM) {
-      new1RM = fresh1RM;
-      console.log(`📈 [STRENGTH] Good session ${sessionData.liftName}: 1RM ↑ ${state.estimated1RM || '?'} → ${new1RM}`);
-    } else {
-      console.log(`✅ [STRENGTH] Good session ${sessionData.liftName}: 1RM unchanged (${new1RM})`);
-    }
-  } else {
-    // Bad session: never increase, optionally decrease by 2%
-    if (new1RM > 0) {
-      const decreased = Math.round(new1RM * 0.98);
-      if (decreased < new1RM) {
-        new1RM = decreased;
-        console.log(`⚠️ [STRENGTH] Bad session ${sessionData.liftName}: 1RM ↓ to ${new1RM}`);
+  // Volume lift progression: adjust weight based on RPE compared to target
+  if (role === "volume") {
+    if (allSetsCompleted) {
+      const rpeDiff = (sessionData.targetRPE || 7) - sessionData.actualRPE;
+      if (rpeDiff >= 1) {
+        // Too easy → increase weight
+        const increment = (sessionData.liftName?.toLowerCase().includes("squat") || sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+        newVolumeWeight += increment;
+        console.log(`📈 [VOLUME] ${sessionData.liftName} RPE too low → weight ↑ to ${newVolumeWeight}kg`);
+      } else if (rpeDiff <= -1) {
+        // Too hard → decrease weight
+        const decrement = (sessionData.liftName?.toLowerCase().includes("squat") || sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+        newVolumeWeight = Math.max(0, newVolumeWeight - decrement);
+        console.log(`⚠️ [VOLUME] ${sessionData.liftName} RPE too high → weight ↓ to ${newVolumeWeight}kg`);
       }
-    } else {
-      console.log(`⚠️ [STRENGTH] Bad session ${sessionData.liftName}: 1RM unchanged (no prior 1RM)`);
     }
+    // Do not update 1RM for volume lifts
+    return { estimated1RM: new1RM, currentWeight: newVolumeWeight };
   }
 
-  return { estimated1RM: Math.round(new1RM) };
+  // Normal strength progression for top‑set and back‑off (no volume lift)
+  if (isGoodSession) {
+    if (fresh1RM > new1RM) {
+      new1RM = fresh1RM;
+      console.log(`📈 [STRENGTH] Good session ${sessionData.liftName}: 1RM ↑ ${state.estimated1RM} → ${new1RM}`);
+    }
+  } else {
+    if (new1RM > 0) {
+      new1RM = Math.round(new1RM * 0.98);
+      console.log(`⚠️ [STRENGTH] Bad session ${sessionData.liftName}: 1RM ↓ to ${new1RM}`);
+    }
+  }
+  return { estimated1RM: Math.round(new1RM), currentWeight: newVolumeWeight };
 }
 
 /**
@@ -1002,38 +1019,52 @@ if (ex.role === "back-off" && !ex._descendingSet) {
 
 if (effectiveState) {
   if (logic === "STRENGTH_RPE" && computed1RM > 0) {
-    let rawWeight = weightForRPE(computed1RM, adjustedRpeTarget, ex.reps);
-    // Back-off floor: must be <= 94% of parent top set weight (unless parent weight unknown)
-    if (ex.role === "back-off" && !ex._descendingSet && topSetWeightForReference > 0) {
-  const liftType = ex.liftName?.toLowerCase() || "";
-  let percentOfTop;
-  if (liftType.includes("squat") || liftType.includes("deadlift")) {
-    percentOfTop = 0.88;   // 12% below
-  } else if (liftType.includes("bench")) {
-    percentOfTop = 0.94;   // 6% below
-  } else {
-    percentOfTop = 0.91;   // 9% below (default)
-  }
-  const maxBackoffWeight = Math.round(topSetWeightForReference * percentOfTop / 2.5) * 2.5;
-  if (rawWeight > maxBackoffWeight) rawWeight = maxBackoffWeight;
-}
-currentWeight = rawWeight;
+    // Apply variation penalty (6% reduction) for paused/tempo lifts
+    let effective1RM = computed1RM;
+    if (isVariationLift(ex.liftName)) {
+      effective1RM = Math.round(computed1RM * 0.94);
+      ex._variationAdjusted = true;
+    }
 
-let nextRaw = weightForRPE(computed1RM, adjustedRpeTarget + 0.5, ex.reps);
-if (ex.role === "back-off" && !ex._descendingSet && topSetWeightForReference > 0) {
-  const liftType = ex.liftName?.toLowerCase() || "";
-  let percentOfTopNext;
-  if (liftType.includes("squat") || liftType.includes("deadlift")) {
-    percentOfTopNext = 0.88;
-  } else if (liftType.includes("bench")) {
-    percentOfTopNext = 0.94;
-  } else {
-    percentOfTopNext = 0.91;
-  }
-  const maxBackoffWeightNext = Math.round(topSetWeightForReference * percentOfTopNext / 2.5) * 2.5;
-  if (nextRaw > maxBackoffWeightNext) nextRaw = maxBackoffWeightNext;
-}
-projectedNextWeight = nextRaw;
+    // Volume lifts: use independent currentWeight from LiftState
+    if (ex.role === "volume" && effectiveState.currentWeight > 0) {
+      currentWeight = effectiveState.currentWeight;
+      const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+      projectedNextWeight = currentWeight + inc;
+    } else {
+      // Normal top‑set / back‑off calculation
+      let rawWeight = weightForRPE(effective1RM, adjustedRpeTarget, ex.reps);
+      if (ex.role === "back-off" && !ex._descendingSet && topSetWeightForReference > 0) {
+        const liftType = ex.liftName?.toLowerCase() || "";
+        let percentOfTop;
+        if (liftType.includes("squat") || liftType.includes("deadlift")) {
+          percentOfTop = 0.88;
+        } else if (liftType.includes("bench")) {
+          percentOfTop = 0.94;
+        } else {
+          percentOfTop = 0.91;
+        }
+        const maxBackoffWeight = Math.round(topSetWeightForReference * percentOfTop / 2.5) * 2.5;
+        if (rawWeight > maxBackoffWeight) rawWeight = maxBackoffWeight;
+      }
+      currentWeight = rawWeight;
+
+      let nextRaw = weightForRPE(effective1RM, adjustedRpeTarget + 0.5, ex.reps);
+      if (ex.role === "back-off" && !ex._descendingSet && topSetWeightForReference > 0) {
+        const liftType = ex.liftName?.toLowerCase() || "";
+        let percentOfTopNext;
+        if (liftType.includes("squat") || liftType.includes("deadlift")) {
+          percentOfTopNext = 0.88;
+        } else if (liftType.includes("bench")) {
+          percentOfTopNext = 0.94;
+        } else {
+          percentOfTopNext = 0.91;
+        }
+        const maxBackoffWeightNext = Math.round(topSetWeightForReference * percentOfTopNext / 2.5) * 2.5;
+        if (nextRaw > maxBackoffWeightNext) nextRaw = maxBackoffWeightNext;
+      }
+      projectedNextWeight = nextRaw;
+    }
   } 
   else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && effectiveState.currentWeight > 0) {
     currentWeight = effectiveState.currentWeight;

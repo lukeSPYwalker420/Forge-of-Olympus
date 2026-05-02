@@ -5,6 +5,7 @@ const SessionSchema = new mongoose.Schema({
   week: Number,
   day: Number,
   liftName: String,
+  role: String,                        // <-- added
   targetReps: String,
   targetSets: Number,
   repsPerSet: [Number],
