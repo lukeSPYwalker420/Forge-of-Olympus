@@ -209,6 +209,7 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
     return res.status(500).send("Webhook secret not configured");
   }
 
+  let event;   // <-- THE ONLY ADDITION (missing declaration)
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
