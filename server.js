@@ -1912,6 +1912,11 @@ app.get("/api/coaching-prompt/:userId", async (req, res) => {
   }
 });
 
+app.get("/api/debug/recent-purchases", async (req, res) => {
+  const purchases = await Purchase.find().sort({ purchasedAt: -1 }).limit(10);
+  res.json(purchases);
+});
+
 // Email templates
 async function sendWelcomeEmail1(email) {
   const mailOptions = {

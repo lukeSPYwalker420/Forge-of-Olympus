@@ -30,7 +30,18 @@ async function callGPT4(rulePrompts) {
       })
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`OpenAI API error: ${response.status} - ${errorText}`);
+      return rulePrompts; // fallback
+    }
+
     const data = await response.json();
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error("OpenAI response missing choices:", data);
+      return rulePrompts;
+    }
+
     const aiMessage = data.choices[0].message.content.trim();
     return [{
       lift: "overall",
