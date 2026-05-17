@@ -26,7 +26,10 @@ const SessionSchema = new mongoose.Schema({
   actualPain: Number,
   targetPain: Number,
   programName: String,
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  // ========== FATIGUE BUDGET FIELDS ==========
+  fatigueUnits: { type: Number, default: null },
+  stressTagTotals: { type: Object, default: null },
 });
 
 export default mongoose.model("Session", SessionSchema);

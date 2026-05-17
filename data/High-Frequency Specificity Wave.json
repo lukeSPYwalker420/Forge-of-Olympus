@@ -1,0 +1,273 @@
+{
+  "name": "High-Frequency Specificity Wave",
+  "logic": "STRENGTH_RPE",
+  "useFatigueBudget": true,
+  "weeklyRpeWave": {
+    "1": 6,
+    "2": 7,
+    "3": 6.5,
+    "4": 7.5,
+    "5": 7,
+    "6": 8
+  },
+  "sessions": [
+    {
+      "week": 1, "day": 1, "focus": "Squat + Bench Specificity", "fatigueCap": 20,
+      "exercises": [
+        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "4", "rpeTarget": 6, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 4, "reps": "4", "rpeTarget": 5.5, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Spoto Press Bench", "role": "secondary", "progressionType": "strength", "baseFUCost": 2.5, "priority": 2, "sets": 4, "reps": "6", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Pulse Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 1.5, "priority": 3, "sets": 3, "reps": "8", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant", "eccentric"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 }
+      ]
+    },
+    {
+      "week": 1, "day": 2, "focus": "Bench Strength + Squat Technique", "fatigueCap": 18,
+      "exercises": [
+        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "4", "rpeTarget": 6, "stressTags": ["push"] },
+        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 4, "reps": "4", "rpeTarget": 5.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Overhead Press", "role": "secondary", "progressionType": "strength", "baseFUCost": 2, "priority": 2, "sets": 3, "reps": "6", "rpeTarget": 6.5, "stressTags": ["push"] },
+        { "liftName": "Tempo Eccentric Low Box Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 2, "priority": 3, "sets": 3, "reps": "6", "rpeTarget": 6.5, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant", "eccentric"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.6 }
+      ]
+    },
+    {
+      "week": 1, "day": 3, "focus": "Deadlift + Bench Speed/Strength", "fatigueCap": 22,
+      "exercises": [
+        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4.5, "priority": 1, "sets": 1, "reps": "3", "rpeTarget": 6, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4.5, "priority": 1, "sets": 3, "reps": "3", "rpeTarget": 5.5, "baseLift": "Deadlift (Top Set)", "stressTags": ["axial", "hinge"] },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "baseFUCost": 2.5, "priority": 2, "sets": 3, "reps": "6", "rpeTarget": 7, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Dead Stop Speed Bench", "role": "speed", "progressionType": "strength", "baseFUCost": 1, "priority": 3, "sets": 3, "reps": "5", "rpeTarget": 6, "baseLift": "Bench (Top Set)", "stressTags": ["push"] }
+      ]
+    },
+    {
+      "week": 1, "day": 4, "focus": "Bench Volume / Recovery Exposure", "fatigueCap": 12,
+      "exercises": [
+        { "liftName": "Bench (Volume Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "8", "rpeTarget": 6, "stressTags": ["push"] },
+        { "liftName": "Bench (Volume Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 3, "reps": "8", "rpeTarget": 5.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Paused Bench", "role": "variation", "progressionType": "strength", "baseFUCost": 2, "priority": 2, "sets": 2, "reps": "6", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 }
+      ]
+    },
+    {
+      "week": 1, "day": 5, "focus": "Deadlift Variation + Squat Exposure", "fatigueCap": 20,
+      "exercises": [
+        { "liftName": "Deficit Pull (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "3", "rpeTarget": 6, "stressTags": ["hinge", "axial"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 },
+        { "liftName": "Deficit Pull (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 2, "reps": "3", "rpeTarget": 5.5, "baseLift": "Deadlift (Top Set)", "stressTags": ["hinge", "axial"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 },
+        { "liftName": "High Box Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 3, "priority": 2, "sets": 3, "reps": "5", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.3 }
+      ]
+    },
+    {
+      "week": 2, "day": 1, "focus": "Squat + Bench Specificity", "fatigueCap": 20,
+      "exercises": [
+        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "4", "rpeTarget": 7, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 4, "reps": "4", "rpeTarget": 6.5, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Spoto Press Bench", "role": "secondary", "progressionType": "strength", "baseFUCost": 2.5, "priority": 2, "sets": 4, "reps": "6", "rpeTarget": 7.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Pulse Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 1.5, "priority": 3, "sets": 3, "reps": "8", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant", "eccentric"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 }
+      ]
+    },
+    {
+      "week": 2, "day": 2, "focus": "Bench Strength + Squat Technique", "fatigueCap": 18,
+      "exercises": [
+        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "4", "rpeTarget": 7, "stressTags": ["push"] },
+        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 4, "reps": "4", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Overhead Press", "role": "secondary", "progressionType": "strength", "baseFUCost": 2, "priority": 2, "sets": 3, "reps": "6", "rpeTarget": 7, "stressTags": ["push"] },
+        { "liftName": "Tempo Eccentric Low Box Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 2, "priority": 3, "sets": 3, "reps": "6", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant", "eccentric"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.6 }
+      ]
+    },
+    {
+      "week": 2, "day": 3, "focus": "Deadlift + Bench Speed/Strength", "fatigueCap": 22,
+      "exercises": [
+        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4.5, "priority": 1, "sets": 1, "reps": "3", "rpeTarget": 7, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4.5, "priority": 1, "sets": 3, "reps": "3", "rpeTarget": 6.5, "baseLift": "Deadlift (Top Set)", "stressTags": ["axial", "hinge"] },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "baseFUCost": 2.5, "priority": 2, "sets": 3, "reps": "6", "rpeTarget": 7.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Dead Stop Speed Bench", "role": "speed", "progressionType": "strength", "baseFUCost": 1, "priority": 3, "sets": 3, "reps": "5", "rpeTarget": 6, "baseLift": "Bench (Top Set)", "stressTags": ["push"] }
+      ]
+    },
+    {
+      "week": 2, "day": 4, "focus": "Bench Volume / Recovery Exposure", "fatigueCap": 12,
+      "exercises": [
+        { "liftName": "Bench (Volume Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "8", "rpeTarget": 6.5, "stressTags": ["push"] },
+        { "liftName": "Bench (Volume Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 3, "reps": "8", "rpeTarget": 6, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Paused Bench", "role": "variation", "progressionType": "strength", "baseFUCost": 2, "priority": 2, "sets": 2, "reps": "6", "rpeTarget": 7, "baseLift": "Bench (Top Set)", "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 }
+      ]
+    },
+    {
+      "week": 2, "day": 5, "focus": "Deadlift Variation + Squat Exposure", "fatigueCap": 20,
+      "exercises": [
+        { "liftName": "Deficit Pull (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "3", "rpeTarget": 7, "stressTags": ["hinge", "axial"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 },
+        { "liftName": "Deficit Pull (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 2, "reps": "3", "rpeTarget": 6.5, "baseLift": "Deadlift (Top Set)", "stressTags": ["hinge", "axial"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 },
+        { "liftName": "High Box Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 3, "priority": 2, "sets": 3, "reps": "5", "rpeTarget": 7.5, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.3 }
+      ]
+    },
+    {
+      "week": 3, "day": 1, "focus": "Squat + Bench Specificity", "fatigueCap": 20,
+      "exercises": [
+        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "4", "rpeTarget": 6.5, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 3, "reps": "4", "rpeTarget": 6, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Spoto Press Bench", "role": "secondary", "progressionType": "strength", "baseFUCost": 2.5, "priority": 2, "sets": 3, "reps": "6", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Pulse Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 1.5, "priority": 3, "sets": 2, "reps": "8", "rpeTarget": 6.5, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant", "eccentric"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 }
+      ]
+    },
+    {
+      "week": 3, "day": 2, "focus": "Bench Strength + Squat Technique", "fatigueCap": 18,
+      "exercises": [
+        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "4", "rpeTarget": 6.5, "stressTags": ["push"] },
+        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 3, "reps": "4", "rpeTarget": 6, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Overhead Press", "role": "secondary", "progressionType": "strength", "baseFUCost": 2, "priority": 2, "sets": 3, "reps": "6", "rpeTarget": 6.5, "stressTags": ["push"] },
+        { "liftName": "Tempo Eccentric Low Box Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 2, "priority": 3, "sets": 2, "reps": "6", "rpeTarget": 6.5, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant", "eccentric"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.6 }
+      ]
+    },
+    {
+      "week": 3, "day": 3, "focus": "Deadlift + Bench Speed/Strength", "fatigueCap": 22,
+      "exercises": [
+        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4.5, "priority": 1, "sets": 1, "reps": "3", "rpeTarget": 6.5, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4.5, "priority": 1, "sets": 3, "reps": "3", "rpeTarget": 6, "baseLift": "Deadlift (Top Set)", "stressTags": ["axial", "hinge"] },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "baseFUCost": 2.5, "priority": 2, "sets": 3, "reps": "6", "rpeTarget": 7, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Dead Stop Speed Bench", "role": "speed", "progressionType": "strength", "baseFUCost": 1, "priority": 3, "sets": 2, "reps": "5", "rpeTarget": 6, "baseLift": "Bench (Top Set)", "stressTags": ["push"] }
+      ]
+    },
+    {
+      "week": 3, "day": 4, "focus": "Bench Volume / Recovery Exposure", "fatigueCap": 12,
+      "exercises": [
+        { "liftName": "Bench (Volume Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "8", "rpeTarget": 6, "stressTags": ["push"] },
+        { "liftName": "Bench (Volume Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 2, "reps": "8", "rpeTarget": 5.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Paused Bench", "role": "variation", "progressionType": "strength", "baseFUCost": 2, "priority": 2, "sets": 2, "reps": "6", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 }
+      ]
+    },
+    {
+      "week": 3, "day": 5, "focus": "Deadlift Variation + Squat Exposure", "fatigueCap": 20,
+      "exercises": [
+        { "liftName": "Deficit Pull (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "3", "rpeTarget": 6.5, "stressTags": ["hinge", "axial"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 },
+        { "liftName": "Deficit Pull (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 2, "reps": "3", "rpeTarget": 6, "baseLift": "Deadlift (Top Set)", "stressTags": ["hinge", "axial"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 },
+        { "liftName": "High Box Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 3, "priority": 2, "sets": 2, "reps": "5", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.3 }
+      ]
+    },
+    {
+      "week": 4, "day": 1, "focus": "Squat + Bench Specificity", "fatigueCap": 20,
+      "exercises": [
+        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "3", "rpeTarget": 7.5, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 3, "reps": "3", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Spoto Press Bench", "role": "secondary", "progressionType": "strength", "baseFUCost": 2.5, "priority": 2, "sets": 3, "reps": "5", "rpeTarget": 7.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Pulse Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 1.5, "priority": 3, "sets": 2, "reps": "6", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant", "eccentric"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 }
+      ]
+    },
+    {
+      "week": 4, "day": 2, "focus": "Bench Strength + Squat Technique", "fatigueCap": 18,
+      "exercises": [
+        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "3", "rpeTarget": 7.5, "stressTags": ["push"] },
+        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 3, "reps": "3", "rpeTarget": 7, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Overhead Press", "role": "secondary", "progressionType": "strength", "baseFUCost": 2, "priority": 2, "sets": 3, "reps": "5", "rpeTarget": 7.5, "stressTags": ["push"] },
+        { "liftName": "Tempo Eccentric Low Box Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 2, "priority": 3, "sets": 2, "reps": "5", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant", "eccentric"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.6 }
+      ]
+    },
+    {
+      "week": 4, "day": 3, "focus": "Deadlift + Bench Speed/Strength", "fatigueCap": 22,
+      "exercises": [
+        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4.5, "priority": 1, "sets": 1, "reps": "2", "rpeTarget": 7.5, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4.5, "priority": 1, "sets": 2, "reps": "2", "rpeTarget": 7, "baseLift": "Deadlift (Top Set)", "stressTags": ["axial", "hinge"] },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "baseFUCost": 2.5, "priority": 2, "sets": 3, "reps": "5", "rpeTarget": 7.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Dead Stop Speed Bench", "role": "speed", "progressionType": "strength", "baseFUCost": 1, "priority": 3, "sets": 2, "reps": "5", "rpeTarget": 6, "baseLift": "Bench (Top Set)", "stressTags": ["push"] }
+      ]
+    },
+    {
+      "week": 4, "day": 4, "focus": "Bench Volume / Recovery Exposure", "fatigueCap": 12,
+      "exercises": [
+        { "liftName": "Bench (Volume Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "6", "rpeTarget": 7, "stressTags": ["push"] },
+        { "liftName": "Bench (Volume Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 2, "reps": "6", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Paused Bench", "role": "variation", "progressionType": "strength", "baseFUCost": 2, "priority": 2, "sets": 2, "reps": "5", "rpeTarget": 7, "baseLift": "Bench (Top Set)", "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 }
+      ]
+    },
+    {
+      "week": 4, "day": 5, "focus": "Deadlift Variation + Squat Exposure", "fatigueCap": 20,
+      "exercises": [
+        { "liftName": "Deficit Pull (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "2", "rpeTarget": 7.5, "stressTags": ["hinge", "axial"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 },
+        { "liftName": "Deficit Pull (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 2, "reps": "2", "rpeTarget": 7, "baseLift": "Deadlift (Top Set)", "stressTags": ["hinge", "axial"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 },
+        { "liftName": "High Box Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 3, "priority": 2, "sets": 2, "reps": "4", "rpeTarget": 7.5, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.3 }
+      ]
+    },
+    {
+      "week": 5, "day": 1, "focus": "Squat + Bench Specificity", "fatigueCap": 20,
+      "exercises": [
+        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "3", "rpeTarget": 7, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 3, "reps": "3", "rpeTarget": 6.5, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Spoto Press Bench", "role": "secondary", "progressionType": "strength", "baseFUCost": 2.5, "priority": 2, "sets": 2, "reps": "5", "rpeTarget": 7, "baseLift": "Bench (Top Set)", "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Pulse Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 1.5, "priority": 3, "sets": 2, "reps": "6", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant", "eccentric"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 }
+      ]
+    },
+    {
+      "week": 5, "day": 2, "focus": "Bench Strength + Squat Technique", "fatigueCap": 18,
+      "exercises": [
+        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "3", "rpeTarget": 7, "stressTags": ["push"] },
+        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 3, "reps": "3", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Overhead Press", "role": "secondary", "progressionType": "strength", "baseFUCost": 2, "priority": 2, "sets": 2, "reps": "5", "rpeTarget": 7, "stressTags": ["push"] },
+        { "liftName": "Tempo Eccentric Low Box Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 2, "priority": 3, "sets": 2, "reps": "5", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant", "eccentric"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.6 }
+      ]
+    },
+    {
+      "week": 5, "day": 3, "focus": "Deadlift + Bench Speed/Strength", "fatigueCap": 22,
+      "exercises": [
+        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4.5, "priority": 1, "sets": 1, "reps": "2", "rpeTarget": 7, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4.5, "priority": 1, "sets": 2, "reps": "2", "rpeTarget": 6.5, "baseLift": "Deadlift (Top Set)", "stressTags": ["axial", "hinge"] },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "baseFUCost": 2.5, "priority": 2, "sets": 2, "reps": "5", "rpeTarget": 7, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Dead Stop Speed Bench", "role": "speed", "progressionType": "strength", "baseFUCost": 1, "priority": 3, "sets": 2, "reps": "5", "rpeTarget": 6, "baseLift": "Bench (Top Set)", "stressTags": ["push"] }
+      ]
+    },
+    {
+      "week": 5, "day": 4, "focus": "Bench Volume / Recovery Exposure", "fatigueCap": 12,
+      "exercises": [
+        { "liftName": "Bench (Volume Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "6", "rpeTarget": 6.5, "stressTags": ["push"] },
+        { "liftName": "Bench (Volume Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 2, "reps": "6", "rpeTarget": 6, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Paused Bench", "role": "variation", "progressionType": "strength", "baseFUCost": 2, "priority": 2, "sets": 1, "reps": "5", "rpeTarget": 7, "baseLift": "Bench (Top Set)", "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 }
+      ]
+    },
+    {
+      "week": 5, "day": 5, "focus": "Deadlift Variation + Squat Exposure", "fatigueCap": 20,
+      "exercises": [
+        { "liftName": "Deficit Pull (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "2", "rpeTarget": 7, "stressTags": ["hinge", "axial"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 },
+        { "liftName": "Deficit Pull (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "2", "rpeTarget": 6.5, "baseLift": "Deadlift (Top Set)", "stressTags": ["hinge", "axial"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 },
+        { "liftName": "High Box Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 3, "priority": 2, "sets": 2, "reps": "4", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.3 }
+      ]
+    },
+    {
+      "week": 6, "day": 1, "focus": "Squat + Bench Specificity", "fatigueCap": 20,
+      "exercises": [
+        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "2", "rpeTarget": 8, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 2, "reps": "2", "rpeTarget": 7.5, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Spoto Press Bench", "role": "secondary", "progressionType": "strength", "baseFUCost": 2.5, "priority": 2, "sets": 2, "reps": "4", "rpeTarget": 7.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Pulse Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 1.5, "priority": 3, "sets": 1, "reps": "5", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant", "eccentric"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 }
+      ]
+    },
+    {
+      "week": 6, "day": 2, "focus": "Bench Strength + Squat Technique", "fatigueCap": 18,
+      "exercises": [
+        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "2", "rpeTarget": 8, "stressTags": ["push"] },
+        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 2, "reps": "2", "rpeTarget": 7.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Overhead Press", "role": "secondary", "progressionType": "strength", "baseFUCost": 2, "priority": 2, "sets": 2, "reps": "4", "rpeTarget": 7.5, "stressTags": ["push"] },
+        { "liftName": "Tempo Eccentric Low Box Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 2, "priority": 3, "sets": 1, "reps": "4", "rpeTarget": 7, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant", "eccentric"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.6 }
+      ]
+    },
+    {
+      "week": 6, "day": 3, "focus": "Deadlift + Bench Speed/Strength", "fatigueCap": 22,
+      "exercises": [
+        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4.5, "priority": 1, "sets": 1, "reps": "1", "rpeTarget": 8, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4.5, "priority": 1, "sets": 1, "reps": "1", "rpeTarget": 7.5, "baseLift": "Deadlift (Top Set)", "stressTags": ["axial", "hinge"] },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "baseFUCost": 2.5, "priority": 2, "sets": 2, "reps": "4", "rpeTarget": 7.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Dead Stop Speed Bench", "role": "speed", "progressionType": "strength", "baseFUCost": 1, "priority": 3, "sets": 1, "reps": "4", "rpeTarget": 6, "baseLift": "Bench (Top Set)", "stressTags": ["push"] }
+      ]
+    },
+    {
+      "week": 6, "day": 4, "focus": "Bench Volume / Recovery Exposure", "fatigueCap": 12,
+      "exercises": [
+        { "liftName": "Bench (Volume Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "5", "rpeTarget": 7, "stressTags": ["push"] },
+        { "liftName": "Bench (Volume Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 2.5, "priority": 1, "sets": 1, "reps": "5", "rpeTarget": 6.5, "baseLift": "Bench (Top Set)", "stressTags": ["push"] },
+        { "liftName": "Paused Bench", "role": "variation", "progressionType": "strength", "baseFUCost": 2, "priority": 2, "sets": 1, "reps": "4", "rpeTarget": 7, "baseLift": "Bench (Top Set)", "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 }
+      ]
+    },
+    {
+      "week": 6, "day": 5, "focus": "Deadlift Variation + Squat Exposure", "fatigueCap": 20,
+      "exercises": [
+        { "liftName": "Deficit Pull (Top Set)", "role": "top-set", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "1", "rpeTarget": 8, "stressTags": ["hinge", "axial"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 },
+        { "liftName": "Deficit Pull (Back Off)", "role": "back-off", "progressionType": "strength", "baseFUCost": 4, "priority": 1, "sets": 1, "reps": "1", "rpeTarget": 7.5, "baseLift": "Deadlift (Top Set)", "stressTags": ["hinge", "axial"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.4 },
+        { "liftName": "High Box Squat", "role": "variation", "progressionType": "strength", "baseFUCost": 3, "priority": 2, "sets": 1, "reps": "3", "rpeTarget": 7.5, "baseLift": "Squat (Top Set)", "stressTags": ["axial", "knee-dominant"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.3 }
+      ]
+    }
+  ]
+}

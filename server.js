@@ -11,6 +11,8 @@ import cron from 'node-cron';
 import { getCoachingPrompts } from './aiCoach.js';
 import LiftState from "./models/LiftState.js";
 import Session from "./models/Session.js";
+// ========== FATIGUE BUDGET IMPORT ==========
+import { allocateSessionBudget, computeWeeklyTagLoads, fatigueUnitsPerSet, calculateSessionLoad } from './fatigueBudget.js';
 
 dotenv.config();
 
@@ -209,7 +211,7 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
     return res.status(500).send("Webhook secret not configured");
   }
 
-  let event;   // <-- THE ONLY ADDITION (missing declaration)
+  let event;
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
@@ -403,7 +405,8 @@ const loadProgram = (programName) => {
     name: raw.name, 
     logic: raw.logic || "STRENGTH_RPE", 
     sessions,
-    weeks: weeksMetadata   // <-- store weeks metadata
+    weeks: weeksMetadata,
+    useFatigueBudget: raw.useFatigueBudget || false   // <-- new flag
   };
 };
 
@@ -677,30 +680,30 @@ function generalFitnessProgression(state, sessionData) {
       break;
 
     case "mobility":
-  const romMetMob = (sessionData.actualROM || 0) >= (sessionData.targetROM || 0);
-  const painOkMob = (sessionData.actualPain || 0) <= (sessionData.targetPain || 4);
-  const isGoodMobility = !!sessionData.completed && romMetMob && painOkMob;
+      const romMetMob = (sessionData.actualROM || 0) >= (sessionData.targetROM || 0);
+      const painOkMob = (sessionData.actualPain || 0) <= (sessionData.targetPain || 4);
+      const isGoodMobility = !!sessionData.completed && romMetMob && painOkMob;
 
-  if (isGoodMobility) {
-    successStreak++;
-    stallCounter = 0;
-    if (successStreak >= 2) {
-      newROM += 5;
-      successStreak = 0;
-      console.log(`📈 [GF-mobility] Good streak ${sessionData.liftName}: ROM ↑ to ${newROM}%`);
-    }
-  } else {
-    successStreak = 0;
-    if (!painOkMob) {
-      stallCounter++;
-      if (stallCounter >= 2 && newWeight > 0) {
-        newWeight = Math.max(0, newWeight - 2.5);
+      if (isGoodMobility) {
+        successStreak++;
         stallCounter = 0;
-        console.log(`⚠️ [GF-mobility] Pain too high for ${sessionData.liftName}: weight ↓ to ${newWeight}kg`);
+        if (successStreak >= 2) {
+          newROM += 5;
+          successStreak = 0;
+          console.log(`📈 [GF-mobility] Good streak ${sessionData.liftName}: ROM ↑ to ${newROM}%`);
+        }
+      } else {
+        successStreak = 0;
+        if (!painOkMob) {
+          stallCounter++;
+          if (stallCounter >= 2 && newWeight > 0) {
+            newWeight = Math.max(0, newWeight - 2.5);
+            stallCounter = 0;
+            console.log(`⚠️ [GF-mobility] Pain too high for ${sessionData.liftName}: weight ↓ to ${newWeight}kg`);
+          }
+        }
       }
-    }
-  }
-  break;
+      break;
 
     case "volume":
     case "stability":
@@ -870,6 +873,7 @@ function applyDescendingSets(exercises, descendingFlag, weekRpe) {
   return newExercises;
 }
 
+// ==================== FATIGUE BUDGET SESSION-VIEW ROUTE ====================
 app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
   try {
     const week = Number(req.params.week);
@@ -930,10 +934,30 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     // ✅ APPLY DESCENDING SETS (always runs for any exercise with descending:true)
     exercises = applyDescendingSets(exercises, true, weekMeta?.rpe || 7);
 
+    // ========== FATIGUE BUDGET & STRESS TAXONOMY ==========
+    let fatigueOptimised = false;
+    let overloadedTags = [];
+    if (programData.useFatigueBudget && session.fatigueCap) {
+      // Retrieve completed sessions for the current week (same program)
+      const weekSessions = await Session.find({
+        userId,
+        programName: programData.name,
+        week: week,
+        fatigueUnits: { $exists: true },
+      }).select("fatigueUnits stressTagTotals").lean();
+
+      const weeklyTagLoads = computeWeeklyTagLoads(weekSessions);
+
+      const budgetResult = allocateSessionBudget(exercises, session.fatigueCap, weeklyTagLoads);
+      overloadedTags = budgetResult.overloadedTags;
+      fatigueOptimised = true;
+    }
+    // =====================================================
+
     // Now rebuild the session with adjusted exercises
     const adjustedSession = { ...session, exercises };
 
-    // Rest of the route remains unchanged …
+    // Rest of the route continues...
     const availableWeeks = [...new Set(programData.sessions.map(s => s.week))].sort((a,b)=>a-b);
     const availableDaysPerWeek = {};
     availableWeeks.forEach(w => {
@@ -971,112 +995,124 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
       }
       // Readiness adjustments for mobility/stability exercises in hybrid programs
       if (ex.progressionType === "mobility" || ex.progressionType === "stability") {
-      // Apply readiness to mobility/stability exercises in hybrid programs
-      if (painAdjustment !== 0 && (ex.progressionType === "mobility" || ex.progressionType === "stability")) {
-        ex.painTarget = Math.max(0, (ex.painTarget || 4) + painAdjustment);
-        ex._readinessAdjustedPain = true;
+        if (painAdjustment !== 0) {
+          ex.painTarget = Math.max(0, (ex.painTarget || 4) + painAdjustment);
+          ex._readinessAdjustedPain = true;
+        }
+        if (stabilityAdjustment !== 0) {
+          ex.stabilityTarget = Math.min(10, Math.max(1, (ex.stabilityTarget || 7) + stabilityAdjustment));
+          ex._readinessAdjustedStability = true;
+        }
       }
-      if (stabilityAdjustment !== 0 && (ex.progressionType === "mobility" || ex.progressionType === "stability")) {
-        ex.stabilityTarget = Math.min(10, Math.max(1, (ex.stabilityTarget || 7) + stabilityAdjustment));
-        ex._readinessAdjustedStability = true;
-      }
-    }
 
       // ========== NEW: baseLift inheritance for weight suggestions ==========
       let effectiveState = state;
-if (!effectiveState || (logic === "STRENGTH_RPE" && !effectiveState.estimated1RM)) {
-  if (ex.baseLift) {
-    effectiveState = liftStates.find(s => s.liftName === ex.baseLift);
-  }
-}
-
-// ========== Weight calculation with back-off floor & ceiling ==========
-let computed1RM = effectiveState?.estimated1RM || 0;
-let topSetWeightForReference = 0;   // parent top set weight suggestion
-
-if (ex.role === "back-off" && !ex._descendingSet) {
-  // 5% fatigue reduction on 1RM (base)
-  if (computed1RM > 0) {
-    computed1RM = Math.round(computed1RM * 0.95);
-    ex._fatigueAdjusted = true;
-  }
-
-  // Find parent top set's suggested weight (without readiness adjustments for fair floor)
-  if (ex.baseLift) {
-    const parentLift = adjustedSession.exercises.find(
-      e => e.liftName === ex.baseLift && e.role === "top-set"
-    );
-    if (parentLift) {
-      const parentEff = liftStates.find(s => s.liftName === parentLift.liftName)
-        || (parentLift.baseLift ? liftStates.find(s => s.liftName === parentLift.baseLift) : null);
-      const parent1RM = parentEff?.estimated1RM || 0;
-      if (parent1RM > 0) {
-        const parentTargetRPE = parentLift.rpeTarget || 7;
-        topSetWeightForReference = weightForRPE(parent1RM, parentTargetRPE, parentLift.reps);
-      }
-    }
-  }
-}
-
-if (effectiveState) {
-  if (logic === "STRENGTH_RPE" && computed1RM > 0) {
-    // Apply variation penalty (6% reduction) for paused/tempo lifts
-    let effective1RM = computed1RM;
-    if (isVariationLift(ex.liftName)) {
-      effective1RM = Math.round(computed1RM * 0.94);
-      ex._variationAdjusted = true;
-    }
-
-    // Volume lifts: use independent currentWeight from LiftState
-    if (ex.role === "volume" && effectiveState.currentWeight > 0) {
-      currentWeight = effectiveState.currentWeight;
-      const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-      projectedNextWeight = currentWeight + inc;
-    } else {
-      // Normal top‑set / back‑off calculation
-      let rawWeight = weightForRPE(effective1RM, adjustedRpeTarget, ex.reps);
-      if (ex.role === "back-off" && !ex._descendingSet && topSetWeightForReference > 0) {
-        const liftType = ex.liftName?.toLowerCase() || "";
-        let percentOfTop;
-        if (liftType.includes("squat") || liftType.includes("deadlift")) {
-          percentOfTop = 0.88;
-        } else if (liftType.includes("bench")) {
-          percentOfTop = 0.94;
-        } else {
-          percentOfTop = 0.91;
+      if (!effectiveState || (logic === "STRENGTH_RPE" && !effectiveState.estimated1RM)) {
+        if (ex.baseLift) {
+          effectiveState = liftStates.find(s => s.liftName === ex.baseLift);
         }
-        const maxBackoffWeight = Math.round(topSetWeightForReference * percentOfTop / 2.5) * 2.5;
-        if (rawWeight > maxBackoffWeight) rawWeight = maxBackoffWeight;
       }
-      currentWeight = rawWeight;
 
-      let nextRaw = weightForRPE(effective1RM, adjustedRpeTarget + 0.5, ex.reps);
-      if (ex.role === "back-off" && !ex._descendingSet && topSetWeightForReference > 0) {
-        const liftType = ex.liftName?.toLowerCase() || "";
-        let percentOfTopNext;
-        if (liftType.includes("squat") || liftType.includes("deadlift")) {
-          percentOfTopNext = 0.88;
-        } else if (liftType.includes("bench")) {
-          percentOfTopNext = 0.94;
-        } else {
-          percentOfTopNext = 0.91;
+      // ========== Weight calculation with back-off floor & ceiling ==========
+      let computed1RM = effectiveState?.estimated1RM || 0;
+      let topSetWeightForReference = 0;   // parent top set weight suggestion
+
+      if (ex.role === "back-off" && !ex._descendingSet) {
+        // 5% fatigue reduction on 1RM (base)
+        if (computed1RM > 0) {
+          computed1RM = Math.round(computed1RM * 0.95);
+          ex._fatigueAdjusted = true;
         }
-        const maxBackoffWeightNext = Math.round(topSetWeightForReference * percentOfTopNext / 2.5) * 2.5;
-        if (nextRaw > maxBackoffWeightNext) nextRaw = maxBackoffWeightNext;
+
+        // Find parent top set's suggested weight (without readiness adjustments for fair floor)
+        if (ex.baseLift) {
+          const parentLift = adjustedSession.exercises.find(
+            e => e.liftName === ex.baseLift && e.role === "top-set"
+          );
+          if (parentLift) {
+            const parentEff = liftStates.find(s => s.liftName === parentLift.liftName)
+              || (parentLift.baseLift ? liftStates.find(s => s.liftName === parentLift.baseLift) : null);
+            const parent1RM = parentEff?.estimated1RM || 0;
+            if (parent1RM > 0) {
+              const parentTargetRPE = parentLift.rpeTarget || 7;
+              topSetWeightForReference = weightForRPE(parent1RM, parentTargetRPE, parentLift.reps);
+            }
+          }
+        }
       }
-      projectedNextWeight = nextRaw;
-    }
-  } 
-  else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && effectiveState.currentWeight > 0) {
-    currentWeight = effectiveState.currentWeight;
-    let weightModifier = 1;
-    if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
-    if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
-    if (weightModifier !== 1) currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
-    const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-    projectedNextWeight = currentWeight + inc;
-  }
-}
+
+      if (effectiveState) {
+        if (logic === "STRENGTH_RPE" && computed1RM > 0) {
+          // Apply variation penalty (6% reduction) for paused/tempo lifts
+          let effective1RM = computed1RM;
+          if (isVariationLift(ex.liftName)) {
+            effective1RM = Math.round(computed1RM * 0.94);
+            ex._variationAdjusted = true;
+          }
+
+          // Volume lifts: use independent currentWeight from LiftState
+          if (ex.role === "volume" && effectiveState.currentWeight > 0) {
+            currentWeight = effectiveState.currentWeight;
+            const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+            projectedNextWeight = currentWeight + inc;
+          } else {
+            // Normal top‑set / back‑off calculation
+            let rawWeight = weightForRPE(effective1RM, adjustedRpeTarget, ex.reps);
+            if (ex.role === "back-off" && !ex._descendingSet && topSetWeightForReference > 0) {
+              const liftType = ex.liftName?.toLowerCase() || "";
+              let percentOfTop;
+              if (liftType.includes("squat") || liftType.includes("deadlift")) {
+                percentOfTop = 0.88;
+              } else if (liftType.includes("bench")) {
+                percentOfTop = 0.94;
+              } else {
+                percentOfTop = 0.91;
+              }
+              const maxBackoffWeight = Math.round(topSetWeightForReference * percentOfTop / 2.5) * 2.5;
+              if (rawWeight > maxBackoffWeight) rawWeight = maxBackoffWeight;
+            }
+            currentWeight = rawWeight;
+
+            let nextRaw = weightForRPE(effective1RM, adjustedRpeTarget + 0.5, ex.reps);
+            if (ex.role === "back-off" && !ex._descendingSet && topSetWeightForReference > 0) {
+              const liftType = ex.liftName?.toLowerCase() || "";
+              let percentOfTopNext;
+              if (liftType.includes("squat") || liftType.includes("deadlift")) {
+                percentOfTopNext = 0.88;
+              } else if (liftType.includes("bench")) {
+                percentOfTopNext = 0.94;
+              } else {
+                percentOfTopNext = 0.91;
+              }
+              const maxBackoffWeightNext = Math.round(topSetWeightForReference * percentOfTopNext / 2.5) * 2.5;
+              if (nextRaw > maxBackoffWeightNext) nextRaw = maxBackoffWeightNext;
+            }
+            projectedNextWeight = nextRaw;
+          }
+        } 
+        else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && effectiveState.currentWeight > 0) {
+          currentWeight = effectiveState.currentWeight;
+          let weightModifier = 1;
+          if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
+          if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
+          if (weightModifier !== 1) currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
+          const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+          projectedNextWeight = currentWeight + inc;
+        }
+      }
+
+      // ========== MECHANICAL DISADVANTAGE HANDLING ==========
+      if (ex.mechanicalDisadvantage && effectiveState && logic === "STRENGTH_RPE") {
+        // Keep currentWeight from parent's 1RM calculation, but never drop it below 95% of that initial suggestion
+        if (!ex._disadvantageBaseWeight) {
+          ex._disadvantageBaseWeight = currentWeight;
+        }
+        if (currentWeight < ex._disadvantageBaseWeight * 0.95) {
+          currentWeight = Math.round(ex._disadvantageBaseWeight * 0.95 / 2.5) * 2.5;
+        }
+        projectedNextWeight = currentWeight;   // don't suggest increase unless user proves readiness
+      }
+      // ====================================================
 
       return {
         liftName: ex.liftName,
@@ -1096,20 +1132,25 @@ if (effectiveState) {
         adjustedQualityTarget: adjustedQualityTarget !== ex.qualityTarget ? adjustedQualityTarget : null,
         adjustedStabilityTarget: adjustedStabilityTarget !== ex.stabilityTarget ? adjustedStabilityTarget : null,
         descendingSet: ex._descendingSet || false,
-        baseLift: ex.baseLift || null,          // forward to frontend if needed
+        baseLift: ex.baseLift || null,
         fatigueAdjusted: ex._fatigueAdjusted || false,
         readinessAdjustedPain: ex._readinessAdjustedPain || false,
         readinessAdjustedStability: ex._readinessAdjustedStability || false,
+        fatigueOptimised: fatigueOptimised,
+        stressOverload: ex._stressOverload || null,
+        overloadedTags: overloadedTags,
+        mechanicalDisadvantage: ex.mechanicalDisadvantage || false,
       };
     });
 
-    res.json({ program: adjustedSession, logic, projected, availableWeeks, availableDaysPerWeek, readinessApplied: { rpeAdjustment, rirAdjustment, qualityAdjustment } });
+    res.json({ program: adjustedSession, logic, projected, availableWeeks, availableDaysPerWeek, readinessApplied: { rpeAdjustment, rirAdjustment, qualityAdjustment }, fatigueOptimised, overloadedTags });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
+// ==================== SESSION LOG (with FU storage) ====================
 app.post("/api/session-log", async (req, res) => {
   try {
     const log = await Session.create(req.body);
@@ -1131,6 +1172,38 @@ app.post("/api/session-log", async (req, res) => {
         }
       }
     }
+
+    // ========== STORE FATIGUE UNITS AND TAG LOADS ==========
+    try {
+      const progName = req.body.programName;
+      const progWeek = req.body.week;
+      const progDay = req.body.day;
+      const progData = loadProgram(progName);
+      if (progData.useFatigueBudget) {
+        const sess = progData.sessions.find(s => s.week === progWeek && s.day === progDay);
+        if (sess) {
+          // Build exercise list from what was actually logged (we have liftName, sets, etc.)
+          // For simplicity, we'll use the program's exercise list with the logged sets/reps/RPE.
+          const exercisesForFU = sess.exercises.map(ex => {
+            const logged = req.body.liftName === ex.liftName ? req.body : ex;
+            return {
+              ...ex,
+              sets: logged.sets || ex.sets,
+              rpeTarget: logged.actualRPE || ex.rpeTarget,
+            };
+          });
+          const { totalFU, tagLoads } = calculateSessionLoad(exercisesForFU);
+          await Session.findByIdAndUpdate(log._id, {
+            fatigueUnits: totalFU,
+            stressTagTotals: tagLoads,
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Failed to store FU data", e);
+    }
+    // ======================================================
+
     res.json(log);
   } catch (err) {
     console.error("Session log error:", err);
@@ -1138,6 +1211,7 @@ app.post("/api/session-log", async (req, res) => {
   }
 });
 
+// ==================== PROGRESSION APPLY (with mechanical disadvantage guard) ====================
 app.post("/api/progression/apply", async (req, res) => {
   try {
     const { userId, liftName, logic } = req.body;
@@ -1171,6 +1245,22 @@ app.post("/api/progression/apply", async (req, res) => {
       return res.json({ message: "Initial state set", state });
     }
 
+    // ========== MECHANICAL DISADVANTAGE GUARD ==========
+    let isDisadvantageLift = false;
+    let baseLiftName = null;
+    try {
+      const progData = loadProgram(lastSession.programName);
+      const sess = progData.sessions.find(s => s.week === lastSession.week && s.day === lastSession.day);
+      if (sess) {
+        const exDef = sess.exercises.find(e => e.liftName === liftName);
+        if (exDef) {
+          isDisadvantageLift = exDef.mechanicalDisadvantage || false;
+          baseLiftName = exDef.baseLift || null;
+        }
+      }
+    } catch (e) { /* ignore */ }
+    // =================================================
+
     const sessionData = {
       completed: lastSession.completed,
       targetReps: lastSession.targetReps,
@@ -1192,7 +1282,23 @@ app.post("/api/progression/apply", async (req, res) => {
       actualRIR: lastSession.actualRIR
     };
 
-    const result = calculateProgression(state, sessionData, logic || "STRENGTH_RPE");
+    let result = calculateProgression(state, sessionData, logic || "STRENGTH_RPE");
+
+    // Mechanical disadvantage: lock e1RM floor and prevent parent lift contamination
+    if (isDisadvantageLift) {
+      // 1RM floor: never drop more than 2.5% below current value
+      if (result.estimated1RM !== undefined && state.estimated1RM > 0) {
+        const floor = Math.round(state.estimated1RM * 0.975);
+        if (result.estimated1RM < floor) {
+          result.estimated1RM = floor;
+        }
+      }
+      // Also, only increase if RPE ≤ target + 0.5
+      const rpeOk = lastSession.actualRPE <= (lastSession.targetRPE + 0.5);
+      if (!rpeOk && result.estimated1RM > state.estimated1RM) {
+        result.estimated1RM = state.estimated1RM;   // discard increase on tough session
+      }
+    }
 
     if (result.estimated1RM !== undefined) state.estimated1RM = result.estimated1RM;
     if (result.currentWeight !== undefined) state.currentWeight = result.currentWeight;
@@ -1211,6 +1317,7 @@ app.post("/api/progression/apply", async (req, res) => {
   }
 });
 
+// ==================== OTHER ROUTES (unchanged) ====================
 app.get("/api/history/:userId/:liftName", async (req, res) => {
   try {
     const { userId, liftName } = req.params;

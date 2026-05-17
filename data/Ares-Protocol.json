@@ -1,205 +1,222 @@
 {
   "name": "Ares Protocol",
   "logic": "STRENGTH_RPE",
+  "useFatigueBudget": true,
   "sessions": [
     {
       "week": 1,
       "day": 1,
       "focus": "Squat",
+      "fatigueCap": 24,
       "exercises": [
-        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 7 },
-        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "4", "rpeTarget": 6 },
-        { "liftName": "Bench Paused 3s", "role": "secondary", "progressionType": "strength", "sets": 4, "reps": "6", "rpeTarget": 6 },
-        { "liftName": "Leg Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6 },
-        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10 E/L", "rpeTarget": 6 }
+        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 7, "baseFUCost": 4, "priority": 1, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "4", "rpeTarget": 6, "baseFUCost": 4, "priority": 1, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Bench Paused 3s", "role": "secondary", "progressionType": "strength", "sets": 4, "reps": "6", "rpeTarget": 6, "baseFUCost": 2.5, "priority": 2, "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Leg Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6, "baseFUCost": 1.5, "priority": 3, "stressTags": ["knee-dominant"] },
+        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10 E/L", "rpeTarget": 6, "baseFUCost": 1.5, "priority": 3, "stressTags": ["knee-dominant"] }
       ]
     },
     {
       "week": 1,
       "day": 2,
       "focus": "Bench",
+      "fatigueCap": 22,
       "exercises": [
-        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 7 },
-        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "4", "rpeTarget": 6 },
-        { "liftName": "Paused Squat", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 6 },
-        { "liftName": "Lateral Raise w/ER", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6 },
-        { "liftName": "Arnold Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6 },
-        { "liftName": "Skull Crusher", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "12", "rpeTarget": 6 }
+        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 7, "baseFUCost": 2.5, "priority": 1, "stressTags": ["push"] },
+        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "4", "rpeTarget": 6, "baseFUCost": 2.5, "priority": 1, "stressTags": ["push"] },
+        { "liftName": "Paused Squat", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 6, "baseFUCost": 3, "priority": 2, "stressTags": ["axial", "knee-dominant"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Lateral Raise w/ER", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6, "baseFUCost": 1, "priority": 3, "stressTags": ["pull"] },
+        { "liftName": "Arnold Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6, "baseFUCost": 1.5, "priority": 3, "stressTags": ["push"] },
+        { "liftName": "Skull Crusher", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "12", "rpeTarget": 6, "baseFUCost": 1, "priority": 3, "stressTags": ["push"] }
       ]
     },
     {
       "week": 1,
       "day": 3,
       "focus": "Deadlift",
+      "fatigueCap": 26,
       "exercises": [
-        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 7 },
-        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 6 },
-        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 6 },
-        { "liftName": "Jefferson Curl", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6 },
-        { "liftName": "Glute Thrust", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6 },
-        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "12", "rpeTarget": 6 }
+        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 7, "baseFUCost": 5, "priority": 1, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 6, "baseFUCost": 5, "priority": 1, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 6, "baseFUCost": 2.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Jefferson Curl", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6, "baseFUCost": 1.5, "priority": 3, "stressTags": ["hinge", "eccentric"] },
+        { "liftName": "Glute Thrust", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6, "baseFUCost": 1.5, "priority": 3, "stressTags": ["hinge"] },
+        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "12", "rpeTarget": 6, "baseFUCost": 1, "priority": 3, "stressTags": [] }
       ]
     },
     {
       "week": 1,
       "day": 4,
       "focus": "Bench Volume",
+      "fatigueCap": 16,
       "exercises": [
-        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 4, "reps": "8", "rpeTarget": 6 },
-        { "liftName": "Incline Dumbbell Bench", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6 },
-        { "liftName": "Dips", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6 },
-        { "liftName": "Seated Overhead Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6 },
-        { "liftName": "Tricep Push-Downs", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "12", "rpeTarget": 6 }
+        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 4, "reps": "8", "rpeTarget": 6, "baseFUCost": 2.5, "priority": 1, "stressTags": ["push"] },
+        { "liftName": "Incline Dumbbell Bench", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6, "baseFUCost": 1.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Dips", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6, "baseFUCost": 1.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Seated Overhead Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6, "baseFUCost": 1.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Tricep Push-Downs", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "12", "rpeTarget": 6, "baseFUCost": 1, "priority": 3, "stressTags": ["push"] }
       ]
     },
     {
       "week": 2,
       "day": 1,
       "focus": "Squat",
+      "fatigueCap": 24,
       "exercises": [
-        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 7.5 },
-        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "4", "rpeTarget": 7 },
-        { "liftName": "Bench Paused 3s", "role": "secondary", "progressionType": "strength", "sets": 4, "reps": "6", "rpeTarget": 7 },
-        { "liftName": "Leg Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6.5 },
-        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10 E/L", "rpeTarget": 6.5 }
+        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 7.5, "baseFUCost": 4, "priority": 1, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "4", "rpeTarget": 7, "baseFUCost": 4, "priority": 1, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Bench Paused 3s", "role": "secondary", "progressionType": "strength", "sets": 4, "reps": "6", "rpeTarget": 7, "baseFUCost": 2.5, "priority": 2, "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Leg Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6.5, "baseFUCost": 1.5, "priority": 3, "stressTags": ["knee-dominant"] },
+        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10 E/L", "rpeTarget": 6.5, "baseFUCost": 1.5, "priority": 3, "stressTags": ["knee-dominant"] }
       ]
     },
     {
       "week": 2,
       "day": 2,
       "focus": "Bench",
+      "fatigueCap": 22,
       "exercises": [
-        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 7.5 },
-        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "4", "rpeTarget": 7 },
-        { "liftName": "Paused Squat", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 7 },
-        { "liftName": "Lateral Raise w/ER", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6.5 },
-        { "liftName": "Arnold Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6.5 },
-        { "liftName": "Skull Crusher", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "12", "rpeTarget": 6.5 }
+        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 7.5, "baseFUCost": 2.5, "priority": 1, "stressTags": ["push"] },
+        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 4, "reps": "4", "rpeTarget": 7, "baseFUCost": 2.5, "priority": 1, "stressTags": ["push"] },
+        { "liftName": "Paused Squat", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 7, "baseFUCost": 3, "priority": 2, "stressTags": ["axial", "knee-dominant"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Lateral Raise w/ER", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6.5, "baseFUCost": 1, "priority": 3, "stressTags": ["pull"] },
+        { "liftName": "Arnold Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6.5, "baseFUCost": 1.5, "priority": 3, "stressTags": ["push"] },
+        { "liftName": "Skull Crusher", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "12", "rpeTarget": 6.5, "baseFUCost": 1, "priority": 3, "stressTags": ["push"] }
       ]
     },
     {
       "week": 2,
       "day": 3,
       "focus": "Deadlift",
+      "fatigueCap": 26,
       "exercises": [
-        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 7.5 },
-        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 7 },
-        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 7 },
-        { "liftName": "Jefferson Curl", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6.5 },
-        { "liftName": "Glute Thrust", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6.5 },
-        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "12", "rpeTarget": 6.5 }
+        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 7.5, "baseFUCost": 5, "priority": 1, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 7, "baseFUCost": 5, "priority": 1, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 7, "baseFUCost": 2.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Jefferson Curl", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6.5, "baseFUCost": 1.5, "priority": 3, "stressTags": ["hinge", "eccentric"] },
+        { "liftName": "Glute Thrust", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6.5, "baseFUCost": 1.5, "priority": 3, "stressTags": ["hinge"] },
+        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "12", "rpeTarget": 6.5, "baseFUCost": 1, "priority": 3, "stressTags": [] }
       ]
     },
     {
       "week": 2,
       "day": 4,
       "focus": "Bench Volume",
+      "fatigueCap": 16,
       "exercises": [
-        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 4, "reps": "8", "rpeTarget": 7.5 },
-        { "liftName": "Incline Dumbbell Bench", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6.5 },
-        { "liftName": "Dips", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6.5 },
-        { "liftName": "Seated Overhead Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6.5 },
-        { "liftName": "Tricep Push-Downs", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "12", "rpeTarget": 6.5 }
+        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 4, "reps": "8", "rpeTarget": 7.5, "baseFUCost": 2.5, "priority": 1, "stressTags": ["push"] },
+        { "liftName": "Incline Dumbbell Bench", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6.5, "baseFUCost": 1.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Dips", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "12", "rpeTarget": 6.5, "baseFUCost": 1.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Seated Overhead Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 6.5, "baseFUCost": 1.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Tricep Push-Downs", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "12", "rpeTarget": 6.5, "baseFUCost": 1, "priority": 3, "stressTags": ["push"] }
       ]
     },
     {
       "week": 3,
       "day": 1,
       "focus": "Squat",
+      "fatigueCap": 24,
       "exercises": [
-        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 8 },
-        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 7.5 },
-        { "liftName": "Bench Paused 3s", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 7.5 },
-        { "liftName": "Leg Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 7 },
-        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "8 E/L", "rpeTarget": 7 }
+        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 8, "baseFUCost": 4, "priority": 1, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 7.5, "baseFUCost": 4, "priority": 1, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Bench Paused 3s", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 7.5, "baseFUCost": 2.5, "priority": 2, "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Leg Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 7, "baseFUCost": 1.5, "priority": 3, "stressTags": ["knee-dominant"] },
+        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "8 E/L", "rpeTarget": 7, "baseFUCost": 1.5, "priority": 3, "stressTags": ["knee-dominant"] }
       ]
     },
     {
       "week": 3,
       "day": 2,
       "focus": "Bench",
+      "fatigueCap": 22,
       "exercises": [
-        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 8 },
-        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 7.5 },
-        { "liftName": "Paused Squat", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 7.5 },
-        { "liftName": "Lateral Raise w/ER", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 7 },
-        { "liftName": "Arnold Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 7 },
-        { "liftName": "Skull Crusher", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 7 }
+        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 8, "baseFUCost": 2.5, "priority": 1, "stressTags": ["push"] },
+        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "3", "rpeTarget": 7.5, "baseFUCost": 2.5, "priority": 1, "stressTags": ["push"] },
+        { "liftName": "Paused Squat", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 7.5, "baseFUCost": 3, "priority": 2, "stressTags": ["axial", "knee-dominant"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Lateral Raise w/ER", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 7, "baseFUCost": 1, "priority": 3, "stressTags": ["pull"] },
+        { "liftName": "Arnold Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 7, "baseFUCost": 1.5, "priority": 3, "stressTags": ["push"] },
+        { "liftName": "Skull Crusher", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 7, "baseFUCost": 1, "priority": 3, "stressTags": ["push"] }
       ]
     },
     {
       "week": 3,
       "day": 3,
       "focus": "Deadlift",
+      "fatigueCap": 26,
       "exercises": [
-        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "2", "rpeTarget": 8 },
-        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "2", "rpeTarget": 7.5 },
-        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 7.5 },
-        { "liftName": "Jefferson Curl", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 7 },
-        { "liftName": "Glute Thrust", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 7 },
-        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 7 }
+        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "2", "rpeTarget": 8, "baseFUCost": 5, "priority": 1, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "2", "rpeTarget": 7.5, "baseFUCost": 5, "priority": 1, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "5", "rpeTarget": 7.5, "baseFUCost": 2.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Jefferson Curl", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 7, "baseFUCost": 1.5, "priority": 3, "stressTags": ["hinge", "eccentric"] },
+        { "liftName": "Glute Thrust", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 7, "baseFUCost": 1.5, "priority": 3, "stressTags": ["hinge"] },
+        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 7, "baseFUCost": 1, "priority": 3, "stressTags": [] }
       ]
     },
     {
       "week": 3,
       "day": 4,
       "focus": "Bench Volume",
+      "fatigueCap": 16,
       "exercises": [
-        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 4, "reps": "6", "rpeTarget": 7.5 },
-        { "liftName": "Incline Dumbbell Bench", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 7 },
-        { "liftName": "Dips", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 7 },
-        { "liftName": "Seated Overhead Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 7 },
-        { "liftName": "Tricep Push-Downs", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 7 }
+        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 4, "reps": "6", "rpeTarget": 7.5, "baseFUCost": 2.5, "priority": 1, "stressTags": ["push"] },
+        { "liftName": "Incline Dumbbell Bench", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 7, "baseFUCost": 1.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Dips", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "10", "rpeTarget": 7, "baseFUCost": 1.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Seated Overhead Press", "role": "accessory", "progressionType": "strength", "sets": 3, "reps": "8", "rpeTarget": 7, "baseFUCost": 1.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Tricep Push-Downs", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 7, "baseFUCost": 1, "priority": 3, "stressTags": ["push"] }
       ]
     },
     {
       "week": 4,
       "day": 1,
       "focus": "Squat",
+      "fatigueCap": 20,
       "exercises": [
-        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 6 },
-        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 5 },
-        { "liftName": "Bench Paused 3s", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 5 },
-        { "liftName": "Leg Press", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 5 },
-        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "8 E/L", "rpeTarget": 5 }
+        { "liftName": "Squat (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 6, "baseFUCost": 4, "priority": 1, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Squats (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 5, "baseFUCost": 4, "priority": 1, "stressTags": ["axial", "knee-dominant"] },
+        { "liftName": "Bench Paused 3s", "role": "secondary", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 5, "baseFUCost": 2.5, "priority": 2, "stressTags": ["push"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Leg Press", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 5, "baseFUCost": 1.5, "priority": 3, "stressTags": ["knee-dominant"] },
+        { "liftName": "Bulgarian Split Squat", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "8 E/L", "rpeTarget": 5, "baseFUCost": 1.5, "priority": 3, "stressTags": ["knee-dominant"] }
       ]
     },
     {
       "week": 4,
       "day": 2,
       "focus": "Bench",
+      "fatigueCap": 18,
       "exercises": [
-        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 6 },
-        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 5 },
-        { "liftName": "Paused Squat", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "5", "rpeTarget": 5 },
-        { "liftName": "Lateral Raise w/ER", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 5 },
-        { "liftName": "Arnold Press", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 5 },
-        { "liftName": "Skull Crusher", "role": "accessory", "progressionType": "strength", "sets": 1, "reps": "10", "rpeTarget": 5 }
+        { "liftName": "Bench (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "4", "rpeTarget": 6, "baseFUCost": 2.5, "priority": 1, "stressTags": ["push"] },
+        { "liftName": "Bench (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 3, "reps": "4", "rpeTarget": 5, "baseFUCost": 2.5, "priority": 1, "stressTags": ["push"] },
+        { "liftName": "Paused Squat", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "5", "rpeTarget": 5, "baseFUCost": 3, "priority": 2, "stressTags": ["axial", "knee-dominant"], "mechanicalDisadvantage": true, "constraintMultiplier": 1.2 },
+        { "liftName": "Lateral Raise w/ER", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 5, "baseFUCost": 1, "priority": 3, "stressTags": ["pull"] },
+        { "liftName": "Arnold Press", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 5, "baseFUCost": 1.5, "priority": 3, "stressTags": ["push"] },
+        { "liftName": "Skull Crusher", "role": "accessory", "progressionType": "strength", "sets": 1, "reps": "10", "rpeTarget": 5, "baseFUCost": 1, "priority": 3, "stressTags": ["push"] }
       ]
     },
     {
       "week": 4,
       "day": 3,
       "focus": "Deadlift",
+      "fatigueCap": 22,
       "exercises": [
-        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 6 },
-        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 2, "reps": "3", "rpeTarget": 5 },
-        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "5", "rpeTarget": 5 },
-        { "liftName": "Jefferson Curl", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "8", "rpeTarget": 5 },
-        { "liftName": "Glute Thrust", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 5 },
-        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "strength", "sets": 1, "reps": "10", "rpeTarget": 5 }
+        { "liftName": "Deadlift (Top Set)", "role": "top-set", "progressionType": "strength", "sets": 1, "reps": "3", "rpeTarget": 6, "baseFUCost": 5, "priority": 1, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Deadlift (Back Off)", "role": "back-off", "progressionType": "strength", "sets": 2, "reps": "3", "rpeTarget": 5, "baseFUCost": 5, "priority": 1, "stressTags": ["axial", "hinge"] },
+        { "liftName": "Close Grip Bench", "role": "secondary", "progressionType": "strength", "sets": 2, "reps": "5", "rpeTarget": 5, "baseFUCost": 2.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Jefferson Curl", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "8", "rpeTarget": 5, "baseFUCost": 1.5, "priority": 3, "stressTags": ["hinge", "eccentric"] },
+        { "liftName": "Glute Thrust", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 5, "baseFUCost": 1.5, "priority": 3, "stressTags": ["hinge"] },
+        { "liftName": "Hanging Leg Raise", "role": "accessory", "progressionType": "strength", "sets": 1, "reps": "10", "rpeTarget": 5, "baseFUCost": 1, "priority": 3, "stressTags": [] }
       ]
     },
     {
       "week": 4,
       "day": 4,
       "focus": "Bench Volume",
+      "fatigueCap": 14,
       "exercises": [
-        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 6 },
-        { "liftName": "Incline Dumbbell Bench", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "8", "rpeTarget": 5 },
-        { "liftName": "Dips", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 5 },
-        { "liftName": "Seated Overhead Press", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "8", "rpeTarget": 5 },
-        { "liftName": "Tricep Push-Downs", "role": "accessory", "progressionType": "strength", "sets": 1, "reps": "10", "rpeTarget": 5 }
+        { "liftName": "Bench", "role": "volume", "progressionType": "strength", "sets": 3, "reps": "6", "rpeTarget": 6, "baseFUCost": 2.5, "priority": 1, "stressTags": ["push"] },
+        { "liftName": "Incline Dumbbell Bench", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "8", "rpeTarget": 5, "baseFUCost": 1.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Dips", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "10", "rpeTarget": 5, "baseFUCost": 1.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Seated Overhead Press", "role": "accessory", "progressionType": "strength", "sets": 2, "reps": "8", "rpeTarget": 5, "baseFUCost": 1.5, "priority": 2, "stressTags": ["push"] },
+        { "liftName": "Tricep Push-Downs", "role": "accessory", "progressionType": "strength", "sets": 1, "reps": "10", "rpeTarget": 5, "baseFUCost": 1, "priority": 3, "stressTags": ["push"] }
       ]
     }
   ]
