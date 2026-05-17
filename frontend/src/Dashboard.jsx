@@ -780,6 +780,7 @@ export default function Dashboard() {
                 <option value="Mark Training">Mark Training</option>
                 <option value="Hercules-Foundation-Pauline-Version">Hercules Foundation - Pauline Version</option>
                 <option value="6-Week Wave Powerlifting">6-Week Wave Powerlifting</option>
+                <option value="High-Frequency Specificity Wave">High-Frequency Specificity Wave</option>
               </select>
               <button onClick={assignProgramToUser} className="btn-primary">Assign Program</button>
               {adminMessage && <p className="admin-message">{adminMessage}</p>}
@@ -807,6 +808,7 @@ export default function Dashboard() {
                   <option value="Hercules Foundation">Hercules Foundation</option>
                   <option value="Hephaestus Framework">Hephaestus Framework</option>
                   <option value="6-Week Wave Powerlifting">6-Week Wave Powerlifting</option>
+                  <option value="High-Frequency Specificity Wave">High-Frequency Specificity Wave</option>
                 </select>
                 <button onClick={removeProgramFromUser} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer" }}>
                   Remove Program
