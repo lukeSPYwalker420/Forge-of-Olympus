@@ -1444,14 +1444,15 @@ app.post("/api/login", async (req, res) => {
   let hasActiveSubscription = false;
   
   if (isAdmin) {
-    purchasedPrograms = [
-      "Ares Protocol", "Apollo Physique",
-      "Hephaestus Framework", "Hercules Foundation",
-      "Mark Training", "Hercules Foundation - Pauline Version",
-      "6-Week Wave Powerlifting"
-    ];
-    hasActiveSubscription = true;
-  } else {
+  purchasedPrograms = [
+    "Ares Protocol", "Apollo Physique",
+    "Hephaestus Framework", "Hercules Foundation",
+    "Mark Training", "Hercules Foundation - Pauline Version",
+    "6-Week Wave Powerlifting",
+    "High-Frequency Specificity Wave"
+  ];
+  hasActiveSubscription = true;
+} else {
     const activePurchases = await Purchase.find({ email, active: true });
     purchasedPrograms = activePurchases.map(p => p.programName);
     hasActiveSubscription = activePurchases.length > 0 || user.manualPremium === true;
