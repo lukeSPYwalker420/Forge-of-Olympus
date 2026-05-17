@@ -50,9 +50,6 @@ export default function SessionView() {
     const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`
       + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
       + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
-      + `&qualityAdjustment=${adjustments.qualityAdjustment}`
-      + `&painAdjustment=${adjustments.painAdjustment}`
-      + `&stabilityAdjustment=${adjustments.stabilityAdjustment}`;
 
     fetch(url)
       .then(res => {
@@ -130,9 +127,6 @@ export default function SessionView() {
       const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`
         + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
         + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
-        + `&qualityAdjustment=${adjustments.qualityAdjustment}`
-        + `&painAdjustment=${adjustments.painAdjustment}`
-        + `&stabilityAdjustment=${adjustments.stabilityAdjustment}`;
       const res = await fetch(url);
       const json = await res.json();
       setData(json);
@@ -360,9 +354,6 @@ export default function SessionView() {
       const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`
         + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
         + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
-        + `&qualityAdjustment=${adjustments.qualityAdjustment}`
-        + `&painAdjustment=${adjustments.painAdjustment}`
-        + `&stabilityAdjustment=${adjustments.stabilityAdjustment}`;
       const res = await fetch(url);
       const json = await res.json();
       setData(json);
@@ -450,6 +441,23 @@ export default function SessionView() {
         </div>
       )}
 
+      {/* Fatigue optimisation notice */}
+      {data.fatigueOptimised && (
+        <div style={{
+          background: "#2a2a3544",
+          borderLeft: "4px solid #d4af37",
+          padding: "12px",
+          marginBottom: "20px",
+          borderRadius: "8px",
+          fontSize: "0.9rem"
+        }}>
+          <strong>📊 Volume auto‑adjusted to today's recovery capacity</strong>
+          {data.overloadedTags?.length > 0 && (
+            <span> · High stress on: {data.overloadedTags.join(', ')}</span>
+          )}
+        </div>
+      )}
+
       <div style={{ marginBottom: 25 }}>
         <h1>Week {data.program?.week ?? "?"} — Day {data.program?.day ?? "?"}</h1>
         <p style={{ opacity: 0.7 }}>{data.program?.focus ?? "No focus found"}</p>
@@ -507,6 +515,30 @@ export default function SessionView() {
                     verticalAlign: "middle"
                   }}>⇊ Descending</span>
                 )}
+                {/* Mechanical disadvantage badge */}
+                {lift.mechanicalDisadvantage && (
+                  <span style={{
+                    fontSize: "0.65rem",
+                    background: "#8b5cf6",
+                    color: "#fff",
+                    padding: "2px 8px",
+                    borderRadius: "12px",
+                    marginLeft: "8px",
+                    verticalAlign: "middle"
+                  }}>🦾 Position‑specific</span>
+                )}
+                {/* Stress overload badge */}
+                {lift.stressOverload && (
+                  <span style={{
+                    fontSize: "0.65rem",
+                    background: "#f97316",
+                    color: "#fff",
+                    padding: "2px 8px",
+                    borderRadius: "12px",
+                    marginLeft: "8px",
+                    verticalAlign: "middle"
+                  }}>⚡ High‑demand</span>
+                )}
               </h3>
               <div style={{ display: "flex", gap: 20, marginBottom: 10, flexWrap: "wrap" }}>
                 <span>Sets: {lift.sets}</span>
@@ -527,13 +559,13 @@ export default function SessionView() {
                     <span>Current: {lift.currentWeight ?? 0}kg</span>
                     <span>Next: {lift.projectedNextWeight ?? 0}kg</span>
                     {lift.fatigueAdjusted && (
-                    <span style={{
-                      fontSize: "0.65rem",
-                      color: "#ffaa44",
-                      marginLeft: "8px",
-                      fontStyle: "italic"
-                    }}>⚡ fatigue‑adjusted</span>
-                  )}
+                      <span style={{
+                        fontSize: "0.65rem",
+                        color: "#ffaa44",
+                        marginLeft: "8px",
+                        fontStyle: "italic"
+                      }}>⚡ fatigue‑adjusted</span>
+                    )}
                   </>
                 ) : (
                   <span style={{ color: "#ffaa44" }}>
