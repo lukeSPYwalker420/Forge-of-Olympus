@@ -495,228 +495,242 @@ export default function SessionView() {
         </div>
       )}
 
-      <div style={{ display: "grid", gap: 20 }}>
-        {(data.projected || []).map((lift, i) => {
-          const pt = lift.progressionType;
-          const currentRepsInputs = inputs[lift.liftName]?.repsPerSet || [];
+            <div style={{ display: "grid", gap: 20 }}>
+        {(() => {
+          const allExercises = data.projected || [];
+          const visibleExercises = allExercises.filter(lift => lift.sets > 0);
+          const hiddenCount = allExercises.length - visibleExercises.length;
 
           return (
-            <div key={i} style={{ border: "1px solid #e5e5e5", borderRadius: 12, padding: 20 }}>
-              <h3>
-                {lift.liftName}
-                {lift.descendingSet && (
-                  <span style={{
-                    fontSize: "0.7rem",
-                    background: "#6a5acd",
-                    color: "#fff",
-                    padding: "2px 8px",
-                    borderRadius: "12px",
-                    marginLeft: "8px",
-                    verticalAlign: "middle"
-                  }}>⇊ Descending</span>
-                )}
-                {/* Mechanical disadvantage badge */}
-                {lift.mechanicalDisadvantage && (
-                  <span style={{
-                    fontSize: "0.65rem",
-                    background: "#8b5cf6",
-                    color: "#fff",
-                    padding: "2px 8px",
-                    borderRadius: "12px",
-                    marginLeft: "8px",
-                    verticalAlign: "middle"
-                  }}>🦾 Position‑specific</span>
-                )}
-                {/* Stress overload badge */}
-                {lift.stressOverload && (
-                  <span style={{
-                    fontSize: "0.65rem",
-                    background: "#f97316",
-                    color: "#fff",
-                    padding: "2px 8px",
-                    borderRadius: "12px",
-                    marginLeft: "8px",
-                    verticalAlign: "middle"
-                  }}>⚡ High‑demand</span>
-                )}
-              </h3>
-              <div style={{ display: "flex", gap: 20, marginBottom: 10, flexWrap: "wrap" }}>
-                <span>Sets: {lift.sets}</span>
-                <span>Reps: {lift.reps}</span>
-                <span>{getMetricLabel(lift)} Target: {getTargetValue(lift)}</span>
-                {(lift.adjustedRpeTarget || lift.adjustedRirTarget || lift.adjustedQualityTarget || lift.adjustedStabilityTarget) && (
-                  <span style={{
-                    fontSize: "0.65rem",
-                    color: "#a1a1aa",
-                    marginLeft: "6px",
-                    fontStyle: "italic"
-                  }}>(auto‑adjusted)</span>
-                )}
-              </div>
-              <div style={{ display: "flex", gap: 20, marginBottom: 15, fontWeight: "bold", flexWrap: "wrap" }}>
-                {subscriptionActive ? (
-                  <>
-                    <span>Current: {lift.currentWeight ?? 0}kg</span>
-                    <span>Next: {lift.projectedNextWeight ?? 0}kg</span>
-                    {lift.fatigueAdjusted && (
-                      <span style={{
-                        fontSize: "0.65rem",
-                        color: "#ffaa44",
-                        marginLeft: "8px",
-                        fontStyle: "italic"
-                      }}>⚡ fatigue‑adjusted</span>
-                    )}
-                  </>
-                ) : (
-                  <span style={{ color: "#ffaa44" }}>
-                    ⚡ Subscribe to see recommended weights
-                  </span>
-                )}
-              </div>
-
-              <div style={{ display: "flex", gap: 10, marginBottom: 15, flexWrap: "wrap" }}>
-                {pt !== "mobility" && (
-                  <input
-                    type="number"
-                    placeholder={lift.currentWeight > 0 ? `${lift.currentWeight} kg` : "Weight (kg)"}
-                    style={{ padding: 8, width: "100px" }}
-                    value={inputs[lift.liftName]?.weight || ""}
-                    onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
-                  />
-                )}
-
-                {pt === "power" && (
-                  <input
-                    type="number"
-                    placeholder="Quality (1-10)"
-                    style={{ padding: 8, width: "100px" }}
-                    value={inputs[lift.liftName]?.quality || ""}
-                    onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], quality: e.target.value } }))}
-                  />
-                )}
-
-                {pt === "mobility" && (
-                  <>
-                    <input
-                      type="number"
-                      placeholder={lift.currentWeight > 0 ? `${lift.currentWeight} kg` : "Weight (kg)"}
-                      style={{ padding: 8, width: "100px" }}
-                      value={inputs[lift.liftName]?.weight || ""}
-                      onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
-                    />
-                    <input
-                      type="number"
-                      placeholder="Stability (1-10)"
-                      style={{ padding: 8, width: "100px" }}
-                      value={inputs[lift.liftName]?.stability || ""}
-                      onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], stability: e.target.value } }))}
-                    />
-                    <input
-                      type="number"
-                      placeholder="Pain (1-10)"
-                      style={{ padding: 8, width: "100px" }}
-                      value={inputs[lift.liftName]?.pain || ""}
-                      onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], pain: e.target.value } }))}
-                    />
-                  </>
-                )}
-
-                {(pt === "strength" || data.logic === "STRENGTH_RPE") && (
-                  <input
-                    type="number"
-                    step="0.5"
-                    placeholder="RPE"
-                    style={{ padding: 8, width: "80px" }}
-                    value={inputs[lift.liftName]?.rpe || ""}
-                    onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], rpe: e.target.value } }))}
-                  />
-                )}
-
-                {(data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") && (
-                  <input
-                    type="number"
-                    placeholder="RIR"
-                    style={{ padding: 8, width: "80px" }}
-                    value={inputs[lift.liftName]?.rir || ""}
-                    onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], rir: e.target.value } }))}
-                  />
-                )}
-              </div>
-
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 15 }}>
-                <span style={{ fontWeight: "bold", minWidth: "50px" }}>Sets:</span>
-                {[...Array(lift.sets || 3)].map((_, idx) => (
-                  <input
-                    key={idx}
-                    type="number"
-                    placeholder={`Set ${idx + 1}`}
-                    style={{ padding: 8, width: "70px" }}
-                    value={currentRepsInputs[idx] || ""}
-                    onChange={e => {
-                      const current = inputs[lift.liftName] || {};
-                      const newReps = [...(current.repsPerSet || [])];
-                      newReps[idx] = e.target.value;
-                      setInputs(prev => ({
-                        ...prev,
-                        [lift.liftName]: { ...current, repsPerSet: newReps }
-                      }));
-                    }}
-                  />
-                ))}
-              </div>
-
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <button onClick={() => logSet(lift)} style={{ padding: "10px 15px", borderRadius: 8, border: "none", background: "#111", color: "#fff", cursor: "pointer" }}>
-                  Log Set
-                </button>
-                <button
-                  onClick={() => handleAutoFill(lift)}
-                  disabled={!subscriptionActive}
-                  style={{
-                    padding: "10px 15px",
-                    borderRadius: 8,
-                    border: "1px solid #4caf50",
-                    background: subscriptionActive ? "#4caf50" : "#666",
-                    color: "#fff",
-                    cursor: subscriptionActive ? "pointer" : "not-allowed",
-                    opacity: subscriptionActive ? 1 : 0.5
-                  }}
-                >
-                  ⚡ Auto Fill
-                </button>
-                <button onClick={() => handleUndoLastEntry(lift.liftName)} style={{ padding: "10px 15px", borderRadius: 8, border: "1px solid #ff9800", background: "#ff9800", color: "#fff", cursor: "pointer" }}>
-                  ↩ Undo Last
-                </button>
-                <button onClick={() => fetchHistory(lift.liftName)} style={{ padding: "10px 15px", borderRadius: 8, border: "1px solid #ccc", background: "#fff", cursor: "pointer" }}>
-                  History
-                </button>
-                <button onClick={() => setInputs(prev => ({ ...prev, [lift.liftName]: {} }))} style={{ padding: "6px 12px", fontSize: "12px", background: "#444", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer" }}>
-                  Clear
-                </button>
-              </div>
-
-              {history[lift.liftName] && history[lift.liftName].length > 0 && (
-                <div style={{ marginTop: 10, background: "#f5f5f5", padding: 10, color: "#000", borderRadius: 8 }}>
-                  <strong>History:</strong>
-                  {history[lift.liftName].map((entry, idx) => {
-                    let metricStr = "";
-                    if (entry.actualRPE) metricStr = `RPE ${entry.actualRPE}`;
-                    else if (entry.actualRIR) metricStr = `RIR ${entry.actualRIR}`;
-                    else if (entry.actualStability && entry.actualPain) metricStr = `Stability ${entry.actualStability} / Pain ${entry.actualPain}`;
-                    else if (entry.actualStability) metricStr = `Stability ${entry.actualStability}`;
-                    else if (entry.actualROM) metricStr = `ROM ${entry.actualROM}% / Pain ${entry.actualPain}`;
-                    const setsInfo = entry.repsPerSet && entry.repsPerSet.length ? `Sets: [${entry.repsPerSet.join(", ")}]` : `${entry.repsCompleted || 0} reps`;
-                    return (
-                      <div key={idx} style={{ fontSize: 14 }}>
-                        {new Date(entry.createdAt).toLocaleDateString()} — {entry.actualWeight ? `${entry.actualWeight}kg x ` : ""}{setsInfo} {metricStr}
-                      </div>
-                    );
-                  })}
+            <>
+              {hiddenCount > 0 && (
+                <div style={{ background: "#2a2a3544", borderLeft: "4px solid #ffaa44", padding: "12px", borderRadius: "8px", fontSize: "0.85rem", marginBottom: "8px" }}>
+                  ⚡ {hiddenCount} exercise(s) skipped today – fatigue budget exceeded
                 </div>
               )}
-            </div>
+              {visibleExercises.map((lift, i) => {
+                const pt = lift.progressionType;
+                const currentRepsInputs = inputs[lift.liftName]?.repsPerSet || [];
+
+                return (
+                  <div key={i} style={{ border: "1px solid #e5e5e5", borderRadius: 12, padding: 20 }}>
+                    {/* Keep all the existing exercise JSX exactly as it was */}
+                    <h3>
+                      {lift.liftName}
+                      {lift.descendingSet && (
+                        <span style={{
+                          fontSize: "0.7rem",
+                          background: "#6a5acd",
+                          color: "#fff",
+                          padding: "2px 8px",
+                          borderRadius: "12px",
+                          marginLeft: "8px",
+                          verticalAlign: "middle"
+                        }}>⇊ Descending</span>
+                      )}
+                      {lift.mechanicalDisadvantage && (
+                        <span style={{
+                          fontSize: "0.65rem",
+                          background: "#8b5cf6",
+                          color: "#fff",
+                          padding: "2px 8px",
+                          borderRadius: "12px",
+                          marginLeft: "8px",
+                          verticalAlign: "middle"
+                        }}>🦾 Position‑specific</span>
+                      )}
+                      {lift.stressOverload && (
+                        <span style={{
+                          fontSize: "0.65rem",
+                          background: "#f97316",
+                          color: "#fff",
+                          padding: "2px 8px",
+                          borderRadius: "12px",
+                          marginLeft: "8px",
+                          verticalAlign: "middle"
+                        }}>⚡ High‑demand</span>
+                      )}
+                    </h3>
+                    <div style={{ display: "flex", gap: 20, marginBottom: 10, flexWrap: "wrap" }}>
+                      <span>Sets: {lift.sets}</span>
+                      <span>Reps: {lift.reps}</span>
+                      <span>{getMetricLabel(lift)} Target: {getTargetValue(lift)}</span>
+                      {(lift.adjustedRpeTarget || lift.adjustedRirTarget || lift.adjustedQualityTarget || lift.adjustedStabilityTarget) && (
+                        <span style={{
+                          fontSize: "0.65rem",
+                          color: "#a1a1aa",
+                          marginLeft: "6px",
+                          fontStyle: "italic"
+                        }}>(auto‑adjusted)</span>
+                      )}
+                    </div>
+                    <div style={{ display: "flex", gap: 20, marginBottom: 15, fontWeight: "bold", flexWrap: "wrap" }}>
+                      {subscriptionActive ? (
+                        <>
+                          <span>Current: {lift.currentWeight ?? 0}kg</span>
+                          <span>Next: {lift.projectedNextWeight ?? 0}kg</span>
+                          {lift.fatigueAdjusted && (
+                            <span style={{
+                              fontSize: "0.65rem",
+                              color: "#ffaa44",
+                              marginLeft: "8px",
+                              fontStyle: "italic"
+                            }}>⚡ fatigue‑adjusted</span>
+                          )}
+                        </>
+                      ) : (
+                        <span style={{ color: "#ffaa44" }}>
+                          ⚡ Subscribe to see recommended weights
+                        </span>
+                      )}
+                    </div>
+
+                    <div style={{ display: "flex", gap: 10, marginBottom: 15, flexWrap: "wrap" }}>
+                      {pt !== "mobility" && (
+                        <input
+                          type="number"
+                          placeholder={lift.currentWeight > 0 ? `${lift.currentWeight} kg` : "Weight (kg)"}
+                          style={{ padding: 8, width: "100px" }}
+                          value={inputs[lift.liftName]?.weight || ""}
+                          onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
+                        />
+                      )}
+
+                      {pt === "power" && (
+                        <input
+                          type="number"
+                          placeholder="Quality (1-10)"
+                          style={{ padding: 8, width: "100px" }}
+                          value={inputs[lift.liftName]?.quality || ""}
+                          onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], quality: e.target.value } }))}
+                        />
+                      )}
+
+                      {pt === "mobility" && (
+                        <>
+                          <input
+                            type="number"
+                            placeholder={lift.currentWeight > 0 ? `${lift.currentWeight} kg` : "Weight (kg)"}
+                            style={{ padding: 8, width: "100px" }}
+                            value={inputs[lift.liftName]?.weight || ""}
+                            onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
+                          />
+                          <input
+                            type="number"
+                            placeholder="Stability (1-10)"
+                            style={{ padding: 8, width: "100px" }}
+                            value={inputs[lift.liftName]?.stability || ""}
+                            onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], stability: e.target.value } }))}
+                          />
+                          <input
+                            type="number"
+                            placeholder="Pain (1-10)"
+                            style={{ padding: 8, width: "100px" }}
+                            value={inputs[lift.liftName]?.pain || ""}
+                            onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], pain: e.target.value } }))}
+                          />
+                        </>
+                      )}
+
+                      {(pt === "strength" || data.logic === "STRENGTH_RPE") && (
+                        <input
+                          type="number"
+                          step="0.5"
+                          placeholder="RPE"
+                          style={{ padding: 8, width: "80px" }}
+                          value={inputs[lift.liftName]?.rpe || ""}
+                          onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], rpe: e.target.value } }))}
+                        />
+                      )}
+
+                      {(data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") && (
+                        <input
+                          type="number"
+                          placeholder="RIR"
+                          style={{ padding: 8, width: "80px" }}
+                          value={inputs[lift.liftName]?.rir || ""}
+                          onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], rir: e.target.value } }))}
+                        />
+                      )}
+                    </div>
+
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 15 }}>
+                      <span style={{ fontWeight: "bold", minWidth: "50px" }}>Sets:</span>
+                      {[...Array(lift.sets)].map((_, idx) => (
+                        <input
+                          key={idx}
+                          type="number"
+                          placeholder={`Set ${idx + 1}`}
+                          style={{ padding: 8, width: "70px" }}
+                          value={currentRepsInputs[idx] || ""}
+                          onChange={e => {
+                            const current = inputs[lift.liftName] || {};
+                            const newReps = [...(current.repsPerSet || [])];
+                            newReps[idx] = e.target.value;
+                            setInputs(prev => ({
+                              ...prev,
+                              [lift.liftName]: { ...current, repsPerSet: newReps }
+                            }));
+                          }}
+                        />
+                      ))}
+                    </div>
+
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      <button onClick={() => logSet(lift)} style={{ padding: "10px 15px", borderRadius: 8, border: "none", background: "#111", color: "#fff", cursor: "pointer" }}>
+                        Log Set
+                      </button>
+                      <button
+                        onClick={() => handleAutoFill(lift)}
+                        disabled={!subscriptionActive}
+                        style={{
+                          padding: "10px 15px",
+                          borderRadius: 8,
+                          border: "1px solid #4caf50",
+                          background: subscriptionActive ? "#4caf50" : "#666",
+                          color: "#fff",
+                          cursor: subscriptionActive ? "pointer" : "not-allowed",
+                          opacity: subscriptionActive ? 1 : 0.5
+                        }}
+                      >
+                        ⚡ Auto Fill
+                      </button>
+                      <button onClick={() => handleUndoLastEntry(lift.liftName)} style={{ padding: "10px 15px", borderRadius: 8, border: "1px solid #ff9800", background: "#ff9800", color: "#fff", cursor: "pointer" }}>
+                        ↩ Undo Last
+                      </button>
+                      <button onClick={() => fetchHistory(lift.liftName)} style={{ padding: "10px 15px", borderRadius: 8, border: "1px solid #ccc", background: "#fff", cursor: "pointer" }}>
+                        History
+                      </button>
+                      <button onClick={() => setInputs(prev => ({ ...prev, [lift.liftName]: {} }))} style={{ padding: "6px 12px", fontSize: "12px", background: "#444", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer" }}>
+                        Clear
+                      </button>
+                    </div>
+
+                    {history[lift.liftName] && history[lift.liftName].length > 0 && (
+                      <div style={{ marginTop: 10, background: "#f5f5f5", padding: 10, color: "#000", borderRadius: 8 }}>
+                        <strong>History:</strong>
+                        {history[lift.liftName].map((entry, idx) => {
+                          let metricStr = "";
+                          if (entry.actualRPE) metricStr = `RPE ${entry.actualRPE}`;
+                          else if (entry.actualRIR) metricStr = `RIR ${entry.actualRIR}`;
+                          else if (entry.actualStability && entry.actualPain) metricStr = `Stability ${entry.actualStability} / Pain ${entry.actualPain}`;
+                          else if (entry.actualStability) metricStr = `Stability ${entry.actualStability}`;
+                          else if (entry.actualROM) metricStr = `ROM ${entry.actualROM}% / Pain ${entry.actualPain}`;
+                          const setsInfo = entry.repsPerSet && entry.repsPerSet.length ? `Sets: [${entry.repsPerSet.join(", ")}]` : `${entry.repsCompleted || 0} reps`;
+                          return (
+                            <div key={idx} style={{ fontSize: 14 }}>
+                              {new Date(entry.createdAt).toLocaleDateString()} — {entry.actualWeight ? `${entry.actualWeight}kg x ` : ""}{setsInfo} {metricStr}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </>
           );
-        })}
+        })()}
       </div>
 
       {/* next workout preview */}
