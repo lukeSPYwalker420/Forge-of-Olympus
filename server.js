@@ -451,52 +451,71 @@ function strengthRPEProgression(state, sessionData) {
   const repsPerSet = sessionData.repsPerSet || [];
   const targetReps = parseInt(sessionData.targetReps, 10);
   const targetSets = sessionData.targetSets || 1;
-  const role = sessionData.role; // 'top-set', 'back-off', 'volume'
+  const role = sessionData.role;
 
-  // Guard: incomplete data
   if (!completed || !sessionData.actualWeight || !repsPerSet.length || !sessionData.actualRPE) {
     return { estimated1RM: new1RM, currentWeight: newVolumeWeight };
   }
 
   const bestReps = Math.max(...repsPerSet);
   const fresh1RM = estimate1RM(sessionData.actualWeight, bestReps, sessionData.actualRPE);
-  const allSetsCompleted = repsPerSet.length === targetSets && repsPerSet.every(r => r >= targetReps);
+
+  // If targetSets is 0 (exercise was skipped), any work counts as meeting minimum
+  const setsCompleted = repsPerSet.length;
+  const metMinimumSets = (targetSets === 0) ? true : (setsCompleted >= targetSets);
+  const metMinReps = repsPerSet.every(r => r >= targetReps);
+  const allSetsCompleted = metMinimumSets && metMinReps;
   const rpeOk = sessionData.actualRPE <= (sessionData.targetRPE || 7) + 0.5;
   const isGoodSession = allSetsCompleted && rpeOk;
 
-  // Volume lift progression: adjust weight based on RPE compared to target
   if (role === "volume") {
     if (allSetsCompleted) {
       const rpeDiff = (sessionData.targetRPE || 7) - sessionData.actualRPE;
       if (rpeDiff >= 1) {
-        // Too easy → increase weight
-        const increment = (sessionData.liftName?.toLowerCase().includes("squat") || sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-        newVolumeWeight += increment;
-        console.log(`📈 [VOLUME] ${sessionData.liftName} RPE too low → weight ↑ to ${newVolumeWeight}kg`);
+        const inc = (sessionData.liftName?.toLowerCase().includes("squat") || sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+        newVolumeWeight += inc;
       } else if (rpeDiff <= -1) {
-        // Too hard → decrease weight
-        const decrement = (sessionData.liftName?.toLowerCase().includes("squat") || sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-        newVolumeWeight = Math.max(0, newVolumeWeight - decrement);
-        console.log(`⚠️ [VOLUME] ${sessionData.liftName} RPE too high → weight ↓ to ${newVolumeWeight}kg`);
+        const dec = (sessionData.liftName?.toLowerCase().includes("squat") || sessionData.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+        newVolumeWeight = Math.max(0, newVolumeWeight - dec);
       }
     }
-    // Do not update 1RM for volume lifts
     return { estimated1RM: new1RM, currentWeight: newVolumeWeight };
   }
 
-  // Normal strength progression for top‑set and back‑off (no volume lift)
+  let stallCounter = state.stallCounter || 0;
+  let consecutiveSuccesses = state.consecutiveSuccesses || 0;
+
   if (isGoodSession) {
+    consecutiveSuccesses++;
+    stallCounter = 0;
     if (fresh1RM > new1RM) {
       new1RM = fresh1RM;
       console.log(`📈 [STRENGTH] Good session ${sessionData.liftName}: 1RM ↑ ${state.estimated1RM} → ${new1RM}`);
     }
   } else {
-    if (new1RM > 0) {
+    consecutiveSuccesses = 0;
+    const didNotMeetWork = setsCompleted < targetSets || !metMinReps;
+    const rpeTooHigh = sessionData.actualRPE > (sessionData.targetRPE || 7) + 1;
+    if (didNotMeetWork && rpeTooHigh) {
+      stallCounter++;
+    } else {
+      stallCounter = 0; // extra work or good RPE resets stall counter
+    }
+    if (stallCounter >= 3 && new1RM > 0) {
       new1RM = Math.round(new1RM * 0.98);
-      console.log(`⚠️ [STRENGTH] Bad session ${sessionData.liftName}: 1RM ↓ to ${new1RM}`);
+      stallCounter = 0;
+      console.log(`⚠️ [STRENGTH] 3 true failures for ${sessionData.liftName}: 1RM deloaded to ${new1RM}`);
+    } else {
+      console.log(`📉 [STRENGTH] Session for ${sessionData.liftName} (stall ${stallCounter}/3) – no 1RM change`);
     }
   }
-  return { estimated1RM: Math.round(new1RM), currentWeight: newVolumeWeight };
+
+  return {
+    estimated1RM: Math.round(new1RM),
+    currentWeight: newVolumeWeight,
+    consecutiveSuccesses,
+    stallCounter
+  };
 }
 
 /**
@@ -1101,18 +1120,17 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
         }
       }
 
-      // ========== MECHANICAL DISADVANTAGE HANDLING ==========
+            // ========== MECHANICAL DISADVANTAGE HANDLING ==========
       if (ex.mechanicalDisadvantage && effectiveState && logic === "STRENGTH_RPE") {
-        // Keep currentWeight from parent's 1RM calculation, but never drop it below 95% of that initial suggestion
-        if (!ex._disadvantageBaseWeight) {
-          ex._disadvantageBaseWeight = currentWeight;
+        // No hard weight cap. Instead, limit the increase on good sessions.
+        if (projectedNextWeight > currentWeight) {
+          const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 2.5 : 1.25;
+          projectedNextWeight = currentWeight + inc;
+        } else {
+          projectedNextWeight = currentWeight;
         }
-        if (currentWeight < ex._disadvantageBaseWeight * 0.95) {
-          currentWeight = Math.round(ex._disadvantageBaseWeight * 0.95 / 2.5) * 2.5;
-        }
-        projectedNextWeight = currentWeight;   // don't suggest increase unless user proves readiness
+        ex._disadvantageActive = true;
       }
-      // ====================================================
 
       return {
         liftName: ex.liftName,

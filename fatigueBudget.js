@@ -104,13 +104,12 @@ export function stressOverloadMultiplier(exercise, weeklyTagLoads) {
  * Returns { totalFU, overloadedTags: string[] } for frontend flags.
  */
 export function allocateSessionBudget(exercises, fatigueCap, weeklyTagLoads) {
-  // Sort by priority (ascending). If no priority, treat as 3.
   const sorted = [...exercises].sort((a, b) => (a.priority || 3) - (b.priority || 3));
 
   let totalFU = 0;
   const overloadedTags = new Set();
 
-  // First pass: compute FU per set for each exercise, record tag overloads
+  // Compute stress multipliers
   for (const ex of sorted) {
     const stressMult = stressOverloadMultiplier(ex, weeklyTagLoads);
     if (stressMult > 1.0) {
@@ -121,14 +120,35 @@ export function allocateSessionBudget(exercises, fatigueCap, weeklyTagLoads) {
     }
   }
 
-  // Second pass: allocate full sets until cap reached
-  for (const ex of sorted) {
+  const getFU = (ex) => {
     const stressMult = ex._stressOverload || 1.0;
-    const fuPerSet = fatigueUnitsPerSet(ex, null, stressMult);
-    const originalSets = ex.sets;
-    let allocatedSets = 0;
+    return fatigueUnitsPerSet(ex, null, stressMult);
+  };
 
-    for (let i = 0; i < originalSets; i++) {
+  // 1. Allocate ONE set to every priority-1 & priority-2 exercise (if originally had sets)
+  for (const ex of sorted) {
+    const priority = ex.priority || 3;
+    if (priority > 2) continue;
+    if (ex.sets === 0) continue;
+    const fuPerSet = getFU(ex);
+    if (totalFU + fuPerSet <= fatigueCap) {
+      totalFU += fuPerSet;
+      ex._allocatedSets = 1;
+    } else {
+      ex._allocatedSets = 0;
+    }
+  }
+
+  // 2. Allocate remaining sets (2nd, 3rd, etc.) for priority 1 & 2 exercises
+  for (const ex of sorted) {
+    const priority = ex.priority || 3;
+    if (priority > 2) continue;
+    const alreadyAllocated = ex._allocatedSets || 0;
+    if (alreadyAllocated === 0) continue;
+    const fuPerSet = getFU(ex);
+    let allocatedSets = alreadyAllocated;
+    const maxSets = ex.sets;
+    for (let i = 1; i < maxSets; i++) {
       if (totalFU + fuPerSet <= fatigueCap) {
         totalFU += fuPerSet;
         allocatedSets++;
@@ -139,7 +159,23 @@ export function allocateSessionBudget(exercises, fatigueCap, weeklyTagLoads) {
     ex.sets = allocatedSets;
   }
 
-  // If totalFU still under cap and some exercises got zero sets, it's fine; the cap is a maximum.
+  // 3. Allocate at most ONE set to each priority-3+ exercise (accessories)
+  for (const ex of sorted) {
+    const priority = ex.priority || 3;
+    if (priority <= 2) continue;
+    if (ex.sets === 0) continue;
+    const fuPerSet = getFU(ex);
+    let allocatedSets = 0;
+    if (totalFU + fuPerSet <= fatigueCap) {
+      totalFU += fuPerSet;
+      allocatedSets = 1;
+    }
+    ex.sets = allocatedSets;
+  }
+
+  // Cleanup
+  for (const ex of sorted) delete ex._allocatedSets;
+
   return {
     totalFU: Math.round(totalFU * 10) / 10,
     overloadedTags: [...overloadedTags],
