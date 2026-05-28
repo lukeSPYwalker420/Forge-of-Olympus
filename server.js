@@ -657,21 +657,33 @@ function generalFitnessProgression(state, sessionData) {
 
   switch (progressionType) {
     case "strength":
-  const targetReps = parseInt(sessionData.targetReps, 10);
-  const actualReps = sessionData.repsCompleted || 0;
-  const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
-  
-  let isGoodStrength = completed && repsMet;
-  
-  // If RPE is available, use it; else if RIR is available, use it; else rely only on repsMet
-  if (sessionData.actualRPE !== undefined && sessionData.targetRPE !== undefined) {
-    const rpeOk = sessionData.actualRPE <= (sessionData.targetRPE || 7) + 1;
-    isGoodStrength = isGoodStrength && rpeOk;
-  } else if (sessionData.actualRIR !== undefined && sessionData.targetRIR !== undefined) {
-    const rirOk = sessionData.actualRIR <= (sessionData.targetRIR || 2);
-    isGoodStrength = isGoodStrength && rirOk;
+  // Determine min reps per set from targetReps string (e.g., "8-10" → 8)
+  const targetRepsStr = sessionData.targetReps;
+  let minRepsPerSet = 8;
+  if (typeof targetRepsStr === 'string' && targetRepsStr.includes('-')) {
+    minRepsPerSet = parseInt(targetRepsStr.split('-')[0], 10);
+  } else {
+    minRepsPerSet = parseInt(targetRepsStr, 10);
   }
-  // else: no RPE/RIR, so only repsMet determines success (user completed the work)
+  
+  const repsPerSetArray = sessionData.repsPerSet || [];
+  const targetSets = sessionData.targetSets || 0;
+  
+  // Check if every set meets the minimum reps
+  const allSetsCompleted = repsPerSetArray.length === targetSets &&
+                           repsPerSetArray.every(r => r >= minRepsPerSet);
+  
+  // Determine RPE success (if RPE is logged; otherwise assume success)
+  let rpeOk = true;
+  if (sessionData.actualRPE !== undefined && sessionData.targetRPE !== undefined) {
+    rpeOk = sessionData.actualRPE <= (sessionData.targetRPE || 7) + 0.5;
+  }
+  // If RIR is available instead (rare for strength), use it
+  else if (sessionData.actualRIR !== undefined && sessionData.targetRIR !== undefined) {
+    rpeOk = sessionData.actualRIR <= (sessionData.targetRIR || 2);
+  }
+  
+  const isGoodStrength = sessionData.completed && allSetsCompleted && rpeOk;
   
   if (isGoodStrength) {
     successStreak++;
@@ -997,6 +1009,18 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     const liftStates = await LiftState.find({ userId });
 
     const projected = adjustedSession.exercises.map(ex => {
+        // Get original exercise from session (before any mutations)
+  const originalEx = session.exercises.find(e => e.liftName === ex.liftName);
+  if (originalEx) {
+    // Restore any lost fields from the original
+    if (ex.rpeTarget === undefined && originalEx.rpeTarget !== undefined) ex.rpeTarget = originalEx.rpeTarget;
+    if (ex.progressionType === undefined && originalEx.progressionType !== undefined) ex.progressionType = originalEx.progressionType;
+    if (ex.rirTarget === undefined && originalEx.rirTarget !== undefined) ex.rirTarget = originalEx.rirTarget;
+    if (ex.qualityTarget === undefined && originalEx.qualityTarget !== undefined) ex.qualityTarget = originalEx.qualityTarget;
+    if (ex.stabilityTarget === undefined && originalEx.stabilityTarget !== undefined) ex.stabilityTarget = originalEx.stabilityTarget;
+    if (ex.painTarget === undefined && originalEx.painTarget !== undefined) ex.painTarget = originalEx.painTarget;
+    if (ex.romTarget === undefined && originalEx.romTarget !== undefined) ex.romTarget = originalEx.romTarget;
+  }
       // ========== NEW: Auto‑convert RIR → RPE for strength/hybrid programs ==========
       if ((logic === "STRENGTH_RPE" || logic === "GENERAL_FITNESS_HYBRID") 
           && ex.rirTarget !== undefined && ex.rpeTarget === undefined) {
@@ -1146,7 +1170,7 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
         liftName: ex.liftName,
         sets: ex.sets,
         reps: ex.reps,
-        rpeTarget: ex.rpeTarget,
+        rpeTarget: ex.rpeTarget !== undefined ? ex.rpeTarget : (ex.progressionType === "strength" ? 7 : undefined),
         rirTarget: ex.rirTarget,
         romTarget: ex.romTarget,
         painTarget: ex.painTarget,
