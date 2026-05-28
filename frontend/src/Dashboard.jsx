@@ -5,6 +5,7 @@ import "./Dashboard.css";
 import html2canvas from 'html2canvas';
 import ProgressLog from './ProgressLog';
 import CoachPrompts from './CoachPrompts';
+import { useSwipeable } from 'react-swipeable';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -45,6 +46,18 @@ export default function Dashboard() {
   const isAdmin = userEmail === "kieren2203@googlemail.com";
   
   const { unlockedRewards = [], nextMilestone = null } = rewards;
+
+  // Carousel state
+  const [currentCard, setCurrentCard] = useState(0);
+  const nextCard = () => setCurrentCard(prev => Math.min(prev + 1, cards.length - 1));
+  const prevCard = () => setCurrentCard(prev => Math.max(prev - 1, 0));
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: nextCard,
+    onSwipedRight: prevCard,
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+  });
 
   // Handle program just selected (fixes the infinite loop)
   useEffect(() => {
@@ -418,6 +431,392 @@ export default function Dashboard() {
 
   if (loading) return <div className="dashboard-loading">Loading your data...</div>;
 
+  // ----- CARD DEFINITIONS -----
+  const programCard = (
+    <div className="card">
+      <h2>Your Program</h2>
+      {purchasedPrograms.length === 0 ? (
+        <p>No programs purchased. <a href="/" style={{ color: "var(--accent)" }}>Buy now</a></p>
+      ) : (
+        <>
+          <p>Active: <strong>{localStorage.getItem("program") || "Not selected"}</strong></p>
+          <button onClick={() => navigate("/program")} className="btn-primary">Change Program</button>
+        </>
+      )}
+      <button onClick={handleStartWorkout} className="btn-workout">🏋️ Start Workout</button>
+      <button onClick={() => navigate("/")} className="btn-secondary">Browse More Programs</button>
+      {!subscriptionActive && purchasedPrograms.length > 0 && (
+        <div style={{ background: "#ffaa4422", padding: "12px", borderRadius: "8px", marginBottom: "12px", textAlign: "center" }}>
+          <strong>⚠️ Your subscription has expired.</strong> You can still view your history,
+          but weight recommendations are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe now</a>
+        </div>
+      )}
+      <button 
+        onClick={() => {
+          const shareText = `I finally stopped guessing my weights. @ForgeOfOlympus calculates every set based on my actual performance. 30 days free.`;
+          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+        }}
+        style={{ background: "#1da1f2", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer" }}
+      >
+        🐦 Share
+      </button>
+      <button 
+        onClick={shareProgress}
+        style={{ background: "#10b981", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", marginTop: "8px", cursor: "pointer" }}
+      >
+        📸 Share My Progress
+      </button>
+    </div>
+  );
+
+  const oneRMCard = (
+    <div className="card">
+      <h2>Estimated 1RM</h2>
+      <div className="estimates-list">
+        <div className="estimate-item"><span>Squat</span><strong>{estimates["Squat (Top Set)"] || "—"} kg</strong></div>
+        <div className="estimate-item"><span>Bench</span><strong>{estimates["Bench (Top Set)"] || "—"} kg</strong></div>
+        <div className="estimate-item"><span>Deadlift</span><strong>{estimates["Deadlift (Top Set)"] || "—"} kg</strong></div>
+      </div>
+      <div className="estimate-item">
+        <span>Squat (4‑week PR)</span>
+        <strong>{predictPR || estimates["Squat (Top Set)"]} kg</strong>
+      </div>
+      <details>
+        <summary style={{ cursor: "pointer", marginTop: "16px", color: "var(--accent)" }}>View Progress Chart</summary>
+        <DashboardChart userId={userId} liftName="Squat (Top Set)" />
+        <DashboardChart userId={userId} liftName="Bench (Top Set)" />
+        <DashboardChart userId={userId} liftName="Deadlift (Top Set)" />
+      </details>
+    </div>
+  );
+
+  const coachCard = <CoachPrompts userId={userId} />;
+
+  const recentActivityCard = (
+    <div className="card">
+      <h2>Recent Activity</h2>
+      {recentSessions.length === 0 ? (
+        <p>No sessions logged yet.</p>
+      ) : (
+        (() => {
+          const workoutMap = new Map();
+          recentSessions.forEach(session => {
+            const date = new Date(session.createdAt);
+            const dateKey = date.toDateString();
+            const workoutKey = `${dateKey}_w${session.week}_d${session.day}`;
+            if (!workoutMap.has(workoutKey)) {
+              workoutMap.set(workoutKey, {
+                id: workoutKey,
+                date: session.createdAt,
+                week: session.week,
+                day: session.day,
+                focus: session.programName || "Workout",
+                exercises: [],
+                isExpanded: false
+              });
+            }
+            workoutMap.get(workoutKey).exercises.push(session);
+          });
+          const workouts = Array.from(workoutMap.values())
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 4);
+          
+          const getWorkoutSummary = (exercises) => {
+            let qualityCount = 0;
+            let struggleCount = 0;
+            exercises.forEach(ex => {
+              if (ex.actualRPE && ex.targetRPE && ex.actualRPE <= ex.targetRPE + 0.5) qualityCount++;
+              if (ex.actualRIR && ex.targetRIR && ex.actualRIR <= ex.targetRIR) qualityCount++;
+              if (ex.actualStability && ex.targetStability && ex.actualStability >= ex.targetStability) qualityCount++;
+              if (ex.actualQuality && ex.targetQuality && ex.actualQuality >= ex.targetQuality) qualityCount++;
+              if (ex.actualRPE && ex.targetRPE && ex.actualRPE > ex.targetRPE + 1) struggleCount++;
+              if (ex.actualRIR && ex.targetRIR && ex.actualRIR < ex.targetRIR - 1) struggleCount++;
+              if (ex.actualStability && ex.targetStability && ex.actualStability < ex.targetStability - 1) struggleCount++;
+            });
+            const successRate = exercises.length > 0 ? Math.round((qualityCount / exercises.length) * 100) : 0;
+            return { successRate, struggleCount };
+          };
+          
+          return (
+            <>
+              {workouts.map((workout) => {
+                const isExpanded = expandedWorkout === workout.id;
+                const workoutDate = new Date(workout.date);
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                let dateDisplay = workoutDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+                if (workoutDate.toDateString() === today.toDateString()) dateDisplay = "Today";
+                else if (workoutDate.toDateString() === yesterday.toDateString()) dateDisplay = "Yesterday";
+                const { successRate, struggleCount } = getWorkoutSummary(workout.exercises);
+                let statusEmoji = "✅", statusColor = "var(--accent)";
+                if (successRate >= 80) { statusEmoji = "🔥"; statusColor = "#4caf50"; }
+                else if (successRate >= 60) { statusEmoji = "💪"; statusColor = "var(--accent)"; }
+                else if (successRate >= 40) { statusEmoji = "⚠️"; statusColor = "#ffaa44"; }
+                else { statusEmoji = "😓"; statusColor = "#ff5555"; }
+                
+                return (
+                  <div key={workout.id} style={{ marginBottom: 16, borderBottom: "1px solid var(--border)", paddingBottom: 12 }}>
+                    <div onClick={() => setExpandedWorkout(isExpanded ? null : workout.id)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", padding: "8px", borderRadius: "8px", background: isExpanded ? "var(--card-hover)" : "transparent" }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: 4 }}>
+                          <span style={{ fontSize: "1.2rem" }}>{statusEmoji}</span>
+                          <h3 style={{ color: statusColor, margin: 0, fontSize: "1rem" }}>{dateDisplay} - Week {workout.week}, Day {workout.day}</h3>
+                        </div>
+                        <div style={{ display: "flex", gap: "12px", fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                          <span>📋 {workout.exercises.length} exercises</span>
+                          <span>⭐ {successRate}% quality</span>
+                          {struggleCount > 0 && <span>⚠️ {struggleCount} struggled</span>}
+                        </div>
+                      </div>
+                      <span style={{ fontSize: "1.2rem" }}>{isExpanded ? "▲" : "▼"}</span>
+                    </div>
+                    {isExpanded && (
+                      <div style={{ marginTop: 12, paddingLeft: 8 }}>
+                        {workout.exercises.map((s, idx) => {
+                          let exerciseEmoji = "✓", exerciseColor = "#888";
+                          if (s.actualRPE && s.targetRPE) {
+                            if (s.actualRPE <= s.targetRPE + 0.5) { exerciseEmoji = "✅"; exerciseColor = "#4caf50"; }
+                            else if (s.actualRPE > s.targetRPE + 1) { exerciseEmoji = "⚠️"; exerciseColor = "#ffaa44"; }
+                          }
+                          if (s.actualRIR && s.targetRIR) {
+                            if (s.actualRIR <= s.targetRIR) { exerciseEmoji = "✅"; exerciseColor = "#4caf50"; }
+                            else if (s.actualRIR > s.targetRIR + 1) { exerciseEmoji = "⚠️"; exerciseColor = "#ffaa44"; }
+                          }
+                          return (
+                            <div key={idx} style={{ fontSize: "0.85rem", marginBottom: 8, padding: "4px 8px", borderRadius: "6px", background: "var(--bg-light)" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <span style={{ color: exerciseColor }}>{exerciseEmoji}</span>
+                                <strong>{s.liftName}</strong>
+                                <span style={{ color: "var(--text-gray)", fontSize: "0.75rem" }}>
+                                  {s.repsPerSet && s.repsPerSet.length > 0 ? `Sets: [${s.repsPerSet.join(", ")}]` : `${s.setsCompleted || 1} × ${s.repsCompleted} reps`}
+                                  {s.actualWeight && ` @ ${s.actualWeight}kg`}
+                                </span>
+                              </div>
+                              <div style={{ fontSize: "0.7rem", color: "var(--text-gray)", paddingLeft: "24px" }}>
+                                {s.actualRPE && <span>Target RPE: {s.targetRPE} → Actual: {s.actualRPE}</span>}
+                                {s.actualRIR && <span>Target RIR: {s.targetRIR} → Actual: {s.actualRIR}</span>}
+                                {s.actualStability && <span>Stability: {s.actualStability}/10</span>}
+                                {s.actualPain && <span>Pain: {s.actualPain}/10</span>}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              <details style={{ marginTop: "12px" }}>
+                <summary style={{ cursor: "pointer", color: "var(--accent)", fontSize: "14px" }}>📈 View full progress comparison</summary>
+                <ProgressLog userId={userId} />
+              </details>
+            </>
+          );
+        })()
+      )}
+    </div>
+  );
+
+  const streakCard = (
+    <div className="card">
+      <h2>Workout Streak</h2>
+      <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent)" }}>{localStorage.getItem("streak") || 0} 🔥</p>
+      <p>Consecutive workout days</p>
+    </div>
+  );
+
+  const dailyQuoteCard = dailyQuote && (
+    <div className="card" style={{ textAlign: "center" }}>
+      <h2>💪 Daily Motivation</h2>
+      <p style={{ fontStyle: "italic", fontSize: "1.1rem", marginBottom: "8px" }}>"{dailyQuote.text}"</p>
+      <p style={{ color: "var(--text-gray)", fontSize: "0.85rem" }}>— {dailyQuote.author}</p>
+    </div>
+  );
+
+  const rewardsCard = (
+    <div className="card">
+      <h2>🏆 Streak Rewards</h2>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+        <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent)", margin: 0 }}>{localStorage.getItem("streak") || 0} days 🔥</p>
+        {nextMilestone && (
+          <div style={{ textAlign: "right" }}>
+            <span style={{ fontSize: "12px", color: "var(--text-gray)" }}>Next reward in</span>
+            <div style={{ fontWeight: "bold", color: "var(--accent)" }}>{nextMilestone.daysNeeded} days</div>
+          </div>
+        )}
+      </div>
+      {nextMilestone && (
+        <div style={{ marginBottom: "16px" }}>
+          <div style={{ background: "var(--bg-light)", borderRadius: "10px", height: "8px", overflow: "hidden" }}>
+            <div style={{ width: `${((parseInt(localStorage.getItem("streak") || 0) - (nextMilestone.days - nextMilestone.daysNeeded)) / nextMilestone.daysNeeded * 100)}%`, background: "var(--accent)", height: "100%" }} />
+          </div>
+          <div style={{ fontSize: "12px", color: "var(--text-gray)", marginTop: "4px" }}>{nextMilestone.daysNeeded} days until {nextMilestone.reward}</div>
+        </div>
+      )}
+      <details>
+        <summary style={{ cursor: "pointer", color: "var(--accent)", fontSize: "14px" }}>View unlocked rewards ({unlockedRewards.length})</summary>
+        <div style={{ marginTop: "12px" }}>
+          {unlockedRewards.map(reward => (
+            <div key={reward.rewardId} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", fontSize: "13px" }}>
+              <span>✅</span>
+              <span><strong>{reward.days} days:</strong> {reward.name}</span>
+            </div>
+          ))}
+        </div>
+      </details>
+    </div>
+  );
+
+  const adminCard = isAdmin && (
+    <div className="card admin-card">
+      <h2>🔧 Admin Panel</h2>
+      <div className="admin-form">
+        <input type="email" placeholder="User Email" value={assignEmail} onChange={e => setAssignEmail(e.target.value)} className="admin-input" />
+        <select value={assignProgram} onChange={e => setAssignProgram(e.target.value)} className="admin-input">
+          <option value="">Select Program</option>
+          <option value="Ares Protocol">Ares Protocol</option>
+          <option value="Apollo Physique">Apollo Physique</option>
+          <option value="Hercules Foundation">Hercules Foundation</option>
+          <option value="Hephaestus Framework">Hephaestus Framework</option>
+          <option value="Mark Training">Mark Training</option>
+          <option value="Hercules-Foundation-Pauline-Version">Hercules Foundation - Pauline Version</option>
+          <option value="6-Week Wave Powerlifting">6-Week Wave Powerlifting</option>
+          <option value="High-Frequency Specificity Wave">High-Frequency Specificity Wave</option>
+        </select>
+        <button onClick={assignProgramToUser} className="btn-primary">Assign Program</button>
+        {adminMessage && <p className="admin-message">{adminMessage}</p>}
+      </div>
+      <div style={{ marginTop: "20px", borderTop: "1px solid #333", paddingTop: "20px" }}>
+        <h3>🗑️ Remove Program from User</h3>
+        <div className="admin-form">
+          <input type="email" placeholder="User Email" value={removeEmail} onChange={e => setRemoveEmail(e.target.value)} className="admin-input" />
+          <select value={removeProgram} onChange={e => setRemoveProgram(e.target.value)} className="admin-input">
+            <option value="">Select Program to Remove</option>
+            <option value="Ares Protocol">Ares Protocol</option>
+            <option value="Apollo Physique">Apollo Physique</option>
+            <option value="Hercules Foundation">Hercules Foundation</option>
+            <option value="Hephaestus Framework">Hephaestus Framework</option>
+            <option value="6-Week Wave Powerlifting">6-Week Wave Powerlifting</option>
+            <option value="High-Frequency Specificity Wave">High-Frequency Specificity Wave</option>
+          </select>
+          <button onClick={removeProgramFromUser} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer" }}>Remove Program</button>
+          {removeMessage && <p className="admin-message">{removeMessage}</p>}
+        </div>
+      </div>
+      <hr style={{ margin: "20px 0", borderColor: "#333" }} />
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+          <h3>📧 Captured Leads ({leads.length})</h3>
+          <div>
+            <button onClick={fetchLeads} className="btn-secondary" style={{ marginRight: "10px" }}>Refresh</button>
+            <button onClick={exportLeads} className="btn-primary" disabled={exporting}>{exporting ? "Exporting..." : "Export CSV"}</button>
+          </div>
+        </div>
+        {loadingLeads ? <p>Loading leads...</p> : leads.length === 0 ? <p>No leads yet.</p> : (
+          <div style={{ maxHeight: "300px", overflowY: "auto", marginTop: "10px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
+              <thead><tr><th>Email</th><th>Source</th><th>Date</th></tr></thead>
+              <tbody>
+                {leads.map((lead, idx) => (
+                  <tr key={idx} style={{ borderTop: "1px solid #333" }}>
+                    <td style={{ padding: "8px 4px" }}>{lead.email}</td>
+                    <td style={{ padding: "8px 4px" }}>{lead.source || "register_modal"}</td>
+                    <td style={{ padding: "8px 4px" }}>{new Date(lead.createdAt).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+      <hr style={{ margin: "20px 0", borderColor: "#333" }} />
+      <div>
+        <h3>👑 Manual Premium Access</h3>
+        <p style={{ fontSize: "12px", color: "var(--text-gray)", marginBottom: "10px" }}>Grant full app access to users who pay you directly</p>
+        <div className="admin-form">
+          <input type="email" placeholder="User Email" value={premiumEmail} onChange={e => setPremiumEmail(e.target.value)} className="admin-input" />
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button onClick={grantManualPremium} style={{ background: "#10b981", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer", flex: 1 }}>Grant Premium Access</button>
+            <button onClick={fetchManualPremiumUsers} className="btn-secondary" style={{ flex: 0.5 }}>Refresh List</button>
+          </div>
+          {premiumMessage && <p className="admin-message">{premiumMessage}</p>}
+        </div>
+        {loadingPremiumUsers ? <p>Loading premium users...</p> : manualPremiumUsers.length > 0 ? (
+          <div style={{ marginTop: "15px", maxHeight: "200px", overflowY: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+              <thead><tr><th>Email</th><th>Granted</th><th>Streak</th><th>Action</th></tr></thead>
+              <tbody>
+                {manualPremiumUsers.map((user, idx) => (
+                  <tr key={idx} style={{ borderTop: "1px solid #333" }}>
+                    <td style={{ padding: "8px 4px" }}>{user.email}</td>
+                    <td style={{ padding: "8px 4px" }}>{new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td style={{ padding: "8px 4px" }}>{user.streak || 0}🔥</td>
+                    <td style={{ padding: "8px 4px" }}>
+                      <button onClick={() => revokeManualPremium(user.email)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "4px 8px", borderRadius: "4px", cursor: "pointer", fontSize: "11px" }}>Revoke</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : <p style={{ fontSize: "12px", color: "var(--text-gray)", marginTop: "10px" }}>No manual premium users yet</p>}
+      </div>
+    </div>
+  );
+
+  const cancelCard = subscriptionActive && !isAdmin && (
+    <div className="card" style={{ borderTop: "2px solid #dc2626" }}>
+      <h2 style={{ color: "#dc2626" }}>⚠️ Cancel Subscription</h2>
+      <p>Your subscription will remain active until the end of the current billing period. After that, you will lose premium features (weight recommendations, adaptive progression).</p>
+      <button
+        onClick={async () => {
+          if (!confirm("Are you sure you want to cancel your subscription? You will keep access until the next billing date, then your plan will end.")) return;
+          try {
+            const res = await fetch("/api/cancel-subscription", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+              alert("Subscription cancelled. You will retain premium access until the end of your billing period.");
+              const statusRes = await fetch(`/api/subscription-status/${userId}`);
+              const statusData = await statusRes.json();
+              setSubscriptionActive(statusData.active);
+            } else {
+              alert(data.error || "Failed to cancel subscription");
+            }
+          } catch (err) {
+            alert("Error: " + err.message);
+          }
+        }}
+        style={{
+          background: "#dc2626",
+          color: "#fff",
+          border: "none",
+          padding: "10px 20px",
+          borderRadius: "8px",
+          cursor: "pointer",
+          marginTop: "12px",
+          width: "100%",
+        }}
+      >
+        Cancel Subscription
+      </button>
+    </div>
+  );
+
+  // Build the array of cards (only include if they should appear)
+  let cards = [programCard, oneRMCard, coachCard, recentActivityCard, streakCard];
+  if (dailyQuote) cards.push(dailyQuoteCard);
+  cards.push(rewardsCard);
+  if (isAdmin) cards.push(adminCard);
+  if (subscriptionActive && !isAdmin) cards.push(cancelCard);
+
+  // Update currentCard if it becomes out of bounds (e.g., after loading)
+  if (currentCard >= cards.length) setCurrentCard(0);
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -434,540 +833,20 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="dashboard-deck">
-        {/* Your Program Card */}
-        <div className="card">
-          <h2>Your Program</h2>
-          {purchasedPrograms.length === 0 ? (
-            <p>No programs purchased. <a href="/" style={{ color: "var(--accent)" }}>Buy now</a></p>
-          ) : (
-            <>
-              <p>Active: <strong>{localStorage.getItem("program") || "Not selected"}</strong></p>
-              <button onClick={() => navigate("/program")} className="btn-primary">Change Program</button>
-            </>
-          )}
-          <button onClick={handleStartWorkout} className="btn-workout">🏋️ Start Workout</button>
-          <button onClick={() => navigate("/")} className="btn-secondary">Browse More Programs</button>
-          {!subscriptionActive && purchasedPrograms.length > 0 && (
-            <div style={{ 
-              background: "#ffaa4422", 
-              padding: "12px", 
-              borderRadius: "8px", 
-              marginBottom: "12px",
-              textAlign: "center"
-            }}>
-              <strong>⚠️ Your subscription has expired.</strong> You can still view your history,
-              but weight recommendations are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe now</a>
-            </div>
-          )}
-          <button 
-            onClick={() => {
-              const shareText = `I finally stopped guessing my weights. @ForgeOfOlympus calculates every set based on my actual performance. 30 days free.`;
-              window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
-            }}
-            style={{ background: "#1da1f2", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer" }}
-          >
-            🐦 Share
-          </button>
-          <button 
-            onClick={shareProgress}
-            style={{ background: "#10b981", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", marginTop: "8px", cursor: "pointer" }}
-          >
-            📸 Share My Progress
-          </button>
+      {/* Carousel */}
+      <div className="carousel-container">
+        <div className="carousel-header">
+          <span className="carousel-counter">{currentCard + 1} / {cards.length}</span>
+          <div className="carousel-nav-buttons">
+            <button onClick={prevCard} disabled={currentCard === 0} className="nav-btn">◀</button>
+            <button onClick={nextCard} disabled={currentCard === cards.length - 1} className="nav-btn">▶</button>
+          </div>
         </div>
-
-        {/* Estimated 1RM Card */}
-        <div className="card">
-          <h2>Estimated 1RM</h2>
-          <div className="estimates-list">
-            <div className="estimate-item"><span>Squat</span><strong>{estimates["Squat (Top Set)"] || "—"} kg</strong></div>
-            <div className="estimate-item"><span>Bench</span><strong>{estimates["Bench (Top Set)"] || "—"} kg</strong></div>
-            <div className="estimate-item"><span>Deadlift</span><strong>{estimates["Deadlift (Top Set)"] || "—"} kg</strong></div>
+        <div className="carousel-card-wrapper" {...swipeHandlers}>
+          <div className="carousel-card">
+            {cards[currentCard]}
           </div>
-          <div className="estimate-item">
-            <span>Squat (4‑week PR)</span>
-            <strong>{predictPR || estimates["Squat (Top Set)"]} kg</strong>
-          </div>
-          <details>
-            <summary style={{ cursor: "pointer", marginTop: "16px", color: "var(--accent)" }}>View Progress Chart</summary>
-            <DashboardChart userId={userId} liftName="Squat (Top Set)" />
-            <DashboardChart userId={userId} liftName="Bench (Top Set)" />
-            <DashboardChart userId={userId} liftName="Deadlift (Top Set)" />
-          </details>
         </div>
-
-        <CoachPrompts userId={userId} />
-
-        {/* Recent Activity Card */}
-        <div className="card">
-          <h2>Recent Activity</h2>
-          {recentSessions.length === 0 ? (
-            <p>No sessions logged yet.</p>
-          ) : (
-            (() => {
-              const workoutMap = new Map();
-              
-              recentSessions.forEach(session => {
-                const date = new Date(session.createdAt);
-                const dateKey = date.toDateString();
-                const workoutKey = `${dateKey}_w${session.week}_d${session.day}`;
-                
-                if (!workoutMap.has(workoutKey)) {
-                  workoutMap.set(workoutKey, {
-                    id: workoutKey,
-                    date: session.createdAt,
-                    week: session.week,
-                    day: session.day,
-                    focus: session.programName || "Workout",
-                    exercises: [],
-                    isExpanded: false
-                  });
-                }
-                workoutMap.get(workoutKey).exercises.push(session);
-              });
-              
-              const workouts = Array.from(workoutMap.values())
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 4);
-              
-              const getWorkoutSummary = (exercises) => {
-                let qualityCount = 0;
-                let struggleCount = 0;
-                
-                exercises.forEach(ex => {
-                  if (ex.actualRPE && ex.targetRPE && ex.actualRPE <= ex.targetRPE + 0.5) {
-                    qualityCount++;
-                  }
-                  if (ex.actualRIR && ex.targetRIR && ex.actualRIR <= ex.targetRIR) {
-                    qualityCount++;
-                  }
-                  if (ex.actualStability && ex.targetStability && ex.actualStability >= ex.targetStability) {
-                    qualityCount++;
-                  }
-                  if (ex.actualQuality && ex.targetQuality && ex.actualQuality >= ex.targetQuality) {
-                    qualityCount++;
-                  }
-                  
-                  if (ex.actualRPE && ex.targetRPE && ex.actualRPE > ex.targetRPE + 1) {
-                    struggleCount++;
-                  }
-                  if (ex.actualRIR && ex.targetRIR && ex.actualRIR < ex.targetRIR - 1) {
-                    struggleCount++;
-                  }
-                  if (ex.actualStability && ex.targetStability && ex.actualStability < ex.targetStability - 1) {
-                    struggleCount++;
-                  }
-                });
-                
-                const successRate = exercises.length > 0 ? Math.round((qualityCount / exercises.length) * 100) : 0;
-                return { successRate, struggleCount };
-              };
-              
-              return (
-                <>
-                  {workouts.map((workout) => {
-                    const isExpanded = expandedWorkout === workout.id;
-                    const workoutDate = new Date(workout.date);
-                    const today = new Date();
-                    const yesterday = new Date(today);
-                    yesterday.setDate(yesterday.getDate() - 1);
-                    
-                    let dateDisplay = workoutDate.toLocaleDateString(undefined, {
-                      weekday: 'short',
-                      month: 'short',
-                      day: 'numeric'
-                    });
-                    
-                    if (workoutDate.toDateString() === today.toDateString()) {
-                      dateDisplay = "Today";
-                    } else if (workoutDate.toDateString() === yesterday.toDateString()) {
-                      dateDisplay = "Yesterday";
-                    }
-                    
-                    const { successRate, struggleCount } = getWorkoutSummary(workout.exercises);
-                    
-                    let statusEmoji = "✅";
-                    let statusColor = "var(--accent)";
-                    if (successRate >= 80) {
-                      statusEmoji = "🔥";
-                      statusColor = "#4caf50";
-                    } else if (successRate >= 60) {
-                      statusEmoji = "💪";
-                      statusColor = "var(--accent)";
-                    } else if (successRate >= 40) {
-                      statusEmoji = "⚠️";
-                      statusColor = "#ffaa44";
-                    } else {
-                      statusEmoji = "😓";
-                      statusColor = "#ff5555";
-                    }
-                    
-                    return (
-                      <div key={workout.id} style={{ marginBottom: 16, borderBottom: "1px solid var(--border)", paddingBottom: 12 }}>
-                        <div 
-                          onClick={() => setExpandedWorkout(isExpanded ? null : workout.id)}
-                          style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", padding: "8px", borderRadius: "8px", background: isExpanded ? "var(--card-hover)" : "transparent" }}
-                        >
-                          <div style={{ flex: 1 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: 4 }}>
-                              <span style={{ fontSize: "1.2rem" }}>{statusEmoji}</span>
-                              <h3 style={{ color: statusColor, margin: 0, fontSize: "1rem" }}>
-                                {dateDisplay} - Week {workout.week}, Day {workout.day}
-                              </h3>
-                            </div>
-                            <div style={{ display: "flex", gap: "12px", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                              <span>📋 {workout.exercises.length} exercises</span>
-                              <span>⭐ {successRate}% quality</span>
-                              {struggleCount > 0 && <span>⚠️ {struggleCount} struggled</span>}
-                            </div>
-                          </div>
-                          <span style={{ fontSize: "1.2rem" }}>{isExpanded ? "▲" : "▼"}</span>
-                        </div>
-                        
-                        {isExpanded && (
-                          <div style={{ marginTop: 12, paddingLeft: 8 }}>
-                            {workout.exercises.map((s, idx) => {
-                              let exerciseEmoji = "✓";
-                              let exerciseColor = "#888";
-                              
-                              if (s.actualRPE && s.targetRPE) {
-                                if (s.actualRPE <= s.targetRPE + 0.5) {
-                                  exerciseEmoji = "✅";
-                                  exerciseColor = "#4caf50";
-                                } else if (s.actualRPE > s.targetRPE + 1) {
-                                  exerciseEmoji = "⚠️";
-                                  exerciseColor = "#ffaa44";
-                                }
-                              }
-                              if (s.actualRIR && s.targetRIR) {
-                                if (s.actualRIR <= s.targetRIR) {
-                                  exerciseEmoji = "✅";
-                                  exerciseColor = "#4caf50";
-                                } else if (s.actualRIR > s.targetRIR + 1) {
-                                  exerciseEmoji = "⚠️";
-                                  exerciseColor = "#ffaa44";
-                                }
-                              }
-                              
-                              return (
-                                <div key={idx} style={{ fontSize: "0.85rem", marginBottom: 8, padding: "4px 8px", borderRadius: "6px", background: "var(--bg-light)" }}>
-                                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                    <span style={{ color: exerciseColor }}>{exerciseEmoji}</span>
-                                    <strong>{s.liftName}</strong>
-                                    <span style={{ color: "var(--text-gray)", fontSize: "0.75rem" }}>
-                                      {s.repsPerSet && s.repsPerSet.length > 0 
-                                        ? `Sets: [${s.repsPerSet.join(", ")}]`
-                                        : `${s.setsCompleted || 1} × ${s.repsCompleted} reps`
-                                      }
-                                      {s.actualWeight && ` @ ${s.actualWeight}kg`}
-                                    </span>
-                                  </div>
-                                  <div style={{ fontSize: "0.7rem", color: "var(--text-gray)", paddingLeft: "24px" }}>
-                                    {s.actualRPE && <span>Target RPE: {s.targetRPE} → Actual: {s.actualRPE}</span>}
-                                    {s.actualRIR && <span>Target RIR: {s.targetRIR} → Actual: {s.actualRIR}</span>}
-                                    {s.actualStability && <span>Stability: {s.actualStability}/10</span>}
-                                    {s.actualPain && <span>Pain: {s.actualPain}/10</span>}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                  <details style={{ marginTop: "12px" }}>
-                    <summary style={{ cursor: "pointer", color: "var(--accent)", fontSize: "14px" }}>
-                      📈 View full progress comparison
-                    </summary>
-                    <ProgressLog userId={userId} />
-                  </details>
-                </>
-              );
-            })()
-          )}
-        </div>
-
-        {/* Workout Streak Card */}
-        <div className="card">
-          <h2>Workout Streak</h2>
-          <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent)" }}>
-            {localStorage.getItem("streak") || 0} 🔥
-          </p>
-          <p>Consecutive workout days</p>
-        </div>
-
-        {/* Daily Motivation Quote - shows at streak 3+ */}
-        {dailyQuote && (
-          <div className="card" style={{ textAlign: "center" }}>
-            <h2>💪 Daily Motivation</h2>
-            <p style={{ fontStyle: "italic", fontSize: "1.1rem", marginBottom: "8px" }}>"{dailyQuote.text}"</p>
-            <p style={{ color: "var(--text-gray)", fontSize: "0.85rem" }}>— {dailyQuote.author}</p>
-          </div>
-        )}
-
-        {/* Streak Rewards Card */}
-        <div className="card">
-          <h2>🏆 Streak Rewards</h2>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-            <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent)", margin: 0 }}>
-              {localStorage.getItem("streak") || 0} days 🔥
-            </p>
-            {nextMilestone && (
-              <div style={{ textAlign: "right" }}>
-                <span style={{ fontSize: "12px", color: "var(--text-gray)" }}>Next reward in</span>
-                <div style={{ fontWeight: "bold", color: "var(--accent)" }}>{nextMilestone.daysNeeded} days</div>
-              </div>
-            )}
-          </div>
-          
-          {/* Progress bar to next milestone */}
-          {nextMilestone && (
-            <div style={{ marginBottom: "16px" }}>
-              <div style={{ background: "var(--bg-light)", borderRadius: "10px", height: "8px", overflow: "hidden" }}>
-                <div style={{ 
-                  width: `${((parseInt(localStorage.getItem("streak") || 0) - (nextMilestone.days - nextMilestone.daysNeeded)) / nextMilestone.daysNeeded * 100)}%`, 
-                  background: "var(--accent)", 
-                  height: "100%" 
-                }} />
-              </div>
-              <div style={{ fontSize: "12px", color: "var(--text-gray)", marginTop: "4px" }}>
-                {nextMilestone.daysNeeded} days until {nextMilestone.reward}
-              </div>
-              {/* ProgressLog moved to Recent Activity card */}
-            </div>
-          )}
-          
-          {/* Unlocked rewards */}
-          <details>
-            <summary style={{ cursor: "pointer", color: "var(--accent)", fontSize: "14px" }}>View unlocked rewards ({unlockedRewards.length})</summary>
-            <div style={{ marginTop: "12px" }}>
-              {unlockedRewards.map(reward => (
-                <div key={reward.rewardId} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", fontSize: "13px" }}>
-                  <span>✅</span>
-                  <span><strong>{reward.days} days:</strong> {reward.name}</span>
-                </div>
-              ))}
-            </div>
-          </details>
-        </div>
-
-        {/* Admin Panel – only visible to admin */}
-        {isAdmin && (
-          <div className="card admin-card">
-            <h2>🔧 Admin Panel</h2>
-            
-            {/* Assign Program Section */}
-            <div className="admin-form">
-              <input
-                type="email"
-                placeholder="User Email"
-                value={assignEmail}
-                onChange={e => setAssignEmail(e.target.value)}
-                className="admin-input"
-              />
-              <select
-                value={assignProgram}
-                onChange={e => setAssignProgram(e.target.value)}
-                className="admin-input"
-              >
-                <option value="">Select Program</option>
-                <option value="Ares Protocol">Ares Protocol</option>
-                <option value="Apollo Physique">Apollo Physique</option>
-                <option value="Hercules Foundation">Hercules Foundation</option>
-                <option value="Hephaestus Framework">Hephaestus Framework</option>
-                <option value="Mark Training">Mark Training</option>
-                <option value="Hercules-Foundation-Pauline-Version">Hercules Foundation - Pauline Version</option>
-                <option value="6-Week Wave Powerlifting">6-Week Wave Powerlifting</option>
-                <option value="High-Frequency Specificity Wave">High-Frequency Specificity Wave</option>
-              </select>
-              <button onClick={assignProgramToUser} className="btn-primary">Assign Program</button>
-              {adminMessage && <p className="admin-message">{adminMessage}</p>}
-            </div>
-
-            {/* Remove Program Section */}
-            <div style={{ marginTop: "20px", borderTop: "1px solid #333", paddingTop: "20px" }}>
-              <h3>🗑️ Remove Program from User</h3>
-              <div className="admin-form">
-                <input
-                  type="email"
-                  placeholder="User Email"
-                  value={removeEmail}
-                  onChange={e => setRemoveEmail(e.target.value)}
-                  className="admin-input"
-                />
-                <select
-                  value={removeProgram}
-                  onChange={e => setRemoveProgram(e.target.value)}
-                  className="admin-input"
-                >
-                  <option value="">Select Program to Remove</option>
-                  <option value="Ares Protocol">Ares Protocol</option>
-                  <option value="Apollo Physique">Apollo Physique</option>
-                  <option value="Hercules Foundation">Hercules Foundation</option>
-                  <option value="Hephaestus Framework">Hephaestus Framework</option>
-                  <option value="6-Week Wave Powerlifting">6-Week Wave Powerlifting</option>
-                  <option value="High-Frequency Specificity Wave">High-Frequency Specificity Wave</option>
-                </select>
-                <button onClick={removeProgramFromUser} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer" }}>
-                  Remove Program
-                </button>
-                {removeMessage && <p className="admin-message">{removeMessage}</p>}
-              </div>
-            </div>
-
-            <hr style={{ margin: "20px 0", borderColor: "#333" }} />
-
-            {/* Leads Section */}
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                <h3>📧 Captured Leads ({leads.length})</h3>
-                <div>
-                  <button onClick={fetchLeads} className="btn-secondary" style={{ marginRight: "10px" }}>
-                    Refresh
-                  </button>
-                  <button onClick={exportLeads} className="btn-primary" disabled={exporting}>
-                    {exporting ? "Exporting..." : "Export CSV"}
-                  </button>
-                </div>
-              </div>
-              {loadingLeads ? (
-                <p>Loading leads...</p>
-              ) : leads.length === 0 ? (
-                <p>No leads yet. Ask users to register on the homepage.</p>
-              ) : (
-                <div style={{ maxHeight: "300px", overflowY: "auto", marginTop: "10px" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
-                    <thead>
-                      <tr>
-                        <th>Email</th>
-                        <th>Source</th>
-                        <th>Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {leads.map((lead, idx) => (
-                        <tr key={idx} style={{ borderTop: "1px solid #333" }}>
-                          <td style={{ padding: "8px 4px" }}>{lead.email}</td>
-                          <td style={{ padding: "8px 4px" }}>{lead.source || "register_modal"}</td>
-                          <td style={{ padding: "8px 4px" }}>{new Date(lead.createdAt).toLocaleDateString()}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-
-            <hr style={{ margin: "20px 0", borderColor: "#333" }} />
-
-            {/* Manual Premium Access Section */}
-            <div>
-              <h3>👑 Manual Premium Access</h3>
-              <p style={{ fontSize: "12px", color: "var(--text-gray)", marginBottom: "10px" }}>
-                Grant full app access to users who pay you directly (offline/paired sessions)
-              </p>
-              <div className="admin-form">
-                <input
-                  type="email"
-                  placeholder="User Email"
-                  value={premiumEmail}
-                  onChange={e => setPremiumEmail(e.target.value)}
-                  className="admin-input"
-                />
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <button onClick={grantManualPremium} style={{ background: "#10b981", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer", flex: 1 }}>
-                    Grant Premium Access
-                  </button>
-                  <button onClick={fetchManualPremiumUsers} className="btn-secondary" style={{ flex: 0.5 }}>
-                    Refresh List
-                  </button>
-                </div>
-                {premiumMessage && <p className="admin-message">{premiumMessage}</p>}
-              </div>
-              
-              {loadingPremiumUsers ? (
-                <p>Loading premium users...</p>
-              ) : manualPremiumUsers.length > 0 ? (
-                <div style={{ marginTop: "15px", maxHeight: "200px", overflowY: "auto" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
-                    <thead>
-                      <tr>
-                        <th>Email</th>
-                        <th>Granted</th>
-                        <th>Streak</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {manualPremiumUsers.map((user, idx) => (
-                        <tr key={idx} style={{ borderTop: "1px solid #333" }}>
-                          <td style={{ padding: "8px 4px" }}>{user.email}</td>
-                          <td style={{ padding: "8px 4px" }}>{new Date(user.createdAt).toLocaleDateString()}</td>
-                          <td style={{ padding: "8px 4px" }}>{user.streak || 0}🔥</td>
-                          <td style={{ padding: "8px 4px" }}>
-                            <button 
-                              onClick={() => revokeManualPremium(user.email)}
-                              style={{ background: "#dc2626", color: "#fff", border: "none", padding: "4px 8px", borderRadius: "4px", cursor: "pointer", fontSize: "11px" }}
-                            >
-                              Revoke
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p style={{ fontSize: "12px", color: "var(--text-gray)", marginTop: "10px" }}>No manual premium users yet</p>
-              )}
-            </div>
-                    {/* Cancel Subscription Card - only for non-admin active subscribers */}
-        {subscriptionActive && !isAdmin && (
-          <div className="card" style={{ borderTop: "2px solid #dc2626" }}>
-            <h2 style={{ color: "#dc2626" }}>⚠️ Cancel Subscription</h2>
-            <p>Your subscription will remain active until the end of the current billing period. After that, you will lose premium features (weight recommendations, adaptive progression).</p>
-            <button
-              onClick={async () => {
-                if (!confirm("Are you sure you want to cancel your subscription? You will keep access until the next billing date, then your plan will end.")) return;
-                try {
-                  const res = await fetch("/api/cancel-subscription", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userId }),
-                  });
-                  const data = await res.json();
-                  if (res.ok) {
-                    alert("Subscription cancelled. You will retain premium access until the end of your billing period.");
-                    // Optionally refresh subscription status
-                    const statusRes = await fetch(`/api/subscription-status/${userId}`);
-                    const statusData = await statusRes.json();
-                    setSubscriptionActive(statusData.active);
-                  } else {
-                    alert(data.error || "Failed to cancel subscription");
-                  }
-                } catch (err) {
-                  alert("Error: " + err.message);
-                }
-              }}
-              style={{
-                background: "#dc2626",
-                color: "#fff",
-                border: "none",
-                padding: "10px 20px",
-                borderRadius: "8px",
-                cursor: "pointer",
-                marginTop: "12px",
-                width: "100%",
-              }}
-            >
-              Cancel Subscription
-            </button>
-          </div>
-        )}
-          </div>
-        )}
       </div>
 
       {/* Hidden progress-share-card for screenshot */}
