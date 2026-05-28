@@ -1143,15 +1143,39 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
             projectedNextWeight = nextRaw;
           }
         } 
-        else if ((logic === "GENERAL_FITNESS_HYBRID" || logic === "HYPERTROPHY_VOLUME") && effectiveState.currentWeight > 0) {
-          currentWeight = effectiveState.currentWeight;
-          let weightModifier = 1;
-          if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
-          if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
-          if (weightModifier !== 1) currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
-          const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-          projectedNextWeight = currentWeight + inc;
-        }
+        else if (logic === "GENERAL_FITNESS_HYBRID") {
+  // Strength exercises: use RPE-based weight from estimated1RM
+  if (ex.progressionType === "strength" && effectiveState?.estimated1RM > 0) {
+    let effective1RM = effectiveState.estimated1RM;
+    if (isVariationLift(ex.liftName)) {
+      effective1RM = Math.round(effective1RM * 0.94);
+      ex._variationAdjusted = true;
+    }
+    currentWeight = weightForRPE(effective1RM, adjustedRpeTarget, ex.reps);
+    let nextRaw = weightForRPE(effective1RM, adjustedRpeTarget + 0.5, ex.reps);
+    projectedNextWeight = nextRaw;
+  }
+  // For non-strength exercises (power, mobility, volume), keep old currentWeight logic
+  else if (effectiveState.currentWeight > 0) {
+    currentWeight = effectiveState.currentWeight;
+    let weightModifier = 1;
+    if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
+    if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
+    if (weightModifier !== 1) currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
+    const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+    projectedNextWeight = currentWeight + inc;
+  }
+}
+else if (logic === "HYPERTROPHY_VOLUME" && effectiveState.currentWeight > 0) {
+  // Keep existing hypertrophy logic unchanged
+  currentWeight = effectiveState.currentWeight;
+  let weightModifier = 1;
+  if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
+  if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
+  if (weightModifier !== 1) currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
+  const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+  projectedNextWeight = currentWeight + inc;
+}
       }
 
             // ========== MECHANICAL DISADVANTAGE HANDLING ==========
@@ -1274,28 +1298,32 @@ app.post("/api/progression/apply", async (req, res) => {
 
     let state = await LiftState.findOne({ userId, liftName });
     if (!state) {
-      let initialState = { userId, liftName };
-      if (logic === "STRENGTH_RPE") {
-        let bestReps = null;
-        if (lastSession.repsPerSet && lastSession.repsPerSet.length) {
-          bestReps = Math.max(...lastSession.repsPerSet);
-        } else {
-          bestReps = lastSession.repsCompleted;
-        }
-        const initial1RM = estimate1RM(lastSession.actualWeight, bestReps, lastSession.actualRPE);
-        initialState.estimated1RM = initial1RM;
-        initialState.currentWeight = 0;
-      } else {
-        const isMobility = lastSession.progressionType === "mobility";
-        const painOk = isMobility ? (lastSession.actualPain || 0) <= (lastSession.targetPain || 4) : true;
-        initialState.currentWeight = painOk ? (lastSession.actualWeight || 0) : 0;
-        initialState.lastROM = 0;
-        initialState.lastRepsAchieved = 0;
-      }
-      state = new LiftState(initialState);
-      await state.save();
-      return res.json({ message: "Initial state set", state });
+  let initialState = { userId, liftName };
+  // For STRENGTH_RPE, or GENERAL_FITNESS_HYBRID with progressionType "strength"
+  const isStrengthExercise = (logic === "STRENGTH_RPE") || 
+    (logic === "GENERAL_FITNESS_HYBRID" && lastSession.progressionType === "strength");
+  
+  if (isStrengthExercise) {
+    let bestReps = null;
+    if (lastSession.repsPerSet && lastSession.repsPerSet.length) {
+      bestReps = Math.max(...lastSession.repsPerSet);
+    } else {
+      bestReps = lastSession.repsCompleted;
     }
+    const initial1RM = estimate1RM(lastSession.actualWeight, bestReps, lastSession.actualRPE);
+    initialState.estimated1RM = initial1RM;
+    initialState.currentWeight = 0;
+  } else {
+    const isMobility = lastSession.progressionType === "mobility";
+    const painOk = isMobility ? (lastSession.actualPain || 0) <= (lastSession.targetPain || 4) : true;
+    initialState.currentWeight = painOk ? (lastSession.actualWeight || 0) : 0;
+    initialState.lastROM = 0;
+    initialState.lastRepsAchieved = 0;
+  }
+  state = new LiftState(initialState);
+  await state.save();
+  return res.json({ message: "Initial state set", state }); // ✅ return stays!
+}
 
     // ========== MECHANICAL DISADVANTAGE GUARD ==========
     let isDisadvantageLift = false;
