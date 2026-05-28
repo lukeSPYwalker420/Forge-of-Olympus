@@ -657,30 +657,40 @@ function generalFitnessProgression(state, sessionData) {
 
   switch (progressionType) {
     case "strength":
-      const targetReps = parseInt(sessionData.targetReps, 10);
-      const actualReps = sessionData.repsCompleted || 0;
-      const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
-      const rpeOk = sessionData.actualRPE <= (sessionData.targetRPE || 7) + 1;
-      const isGoodStrength = completed && repsMet && rpeOk;
-
-      if (isGoodStrength) {
-        successStreak++;
-        stallCounter = 0;
-        if (successStreak >= 3) {
-          newWeight += getIncrement(sessionData.liftName);
-          successStreak = 0;
-          console.log(`📈 [GF-strength] Good streak ${sessionData.liftName}: weight ↑ to ${newWeight}kg`);
-        }
-      } else {
-        successStreak = 0;
-        stallCounter++;
-        if (stallCounter >= 2 && newWeight > 0) {
-          newWeight = Math.max(0, newWeight - getDecrement(sessionData.liftName));
-          stallCounter = 0;
-          console.log(`⚠️ [GF-strength] Bad streak ${sessionData.liftName}: weight ↓ to ${newWeight}kg`);
-        }
-      }
-      break;
+  const targetReps = parseInt(sessionData.targetReps, 10);
+  const actualReps = sessionData.repsCompleted || 0;
+  const repsMet = !isNaN(targetReps) && actualReps >= targetReps;
+  
+  let isGoodStrength = completed && repsMet;
+  
+  // If RPE is available, use it; else if RIR is available, use it; else rely only on repsMet
+  if (sessionData.actualRPE !== undefined && sessionData.targetRPE !== undefined) {
+    const rpeOk = sessionData.actualRPE <= (sessionData.targetRPE || 7) + 1;
+    isGoodStrength = isGoodStrength && rpeOk;
+  } else if (sessionData.actualRIR !== undefined && sessionData.targetRIR !== undefined) {
+    const rirOk = sessionData.actualRIR <= (sessionData.targetRIR || 2);
+    isGoodStrength = isGoodStrength && rirOk;
+  }
+  // else: no RPE/RIR, so only repsMet determines success (user completed the work)
+  
+  if (isGoodStrength) {
+    successStreak++;
+    stallCounter = 0;
+    if (successStreak >= 3) {
+      newWeight += getIncrement(sessionData.liftName);
+      successStreak = 0;
+      console.log(`📈 [GF-strength] Good streak ${sessionData.liftName}: weight ↑ to ${newWeight}kg`);
+    }
+  } else {
+    successStreak = 0;
+    stallCounter++;
+    if (stallCounter >= 2 && newWeight > 0) {
+      newWeight = Math.max(0, newWeight - getDecrement(sessionData.liftName));
+      stallCounter = 0;
+      console.log(`⚠️ [GF-strength] Bad streak ${sessionData.liftName}: weight ↓ to ${newWeight}kg`);
+    }
+  }
+  break;
 
     case "power":
       const qualityOk = (sessionData.actualQuality || 0) >= (sessionData.targetQuality || 7);
