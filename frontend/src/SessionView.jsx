@@ -396,34 +396,39 @@ export default function SessionView() {
   if (!data) return <div>No data returned</div>;
 
   const getMetricLabel = (lift) => {
-    const pt = lift.progressionType;
-    if (pt === "power") return "Quality (1-10)";
-    if (pt === "mobility") return "Stability (1-10) / Pain (1-10)";
-    if (pt === "strength" || data.logic === "STRENGTH_RPE") return "RPE";
-    if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") return "RIR";
-    return "RPE";
-  };
+  const pt = lift.progressionType;
+  if (pt === "power") return "Quality (1-10)";
+  if (pt === "mobility") return "Stability (1-10) / Pain (1-10)";
+  if (pt === "strength" || pt === "deload" || data.logic === "STRENGTH_RPE") return "RPE";
+  if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") return "RIR";
+  return "RPE";
+};
 
   const getTargetValue = (lift) => {
   const pt = lift.progressionType;
+  
+  // For any progression type that uses RPE (strength, deload, or any exercise with an rpeTarget)
+  if ((pt === "strength" || pt === "deload" || data.logic === "STRENGTH_RPE" || lift.rpeTarget !== undefined) && lift.rpeTarget !== undefined) {
+    const target = lift.adjustedRpeTarget ?? lift.rpeTarget;
+    return target ?? 7;
+  }
+  
   if (pt === "power") {
     const target = lift.adjustedQualityTarget || lift.qualityTarget;
     return target || "—";
   }
+  
   if (pt === "mobility") {
     const stability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
     const pain = lift.painTarget || 4;
     return `Stability ≥${stability} / Pain ≤${pain}`;
   }
-  if (pt === "strength" || data.logic === "STRENGTH_RPE") {
-    const target = lift.adjustedRpeTarget || lift.rpeTarget;
-    // If still missing, default to 7
-    return target || 7;
-  }
+  
   if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") {
     const target = lift.adjustedRirTarget || lift.rirTarget;
     return target || "—";
   }
+  
   return "—";
 };
 
