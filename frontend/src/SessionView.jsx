@@ -248,16 +248,17 @@ export default function SessionView() {
     const liftName = lift.liftName;
     const targetReps = lift.reps;
     const targetSets = lift.sets;
-    // Use adjusted targets if available (from server)
+    const progressionType = lift.progressionType;   // ✅ declare first
+    const logic = data.logic;                      // ✅ also move logic up if needed later
+
     let targetRPE = lift.adjustedRpeTarget || lift.rpeTarget;
-      if (progressionType === "strength" && targetRPE === undefined) targetRPE = 7;
+    if (progressionType === "strength" && targetRPE === undefined) targetRPE = 7;
     let targetRIR = lift.adjustedRirTarget || lift.rirTarget;
+    // ... rest of your function unchanged ...
     const targetQuality = lift.adjustedQualityTarget || lift.qualityTarget;
     const targetROM = lift.romTarget;
     const targetPain = lift.painTarget || 4;
     const targetStability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
-    const progressionType = lift.progressionType;
-    const logic = data.logic;
 
     const streakRes = await fetch(`/api/streak/${userId}`);
     if (streakRes.ok) {
