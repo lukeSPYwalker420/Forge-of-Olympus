@@ -434,7 +434,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="dashboard-grid">
+      <div className="dashboard-deck">
         {/* Your Program Card */}
         <div className="card">
           <h2>Your Program</h2>
@@ -923,6 +923,49 @@ export default function Dashboard() {
                 <p style={{ fontSize: "12px", color: "var(--text-gray)", marginTop: "10px" }}>No manual premium users yet</p>
               )}
             </div>
+                    {/* Cancel Subscription Card - only for non-admin active subscribers */}
+        {subscriptionActive && !isAdmin && (
+          <div className="card" style={{ borderTop: "2px solid #dc2626" }}>
+            <h2 style={{ color: "#dc2626" }}>⚠️ Cancel Subscription</h2>
+            <p>Your subscription will remain active until the end of the current billing period. After that, you will lose premium features (weight recommendations, adaptive progression).</p>
+            <button
+              onClick={async () => {
+                if (!confirm("Are you sure you want to cancel your subscription? You will keep access until the next billing date, then your plan will end.")) return;
+                try {
+                  const res = await fetch("/api/cancel-subscription", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId }),
+                  });
+                  const data = await res.json();
+                  if (res.ok) {
+                    alert("Subscription cancelled. You will retain premium access until the end of your billing period.");
+                    // Optionally refresh subscription status
+                    const statusRes = await fetch(`/api/subscription-status/${userId}`);
+                    const statusData = await statusRes.json();
+                    setSubscriptionActive(statusData.active);
+                  } else {
+                    alert(data.error || "Failed to cancel subscription");
+                  }
+                } catch (err) {
+                  alert("Error: " + err.message);
+                }
+              }}
+              style={{
+                background: "#dc2626",
+                color: "#fff",
+                border: "none",
+                padding: "10px 20px",
+                borderRadius: "8px",
+                cursor: "pointer",
+                marginTop: "12px",
+                width: "100%",
+              }}
+            >
+              Cancel Subscription
+            </button>
+          </div>
+        )}
           </div>
         )}
       </div>
