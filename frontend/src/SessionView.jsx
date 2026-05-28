@@ -250,6 +250,7 @@ export default function SessionView() {
     const targetSets = lift.sets;
     // Use adjusted targets if available (from server)
     let targetRPE = lift.adjustedRpeTarget || lift.rpeTarget;
+      if (progressionType === "strength" && targetRPE === undefined) targetRPE = 7;
     let targetRIR = lift.adjustedRirTarget || lift.rirTarget;
     const targetQuality = lift.adjustedQualityTarget || lift.qualityTarget;
     const targetROM = lift.romTarget;
@@ -403,27 +404,27 @@ export default function SessionView() {
   };
 
   const getTargetValue = (lift) => {
-    const pt = lift.progressionType;
-
-    if (pt === "power") {
-      const target = lift.adjustedQualityTarget || lift.qualityTarget;
-      return target || "—";
-    }
-    if (pt === "mobility") {
-      const stability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
-      const pain = lift.painTarget || 4;
-      return `Stability ≥${stability} / Pain ≤${pain}`;
-    }
-    if (pt === "strength" || data.logic === "STRENGTH_RPE") {
-      const target = lift.adjustedRpeTarget || lift.rpeTarget;
-      return target || "—";
-    }
-    if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") {
-      const target = lift.adjustedRirTarget || lift.rirTarget;
-      return target || "—";
-    }
-    return "—";
-  };
+  const pt = lift.progressionType;
+  if (pt === "power") {
+    const target = lift.adjustedQualityTarget || lift.qualityTarget;
+    return target || "—";
+  }
+  if (pt === "mobility") {
+    const stability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
+    const pain = lift.painTarget || 4;
+    return `Stability ≥${stability} / Pain ≤${pain}`;
+  }
+  if (pt === "strength" || data.logic === "STRENGTH_RPE") {
+    const target = lift.adjustedRpeTarget || lift.rpeTarget;
+    // If still missing, default to 7
+    return target || 7;
+  }
+  if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") {
+    const target = lift.adjustedRirTarget || lift.rirTarget;
+    return target || "—";
+  }
+  return "—";
+};
 
   return (
     <div style={{ padding: 30, fontFamily: "system-ui", maxWidth: 900, margin: "0 auto" }}>
