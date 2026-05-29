@@ -52,7 +52,7 @@ export default function Home() {
     try {
       let email = localStorage.getItem("userEmail");
       if (!email) {
-        email = prompt("Enter your email to start your free trial (no charge, cancel anytime):");
+        email = prompt("Enter your email to start your 30‑day free trial:");
         if (!email || !email.includes("@")) {
           alert("Please enter a valid email address");
           return;
@@ -110,7 +110,6 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero – direct, benefit-driven */}
       <section className="hero">
         <div className="hero-content">
           <h1>Tired of guessing your working weights?</h1>
@@ -123,32 +122,10 @@ export default function Home() {
               How It Works
             </button>
           </div>
-          <p className="hero-trust">✅ 30‑day free trial · Cancel anytime · No hidden fees</p>
+          <p className="hero-trust">✅ 30‑day free trial · Cancel anytime</p>
         </div>
       </section>
 
-      {/* Social proof – testimonials */}
-      <section className="testimonials">
-        <div className="container">
-          <h2>Trusted by lifters who were tired of stalling</h2>
-          <div className="testimonial-grid">
-            <div className="testimonial-card">
-              <p>“I’ve used spreadsheets for years. This app actually adapts to how I feel. My squat e1RM went from 140kg to 160kg in 8 weeks.”</p>
-              <div className="testimonial-author">– Sam L., powerlifter</div>
-            </div>
-            <div className="testimonial-card">
-              <p>“Finally, an app that doesn’t force me to guess RPE. It just works. My bench finally moved after a 6‑month stall.”</p>
-              <div className="testimonial-author">– Jess T., recreational lifter</div>
-            </div>
-            <div className="testimonial-card">
-              <p>“The auto‑adjustment is magic. I log my sets, and next week’s weights are exactly what I need. No overthinking.”</p>
-              <div className="testimonial-author">– Mark R., strongman competitor</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How it works – concrete example */}
       <section className="how-it-works" id="how-it-works">
         <div className="container">
           <h2>How it works in 60 seconds</h2>
@@ -175,7 +152,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Comparison table: static spreadsheet vs Forge */}
       <section className="comparison">
         <div className="container">
           <h2>Static spreadsheets vs. Forge of Olympus</h2>
@@ -202,7 +178,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Programs section – same as before but with clearer CTAs */}
       <section className="programs" id="programs">
         <div className="container">
           <h2>Programs by goal</h2>
@@ -233,19 +208,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA – risk reversal */}
       <section className="final-cta">
         <div className="container">
           <h2>Stop guessing. Start progressing.</h2>
-          <p>Try any program free for 30 days. No risk, cancel anytime.</p>
+          <p>Try any program free for 30 days. Cancel anytime.</p>
           <button onClick={() => document.getElementById("programs")?.scrollIntoView({ behavior: "smooth" })} className="btn btn-gold btn-large">
             Choose your program →
           </button>
-          <p className="small">⭐ Trusted by 500+ lifters · No credit card required during trial</p>
         </div>
       </section>
 
-      {/* Lead magnet modal */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
