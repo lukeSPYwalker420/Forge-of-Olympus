@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
-/* global gtag */
 
 export default function Home() {
   const navigate = useNavigate();
@@ -30,23 +29,20 @@ export default function Home() {
         body: JSON.stringify({ email, source: "register_modal" })
       });
       if (response.ok) {
-        setModalMessage("Thanks! You're on the list. We'll be in touch.");
+        await fetch("/api/send-cheatsheet", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+        setModalMessage("Thanks! Check your email for the RPE cheat sheet and free trial link.");
         setTimeout(() => {
           setShowModal(false);
           setEmail("");
           setModalMessage("");
-        }, 2000);
+        }, 3000);
       } else {
         setModalMessage("Something went wrong. Please try again.");
       }
-      if (response.ok) {
-  await fetch("/api/send-cheatsheet", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email })
-  });
-  setModalMessage("Thanks! Check your email for the RPE cheat sheet and free trial link.");
-}
     } catch (err) {
       console.error(err);
       setModalMessage("Network error. Please try again.");
@@ -54,72 +50,48 @@ export default function Home() {
   };
 
   const handleSubscribe = async (programName) => {
-  try {
-    let email = localStorage.getItem("userEmail");
-    
-    // If no email stored, ask for it AND create account
-    if (!email) {
-      email = prompt("Enter your email to start your free trial:");
-      if (!email || !email.includes("@")) {
-        alert("Please enter a valid email address");
-        return;
+    try {
+      let email = localStorage.getItem("userEmail");
+      if (!email) {
+        email = prompt("Enter your email to start your free trial:");
+        if (!email || !email.includes("@")) {
+          alert("Please enter a valid email address");
+          return;
+        }
+        const loginRes = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+        const userData = await loginRes.json();
+        if (loginRes.ok) {
+          localStorage.setItem("userId", userData.userId);
+          localStorage.setItem("userEmail", userData.email);
+          localStorage.setItem("purchasedPrograms", JSON.stringify(userData.purchasedPrograms));
+        } else {
+          alert("Error creating account. Please try again.");
+          return;
+        }
       }
-      
-      // Create/verify user account BEFORE checkout
-      const loginRes = await fetch("/api/login", {
+
+      const response = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ programName, email })
       });
-      
-      const userData = await loginRes.json();
-      if (loginRes.ok) {
-        localStorage.setItem("userId", userData.userId);
-        localStorage.setItem("userEmail", userData.email);
-        localStorage.setItem("purchasedPrograms", JSON.stringify(userData.purchasedPrograms));
-      } else {
-        alert("Error creating account. Please try again.");
-        return;
-      }
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Checkout failed");
+      if (data.url) window.location.href = data.url;
+      else throw new Error("No checkout URL returned");
+    } catch (err) {
+      console.error("Checkout error:", err);
+      alert(`Error: ${err.message}. Please try again or contact support.`);
     }
-
-    const response = await fetch("/api/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        programName, 
-        email: email
-      })
-    });
-    
-    const data = await response.json();
-
-    // Inside handleSubscribe, after getting the session URL but before redirect:
-if (window.gtag) {
-  gtag('event', 'conversion', { 'send_to': 'AW-XXXXXXXX/XXXXXXX' });
-}
-window.location.href = data.url;
-    
-    if (!response.ok) {
-      throw new Error(data.error || "Checkout failed");
-    }
-    
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      throw new Error("No checkout URL returned");
-    }
-  } catch (err) {
-    console.error("Checkout error:", err);
-    alert(`Error: ${err.message}. Please try again or contact support.`);
-  }
-};
+  };
 
   const handleCoaching = (programName) => {
     const program = programs.find(p => p.title === programName);
-    if (program && program.coachingLink) {
-      window.location.href = program.coachingLink;
-    }
+    if (program && program.coachingLink) window.location.href = program.coachingLink;
   };
 
   return (
@@ -131,22 +103,22 @@ window.location.href = data.url;
           </span>
           <div className="nav-links">
             {userId ? (
-            <button onClick={() => navigate("/dashboard")} className="nav-btn primary">Your Training System</button>
-          ) : (
-            <button onClick={() => navigate("/login")} className="nav-btn">Get Access</button>
-          )}
-            <button onClick={handleRegister} className="nav-btn primary">Join the Forge</button>
+              <button onClick={() => navigate("/dashboard")} className="nav-btn primary">Dashboard</button>
+            ) : (
+              <button onClick={() => navigate("/login")} className="nav-btn">Login</button>
+            )}
+            <button onClick={handleRegister} className="nav-btn primary">Free RPE Guide</button>
           </div>
         </div>
       </nav>
 
       <section className="hero">
         <div className="hero-content">
-          <h1>Stop Guessing Your Working Weights.<br />Your Program Adjusts When You Do.</h1>
-          <p>Adaptive periodisation that learns from every rep. No spreadsheets. No plateaus.</p>
+          <h1>Stop guessing your working weights.<br />Your program adjusts when you do.</h1>
+          <p>Adaptive periodisation that learns from every rep. No spreadsheets, no plateaus.</p>
           <div className="hero-buttons">
             <button onClick={() => document.getElementById("programs")?.scrollIntoView({ behavior: "smooth" })} className="btn btn-gold">
-              Explore Programs
+              View Programs
             </button>
             <button onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })} className="btn btn-outline">
               How It Works
@@ -155,45 +127,40 @@ window.location.href = data.url;
         </div>
       </section>
 
-      {/* Rest of your sections remain the same... */}
       <section className="how-it-works" id="how-it-works">
         <div className="container">
           <h2>How It Works</h2>
           <div className="steps-grid">
             <div className="step">
               <div className="step-number">1</div>
-              <h3>Choose Your Plan</h3>
-              <p>Subscribe to any program – first month free. You get the complete exercise library, sets, reps, and targets delivered to your dashboard instantly.</p>
+              <h3>Choose Your Goal</h3>
+              <p>Select a program based on what you want to achieve – strength, size, mobility, or general fitness.</p>
             </div>
             <div className="step">
               <div className="step-number">2</div>
-              <h3>Your Dashboard</h3>
-              <p>See your weekly schedule, upcoming workouts, estimated 1RMs, and recovery status. The engine pre-loads your next session based on your last performance.</p>
+              <h3>Train with Live Adjustments</h3>
+              <p>Every set you log updates your estimated 1RM and next session’s weights – automatically.</p>
             </div>
             <div className="step">
               <div className="step-number">3</div>
-              <h3>Log & Adapt</h3>
-              <p>Enter your sets, reps, and effort. The system automatically adjusts your next session.</p>
-            </div>
-            <div className="step">
-              <div className="step-number">4</div>
-              <h3>Progress Becomes Inevitable</h3>
-              <p>No guesswork. No stalls. Every session builds on the last.</p>
+              <h3>Never Stall Again</h3>
+              <p>The engine increases or decreases intensity based on your performance, not a fixed spreadsheet.</p>
             </div>
           </div>
           <div className="coaching-note">
-            <p>⚡ <strong>What makes us different?</strong> Most apps just give you templates. Forge of Olympus gives you <strong>my coaching brain in code</strong> – adaptive periodisation that learns from your performance. Upgrade to live coaching for form reviews, video calls, and direct access.</p>
+            <p>⚡ <strong>What makes us different?</strong> Forge of Olympus embeds coaching intelligence into every program. Upgrade to live coaching for form reviews, video calls, and direct access.</p>
           </div>
         </div>
       </section>
 
       <section className="programs" id="programs">
         <div className="container">
-          <h2>Premium Programs</h2>
+          <h2>Programs by Goal</h2>
           <div className="program-grid">
             {programs.map((p) => (
               <div key={p.title} className="program-card">
                 <div className="program-header" style={{ backgroundImage: `url(${p.image})` }}>
+                  <div className="program-badge">{p.goal}</div>
                   <h3>{p.title}</h3>
                 </div>
                 <ul className="program-features">
@@ -202,11 +169,11 @@ window.location.href = data.url;
                   ))}
                 </ul>
                 <div className="program-buttons">
-                  <button onClick={(e) => { e.preventDefault(); handleSubscribe(p.title); }} className="btn-plan">
-                    Start Free Trial – £19.99/mo after 30 days
+                  <button onClick={() => handleSubscribe(p.title)} className="btn-plan">
+                    30‑day free trial · £19.99/mo
                   </button>
                   <button onClick={() => handleCoaching(p.title)} className="btn-coaching">
-                    Get Plan + Coaching – £169.99/mo
+                    + Coaching · £169.99/mo
                   </button>
                 </div>
               </div>
@@ -215,15 +182,14 @@ window.location.href = data.url;
         </div>
       </section>
 
-      {/* Registration Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Join the Forge</h3>
-            <p>Get early access, training tips, and exclusive offers.</p>
+            <h3>Get the RPE Cheat Sheet</h3>
+            <p>Enter your email – we'll send you the guide and a 30‑day free trial link.</p>
             <form onSubmit={handleEmailSubmit}>
               <input type="email" placeholder="Your email address" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              <button type="submit">Sign Up</button>
+              <button type="submit">Send</button>
             </form>
             {modalMessage && <p className="modal-message">{modalMessage}</p>}
             <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
@@ -237,26 +203,30 @@ window.location.href = data.url;
 const programs = [
   {
     title: "Ares Protocol",
+    goal: "⚡ Strength Peaking",
     image: "/Ares Protocol.jpg",
     coachingLink: "https://buy.stripe.com/14A28r1y63BT6WS6mV4sE0k",
-    features: ["No more RPE math", "Auto‑calculated top sets", "Never stall from bad load selection again", "Peak strength development", "Built for serious lifters"]
+    features: ["Auto‑calculated top sets", "RPE‑based intensity management", "Designed for powerlifting & strength athletes", "Weekly wave progression"]
   },
   {
     title: "Apollo Physique",
+    goal: "💪 Hypertrophy & Aesthetics",
     image: "/Apollo Physique.jpg",
     coachingLink: "https://buy.stripe.com/8x25kD0u2fkBa947qZ4sE0i",
-    features: ["Bodybuilding symmetry focus", "Muscle definition protocols", "Proportion optimisation", "Classic physique development"]
+    features: ["Bodybuilding‑focused volume schemes", "Symmetry and proportion emphasis", "Muscle group prioritisation", "Classic physique development"]
   },
   {
     title: "Hephaestus Framework",
+    goal: "🛡️ Joint Health & Longevity",
     image: "/Hephaestus Framework.jpg",
     coachingLink: "https://buy.stripe.com/6oU8wPa4CfkB1Cy7qZ4sE0g",
-    features: ["Injury prevention protocols", "Joint health optimisation", "Recovery enhancement", "Longevity-focused training"]
+    features: ["Injury prevention protocols", "ROM & stability tracking", "Pain‑managed progression", "Designed for long‑term athleticism"]
   },
   {
     title: "Hercules Foundation",
+    goal: "🏋️ General Fitness & Power",
     image: "/Hercules Foundation.jpg",
     coachingLink: "https://buy.stripe.com/4gMdR9a4C5K1fto8v34sE0f",
-    features: ["Balanced strength & conditioning", "Power development for everyday athletes", "Mobility & injury prevention", "5‑week wave blocks with deload"]
+    features: ["Balanced strength & conditioning", "Power development for sports", "Mobility & work capacity", "5‑week wave blocks with deload"]
   }
 ];
