@@ -213,7 +213,7 @@ export default function Dashboard() {
     if (!element) return;
     const canvas = await html2canvas(element);
     const link = document.createElement('a');
-    link.download = 'forge-progress.png';
+    link.download = 'apex-progress.png';
     link.href = canvas.toDataURL();
     link.click();
   };
@@ -413,7 +413,7 @@ export default function Dashboard() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "forge_leads.csv";
+        a.download = "apex_leads.csv";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -453,7 +453,7 @@ export default function Dashboard() {
       )}
       <button 
         onClick={() => {
-          const shareText = `I finally stopped guessing my weights. @ForgeOfOlympus calculates every set based on my actual performance. 30 days free.`;
+          const shareText = `I finally stopped guessing my weights. Apex Method calculates every set based on my actual performance. 30 days free.`;
           window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
         }}
         style={{ background: "#1da1f2", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer" }}
@@ -716,7 +716,9 @@ export default function Dashboard() {
         {loadingLeads ? <p>Loading leads...</p> : leads.length === 0 ? <p>No leads yet.</p> : (
           <div style={{ maxHeight: "300px", overflowY: "auto", marginTop: "10px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
-              <thead><tr><th>Email</th><th>Source</th><th>Date</th></tr></thead>
+              <thead>
+                <tr><th>Email</th><th>Source</th><th>Date</th></tr>
+              </thead>
               <tbody>
                 {leads.map((lead, idx) => (
                   <tr key={idx} style={{ borderTop: "1px solid #333" }}>
@@ -745,7 +747,9 @@ export default function Dashboard() {
         {loadingPremiumUsers ? <p>Loading premium users...</p> : manualPremiumUsers.length > 0 ? (
           <div style={{ marginTop: "15px", maxHeight: "200px", overflowY: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
-              <thead><tr><th>Email</th><th>Granted</th><th>Streak</th><th>Action</th></tr></thead>
+              <thead>
+                <tr><th>Email</th><th>Granted</th><th>Streak</th><th>Action</th></tr>
+              </thead>
               <tbody>
                 {manualPremiumUsers.map((user, idx) => (
                   <tr key={idx} style={{ borderTop: "1px solid #333" }}>
@@ -821,14 +825,14 @@ export default function Dashboard() {
     <div className="dashboard-container">
       <div className="dashboard-header">
         <span className="dashboard-logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
-          ⚡ FORGE OF OLYMPUS
+          APEX METHOD
         </span>
         <button onClick={() => { localStorage.clear(); navigate("/"); }} className="logout-btn">Logout</button>
       </div>
 
       {showInstallBanner && (
         <div className="install-banner" style={{ background: "#2a2a35", padding: "12px", borderRadius: "8px", marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>📲 Install Forge of Olympus as an app</span>
+          <span>📲 Install Apex Method as an app</span>
           <button onClick={handleInstallClick} style={{ background: "var(--accent)", border: "none", padding: "8px 16px", borderRadius: "6px", cursor: "pointer" }}>Install</button>
         </div>
       )}
@@ -851,7 +855,7 @@ export default function Dashboard() {
 
       {/* Hidden progress-share-card for screenshot */}
       <div className="progress-share-card" style={{ position: 'absolute', left: '-9999px', top: 0, width: '400px', background: '#1e1e2a', padding: '20px', borderRadius: '16px' }}>
-        <h3 style={{ color: '#d4af37' }}>My Forge of Olympus Progress</h3>
+        <h3 style={{ color: 'var(--accent)' }}>My Apex Method Progress</h3>
         <p>🔥 Streak: {localStorage.getItem("streak") || 0} days</p>
         <p>🏋️ Squat 1RM: {estimates["Squat (Top Set)"] || "—"} kg</p>
         <p>💪 Bench 1RM: {estimates["Bench (Top Set)"] || "—"} kg</p>
