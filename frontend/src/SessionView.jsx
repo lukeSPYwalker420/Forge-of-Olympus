@@ -37,7 +37,6 @@ export default function SessionView() {
   const userId = localStorage.getItem("userId");
   const program = localStorage.getItem("program");
 
-  // Fetch session data WITH all readiness adjustments included
   useEffect(() => {
     if (!userId || !program) return;
 
@@ -61,7 +60,6 @@ export default function SessionView() {
       .finally(() => setLoading(false));
   }, [week, day, userId, program, adjustments]);
 
-  // Check subscription status
   useEffect(() => {
     const checkSubscription = async () => {
       try {
@@ -118,7 +116,6 @@ export default function SessionView() {
 
       await fetchHistory(liftName);
 
-      // Refresh data (keep same adjustments)
       const rpeAdj = adjustments.rpeAdjustment || 0;
       const rirAdj = adjustments.rirAdjustment || 0;
       const qualityAdj = adjustments.qualityAdjustment || 0;
@@ -167,7 +164,6 @@ export default function SessionView() {
     const newInputs = { ...inputs };
     const liftInputs = newInputs[lift.liftName] || {};
 
-    // Fill reps per set based on target reps
     const targetRepsPerSet = [];
     const targetRepsValue = lift.reps;
 
@@ -186,30 +182,25 @@ export default function SessionView() {
     }
     liftInputs.repsPerSet = targetRepsPerSet;
 
-    // Fill weight from server-calculated current weight (already adjusted by server)
     if (lift.currentWeight && lift.currentWeight > 0) {
       liftInputs.weight = lift.currentWeight;
     }
 
-    // Fill RPE for strength programs (use adjusted target if available)
     if (lift.progressionType === "strength" || data?.logic === "STRENGTH_RPE") {
       const targetRPE = lift.adjustedRpeTarget || lift.rpeTarget;
       liftInputs.rpe = targetRPE;
     }
 
-    // Fill RIR for hypertrophy programs
     if (data?.logic === "HYPERTROPHY_VOLUME" || lift.progressionType === "volume") {
       const targetRIR = lift.adjustedRirTarget || lift.rirTarget;
       liftInputs.rir = targetRIR;
     }
 
-    // Fill quality for power programs
     if (lift.progressionType === "power") {
       const targetQuality = lift.adjustedQualityTarget || lift.qualityTarget;
       liftInputs.quality = targetQuality;
     }
 
-    // Fill stability/pain for mobility programs
     if (lift.progressionType === "mobility") {
       liftInputs.stability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
       liftInputs.pain = lift.painTarget || 4;
@@ -221,7 +212,7 @@ export default function SessionView() {
 
   const markExerciseComplete = (liftName) => {
     const updated = new Set(completedLifts);
-    if (updated.has(liftName)) return;   // already counted
+    if (updated.has(liftName)) return;
     updated.add(liftName);
     setCompletedLifts(updated);
 
@@ -248,13 +239,12 @@ export default function SessionView() {
     const liftName = lift.liftName;
     const targetReps = lift.reps;
     const targetSets = lift.sets;
-    const progressionType = lift.progressionType;   // ✅ declare first
-    const logic = data.logic;                      // ✅ also move logic up if needed later
+    const progressionType = lift.progressionType;
+    const logic = data.logic;
 
     let targetRPE = lift.adjustedRpeTarget || lift.rpeTarget;
     if (progressionType === "strength" && targetRPE === undefined) targetRPE = 7;
     let targetRIR = lift.adjustedRirTarget || lift.rirTarget;
-    // ... rest of your function unchanged ...
     const targetQuality = lift.adjustedQualityTarget || lift.qualityTarget;
     const targetROM = lift.romTarget;
     const targetPain = lift.painTarget || 4;
@@ -326,7 +316,6 @@ export default function SessionView() {
         })
       });
 
-      // “You would have missed this” moment
       if (weight && targetRPE && lift.rpeTarget && lift.currentWeight) {
         const staticWeight = Math.round((lift.currentWeight / 0.82) * 0.82 / 2.5) * 2.5;
         if (staticWeight > 0 && staticWeight !== weight) {
@@ -347,7 +336,6 @@ export default function SessionView() {
         body: JSON.stringify({ userId, liftName, logic })
       });
 
-      // Refresh data (keep same adjustments)
       const rpeAdj = adjustments.rpeAdjustment || 0;
       const rirAdj = adjustments.rirAdjustment || 0;
       const qualityAdj = adjustments.qualityAdjustment || 0;
@@ -396,45 +384,43 @@ export default function SessionView() {
   if (!data) return <div>No data returned</div>;
 
   const getMetricLabel = (lift) => {
-  const pt = lift.progressionType;
-  if (pt === "power") return "Quality (1-10)";
-  if (pt === "mobility") return "Stability (1-10) / Pain (1-10)";
-  if (pt === "strength" || pt === "deload" || data.logic === "STRENGTH_RPE") return "RPE";
-  if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") return "RIR";
-  return "RPE";
-};
+    const pt = lift.progressionType;
+    if (pt === "power") return "Quality (1-10)";
+    if (pt === "mobility") return "Stability (1-10) / Pain (1-10)";
+    if (pt === "strength" || pt === "deload" || data.logic === "STRENGTH_RPE") return "RPE";
+    if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") return "RIR";
+    return "RPE";
+  };
 
   const getTargetValue = (lift) => {
-  const pt = lift.progressionType;
-  
-  // For any progression type that uses RPE (strength, deload, or any exercise with an rpeTarget)
-  if ((pt === "strength" || pt === "deload" || data.logic === "STRENGTH_RPE" || lift.rpeTarget !== undefined) && lift.rpeTarget !== undefined) {
-    const target = lift.adjustedRpeTarget ?? lift.rpeTarget;
-    return target ?? 7;
-  }
-  
-  if (pt === "power") {
-    const target = lift.adjustedQualityTarget || lift.qualityTarget;
-    return target || "—";
-  }
-  
-  if (pt === "mobility") {
-    const stability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
-    const pain = lift.painTarget || 4;
-    return `Stability ≥${stability} / Pain ≤${pain}`;
-  }
-  
-  if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") {
-    const target = lift.adjustedRirTarget || lift.rirTarget;
-    return target || "—";
-  }
-  
-  return "—";
-};
+    const pt = lift.progressionType;
+
+    if ((pt === "strength" || pt === "deload" || data.logic === "STRENGTH_RPE" || lift.rpeTarget !== undefined) && lift.rpeTarget !== undefined) {
+      const target = lift.adjustedRpeTarget ?? lift.rpeTarget;
+      return target ?? 7;
+    }
+
+    if (pt === "power") {
+      const target = lift.adjustedQualityTarget || lift.qualityTarget;
+      return target || "—";
+    }
+
+    if (pt === "mobility") {
+      const stability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
+      const pain = lift.painTarget || 4;
+      return `Stability ≥${stability} / Pain ≤${pain}`;
+    }
+
+    if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") {
+      const target = lift.adjustedRirTarget || lift.rirTarget;
+      return target || "—";
+    }
+
+    return "—";
+  };
 
   return (
     <div style={{ padding: 30, fontFamily: "system-ui", maxWidth: 900, margin: "0 auto" }}>
-      {/* missed opportunity banner */}
       {missedOpportunityBanner && (
         <div style={{
           background: "#ffaa4422",
@@ -448,11 +434,10 @@ export default function SessionView() {
         </div>
       )}
 
-      {/* Fatigue optimisation notice */}
       {data.fatigueOptimised && (
         <div style={{
           background: "#2a2a3544",
-          borderLeft: "4px solid #d4af37",
+          borderLeft: "4px solid var(--accent)",
           padding: "12px",
           marginBottom: "20px",
           borderRadius: "8px",
@@ -502,7 +487,7 @@ export default function SessionView() {
         </div>
       )}
 
-            <div style={{ display: "grid", gap: 20 }}>
+      <div style={{ display: "grid", gap: 20 }}>
         {(() => {
           const allExercises = data.projected || [];
           const visibleExercises = allExercises.filter(lift => lift.sets > 0);
@@ -521,7 +506,6 @@ export default function SessionView() {
 
                 return (
                   <div key={i} style={{ border: "1px solid #e5e5e5", borderRadius: 12, padding: 20 }}>
-                    {/* Keep all the existing exercise JSX exactly as it was */}
                     <h3>
                       {lift.liftName}
                       {lift.descendingSet && (
@@ -740,7 +724,6 @@ export default function SessionView() {
         })()}
       </div>
 
-      {/* next workout preview */}
       {nextPreview && (
         <div style={{ marginTop: "30px", padding: "16px", background: "#1e1e2a", borderRadius: "12px", border: "1px solid var(--accent)" }}>
           <h4>🔮 Next workout preview</h4>
@@ -753,7 +736,6 @@ export default function SessionView() {
         </div>
       )}
 
-      {/* Workout Completion Modal */}
       {showCompletionModal && workoutSummary && (
         <div style={{
           position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
@@ -763,29 +745,29 @@ export default function SessionView() {
         }}>
           <div style={{
             background: "var(--card-bg, #1e1e2a)", borderRadius: "24px", padding: "30px",
-            maxWidth: "500px", width: "100%", border: "1px solid var(--accent, #d4af37)",
+            maxWidth: "500px", width: "100%", border: "1px solid var(--accent)",
             maxHeight: "90vh", overflowY: "auto"
           }}>
-            <h2 style={{ color: "var(--accent, #d4af37)", marginBottom: "8px" }}>Workout Complete! 🎉</h2>
+            <h2 style={{ color: "var(--accent)", marginBottom: "8px" }}>Workout Complete! 🎉</h2>
             <p style={{ color: "var(--text-gray, #a1a1aa)", marginBottom: "20px" }}>Great work today</p>
 
             <div style={{ marginBottom: "24px" }}>
               <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>📊 Session Stats</h3>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                 <div style={{ background: "var(--bg-light, #2a2a35)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent, #d4af37)" }}>{workoutSummary.timeToComplete}</div>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.timeToComplete}</div>
                   <div style={{ fontSize: "12px", color: "var(--text-gray, #a1a1aa)" }}>Time</div>
                 </div>
                 <div style={{ background: "var(--bg-light, #2a2a35)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent, #d4af37)" }}>{workoutSummary.totalVolume}kg</div>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.totalVolume}kg</div>
                   <div style={{ fontSize: "12px", color: "var(--text-gray, #a1a1aa)" }}>Total Volume</div>
                 </div>
                 <div style={{ background: "var(--bg-light, #2a2a35)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent, #d4af37)" }}>{workoutSummary.exercisesCompleted}</div>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.exercisesCompleted}</div>
                   <div style={{ fontSize: "12px", color: "var(--text-gray, #a1a1aa)" }}>Exercises</div>
                 </div>
                 <div style={{ background: "var(--bg-light, #2a2a35)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent, #d4af37)" }}>{workoutSummary.streak} 🔥</div>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.streak} 🔥</div>
                   <div style={{ fontSize: "12px", color: "var(--text-gray, #a1a1aa)" }}>Day Streak</div>
                 </div>
               </div>
@@ -807,7 +789,7 @@ export default function SessionView() {
                 <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>💪 Nailed It</h3>
                 <ul style={{ listStyle: "none", padding: 0 }}>
                   {workoutSummary.underRPE.map((r, i) => (
-                    <li key={i} style={{ padding: "4px 0", color: "var(--accent, #d4af37)" }}>✓ {r}</li>
+                    <li key={i} style={{ padding: "4px 0", color: "var(--accent)" }}>✓ {r}</li>
                   ))}
                 </ul>
               </div>
@@ -823,7 +805,7 @@ export default function SessionView() {
             <div style={{ display: "flex", gap: "12px", marginTop: "20px", flexWrap: "wrap" }}>
               <button
                 onClick={() => {
-                  const shareText = `I finally stopped guessing my weights. @ForgeOfOlympus calculates every set based on my actual performance. 30 days free.`;
+                  const shareText = `I finally stopped guessing my weights. @ApexMethod calculates every set based on my actual performance. 30 days free.`;
                   window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
                 }}
                 style={{ flex: 1, padding: "12px", background: "#1da1f2", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}
@@ -832,8 +814,8 @@ export default function SessionView() {
               </button>
               <button
                 onClick={() => {
-                  const shareText = `🔥 Just crushed my ${program} workout on Forge of Olympus!\n\nWeek ${week}, Day ${day}\n✅ ${workoutSummary.exercisesCompleted} exercises completed\n💪 ${workoutSummary.prs?.length || 0} personal records\n⏱️ ${workoutSummary.timeToComplete}`;
-                  window.open(`https://www.facebook.com/sharer/sharer.php?u=https://forge-of-olympus.onrender.com&quote=${encodeURIComponent(shareText)}`, '_blank');
+                  const shareText = `🔥 Just crushed my ${program} workout on Apex Method!\n\nWeek ${week}, Day ${day}\n✅ ${workoutSummary.exercisesCompleted} exercises completed\n💪 ${workoutSummary.prs?.length || 0} personal records\n⏱️ ${workoutSummary.timeToComplete}`;
+                  window.open(`https://www.facebook.com/sharer/sharer.php?u=https://apexmethod.com&quote=${encodeURIComponent(shareText)}`, '_blank');
                 }}
                 style={{ flex: 1, padding: "12px", background: "#4267B2", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}
               >
@@ -844,7 +826,7 @@ export default function SessionView() {
                   setShowCompletionModal(false);
                   window.location.href = "/dashboard";
                 }}
-                style={{ flex: 1, padding: "12px", background: "var(--accent, #d4af37)", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" }}
+                style={{ flex: 1, padding: "12px", background: "var(--accent)", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" }}
               >
                 Go to Dashboard
               </button>
