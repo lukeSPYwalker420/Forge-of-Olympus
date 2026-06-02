@@ -97,7 +97,7 @@ export default function Home() {
       <nav className="navbar">
         <div className="nav-container">
           <span className="logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
-            FORGE OF OLYMPUS
+            APEX METHOD
           </span>
           <div className="nav-links">
             {userId ? (
@@ -113,7 +113,7 @@ export default function Home() {
       <section className="hero">
         <div className="hero-content">
           <h1>Tired of guessing your working weights?</h1>
-          <p className="hero-sub">Forge of Olympus automatically adjusts your program based on your performance. No spreadsheets. No plateaus.</p>
+          <p className="hero-sub">Apex Method automatically adjusts your program based on your performance. No spreadsheets. No plateaus.</p>
           <div className="hero-buttons">
             <button onClick={() => document.getElementById("programs")?.scrollIntoView({ behavior: "smooth" })} className="btn btn-gold">
               See Programs
@@ -154,7 +154,7 @@ export default function Home() {
 
       <section className="comparison">
         <div className="container">
-          <h2>Static spreadsheets vs. Forge of Olympus</h2>
+          <h2>Static spreadsheets vs. Apex Method</h2>
           <div className="comparison-grid">
             <div className="comparison-col">
               <h3>📄 Static Spreadsheets</h3>
@@ -166,7 +166,7 @@ export default function Home() {
               </ul>
             </div>
             <div className="comparison-col highlight">
-              <h3>⚡ Forge of Olympus</h3>
+              <h3>⚡ Apex Method</h3>
               <ul>
                 <li>✅ Auto‑adjusts weights based on your logged RPE</li>
                 <li>✅ Never stall – always optimal load</li>
