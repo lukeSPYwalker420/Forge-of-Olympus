@@ -39,10 +39,10 @@ async function sendCancellationEmail(email, programName) {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: "Your Forge of Olympus Subscription Has Ended",
+    subject: "Your Apex Method Subscription Has Ended",
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #d4af37;">Your Journey Continues</h2>
+        <h2 style="color: #06b6d4;">Your Journey Continues</h2>
         <p>Your subscription to <strong>${programName}</strong> has ended.</p>
         <p>You can still:</p>
         <ul>
@@ -50,9 +50,9 @@ async function sendCancellationEmail(email, programName) {
           <li>✓ See your 1RM progression charts</li>
           <li>✓ Log workouts manually</li>
         </ul>
-        <p>To get weight recommendations and adaptive progression again, simply <a href="https://forge-of-olympus.onrender.com" style="color: #d4af37;">resubscribe</a>.</p>
+        <p>To get weight recommendations and adaptive progression again, simply <a href="https://forge-of-olympus.onrender.com/" style="color: #06b6d4;">resubscribe</a>.</p>
         <hr />
-        <p style="font-size: 12px; color: #666;">Forge of Olympus – Train Without Guessing</p>
+        <p style="font-size: 12px; color: #666;">Apex Method – Adaptive Strength Training</p>
       </div>
     `
   };
@@ -77,12 +77,12 @@ async function sendPaymentFailureEmail(email, programName, gracePeriodEnds) {
         <p>You have until <strong>${gracePeriodEnds.toLocaleDateString()}</strong> to update your payment method.</p>
         <p>During this grace period, your training recommendations are hidden, but you can still log workouts.</p>
         <div style="text-align: center; margin: 30px 0;">
-          <a href="https://forge-of-olympus.onrender.com" style="background: #d4af37; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+          <a href="https://forge-of-olympus.onrender.com/" style="background: #06b6d4; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
             Update Payment Method
           </a>
         </div>
         <hr />
-        <p style="font-size: 12px; color: #666;">Forge of Olympus – Train Without Guessing</p>
+        <p style="font-size: 12px; color: #666;">Apex Method – Adaptive Strength Training</p>
       </div>
     `
   };
@@ -657,52 +657,52 @@ function generalFitnessProgression(state, sessionData) {
 
   switch (progressionType) {
     case "strength":
-  // Determine min reps per set from targetReps string (e.g., "8-10" → 8)
-  const targetRepsStr = sessionData.targetReps;
-  let minRepsPerSet = 8;
-  if (typeof targetRepsStr === 'string' && targetRepsStr.includes('-')) {
-    minRepsPerSet = parseInt(targetRepsStr.split('-')[0], 10);
-  } else {
-    minRepsPerSet = parseInt(targetRepsStr, 10);
-  }
-  
-  const repsPerSetArray = sessionData.repsPerSet || [];
-  const targetSets = sessionData.targetSets || 0;
-  
-  // Check if every set meets the minimum reps
-  const allSetsCompleted = repsPerSetArray.length === targetSets &&
-                           repsPerSetArray.every(r => r >= minRepsPerSet);
-  
-  // Determine RPE success (if RPE is logged; otherwise assume success)
-  let rpeOk = true;
-  if (sessionData.actualRPE !== undefined && sessionData.targetRPE !== undefined) {
-    rpeOk = sessionData.actualRPE <= (sessionData.targetRPE || 7) + 0.5;
-  }
-  // If RIR is available instead (rare for strength), use it
-  else if (sessionData.actualRIR !== undefined && sessionData.targetRIR !== undefined) {
-    rpeOk = sessionData.actualRIR <= (sessionData.targetRIR || 2);
-  }
-  
-  const isGoodStrength = sessionData.completed && allSetsCompleted && rpeOk;
-  
-  if (isGoodStrength) {
-    successStreak++;
-    stallCounter = 0;
-    if (successStreak >= 3) {
-      newWeight += getIncrement(sessionData.liftName);
-      successStreak = 0;
-      console.log(`📈 [GF-strength] Good streak ${sessionData.liftName}: weight ↑ to ${newWeight}kg`);
-    }
-  } else {
-    successStreak = 0;
-    stallCounter++;
-    if (stallCounter >= 2 && newWeight > 0) {
-      newWeight = Math.max(0, newWeight - getDecrement(sessionData.liftName));
-      stallCounter = 0;
-      console.log(`⚠️ [GF-strength] Bad streak ${sessionData.liftName}: weight ↓ to ${newWeight}kg`);
-    }
-  }
-  break;
+      // Determine min reps per set from targetReps string (e.g., "8-10" → 8)
+      const targetRepsStr = sessionData.targetReps;
+      let minRepsPerSet = 8;
+      if (typeof targetRepsStr === 'string' && targetRepsStr.includes('-')) {
+        minRepsPerSet = parseInt(targetRepsStr.split('-')[0], 10);
+      } else {
+        minRepsPerSet = parseInt(targetRepsStr, 10);
+      }
+      
+      const repsPerSetArray = sessionData.repsPerSet || [];
+      const targetSets = sessionData.targetSets || 0;
+      
+      // Check if every set meets the minimum reps
+      const allSetsCompleted = repsPerSetArray.length === targetSets &&
+                               repsPerSetArray.every(r => r >= minRepsPerSet);
+      
+      // Determine RPE success (if RPE is logged; otherwise assume success)
+      let rpeOk = true;
+      if (sessionData.actualRPE !== undefined && sessionData.targetRPE !== undefined) {
+        rpeOk = sessionData.actualRPE <= (sessionData.targetRPE || 7) + 0.5;
+      }
+      // If RIR is available instead (rare for strength), use it
+      else if (sessionData.actualRIR !== undefined && sessionData.targetRIR !== undefined) {
+        rpeOk = sessionData.actualRIR <= (sessionData.targetRIR || 2);
+      }
+      
+      const isGoodStrength = sessionData.completed && allSetsCompleted && rpeOk;
+      
+      if (isGoodStrength) {
+        successStreak++;
+        stallCounter = 0;
+        if (successStreak >= 3) {
+          newWeight += getIncrement(sessionData.liftName);
+          successStreak = 0;
+          console.log(`📈 [GF-strength] Good streak ${sessionData.liftName}: weight ↑ to ${newWeight}kg`);
+        }
+      } else {
+        successStreak = 0;
+        stallCounter++;
+        if (stallCounter >= 2 && newWeight > 0) {
+          newWeight = Math.max(0, newWeight - getDecrement(sessionData.liftName));
+          stallCounter = 0;
+          console.log(`⚠️ [GF-strength] Bad streak ${sessionData.liftName}: weight ↓ to ${newWeight}kg`);
+        }
+      }
+      break;
 
     case "power":
       const qualityOk = (sessionData.actualQuality || 0) >= (sessionData.targetQuality || 7);
@@ -1010,17 +1010,17 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
 
     const projected = adjustedSession.exercises.map(ex => {
         // Get original exercise from session (before any mutations)
-  const originalEx = session.exercises.find(e => e.liftName === ex.liftName);
-  if (originalEx) {
-    // Restore any lost fields from the original
-    if (ex.rpeTarget === undefined && originalEx.rpeTarget !== undefined) ex.rpeTarget = originalEx.rpeTarget;
-    if (ex.progressionType === undefined && originalEx.progressionType !== undefined) ex.progressionType = originalEx.progressionType;
-    if (ex.rirTarget === undefined && originalEx.rirTarget !== undefined) ex.rirTarget = originalEx.rirTarget;
-    if (ex.qualityTarget === undefined && originalEx.qualityTarget !== undefined) ex.qualityTarget = originalEx.qualityTarget;
-    if (ex.stabilityTarget === undefined && originalEx.stabilityTarget !== undefined) ex.stabilityTarget = originalEx.stabilityTarget;
-    if (ex.painTarget === undefined && originalEx.painTarget !== undefined) ex.painTarget = originalEx.painTarget;
-    if (ex.romTarget === undefined && originalEx.romTarget !== undefined) ex.romTarget = originalEx.romTarget;
-  }
+      const originalEx = session.exercises.find(e => e.liftName === ex.liftName);
+      if (originalEx) {
+        // Restore any lost fields from the original
+        if (ex.rpeTarget === undefined && originalEx.rpeTarget !== undefined) ex.rpeTarget = originalEx.rpeTarget;
+        if (ex.progressionType === undefined && originalEx.progressionType !== undefined) ex.progressionType = originalEx.progressionType;
+        if (ex.rirTarget === undefined && originalEx.rirTarget !== undefined) ex.rirTarget = originalEx.rirTarget;
+        if (ex.qualityTarget === undefined && originalEx.qualityTarget !== undefined) ex.qualityTarget = originalEx.qualityTarget;
+        if (ex.stabilityTarget === undefined && originalEx.stabilityTarget !== undefined) ex.stabilityTarget = originalEx.stabilityTarget;
+        if (ex.painTarget === undefined && originalEx.painTarget !== undefined) ex.painTarget = originalEx.painTarget;
+        if (ex.romTarget === undefined && originalEx.romTarget !== undefined) ex.romTarget = originalEx.romTarget;
+      }
       // ========== NEW: Auto‑convert RIR → RPE for strength/hybrid programs ==========
       if ((logic === "STRENGTH_RPE" || logic === "GENERAL_FITNESS_HYBRID") 
           && ex.rirTarget !== undefined && ex.rpeTarget === undefined) {
@@ -1144,41 +1144,41 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
           }
         } 
         else if (logic === "GENERAL_FITNESS_HYBRID") {
-  // Strength exercises: use RPE-based weight from estimated1RM
-  if (ex.progressionType === "strength" && effectiveState?.estimated1RM > 0) {
-    let effective1RM = effectiveState.estimated1RM;
-    if (isVariationLift(ex.liftName)) {
-      effective1RM = Math.round(effective1RM * 0.94);
-      ex._variationAdjusted = true;
-    }
-    currentWeight = weightForRPE(effective1RM, adjustedRpeTarget, ex.reps);
-    let nextRaw = weightForRPE(effective1RM, adjustedRpeTarget + 0.5, ex.reps);
-    projectedNextWeight = nextRaw;
-  }
-  // For non-strength exercises (power, mobility, volume), keep old currentWeight logic
-  else if (effectiveState.currentWeight > 0) {
-    currentWeight = effectiveState.currentWeight;
-    let weightModifier = 1;
-    if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
-    if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
-    if (weightModifier !== 1) currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
-    const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-    projectedNextWeight = currentWeight + inc;
-  }
-}
-else if (logic === "HYPERTROPHY_VOLUME" && effectiveState.currentWeight > 0) {
-  // Keep existing hypertrophy logic unchanged
-  currentWeight = effectiveState.currentWeight;
-  let weightModifier = 1;
-  if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
-  if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
-  if (weightModifier !== 1) currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
-  const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
-  projectedNextWeight = currentWeight + inc;
-}
+          // Strength exercises: use RPE-based weight from estimated1RM
+          if (ex.progressionType === "strength" && effectiveState?.estimated1RM > 0) {
+            let effective1RM = effectiveState.estimated1RM;
+            if (isVariationLift(ex.liftName)) {
+              effective1RM = Math.round(effective1RM * 0.94);
+              ex._variationAdjusted = true;
+            }
+            currentWeight = weightForRPE(effective1RM, adjustedRpeTarget, ex.reps);
+            let nextRaw = weightForRPE(effective1RM, adjustedRpeTarget + 0.5, ex.reps);
+            projectedNextWeight = nextRaw;
+          }
+          // For non-strength exercises (power, mobility, volume), keep old currentWeight logic
+          else if (effectiveState.currentWeight > 0) {
+            currentWeight = effectiveState.currentWeight;
+            let weightModifier = 1;
+            if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
+            if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
+            if (weightModifier !== 1) currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
+            const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+            projectedNextWeight = currentWeight + inc;
+          }
+        }
+        else if (logic === "HYPERTROPHY_VOLUME" && effectiveState.currentWeight > 0) {
+          // Keep existing hypertrophy logic unchanged
+          currentWeight = effectiveState.currentWeight;
+          let weightModifier = 1;
+          if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
+          if (rpeAdjustment !== 0) weightModifier *= (1 + (rpeAdjustment * 0.05));
+          if (weightModifier !== 1) currentWeight = Math.round(currentWeight * weightModifier / 2.5) * 2.5;
+          const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
+          projectedNextWeight = currentWeight + inc;
+        }
       }
 
-            // ========== MECHANICAL DISADVANTAGE HANDLING ==========
+      // ========== MECHANICAL DISADVANTAGE HANDLING ==========
       if (ex.mechanicalDisadvantage && effectiveState && logic === "STRENGTH_RPE") {
         // No hard weight cap. Instead, limit the increase on good sessions.
         if (projectedNextWeight > currentWeight) {
@@ -1298,32 +1298,32 @@ app.post("/api/progression/apply", async (req, res) => {
 
     let state = await LiftState.findOne({ userId, liftName });
     if (!state) {
-  let initialState = { userId, liftName };
-  // For STRENGTH_RPE, or GENERAL_FITNESS_HYBRID with progressionType "strength"
-  const isStrengthExercise = (logic === "STRENGTH_RPE") || 
-    (logic === "GENERAL_FITNESS_HYBRID" && lastSession.progressionType === "strength");
-  
-  if (isStrengthExercise) {
-    let bestReps = null;
-    if (lastSession.repsPerSet && lastSession.repsPerSet.length) {
-      bestReps = Math.max(...lastSession.repsPerSet);
-    } else {
-      bestReps = lastSession.repsCompleted;
+      let initialState = { userId, liftName };
+      // For STRENGTH_RPE, or GENERAL_FITNESS_HYBRID with progressionType "strength"
+      const isStrengthExercise = (logic === "STRENGTH_RPE") || 
+        (logic === "GENERAL_FITNESS_HYBRID" && lastSession.progressionType === "strength");
+      
+      if (isStrengthExercise) {
+        let bestReps = null;
+        if (lastSession.repsPerSet && lastSession.repsPerSet.length) {
+          bestReps = Math.max(...lastSession.repsPerSet);
+        } else {
+          bestReps = lastSession.repsCompleted;
+        }
+        const initial1RM = estimate1RM(lastSession.actualWeight, bestReps, lastSession.actualRPE);
+        initialState.estimated1RM = initial1RM;
+        initialState.currentWeight = 0;
+      } else {
+        const isMobility = lastSession.progressionType === "mobility";
+        const painOk = isMobility ? (lastSession.actualPain || 0) <= (lastSession.targetPain || 4) : true;
+        initialState.currentWeight = painOk ? (lastSession.actualWeight || 0) : 0;
+        initialState.lastROM = 0;
+        initialState.lastRepsAchieved = 0;
+      }
+      state = new LiftState(initialState);
+      await state.save();
+      return res.json({ message: "Initial state set", state });
     }
-    const initial1RM = estimate1RM(lastSession.actualWeight, bestReps, lastSession.actualRPE);
-    initialState.estimated1RM = initial1RM;
-    initialState.currentWeight = 0;
-  } else {
-    const isMobility = lastSession.progressionType === "mobility";
-    const painOk = isMobility ? (lastSession.actualPain || 0) <= (lastSession.targetPain || 4) : true;
-    initialState.currentWeight = painOk ? (lastSession.actualWeight || 0) : 0;
-    initialState.lastROM = 0;
-    initialState.lastRepsAchieved = 0;
-  }
-  state = new LiftState(initialState);
-  await state.save();
-  return res.json({ message: "Initial state set", state }); // ✅ return stays!
-}
 
     // ========== MECHANICAL DISADVANTAGE GUARD ==========
     let isDisadvantageLift = false;
@@ -1524,15 +1524,15 @@ app.post("/api/login", async (req, res) => {
   let hasActiveSubscription = false;
   
   if (isAdmin) {
-  purchasedPrograms = [
-    "Ares Protocol", "Apollo Physique",
-    "Hephaestus Framework", "Hercules Foundation",
-    "Mark Training", "Hercules Foundation - Pauline Version",
-    "6-Week Wave Powerlifting",
-    "High-Frequency Specificity Wave"
-  ];
-  hasActiveSubscription = true;
-} else {
+    purchasedPrograms = [
+      "Ares Protocol", "Apollo Physique",
+      "Hephaestus Framework", "Hercules Foundation",
+      "Mark Training", "Hercules Foundation - Pauline Version",
+      "6-Week Wave Powerlifting",
+      "High-Frequency Specificity Wave"
+    ];
+    hasActiveSubscription = true;
+  } else {
     const activePurchases = await Purchase.find({ email, active: true });
     purchasedPrograms = activePurchases.map(p => p.programName);
     hasActiveSubscription = activePurchases.length > 0 || user.manualPremium === true;
@@ -1555,9 +1555,9 @@ app.post("/api/send-cheatsheet", async (req, res) => {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Your RPE Cheat Sheet & Free Trial",
-    html: `<p>Thanks for joining the Forge.</p>
+    html: `<p>Thanks for joining Apex Method.</p>
            <p>Download your RPE Cheat Sheet: <a href="${pdfUrl}">Click here</a></p>
-           <p>Start your 30‑day free trial now: <a href="https://forge-of-olympus.onrender.com">Start Free Trial</a></p>`
+           <p>Start your 30‑day free trial now: <a href="https://forge-of-olympus.onrender.com/">Start Free Trial</a></p>`
   };
   try {
     await transporter.sendMail(mailOptions);
@@ -1620,7 +1620,7 @@ app.get("/api/admin/leads/export", async (req, res) => {
     csv += `"${l.email}","${l.source}","${l.createdAt.toISOString()}"\n`;
   });
   res.setHeader("Content-Type", "text/csv");
-  res.setHeader("Content-Disposition", "attachment; filename=forge_leads.csv");
+  res.setHeader("Content-Disposition", "attachment; filename=apex_leads.csv");
   res.send(csv);
 });
 
@@ -1727,6 +1727,39 @@ app.get("/api/test-stripe", (req, res) => {
     keyExists: !!process.env.STRIPE_SECRET_KEY,
     keyPrefix: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 7) : "none"
   });
+});
+
+// Cancel subscription endpoint
+app.post("/api/cancel-subscription", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ error: "User ID required" });
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Find active purchase with Stripe subscription ID
+    const purchase = await Purchase.findOne({ email: user.email, active: true, stripeSubscriptionId: { $ne: null } });
+    if (!purchase || !purchase.stripeSubscriptionId) {
+      return res.status(400).json({ error: "No active subscription found to cancel" });
+    }
+
+    // Cancel subscription in Stripe
+    const subscription = await stripe.subscriptions.update(purchase.stripeSubscriptionId, {
+      cancel_at_period_end: true,
+    });
+
+    // Optionally mark as canceling in DB (we'll set active: false only after period end, but we can store cancel_at)
+    await Purchase.updateOne(
+      { _id: purchase._id },
+      { cancelAtPeriodEnd: true, canceledAt: new Date() } // You may add a field `cancelAtPeriodEnd`
+    );
+
+    res.json({ message: "Subscription will be cancelled at the end of the current billing period." });
+  } catch (err) {
+    console.error("Cancel subscription error:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.delete("/api/session-log/:id", async (req, res) => {
@@ -2111,13 +2144,13 @@ async function sendWelcomeEmail1(email) {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: "Welcome to Forge of Olympus – Your First Workout",
-    html: `<h2>Welcome to the Forge</h2>
+    subject: "Welcome to Apex Method – Your First Workout",
+    html: `<h2>Welcome to Apex Method</h2>
            <p>You’ve taken the first step toward training without guessing.</p>
            <p><strong>Your first workout is ready.</strong> Log in and start your program.</p>
-           <p>👉 <a href="https://forge-of-olympus.onrender.com/login">Start your first session</a></p>
+           <p>👉 <a href="https://forge-of-olympus.onrender.com//login">Start your first session</a></p>
            <p>Here’s a quick tip: use the “Auto Fill” button to pre‑fill your recommended weights and RPE targets.</p>
-           <hr /><p style="font-size:12px;">Forge of Olympus – Train Without Guessing</p>`
+           <hr /><p style="font-size:12px;">Apex Method – Adaptive Strength Training</p>`
   };
   try { await transporter.sendMail(mailOptions); console.log(`📧 Day1 email to ${email}`); } catch(e) { console.error(e); }
 }
@@ -2128,10 +2161,10 @@ async function sendWelcomeEmail2(email) {
     to: email,
     subject: "Why RPE beats percentages (and how you’re already benefiting)",
     html: `<h2>Why guessing your weights is over</h2>
-           <p>Most apps give you fixed percentages. Forge of Olympus adapts to <strong>you</strong>.</p>
+           <p>Most apps give you fixed percentages. Apex Method adapts to <strong>you</strong>.</p>
            <p>Every set you log with RPE (or RIR) teaches the engine your true strength on that day.</p>
            <p>👉 <a href="https://forge-of-olympus.onrender.com/dashboard">Check your 1RM progression</a></p>
-           <hr /><p style="font-size:12px;">Forge of Olympus – Train Without Guessing</p>`
+           <hr /><p style="font-size:12px;">Apex Method – Adaptive Strength Training</p>`
   };
   try { await transporter.sendMail(mailOptions); console.log(`📧 Day7 email to ${email}`); } catch(e) { console.error(e); }
 }
@@ -2145,7 +2178,7 @@ async function sendWelcomeEmail3(email) {
            <p>Your 30‑day free trial is almost over. After that, your personalised weight recommendations will be hidden.</p>
            <p>Subscribe now to keep every lift optimised – <strong>£19.99/month</strong>.</p>
            <p>👉 <a href="https://forge-of-olympus.onrender.com">Subscribe now</a></p>
-           <hr /><p style="font-size:12px;">Forge of Olympus – Train Without Guessing</p>`
+           <hr /><p style="font-size:12px;">Apex Method – Adaptive Strength Training</p>`
   };
   try { await transporter.sendMail(mailOptions); console.log(`📧 Day25 email to ${email}`); } catch(e) { console.error(e); }
 }
