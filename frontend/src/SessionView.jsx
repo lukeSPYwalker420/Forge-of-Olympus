@@ -815,7 +815,7 @@ export default function SessionView() {
               <button
                 onClick={() => {
                   const shareText = `🔥 Just crushed my ${program} workout on Apex Method!\n\nWeek ${week}, Day ${day}\n✅ ${workoutSummary.exercisesCompleted} exercises completed\n💪 ${workoutSummary.prs?.length || 0} personal records\n⏱️ ${workoutSummary.timeToComplete}`;
-                  window.open(`https://www.facebook.com/sharer/sharer.php?u=https://apexmethod.com&quote=${encodeURIComponent(shareText)}`, '_blank');
+                  window.open(`https://www.facebook.com/sharer/sharer.php?u=https://forge-of-olympus.onrender.com&quote=${encodeURIComponent(shareText)}`, '_blank');
                 }}
                 style={{ flex: 1, padding: "12px", background: "#4267B2", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}
               >
