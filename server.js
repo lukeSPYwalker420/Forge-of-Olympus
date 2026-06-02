@@ -11,7 +11,6 @@ import cron from 'node-cron';
 import { getCoachingPrompts } from './aiCoach.js';
 import LiftState from "./models/LiftState.js";
 import Session from "./models/Session.js";
-// ========== FATIGUE BUDGET IMPORT ==========
 import { allocateSessionBudget, computeWeeklyTagLoads, fatigueUnitsPerSet, calculateSessionLoad } from './fatigueBudget.js';
 
 dotenv.config();
@@ -95,12 +94,40 @@ async function sendPaymentFailureEmail(email, programName, gracePeriodEnds) {
   }
 }
 
-// Helper function to decode and normalize program names
+// Helper function to decode and normalize program names (with Stripe mapping)
 function normalizeProgramName(encodedName) {
   try {
     let decoded = decodeURIComponent(encodedName);
     decoded = decoded.replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-');
     
+    // Map new Stripe product names to internal program names
+    const stripeNameToInternal = {
+      "Apex Strength - App Coaching": "Ares Protocol",
+      "Apex Hypertrophy - App Coaching": "Apollo Physique",
+      "Apex Foundation - App Coaching": "Hephaestus Framework",
+      "Apex Performance - App Coaching": "Hercules Foundation",
+      "Apex Strength - Live/Online Coaching": "Ares Protocol",
+      "Apex Hypertrophy - Live/Online Coaching": "Apollo Physique",
+      "Apex Foundation - Live/Online Coaching": "Hephaestus Framework",
+      "Apex Performance - Live/Online Coaching": "Hercules Foundation"
+    };
+    
+    // Exact match first
+    if (stripeNameToInternal[decoded]) {
+      console.log(`[NORMALIZE] Stripe name "${decoded}" → internal "${stripeNameToInternal[decoded]}"`);
+      return stripeNameToInternal[decoded];
+    }
+    
+    // Case-insensitive fallback
+    const decodedLower = decoded.toLowerCase();
+    for (const [stripeName, internalName] of Object.entries(stripeNameToInternal)) {
+      if (decodedLower === stripeName.toLowerCase()) {
+        console.log(`[NORMALIZE] Stripe name (case‑insensitive) "${decoded}" → internal "${internalName}"`);
+        return internalName;
+      }
+    }
+    
+    // Existing valid programs (for old names and other programs)
     const validPrograms = [
       "Ares Protocol",
       "Apollo Physique", 
@@ -108,10 +135,10 @@ function normalizeProgramName(encodedName) {
       "Hercules Foundation",
       "Mark Training",       
       "Hercules Foundation - Pauline Version",
-      "6-Week Wave Powerlifting" 
+      "6-Week Wave Powerlifting",
+      "High-Frequency Specificity Wave"
     ];
     
-    const decodedLower = decoded.toLowerCase();
     for (const validName of validPrograms) {
       if (decodedLower.includes(validName.toLowerCase())) {
         console.log(`[NORMALIZE] "${decoded}" → "${validName}"`);
@@ -119,6 +146,7 @@ function normalizeProgramName(encodedName) {
       }
     }
     
+    // Suffix stripping fallback
     const suffixesToRemove = [
       " – Strength Program", " – Strength", " – Power", " – Mobility",
       " – Hypertrophy Program", " – Hypertrophy",
@@ -406,7 +434,7 @@ const loadProgram = (programName) => {
     logic: raw.logic || "STRENGTH_RPE", 
     sessions,
     weeks: weeksMetadata,
-    useFatigueBudget: raw.useFatigueBudget || false   // <-- new flag
+    useFatigueBudget: raw.useFatigueBudget || false
   };
 };
 
@@ -1397,7 +1425,7 @@ app.post("/api/progression/apply", async (req, res) => {
   }
 });
 
-// ==================== OTHER ROUTES (unchanged) ====================
+// ==================== OTHER ROUTES ====================
 app.get("/api/history/:userId/:liftName", async (req, res) => {
   try {
     const { userId, liftName } = req.params;
@@ -1550,7 +1578,7 @@ app.post("/api/login", async (req, res) => {
 app.post("/api/send-cheatsheet", async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "Email required" });
-  const pdfUrl = "https://forge-of-olympus.onrender.com/RPE-Cheat-Sheet.pdf";
+  const pdfUrl = "/RPE-Cheat-Sheet.pdf";
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
@@ -1752,7 +1780,7 @@ app.post("/api/cancel-subscription", async (req, res) => {
     // Optionally mark as canceling in DB (we'll set active: false only after period end, but we can store cancel_at)
     await Purchase.updateOne(
       { _id: purchase._id },
-      { cancelAtPeriodEnd: true, canceledAt: new Date() } // You may add a field `cancelAtPeriodEnd`
+      { cancelAtPeriodEnd: true, canceledAt: new Date() }
     );
 
     res.json({ message: "Subscription will be cancelled at the end of the current billing period." });
@@ -2177,7 +2205,7 @@ async function sendWelcomeEmail3(email) {
     html: `<h2>Don’t lose your adaptive training</h2>
            <p>Your 30‑day free trial is almost over. After that, your personalised weight recommendations will be hidden.</p>
            <p>Subscribe now to keep every lift optimised – <strong>£19.99/month</strong>.</p>
-           <p>👉 <a href="https://forge-of-olympus.onrender.com">Subscribe now</a></p>
+           <p>👉 <a href="https://forge-of-olympus.onrender.com/">Subscribe now</a></p>
            <hr /><p style="font-size:12px;">Apex Method – Adaptive Strength Training</p>`
   };
   try { await transporter.sendMail(mailOptions); console.log(`📧 Day25 email to ${email}`); } catch(e) { console.error(e); }
@@ -2191,38 +2219,31 @@ cron.schedule('0 9 * * *', async () => {
   const day7Ago = new Date(now); day7Ago.setDate(now.getDate() - 7);
   const day25Ago = new Date(now); day25Ago.setDate(now.getDate() - 25);
 
-  // Users who signed up exactly 1 day ago
   const day1Users = await User.find({ createdAt: { $gte: day1Ago, $lt: now } });
   for (const user of day1Users) await sendWelcomeEmail1(user.email);
 
-  // Users who signed up exactly 7 days ago
   const day7Users = await User.find({ createdAt: { $gte: day7Ago, $lt: day7Ago.setHours(24,0,0,0) } });
   for (const user of day7Users) await sendWelcomeEmail2(user.email);
 
-  // Users who signed up exactly 25 days ago
   const day25Users = await User.find({ createdAt: { $gte: day25Ago, $lt: day25Ago.setHours(24,0,0,0) } });
   for (const user of day25Users) await sendWelcomeEmail3(user.email);
 });
 
 app.post("/api/run-email-cron", async (req, res) => {
-  // This endpoint will be called by Render Cron Job
   console.log("🕐 Running email cron job");
   const now = new Date();
   const day1Ago = new Date(now); day1Ago.setDate(now.getDate() - 1);
   const day7Ago = new Date(now); day7Ago.setDate(now.getDate() - 7);
   const day25Ago = new Date(now); day25Ago.setDate(now.getDate() - 25);
 
-  // Day 1 (users created exactly 1 day ago)
   const day1Users = await User.find({ createdAt: { $gte: day1Ago, $lt: now } });
   for (const user of day1Users) await sendWelcomeEmail1(user.email);
 
-  // Day 7 (users created exactly 7 days ago – careful with time calculation)
   const day7Start = new Date(now); day7Start.setDate(now.getDate() - 7);
   const day7End = new Date(day7Start); day7End.setHours(24,0,0,0);
   const day7Users = await User.find({ createdAt: { $gte: day7Start, $lt: day7End } });
   for (const user of day7Users) await sendWelcomeEmail2(user.email);
 
-  // Day 25
   const day25Start = new Date(now); day25Start.setDate(now.getDate() - 25);
   const day25End = new Date(day25Start); day25End.setHours(24,0,0,0);
   const day25Users = await User.find({ createdAt: { $gte: day25Start, $lt: day25End } });
