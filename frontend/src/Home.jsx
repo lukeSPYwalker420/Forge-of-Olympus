@@ -88,7 +88,7 @@ export default function Home() {
   };
 
   const handleCoaching = (programName) => {
-    const program = programs.find(p => p.title === programName);
+    const program = programs.find(p => p.originalTitle === programName);
     if (program && program.coachingLink) window.location.href = program.coachingLink;
   };
 
@@ -96,7 +96,7 @@ export default function Home() {
     <>
       <nav className="navbar">
         <div className="nav-container">
-          <span className="logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
+          <span className="logo" onClick={() => navigate("/")}>
             APEX METHOD
           </span>
           <div className="nav-links">
@@ -105,45 +105,51 @@ export default function Home() {
             ) : (
               <button onClick={() => navigate("/login")} className="nav-btn">Login</button>
             )}
-            <button onClick={handleRegister} className="nav-btn">Free RPE Guide</button>
+            <button onClick={handleRegister} className="nav-btn outline">Free RPE Guide</button>
           </div>
         </div>
       </nav>
 
       <section className="hero">
+        <div className="hero-shapes">
+          <div className="shape barbell"></div>
+          <div className="shape plate plate-1"></div>
+          <div className="shape plate plate-2"></div>
+          <div className="shape plate plate-3"></div>
+        </div>
         <div className="hero-content">
-          <h1>Tired of guessing your working weights?</h1>
-          <p className="hero-sub">Apex Method automatically adjusts your program based on your performance. No spreadsheets. No plateaus.</p>
+          <h1>Stop guessing your progression</h1>
+          <p className="hero-sub">Apex Method adapts your training based on performance, fatigue, and real‑time feedback. No static spreadsheets.</p>
           <div className="hero-buttons">
-            <button onClick={() => document.getElementById("programs")?.scrollIntoView({ behavior: "smooth" })} className="btn btn-gold">
-              See Programs
+            <button onClick={() => document.getElementById("programs")?.scrollIntoView({ behavior: "smooth" })} className="btn btn-primary">
+              Explore Programs
             </button>
             <button onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })} className="btn btn-outline">
               How It Works
             </button>
           </div>
-          <p className="hero-trust">✅ 30‑day free trial · Cancel anytime</p>
+          <p className="hero-trust">✓ 30‑day free trial · Cancel anytime</p>
         </div>
       </section>
 
       <section className="how-it-works" id="how-it-works">
         <div className="container">
-          <h2>How it works in 60 seconds</h2>
+          <h2>How it works</h2>
           <div className="steps-grid">
             <div className="step">
               <div className="step-number">1</div>
-              <h3>Choose your goal</h3>
-              <p>Strength, hypertrophy, joint health, or general fitness. Pick the program that fits you.</p>
+              <h3>Choose your focus</h3>
+              <p>Strength, hypertrophy, or balanced performance. Pick the system that matches your goal.</p>
             </div>
             <div className="step">
               <div className="step-number">2</div>
               <h3>Log your sets</h3>
-              <p>Enter weight, reps, and effort (RPE). That's it – no complex math.</p>
+              <p>Enter weight, reps, and effort (RPE/RIR). That's it – the app handles the rest.</p>
             </div>
             <div className="step">
               <div className="step-number">3</div>
-              <h3>App adjusts automatically</h3>
-              <p>Your estimated 1RM updates. Next session’s weights are calculated for you.</p>
+              <h3>Adaptive progression</h3>
+              <p>Your estimated 1RM updates automatically. Next session’s weights are calculated for you.</p>
             </div>
           </div>
           <div className="example-box">
@@ -157,9 +163,9 @@ export default function Home() {
           <h2>Static spreadsheets vs. Apex Method</h2>
           <div className="comparison-grid">
             <div className="comparison-col">
-              <h3>📄 Static Spreadsheets</h3>
+              <h3>📄 Static Plans</h3>
               <ul>
-                <li>❌ Fixed percentages – ignore how you actually performed</li>
+                <li>❌ Fixed percentages – ignore your actual performance</li>
                 <li>❌ No adaptation – you stall for weeks</li>
                 <li>❌ You have to do all the math</li>
                 <li>❌ No recovery management</li>
@@ -168,7 +174,7 @@ export default function Home() {
             <div className="comparison-col highlight">
               <h3>⚡ Apex Method</h3>
               <ul>
-                <li>✅ Auto‑adjusts weights based on your logged RPE</li>
+                <li>✅ Auto‑adjusts weights based on logged RPE/RIR</li>
                 <li>✅ Never stall – always optimal load</li>
                 <li>✅ All calculations are automatic</li>
                 <li>✅ Fatigue budget prevents overtraining</li>
@@ -180,11 +186,11 @@ export default function Home() {
 
       <section className="programs" id="programs">
         <div className="container">
-          <h2>Programs by goal</h2>
+          <h2>Training systems</h2>
           <div className="program-grid">
             {programs.map((p) => (
-              <div key={p.title} className="program-card">
-                <div className="program-header" style={{ backgroundImage: `url(${p.image})` }}>
+              <div key={p.originalTitle} className="program-card">
+                <div className="program-header">
                   <div className="program-badge">{p.goal}</div>
                   <h3>{p.title}</h3>
                 </div>
@@ -194,11 +200,11 @@ export default function Home() {
                   ))}
                 </ul>
                 <div className="program-buttons">
-                  <button onClick={() => handleSubscribe(p.title)} className="btn-plan">
-                    Start free 30‑day trial →<br />
+                  <button onClick={() => handleSubscribe(p.originalTitle)} className="btn-plan">
+                    Start free 30‑day trial<br />
                     <span className="small">£19.99/month after trial, cancel anytime</span>
                   </button>
-                  <button onClick={() => handleCoaching(p.title)} className="btn-coaching">
+                  <button onClick={() => handleCoaching(p.originalTitle)} className="btn-coaching">
                     Add live coaching · £169.99/month
                   </button>
                 </div>
@@ -210,10 +216,10 @@ export default function Home() {
 
       <section className="final-cta">
         <div className="container">
-          <h2>Stop guessing. Start progressing.</h2>
-          <p>Try any program free for 30 days. Cancel anytime.</p>
-          <button onClick={() => document.getElementById("programs")?.scrollIntoView({ behavior: "smooth" })} className="btn btn-gold btn-large">
-            Choose your program →
+          <h2>Train with a system that adapts</h2>
+          <p>Built for lifters who take progression seriously.</p>
+          <button onClick={() => document.getElementById("programs")?.scrollIntoView({ behavior: "smooth" })} className="btn btn-primary btn-large">
+            Choose your system →
           </button>
         </div>
       </section>
@@ -222,7 +228,7 @@ export default function Home() {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h3>Free RPE cheat sheet</h3>
-            <p>Learn how to rate your effort accurately – plus get a 30‑day trial link sent to your inbox.</p>
+            <p>Learn to rate effort accurately – plus get a 30‑day trial link sent to your inbox.</p>
             <form onSubmit={handleEmailSubmit}>
               <input type="email" placeholder="Your email address" value={email} onChange={(e) => setEmail(e.target.value)} required />
               <button type="submit">Send me the guide</button>
@@ -236,32 +242,33 @@ export default function Home() {
   );
 }
 
+// Programs renamed – no Greek gods, no images.
 const programs = [
   {
-    title: "Ares Protocol",
+    originalTitle: "Ares Protocol",
+    title: "Apex Strength",
     goal: "⚡ Strength Peaking",
-    image: "/Ares Protocol.jpg",
     coachingLink: "https://buy.stripe.com/14A28r1y63BT6WS6mV4sE0k",
     features: ["Auto‑calculated top sets", "RPE‑based intensity management", "Designed for powerlifting & strength athletes", "Weekly wave progression"]
   },
   {
-    title: "Apollo Physique",
-    goal: "💪 Hypertrophy & Aesthetics",
-    image: "/Apollo Physique.jpg",
+    originalTitle: "Apollo Physique",
+    title: "Apex Hypertrophy",
+    goal: "💪 Muscle Development",
     coachingLink: "https://buy.stripe.com/8x25kD0u2fkBa947qZ4sE0i",
-    features: ["Bodybuilding‑focused volume schemes", "Symmetry and proportion emphasis", "Muscle group prioritisation", "Classic physique development"]
+    features: ["Volume‑focused schemes", "Symmetry and proportion emphasis", "Muscle group prioritisation", "Long‑term muscle development"]
   },
   {
-    title: "Hephaestus Framework",
+    originalTitle: "Hephaestus Framework",
+    title: "Apex Foundation",
     goal: "🛡️ Joint Health & Longevity",
-    image: "/Hephaestus Framework.jpg",
     coachingLink: "https://buy.stripe.com/6oU8wPa4CfkB1Cy7qZ4sE0g",
     features: ["Injury prevention protocols", "ROM & stability tracking", "Pain‑managed progression", "Designed for long‑term athleticism"]
   },
   {
-    title: "Hercules Foundation",
+    originalTitle: "Hercules Foundation",
+    title: "Apex Performance",
     goal: "🏋️ General Fitness & Power",
-    image: "/Hercules Foundation.jpg",
     coachingLink: "https://buy.stripe.com/4gMdR9a4C5K1fto8v34sE0f",
     features: ["Balanced strength & conditioning", "Power development for sports", "Mobility & work capacity", "5‑week wave blocks with deload"]
   }
