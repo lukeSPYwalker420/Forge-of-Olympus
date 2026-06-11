@@ -9,18 +9,18 @@ export default function Home() {
   const [modalMessage, setModalMessage] = useState("");
   const userId = localStorage.getItem("userId");
 
-  // Simulator state (existing)
+  // Simulator state
   const [simLift, setSimLift] = useState("squat");
   const [sim1RM, setSim1RM] = useState(152);
   const [simTargetRPE, setSimTargetRPE] = useState(8);
   const [simReps, setSimReps] = useState(3);
   const [simScenario, setSimScenario] = useState("good");
 
-  // Back‑off calculator state (new)
+  // Back‑off calculator state
   const [calcTopWeight, setCalcTopWeight] = useState(120);
   const [calcLoggedRPE, setCalcLoggedRPE] = useState(9);
 
-  // Helper function
+  // Helper functions
   function weightForRPE(oneRM, targetRPE, targetReps) {
     if (!oneRM || !targetRPE) return 0;
     const rpeToPercent = {
@@ -34,20 +34,18 @@ export default function Home() {
     return Math.round(oneRM * percent / 2.5) * 2.5;
   }
 
-  // Back‑off calculator logic
   function calculateBackOffs(topWeight, loggedRPE) {
     if (!topWeight || !loggedRPE) return { weight: 0, dropPercent: 0 };
     let dropPercent;
-    if (loggedRPE >= 9.5) dropPercent = 0.85;   // 15% drop
-    else if (loggedRPE >= 9) dropPercent = 0.87; // 13% drop
-    else if (loggedRPE >= 8) dropPercent = 0.90; // 10% drop
-    else dropPercent = 0.93;                     // 7% drop
+    if (loggedRPE >= 9.5) dropPercent = 0.85;
+    else if (loggedRPE >= 9) dropPercent = 0.87;
+    else if (loggedRPE >= 8) dropPercent = 0.90;
+    else dropPercent = 0.93;
     const rawWeight = topWeight * dropPercent;
     const roundedWeight = Math.round(rawWeight / 2.5) * 2.5;
     return { weight: roundedWeight, dropPercent };
   }
 
-  // Static plan would use fixed 10% drop
   const staticBackOffWeight = Math.round(calcTopWeight * 0.9 / 2.5) * 2.5;
   const apexBackOff = calculateBackOffs(calcTopWeight, calcLoggedRPE);
   const staticDropMsg = "Static plan: fixed 10% drop regardless of RPE.";
@@ -68,6 +66,42 @@ export default function Home() {
     apexNextSets = 2;
     progressionNote = "Hard session exceeded fatigue budget → volume reduced (3 → 2 sets). Weight stays the same.";
   }
+
+  // ----- New: start free trial (redirect to program selection) -----
+  const handleStartFreeTrial = async () => {
+    // If already logged in, go straight to program selection
+    if (userId) {
+      navigate("/program");
+      return;
+    }
+
+    // Not logged in: prompt for email, create account, then go to program selection
+    const email = prompt("Enter your email to start your 30‑day free trial:");
+    if (!email || !email.includes("@")) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    try {
+      const loginRes = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      const userData = await loginRes.json();
+      if (loginRes.ok) {
+        localStorage.setItem("userId", userData.userId);
+        localStorage.setItem("userEmail", userData.email);
+        localStorage.setItem("purchasedPrograms", JSON.stringify(userData.purchasedPrograms));
+        navigate("/program");
+      } else {
+        alert("Error creating account. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error. Please try again.");
+    }
+  };
 
   const handleRegister = () => {
     setShowModal(true);
@@ -290,7 +324,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ========== NEW: BACK‑OFF CALCULATOR WIDGET (LOSS LEADER) ========== */}
+      {/* FREE BACK‑OFF CALCULATOR WIDGET */}
       <section className="free-tool-section" id="backoff-calculator">
         <div className="container">
           <div className="simulator-card" style={{ background: "linear-gradient(135deg, var(--card-bg), #0f172a)" }}>
@@ -339,8 +373,8 @@ export default function Home() {
               <p style={{ marginBottom: "16px", fontSize: "0.85rem", color: "var(--text-gray)" }}>
                 💡 This is a single‑algorithm preview. The full Apex Method manages fatigue across your whole week.
               </p>
-              <button onClick={handleRegister} className="btn btn-primary" style={{ padding: "12px 32px" }}>
-                Automate Your Entire Training Cycle →
+              <button onClick={handleStartFreeTrial} className="btn btn-primary" style={{ padding: "12px 32px" }}>
+                Start Your Free Trial →
               </button>
             </div>
           </div>
@@ -431,7 +465,7 @@ export default function Home() {
   );
 }
 
-// Programs renamed – no Greek gods, no images.
+// Programs (unchanged)
 const programs = [
   {
     originalTitle: "Ares Protocol",
