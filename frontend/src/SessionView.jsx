@@ -36,6 +36,10 @@ export default function SessionView() {
 
   const userId = localStorage.getItem("userId");
   const program = localStorage.getItem("program");
+  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+const [onboardingLifts, setOnboardingLifts] = useState([]);
+const [onboardingValues, setOnboardingValues] = useState({});
+const [onboardingSubmitting, setOnboardingSubmitting] = useState(false);
 
   useEffect(() => {
     if (!userId || !program) return;
@@ -84,6 +88,28 @@ export default function SessionView() {
 
     if (userId) checkSubscription();
   }, [userId]);
+
+  // Detect missing 1RM for strength lifts (onboarding)
+useEffect(() => {
+  if (!data || loading) return;
+
+  const missing = data.projected?.filter(lift => {
+    const isStrength = lift.progressionType === "strength" || data.logic === "STRENGTH_RPE";
+    const hasZeroWeight = !lift.currentWeight || lift.currentWeight === 0;
+    const noExistingState = !history[lift.liftName] || history[lift.liftName].length === 0;
+    return isStrength && hasZeroWeight && noExistingState;
+  }) || [];
+
+  if (missing.length > 0) {
+    setOnboardingLifts(missing);
+    const initialValues = {};
+    missing.forEach(lift => {
+      initialValues[lift.liftName] = "";
+    });
+    setOnboardingValues(initialValues);
+    setShowOnboardingModal(true);
+  }
+}, [data, loading, history]);
 
   const handleReadinessComplete = (readinessData) => {
     setAdjustments({
@@ -382,6 +408,50 @@ export default function SessionView() {
   );
   if (error) return <div>Error: {error}</div>;
   if (!data) return <div>No data returned</div>;
+
+  const handleInitializeLifts = async () => {
+  setOnboardingSubmitting(true);
+  try {
+    for (const lift of onboardingLifts) {
+      const estimated1RM = Number(onboardingValues[lift.liftName]);
+      if (!estimated1RM || estimated1RM <= 0) {
+        alert(`Please enter a valid 1RM for ${lift.liftName}`);
+        setOnboardingSubmitting(false);
+        return;
+      }
+      await fetch("/api/initialize-lift", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          liftName: lift.liftName,
+          estimated1RM
+        })
+      });
+    }
+    // Refresh session data
+    const rpeAdj = adjustments.rpeAdjustment || 0;
+    const rirAdj = adjustments.rirAdjustment || 0;
+    const qualityAdj = adjustments.qualityAdjustment || 0;
+    const painAdj = adjustments.painAdjustment || 0;
+    const stabAdj = adjustments.stabilityAdjustment || 0;
+    const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`
+      + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
+      + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
+    const res = await fetch(url);
+    const json = await res.json();
+    setData(json);
+    setShowOnboardingModal(false);
+    setOnboardingLifts([]);
+    setOnboardingValues({});
+    alert("Lifts initialised! You can now use Auto Fill.");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to initialise lifts: " + err.message);
+  } finally {
+    setOnboardingSubmitting(false);
+  }
+};
 
   const getMetricLabel = (lift) => {
     const pt = lift.progressionType;
@@ -834,6 +904,41 @@ export default function SessionView() {
           </div>
         </div>
       )}
+      {showOnboardingModal && (
+  <div style={{
+    position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+    background: "rgba(0,0,0,0.95)", zIndex: 2000,
+    display: "flex", alignItems: "center", justifyContent: "center", padding: "20px"
+  }}>
+    <div style={{
+      background: "var(--card-bg, #1e1e2a)", borderRadius: "24px", padding: "30px",
+      maxWidth: "500px", width: "100%", border: "1px solid var(--accent)"
+    }}>
+      <h2 style={{ color: "var(--accent)", marginBottom: "16px" }}>Welcome to Apex Method!</h2>
+      <p style={{ marginBottom: "20px" }}>We need your current 1RM for the following lifts to give you accurate weight recommendations.</p>
+      {onboardingLifts.map(lift => (
+        <div key={lift.liftName} style={{ marginBottom: "16px" }}>
+          <label style={{ display: "block", marginBottom: "6px", fontWeight: "bold" }}>{lift.liftName} (1RM in kg)</label>
+          <input
+            type="number"
+            step="2.5"
+            value={onboardingValues[lift.liftName] || ""}
+            onChange={e => setOnboardingValues(prev => ({ ...prev, [lift.liftName]: e.target.value }))}
+            style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg-dark)", color: "white" }}
+            placeholder="e.g., 140"
+          />
+        </div>
+      ))}
+      <div style={{ display: "flex", gap: "12px", marginTop: "24px" }}>
+        <button onClick={handleInitializeLifts} disabled={onboardingSubmitting} style={{
+          flex: 1, padding: "12px", background: "var(--accent)", color: "#000", border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer"
+        }}>
+          {onboardingSubmitting ? "Saving..." : "Start Training"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

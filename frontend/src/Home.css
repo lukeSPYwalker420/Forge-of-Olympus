@@ -617,4 +617,123 @@ body {
     width: 24px;
     height: 24px;
   }
+  /* ==================== SIMULATOR ==================== */
+.simulator {
+  padding: 80px 20px;
+  background: var(--bg-dark);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.simulator-card {
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 32px;
+  margin-top: 48px;
+  border: 1px solid var(--border);
+}
+
+.sim-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sim-controls label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-gray);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.sim-controls select,
+.sim-controls input {
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  color: var(--text-light);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.sim-controls button {
+  background: var(--accent);
+  border: none;
+  color: #000;
+  padding: 8px 20px;
+  border-radius: 40px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sim-controls button:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+.sim-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.sim-col {
+  background: rgba(11, 18, 32, 0.6);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.sim-col.highlight {
+  border-color: var(--accent);
+  background: rgba(6, 182, 212, 0.05);
+}
+
+.sim-col h3 {
+  margin-bottom: 12px;
+  font-size: 1.2rem;
+}
+
+.sim-col p {
+  font-size: 1rem;
+  margin: 8px 0;
+}
+
+.sim-col strong {
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+
+.sim-note {
+  font-size: 0.75rem;
+  color: var(--text-gray);
+  margin-top: 12px;
+}
+
+.sim-explanation {
+  background: rgba(6, 182, 212, 0.1);
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  margin-top: 16px;
+}
+
+@media (max-width: 700px) {
+  .sim-comparison {
+    grid-template-columns: 1fr;
+  }
+  .sim-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
 }

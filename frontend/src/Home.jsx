@@ -8,6 +8,25 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [modalMessage, setModalMessage] = useState("");
   const userId = localStorage.getItem("userId");
+  const [simLift, setSimLift] = useState("squat");
+const [sim1RM, setSim1RM] = useState(152); // example squat
+const [simTargetRPE, setSimTargetRPE] = useState(8);
+const [simReps, setSimReps] = useState(3);
+const [simulateBadDay, setSimulateBadDay] = useState(false);
+
+const staticNextWeight = weightForRPE(sim1RM, simTargetRPE, simReps);
+
+let apexNextWeight = staticNextWeight;
+let simWeight = staticNextWeight;
+let simNew1RM = sim1RM;
+
+if (simulateBadDay) {
+  // The user attempted staticNextWeight but could only do it at RPE 9.5
+  simWeight = staticNextWeight;
+  simNew1RM = estimate1RM(simWeight, simReps, 9.5);
+  // Next session target RPE is the same (8)
+  apexNextWeight = weightForRPE(simNew1RM, simTargetRPE, simReps);
+}
 
   const handleRegister = () => {
     setShowModal(true);
@@ -87,6 +106,32 @@ export default function Home() {
     }
   };
 
+  // Helper functions (copied from server logic)
+function estimate1RM(weight, reps, actualRPE) {
+  if (!weight || !reps || !actualRPE) return weight || 0;
+  const rpeToPercent = {
+    10: 1.00, 9.5: 0.97, 9: 0.94, 8.5: 0.91, 8: 0.88,
+    7.5: 0.85, 7: 0.82, 6.5: 0.79, 6: 0.76, 5.5: 0.73, 5: 0.70
+  };
+  let percent = rpeToPercent[actualRPE] || 0.8;
+  let estimated = weight / percent;
+  if (reps > 5) estimated = weight * (1 + reps / 30);
+  return Math.round(estimated);
+}
+
+function weightForRPE(oneRM, targetRPE, targetReps) {
+  if (!oneRM || !targetRPE) return 0;
+  const rpeToPercent = {
+    10: 1.00, 9.5: 0.97, 9: 0.94, 8.5: 0.91, 8: 0.88,
+    7.5: 0.85, 7: 0.82, 6.5: 0.79, 6: 0.76, 5.5: 0.73, 5: 0.70
+  };
+  let percent = rpeToPercent[targetRPE] || 0.8;
+  if (targetReps <= 3) percent += 0.02;
+  if (targetReps >= 8) percent -= 0.03;
+  percent = Math.min(0.95, Math.max(0.65, percent));
+  return Math.round(oneRM * percent / 2.5) * 2.5;
+}
+
   const handleCoaching = (programName) => {
     const program = programs.find(p => p.originalTitle === programName);
     if (program && program.coachingLink) window.location.href = program.coachingLink;
@@ -118,8 +163,11 @@ export default function Home() {
           <div className="shape plate plate-3"></div>
         </div>
         <div className="hero-content">
-          <h1>Stop guessing your progression</h1>
-          <p className="hero-sub">Apex Method adapts your training based on performance, fatigue, and real‑time feedback. No static spreadsheets.</p>
+          <h1>The era of the static spreadsheet is over.</h1>
+<p className="hero-sub">
+  Most plans break the moment you have a bad day. Apex Method adapts in real time – 
+  automatically adjusting your weights, volume, and intensity based on how you actually perform.
+</p>
           <div className="hero-buttons">
             <button onClick={() => document.getElementById("programs")?.scrollIntoView({ behavior: "smooth" })} className="btn btn-primary">
               Explore Programs
@@ -157,6 +205,54 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+<section className="simulator" id="simulator">
+  <div className="container">
+    <h2>See how Apex Method saves you from stalling</h2>
+    <div className="simulator-card">
+      <div className="sim-controls">
+        <label>Lift:</label>
+        <select value={simLift} onChange={e => setSimLift(e.target.value)}>
+          <option value="squat">Squat</option>
+          <option value="bench">Bench</option>
+          <option value="deadlift">Deadlift</option>
+        </select>
+        <label>Your 1RM (kg):</label>
+        <input type="number" value={sim1RM} onChange={e => setSim1RM(Number(e.target.value))} />
+        <label>Target RPE:</label>
+        <input type="number" step="0.5" value={simTargetRPE} onChange={e => setSimTargetRPE(Number(e.target.value))} />
+        <label>Reps:</label>
+        <input type="number" value={simReps} onChange={e => setSimReps(Number(e.target.value))} />
+        <button onClick={() => setSimulateBadDay(!simulateBadDay)}>
+          {simulateBadDay ? "Reset to good day" : "Simulate a bad day (RPE 9.5)"}
+        </button>
+      </div>
+      <div className="sim-comparison">
+        <div className="sim-col">
+          <h3>📄 Static Spreadsheet</h3>
+          <p>Next session weight: <strong>{staticNextWeight} kg</strong></p>
+          <p className="sim-note">Never changes based on how you performed.</p>
+        </div>
+        <div className="sim-col highlight">
+          <h3>⚡ Apex Method</h3>
+          <p>Next session weight: <strong>{apexNextWeight} kg</strong></p>
+          <p className="sim-note">
+            {simulateBadDay 
+              ? "After a harder session, Apex lowers the load to prevent overreaching."
+              : "Matches the spreadsheet when things go perfectly."}
+          </p>
+        </div>
+      </div>
+      {simulateBadDay && (
+        <div className="sim-explanation">
+          💡 On the bad day, you logged  {simWeight} kg for {simReps} reps at RPE 9.5.<br />
+          Static plan would have kept you at {staticNextWeight} kg – likely leading to another failure.<br />
+          Apex estimates your new 1RM as {simNew1RM} kg and adjusts your next weight to <strong>{apexNextWeight} kg</strong>.
+        </div>
+      )}
+    </div>
+  </div>
+</section>
 
       <section className="comparison">
         <div className="container">
