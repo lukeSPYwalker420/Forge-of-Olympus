@@ -9,14 +9,18 @@ export default function Home() {
   const [modalMessage, setModalMessage] = useState("");
   const userId = localStorage.getItem("userId");
 
-  // Simulator state
+  // Simulator state (existing)
   const [simLift, setSimLift] = useState("squat");
   const [sim1RM, setSim1RM] = useState(152);
   const [simTargetRPE, setSimTargetRPE] = useState(8);
   const [simReps, setSimReps] = useState(3);
-  const [simScenario, setSimScenario] = useState("good"); // "good" or "bad"
+  const [simScenario, setSimScenario] = useState("good");
 
-  // Helper function (only weightForRPE is used)
+  // Back‑off calculator state (new)
+  const [calcTopWeight, setCalcTopWeight] = useState(120);
+  const [calcLoggedRPE, setCalcLoggedRPE] = useState(9);
+
+  // Helper function
   function weightForRPE(oneRM, targetRPE, targetReps) {
     if (!oneRM || !targetRPE) return 0;
     const rpeToPercent = {
@@ -30,23 +34,36 @@ export default function Home() {
     return Math.round(oneRM * percent / 2.5) * 2.5;
   }
 
-  // Current session weight (same for both plans)
-  const currentWeight = weightForRPE(sim1RM, simTargetRPE, simReps);
-  // Static plan: always increase by 2.5kg
-  const staticNextWeight = currentWeight + 2.5;
+  // Back‑off calculator logic
+  function calculateBackOffs(topWeight, loggedRPE) {
+    if (!topWeight || !loggedRPE) return { weight: 0, dropPercent: 0 };
+    let dropPercent;
+    if (loggedRPE >= 9.5) dropPercent = 0.85;   // 15% drop
+    else if (loggedRPE >= 9) dropPercent = 0.87; // 13% drop
+    else if (loggedRPE >= 8) dropPercent = 0.90; // 10% drop
+    else dropPercent = 0.93;                     // 7% drop
+    const rawWeight = topWeight * dropPercent;
+    const roundedWeight = Math.round(rawWeight / 2.5) * 2.5;
+    return { weight: roundedWeight, dropPercent };
+  }
 
-  // Apex plan logic
+  // Static plan would use fixed 10% drop
+  const staticBackOffWeight = Math.round(calcTopWeight * 0.9 / 2.5) * 2.5;
+  const apexBackOff = calculateBackOffs(calcTopWeight, calcLoggedRPE);
+  const staticDropMsg = "Static plan: fixed 10% drop regardless of RPE.";
+  const apexDropMsg = `Apex Method: ${Math.round((1 - apexBackOff.dropPercent) * 100)}% drop based on RPE ${calcLoggedRPE}.`;
+
+  // Existing simulator calculations
+  const currentWeight = weightForRPE(sim1RM, simTargetRPE, simReps);
+  const staticNextWeight = currentWeight + 2.5;
   let apexNextWeight = currentWeight;
   let apexNextSets = 3;
   let progressionNote = "";
-
   if (simScenario === "good") {
-    // After 3 good sessions, weight increases
     apexNextWeight = currentWeight + 2.5;
     apexNextSets = 3;
     progressionNote = "3 good sessions → weight increased by 2.5kg.";
   } else {
-    // Hard session (RPE 9.5): weight stays same, volume reduced
     apexNextWeight = currentWeight;
     apexNextSets = 2;
     progressionNote = "Hard session exceeded fatigue budget → volume reduced (3 → 2 sets). Weight stays the same.";
@@ -269,6 +286,63 @@ export default function Home() {
                 Static plans also increase weight, but they never adjust for fatigue or bad days – leading to inevitable stalls. Apex only increases when you're ready.
               </div>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* ========== NEW: BACK‑OFF CALCULATOR WIDGET (LOSS LEADER) ========== */}
+      <section className="free-tool-section" id="backoff-calculator">
+        <div className="container">
+          <div className="simulator-card" style={{ background: "linear-gradient(135deg, var(--card-bg), #0f172a)" }}>
+            <div className="tool-badge" style={{ display: "inline-block", background: "var(--accent)", color: "#000", fontSize: "0.7rem", fontWeight: "600", padding: "4px 12px", borderRadius: "20px", marginBottom: "16px" }}>
+              🔧 FREE UTILITY – NO SIGNUP
+            </div>
+            <h2 style={{ fontSize: "1.8rem", marginBottom: "8px" }}>Dynamic Back‑Off Set Calculator</h2>
+            <p className="tool-subtitle" style={{ color: "var(--text-gray)", marginBottom: "32px" }}>
+              Enter your top set – see how Apex Method adjusts back‑off weight based on how hard it actually felt.
+            </p>
+
+            <div className="sim-controls" style={{ marginBottom: "24px" }}>
+              <div>
+                <label>🏋️ Top Set Weight (kg)</label>
+                <input type="number" value={calcTopWeight} onChange={e => setCalcTopWeight(Number(e.target.value))} />
+              </div>
+              <div>
+                <label>📊 Actual Logged RPE</label>
+                <select value={calcLoggedRPE} onChange={e => setCalcLoggedRPE(Number(e.target.value))}>
+                  <option value={10}>10 – Absolute max</option>
+                  <option value={9.5}>9.5 – 0 reps left, maybe add weight</option>
+                  <option value={9}>9 – 1 rep left</option>
+                  <option value={8.5}>8.5 – 1–2 reps left</option>
+                  <option value={8}>8 – 2 reps left</option>
+                  <option value={7}>7 – 3+ reps left</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="sim-comparison" style={{ marginTop: "16px" }}>
+              <div className="sim-col">
+                <h3>📄 Static Plan</h3>
+                <p>Back‑off sets:</p>
+                <p><strong>{staticBackOffWeight} kg</strong> × 3–4 sets</p>
+                <p className="sim-note">{staticDropMsg}</p>
+              </div>
+              <div className="sim-col highlight">
+                <h3>⚡ Apex Method</h3>
+                <p>Back‑off sets:</p>
+                <p><strong>{apexBackOff.weight} kg</strong> × 3–4 sets</p>
+                <p className="sim-note">{apexDropMsg}</p>
+              </div>
+            </div>
+
+            <div className="tool-cta-wrapper" style={{ marginTop: "32px", textAlign: "center", borderTop: "1px solid var(--border)", paddingTop: "24px" }}>
+              <p style={{ marginBottom: "16px", fontSize: "0.85rem", color: "var(--text-gray)" }}>
+                💡 This is a single‑algorithm preview. The full Apex Method manages fatigue across your whole week.
+              </p>
+              <button onClick={handleRegister} className="btn btn-primary" style={{ padding: "12px 32px" }}>
+                Automate Your Entire Training Cycle →
+              </button>
+            </div>
           </div>
         </div>
       </section>
