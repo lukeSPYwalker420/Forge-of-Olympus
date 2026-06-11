@@ -2162,6 +2162,41 @@ app.get("/api/coaching-prompt/:userId", async (req, res) => {
   }
 });
 
+// Initialize LiftState with a given 1RM (onboarding)
+app.post("/api/initialize-lift", async (req, res) => {
+  try {
+    const { userId, liftName, estimated1RM } = req.body;
+    if (!userId || !liftName || !estimated1RM) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    let state = await LiftState.findOne({ userId, liftName });
+    if (state) {
+      // Update existing
+      state.estimated1RM = estimated1RM;
+      state.currentWeight = 0; // strength lifts start from 1RM
+      state.updatedAt = new Date();
+      await state.save();
+    } else {
+      state = new LiftState({
+        userId,
+        liftName,
+        estimated1RM,
+        currentWeight: 0,
+        consecutiveSuccesses: 0,
+        stallCounter: 0,
+      });
+      await state.save();
+    }
+
+    console.log(`📊 Initialised ${liftName} for ${userId} with 1RM = ${estimated1RM}kg`);
+    res.json({ message: "Lift initialised", state });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/api/debug/recent-purchases", async (req, res) => {
   const purchases = await Purchase.find().sort({ purchasedAt: -1 }).limit(10);
   res.json(purchases);
