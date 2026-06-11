@@ -8,25 +8,49 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [modalMessage, setModalMessage] = useState("");
   const userId = localStorage.getItem("userId");
+
+  // Simulator state
   const [simLift, setSimLift] = useState("squat");
-const [sim1RM, setSim1RM] = useState(152); // example squat
-const [simTargetRPE, setSimTargetRPE] = useState(8);
-const [simReps, setSimReps] = useState(3);
-const [simulateBadDay, setSimulateBadDay] = useState(false);
+  const [sim1RM, setSim1RM] = useState(152);
+  const [simTargetRPE, setSimTargetRPE] = useState(8);
+  const [simReps, setSimReps] = useState(3);
+  const [simScenario, setSimScenario] = useState("good"); // "good" or "bad"
 
-const staticNextWeight = weightForRPE(sim1RM, simTargetRPE, simReps);
+  // Helper function (only weightForRPE is used)
+  function weightForRPE(oneRM, targetRPE, targetReps) {
+    if (!oneRM || !targetRPE) return 0;
+    const rpeToPercent = {
+      10: 1.00, 9.5: 0.97, 9: 0.94, 8.5: 0.91, 8: 0.88,
+      7.5: 0.85, 7: 0.82, 6.5: 0.79, 6: 0.76, 5.5: 0.73, 5: 0.70
+    };
+    let percent = rpeToPercent[targetRPE] || 0.8;
+    if (targetReps <= 3) percent += 0.02;
+    if (targetReps >= 8) percent -= 0.03;
+    percent = Math.min(0.95, Math.max(0.65, percent));
+    return Math.round(oneRM * percent / 2.5) * 2.5;
+  }
 
-let apexNextWeight = staticNextWeight;
-let simWeight = staticNextWeight;
-let simNew1RM = sim1RM;
+  // Current session weight (same for both plans)
+  const currentWeight = weightForRPE(sim1RM, simTargetRPE, simReps);
+  // Static plan: always increase by 2.5kg
+  const staticNextWeight = currentWeight + 2.5;
 
-if (simulateBadDay) {
-  // The user attempted staticNextWeight but could only do it at RPE 9.5
-  simWeight = staticNextWeight;
-  simNew1RM = estimate1RM(simWeight, simReps, 9.5);
-  // Next session target RPE is the same (8)
-  apexNextWeight = weightForRPE(simNew1RM, simTargetRPE, simReps);
-}
+  // Apex plan logic
+  let apexNextWeight = currentWeight;
+  let apexNextSets = 3;
+  let progressionNote = "";
+
+  if (simScenario === "good") {
+    // After 3 good sessions, weight increases
+    apexNextWeight = currentWeight + 2.5;
+    apexNextSets = 3;
+    progressionNote = "3 good sessions → weight increased by 2.5kg.";
+  } else {
+    // Hard session (RPE 9.5): weight stays same, volume reduced
+    apexNextWeight = currentWeight;
+    apexNextSets = 2;
+    progressionNote = "Hard session exceeded fatigue budget → volume reduced (3 → 2 sets). Weight stays the same.";
+  }
 
   const handleRegister = () => {
     setShowModal(true);
@@ -106,32 +130,6 @@ if (simulateBadDay) {
     }
   };
 
-  // Helper functions (copied from server logic)
-function estimate1RM(weight, reps, actualRPE) {
-  if (!weight || !reps || !actualRPE) return weight || 0;
-  const rpeToPercent = {
-    10: 1.00, 9.5: 0.97, 9: 0.94, 8.5: 0.91, 8: 0.88,
-    7.5: 0.85, 7: 0.82, 6.5: 0.79, 6: 0.76, 5.5: 0.73, 5: 0.70
-  };
-  let percent = rpeToPercent[actualRPE] || 0.8;
-  let estimated = weight / percent;
-  if (reps > 5) estimated = weight * (1 + reps / 30);
-  return Math.round(estimated);
-}
-
-function weightForRPE(oneRM, targetRPE, targetReps) {
-  if (!oneRM || !targetRPE) return 0;
-  const rpeToPercent = {
-    10: 1.00, 9.5: 0.97, 9: 0.94, 8.5: 0.91, 8: 0.88,
-    7.5: 0.85, 7: 0.82, 6.5: 0.79, 6: 0.76, 5.5: 0.73, 5: 0.70
-  };
-  let percent = rpeToPercent[targetRPE] || 0.8;
-  if (targetReps <= 3) percent += 0.02;
-  if (targetReps >= 8) percent -= 0.03;
-  percent = Math.min(0.95, Math.max(0.65, percent));
-  return Math.round(oneRM * percent / 2.5) * 2.5;
-}
-
   const handleCoaching = (programName) => {
     const program = programs.find(p => p.originalTitle === programName);
     if (program && program.coachingLink) window.location.href = program.coachingLink;
@@ -164,10 +162,10 @@ function weightForRPE(oneRM, targetRPE, targetReps) {
         </div>
         <div className="hero-content">
           <h1>The era of the static spreadsheet is over.</h1>
-<p className="hero-sub">
-  Most plans break the moment you have a bad day. Apex Method adapts in real time – 
-  automatically adjusting your weights, volume, and intensity based on how you actually perform.
-</p>
+          <p className="hero-sub">
+            Most plans break the moment you have a bad day. Apex Method adapts in real time –
+            automatically adjusting your weights, volume, and intensity based on how you actually perform.
+          </p>
           <div className="hero-buttons">
             <button onClick={() => document.getElementById("programs")?.scrollIntoView({ behavior: "smooth" })} className="btn btn-primary">
               Explore Programs
@@ -206,67 +204,74 @@ function weightForRPE(oneRM, targetRPE, targetReps) {
         </div>
       </section>
 
-<section className="simulator" id="simulator">
-  <div className="container">
-    <h2>See how Apex Method saves you from stalling</h2>
-    <div className="simulator-card">
-      <div className="sim-controls">
-        <div>
-          <label>🏋️ Lift</label>
-          <select value={simLift} onChange={e => setSimLift(e.target.value)}>
-            <option value="squat">Squat</option>
-            <option value="bench">Bench Press</option>
-            <option value="deadlift">Deadlift</option>
-          </select>
-        </div>
-        <div>
-          <label>📊 Your 1RM (kg)</label>
-          <input type="number" value={sim1RM} onChange={e => setSim1RM(Number(e.target.value))} />
-        </div>
-        <div>
-          <label>🎯 Target RPE</label>
-          <input type="number" step="0.5" value={simTargetRPE} onChange={e => setSimTargetRPE(Number(e.target.value))} />
-        </div>
-        <div>
-          <label>🔁 Reps</label>
-          <input type="number" value={simReps} onChange={e => setSimReps(Number(e.target.value))} />
-        </div>
-        <button onClick={() => setSimulateBadDay(!simulateBadDay)}>
-          {simulateBadDay ? "↺ Reset to good day" : "⚠️ Simulate a bad day (RPE 9.5)"}
-        </button>
-      </div>
+      <section className="simulator" id="simulator">
+        <div className="container">
+          <h2>See how Apex Method saves you from stalling</h2>
+          <div className="simulator-card">
+            <div className="sim-controls">
+              <div>
+                <label>🏋️ Lift</label>
+                <select value={simLift} onChange={e => setSimLift(e.target.value)}>
+                  <option value="squat">Squat</option>
+                  <option value="bench">Bench Press</option>
+                  <option value="deadlift">Deadlift</option>
+                </select>
+              </div>
+              <div>
+                <label>📊 Your 1RM (kg)</label>
+                <input type="number" value={sim1RM} onChange={e => setSim1RM(Number(e.target.value))} />
+              </div>
+              <div>
+                <label>🎯 Target RPE</label>
+                <input type="number" step="0.5" value={simTargetRPE} onChange={e => setSimTargetRPE(Number(e.target.value))} />
+              </div>
+              <div>
+                <label>🔁 Reps</label>
+                <input type="number" value={simReps} onChange={e => setSimReps(Number(e.target.value))} />
+              </div>
+              <div>
+                <label>📈 Scenario</label>
+                <select value={simScenario} onChange={e => setSimScenario(e.target.value)}>
+                  <option value="good">Normal progression (3 good sessions)</option>
+                  <option value="bad">Hard session (RPE 9.5) → fatigue budget triggers</option>
+                </select>
+              </div>
+            </div>
 
-      <div className="sim-comparison">
-        <div className="sim-col">
-          <h3>📄 Static Spreadsheet</h3>
-          <p>Next session weight</p>
-          <p><strong>{staticNextWeight} kg</strong></p>
-          <p className="sim-note">Never changes based on how you performed. If you fail, you stay stuck.</p>
-        </div>
-        <div className="sim-col highlight">
-          <h3>⚡ Apex Method</h3>
-          <p>Next session weight</p>
-          <p><strong>{apexNextWeight} kg</strong></p>
-          <p className="sim-note">
-            {simulateBadDay 
-              ? "After a harder session, Apex lowers the load to keep you progressing safely."
-              : "Matches the spreadsheet when things go perfectly, but adapts when they don't."}
-          </p>
-        </div>
-      </div>
+            <div className="sim-comparison">
+              <div className="sim-col">
+                <h3>📄 Static Spreadsheet</h3>
+                <p>Next session</p>
+                <p><strong>{staticNextWeight} kg</strong> × 3 sets × {simReps} reps</p>
+                <p className="sim-note">Increases weight every session, ignoring fatigue.</p>
+              </div>
+              <div className="sim-col highlight">
+                <h3>⚡ Apex Method</h3>
+                <p>Next session</p>
+                <p><strong>{apexNextWeight} kg</strong> × {apexNextSets} sets × {simReps} reps</p>
+                <p className="sim-note">{progressionNote}</p>
+              </div>
+            </div>
 
-      {simulateBadDay && (
-        <div className="sim-explanation">
-          💡 <strong>What happened?</strong> On the bad day, you attempted <strong>{staticNextWeight} kg</strong> for {simReps} reps,
-          but it felt like <strong>RPE 9.5</strong>.<br />
-          A static plan would still prescribe <strong>{staticNextWeight} kg</strong> next time – likely another failure.<br />
-          Apex Method re‑estimates your 1RM as <strong>{simNew1RM} kg</strong> and lowers your next weight to <strong>{apexNextWeight} kg</strong>,
-          preventing a stall and keeping your training productive.
+            {simScenario === "bad" && (
+              <div className="sim-explanation">
+                💡 <strong>What actually happens in Apex Method?</strong><br />
+                You attempted <strong>{currentWeight} kg</strong> for {simReps} reps, but it felt like <strong>RPE 9.5</strong>.<br />
+                <strong>Static plan</strong> would prescribe <strong>{staticNextWeight} kg</strong> × 3 sets – likely causing failure or injury.<br />
+                <strong>Apex Method</strong> detects that your fatigue budget (axial load) is exceeded. It keeps the weight at <strong>{apexNextWeight} kg</strong> but <strong>reduces sets from 3 to 2</strong> for the next session, protecting recovery while still allowing long‑term progress.
+              </div>
+            )}
+
+            {simScenario === "good" && (
+              <div className="sim-explanation">
+                📈 <strong>When things go right – Apex Method rewards consistency</strong><br />
+                After <strong>3 successful sessions</strong> (target RPE achieved), Apex increases your weight by <strong>2.5 kg</strong>.<br />
+                Static plans also increase weight, but they never adjust for fatigue or bad days – leading to inevitable stalls. Apex only increases when you're ready.
+              </div>
+            )}
+          </div>
         </div>
-      )}
-    </div>
-  </div>
-</section>
+      </section>
 
       <section className="comparison">
         <div className="container">

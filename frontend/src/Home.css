@@ -1,6 +1,6 @@
 /* ==================== GLOBAL & RESET ==================== */
 :root {
-  --accent: #06b6d4;        /* cyan – clean, modern */
+  --accent: #06b6d4;
   --accent-dark: #0891b2;
   --accent-muted: #22d3ee;
   --bg-dark: #0b1120;
@@ -97,7 +97,7 @@ body {
   color: var(--accent);
 }
 
-/* ==================== HERO (CSS barbell, no gold) ==================== */
+/* ==================== HERO ==================== */
 .hero {
   height: 100vh;
   display: flex;
@@ -122,7 +122,6 @@ body {
   position: absolute;
 }
 
-/* Barbell (horizontal bar with two weight plates) */
 .barbell {
   width: 300px;
   height: 6px;
@@ -152,7 +151,6 @@ body {
   right: -46px;
 }
 
-/* Floating plates */
 .plate {
   width: 28px;
   height: 28px;
@@ -301,6 +299,167 @@ body {
   color: var(--text-gray);
 }
 
+/* ==================== SIMULATOR (polished) ==================== */
+.simulator {
+  padding: 80px 20px;
+  background: var(--bg-dark);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.simulator .container {
+  max-width: 1000px;
+}
+
+.simulator h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #fff, var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.simulator-card {
+  background: var(--card-bg);
+  border-radius: 28px;
+  padding: 32px;
+  margin-top: 48px;
+  border: 1px solid var(--border);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.simulator-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+}
+
+.sim-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sim-controls label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-gray);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.sim-controls select,
+.sim-controls input {
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  color: var(--text-light);
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  width: 140px;
+  transition: 0.2s;
+}
+
+.sim-controls select:focus,
+.sim-controls input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+}
+
+.sim-controls button {
+  background: var(--accent);
+  border: none;
+  color: #000;
+  padding: 10px 24px;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sim-controls button:hover {
+  background: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+.sim-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin: 32px 0 24px;
+}
+
+.sim-col {
+  background: rgba(11, 18, 32, 0.7);
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  text-align: center;
+  backdrop-filter: blur(2px);
+  transition: border-color 0.2s;
+}
+
+.sim-col.highlight {
+  border-color: var(--accent);
+  background: rgba(6, 182, 212, 0.04);
+  box-shadow: 0 0 0 1px rgba(6, 182, 212, 0.2);
+}
+
+.sim-col h3 {
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sim-col p {
+  margin: 12px 0;
+  font-size: 1rem;
+  color: var(--text-gray);
+}
+
+.sim-col strong {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  display: inline-block;
+  margin: 0 4px;
+}
+
+.sim-note {
+  font-size: 0.75rem;
+  color: var(--text-gray);
+  margin-top: 16px;
+  border-top: 1px dashed var(--border);
+  padding-top: 12px;
+}
+
+.sim-explanation {
+  background: rgba(6, 182, 212, 0.08);
+  padding: 18px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  border-left: 3px solid var(--accent);
+  margin-top: 20px;
+  line-height: 1.5;
+}
+
+.sim-explanation strong {
+  color: var(--accent);
+}
+
 /* ==================== COMPARISON ==================== */
 .comparison {
   background: var(--bg-dark);
@@ -362,7 +521,7 @@ body {
   color: var(--accent);
 }
 
-/* ==================== PROGRAMS SECTION (no images) ==================== */
+/* ==================== PROGRAMS SECTION ==================== */
 .programs {
   padding: 80px 20px;
   background: var(--bg-dark);
@@ -617,168 +776,6 @@ body {
     width: 24px;
     height: 24px;
   }
-  /* ==================== SIMULATOR (polished) ==================== */
-.simulator {
-  padding: 80px 20px;
-  background: var(--bg-dark);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-.simulator .container {
-  max-width: 1000px;
-}
-
-.simulator h2 {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  background: linear-gradient(135deg, #fff, var(--accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.simulator-card {
-  background: var(--card-bg);
-  border-radius: 28px;
-  padding: 32px;
-  margin-top: 48px;
-  border: 1px solid var(--border);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.simulator-card:hover {
-  border-color: var(--accent);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
-}
-
-.sim-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  align-items: flex-end;
-  margin-bottom: 32px;
-  padding-bottom: 28px;
-  border-bottom: 1px solid var(--border);
-}
-
-.sim-controls label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-gray);
-  display: block;
-  margin-bottom: 6px;
-}
-
-.sim-controls select,
-.sim-controls input {
-  background: var(--bg-dark);
-  border: 1px solid var(--border);
-  color: var(--text-light);
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  width: 140px;
-  transition: 0.2s;
-}
-
-.sim-controls select:focus,
-.sim-controls input:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
-}
-
-.sim-controls button {
-  background: var(--accent);
-  border: none;
-  color: #000;
-  padding: 10px 24px;
-  border-radius: 40px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.sim-controls button:hover {
-  background: var(--accent-dark);
-  transform: translateY(-2px);
-}
-
-.sim-comparison {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px;
-  margin: 32px 0 24px;
-}
-
-.sim-col {
-  background: rgba(11, 18, 32, 0.7);
-  padding: 24px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  text-align: center;
-  backdrop-filter: blur(2px);
-  transition: border-color 0.2s;
-}
-
-.sim-col.highlight {
-  border-color: var(--accent);
-  background: rgba(6, 182, 212, 0.04);
-  box-shadow: 0 0 0 1px rgba(6, 182, 212, 0.2);
-}
-
-.sim-col h3 {
-  font-size: 1.3rem;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.sim-col p {
-  margin: 12px 0;
-  font-size: 1rem;
-  color: var(--text-gray);
-}
-
-.sim-col strong {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--accent);
-  display: inline-block;
-  margin: 0 4px;
-}
-
-.sim-note {
-  font-size: 0.75rem;
-  color: var(--text-gray);
-  margin-top: 16px;
-  border-top: 1px dashed var(--border);
-  padding-top: 12px;
-}
-
-.sim-explanation {
-  background: rgba(6, 182, 212, 0.08);
-  padding: 18px;
-  border-radius: 16px;
-  font-size: 0.9rem;
-  color: var(--text-light);
-  border-left: 3px solid var(--accent);
-  margin-top: 20px;
-  line-height: 1.5;
-}
-
-.sim-explanation strong {
-  color: var(--accent);
-}
-
-@media (max-width: 700px) {
   .sim-comparison {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -797,5 +794,4 @@ body {
   .simulator-card {
     padding: 20px;
   }
-}
 }
