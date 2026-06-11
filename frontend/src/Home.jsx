@@ -211,43 +211,57 @@ function weightForRPE(oneRM, targetRPE, targetReps) {
     <h2>See how Apex Method saves you from stalling</h2>
     <div className="simulator-card">
       <div className="sim-controls">
-        <label>Lift:</label>
-        <select value={simLift} onChange={e => setSimLift(e.target.value)}>
-          <option value="squat">Squat</option>
-          <option value="bench">Bench</option>
-          <option value="deadlift">Deadlift</option>
-        </select>
-        <label>Your 1RM (kg):</label>
-        <input type="number" value={sim1RM} onChange={e => setSim1RM(Number(e.target.value))} />
-        <label>Target RPE:</label>
-        <input type="number" step="0.5" value={simTargetRPE} onChange={e => setSimTargetRPE(Number(e.target.value))} />
-        <label>Reps:</label>
-        <input type="number" value={simReps} onChange={e => setSimReps(Number(e.target.value))} />
+        <div>
+          <label>🏋️ Lift</label>
+          <select value={simLift} onChange={e => setSimLift(e.target.value)}>
+            <option value="squat">Squat</option>
+            <option value="bench">Bench Press</option>
+            <option value="deadlift">Deadlift</option>
+          </select>
+        </div>
+        <div>
+          <label>📊 Your 1RM (kg)</label>
+          <input type="number" value={sim1RM} onChange={e => setSim1RM(Number(e.target.value))} />
+        </div>
+        <div>
+          <label>🎯 Target RPE</label>
+          <input type="number" step="0.5" value={simTargetRPE} onChange={e => setSimTargetRPE(Number(e.target.value))} />
+        </div>
+        <div>
+          <label>🔁 Reps</label>
+          <input type="number" value={simReps} onChange={e => setSimReps(Number(e.target.value))} />
+        </div>
         <button onClick={() => setSimulateBadDay(!simulateBadDay)}>
-          {simulateBadDay ? "Reset to good day" : "Simulate a bad day (RPE 9.5)"}
+          {simulateBadDay ? "↺ Reset to good day" : "⚠️ Simulate a bad day (RPE 9.5)"}
         </button>
       </div>
+
       <div className="sim-comparison">
         <div className="sim-col">
           <h3>📄 Static Spreadsheet</h3>
-          <p>Next session weight: <strong>{staticNextWeight} kg</strong></p>
-          <p className="sim-note">Never changes based on how you performed.</p>
+          <p>Next session weight</p>
+          <p><strong>{staticNextWeight} kg</strong></p>
+          <p className="sim-note">Never changes based on how you performed. If you fail, you stay stuck.</p>
         </div>
         <div className="sim-col highlight">
           <h3>⚡ Apex Method</h3>
-          <p>Next session weight: <strong>{apexNextWeight} kg</strong></p>
+          <p>Next session weight</p>
+          <p><strong>{apexNextWeight} kg</strong></p>
           <p className="sim-note">
             {simulateBadDay 
-              ? "After a harder session, Apex lowers the load to prevent overreaching."
-              : "Matches the spreadsheet when things go perfectly."}
+              ? "After a harder session, Apex lowers the load to keep you progressing safely."
+              : "Matches the spreadsheet when things go perfectly, but adapts when they don't."}
           </p>
         </div>
       </div>
+
       {simulateBadDay && (
         <div className="sim-explanation">
-          💡 On the bad day, you logged  {simWeight} kg for {simReps} reps at RPE 9.5.<br />
-          Static plan would have kept you at {staticNextWeight} kg – likely leading to another failure.<br />
-          Apex estimates your new 1RM as {simNew1RM} kg and adjusts your next weight to <strong>{apexNextWeight} kg</strong>.
+          💡 <strong>What happened?</strong> On the bad day, you attempted <strong>{staticNextWeight} kg</strong> for {simReps} reps,
+          but it felt like <strong>RPE 9.5</strong>.<br />
+          A static plan would still prescribe <strong>{staticNextWeight} kg</strong> next time – likely another failure.<br />
+          Apex Method re‑estimates your 1RM as <strong>{simNew1RM} kg</strong> and lowers your next weight to <strong>{apexNextWeight} kg</strong>,
+          preventing a stall and keeping your training productive.
         </div>
       )}
     </div>
