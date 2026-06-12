@@ -19,32 +19,42 @@ export default function Dashboard() {
   const [subscriptionActive, setSubscriptionActive] = useState(true);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
+  
+  // NEW: Store the detailed program config from the backend
   const [programConfig, setProgramConfig] = useState(null);
+
+  // Rewards state
   const [rewards, setRewards] = useState({ unlockedRewards: [], nextMilestone: null, streak: 0 });
   const [dailyQuote, setDailyQuote] = useState(null);
 
-  // Admin states (all original)
+  // Admin state
   const [assignEmail, setAssignEmail] = useState("");
   const [assignProgram, setAssignProgram] = useState("");
   const [adminMessage, setAdminMessage] = useState("");
   const [leads, setLeads] = useState([]);
   const [loadingLeads, setLoadingLeads] = useState(false);
   const [exporting, setExporting] = useState(false);
+  
+  // Remove program state
   const [removeEmail, setRemoveEmail] = useState("");
   const [removeProgram, setRemoveProgram] = useState("");
   const [removeMessage, setRemoveMessage] = useState("");
+
+  // Manual premium state
   const [premiumEmail, setPremiumEmail] = useState("");
   const [premiumMessage, setPremiumMessage] = useState("");
   const [manualPremiumUsers, setManualPremiumUsers] = useState([]);
   const [loadingPremiumUsers, setLoadingPremiumUsers] = useState(false);
 
   const isAdmin = userEmail === "kieren2203@googlemail.com";
+  
   const { unlockedRewards = [], nextMilestone = null } = rewards;
 
   // Carousel state
   const [currentCard, setCurrentCard] = useState(0);
   const nextCard = () => setCurrentCard(prev => Math.min(prev + 1, cards.length - 1));
   const prevCard = () => setCurrentCard(prev => Math.max(prev - 1, 0));
+
   const swipeHandlers = useSwipeable({
     onSwipedLeft: nextCard,
     onSwipedRight: prevCard,
@@ -52,7 +62,7 @@ export default function Dashboard() {
     trackMouse: true,
   });
 
-  // Handle program just selected
+  // Handle program just selected (fixes the infinite loop)
   useEffect(() => {
     if (localStorage.getItem("programJustSelected") === "true") {
       localStorage.removeItem("programJustSelected");
@@ -61,7 +71,6 @@ export default function Dashboard() {
     }
   }, []);
 
-  // PWA install
   useEffect(() => {
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -80,49 +89,56 @@ export default function Dashboard() {
     }
   };
 
-  // Subscription check
   useEffect(() => {
     const checkSubscription = async () => {
       if (!userId) return;
+      
       const userEmail = localStorage.getItem("userEmail");
       const isAdmin = userEmail === "kieren2203@googlemail.com";
+      
       if (isAdmin) {
         setSubscriptionActive(true);
         return;
       }
+      
       try {
         const res = await fetch(`/api/subscription-status/${userId}`);
         const data = await res.json();
         setSubscriptionActive(data.active);
-      } catch (error) {
-        console.error("Subscription check error:", error);
+      } catch (err) {
+        console.error(err);
       }
     };
     checkSubscription();
   }, [userId]);
 
-  // Main dashboard data
+  // Fetch main dashboard data
   useEffect(() => {
     if (!userId) {
       navigate("/login");
       return;
     }
+
     const fetchData = async () => {
       try {
         const programs = JSON.parse(localStorage.getItem("purchasedPrograms") || "[]");
         setPurchasedPrograms(programs);
+
         const mainLifts = ["Squat (Top Set)", "Bench (Top Set)", "Deadlift (Top Set)"];
+        
         const estPromises = mainLifts.map(lift =>
           fetch(`/api/estimate-1rm/${userId}/${encodeURIComponent(lift)}`)
             .then(res => res.json())
-            .catch(() => ({ estimated1RM: null }))
+            .catch(err => ({ estimated1RM: null, error: err }))
         );
         const estResults = await Promise.all(estPromises);
+        
         const estMap = {};
         mainLifts.forEach((lift, idx) => {
           estMap[lift] = estResults[idx].estimated1RM || 0;
         });
         setEstimates(estMap);
+
         const historyRes = await fetch(`/api/recent-sessions/${userId}?limit=50`);
         if (historyRes.ok) {
           const sessions = await historyRes.json();
@@ -134,10 +150,11 @@ export default function Dashboard() {
         setLoading(false);
       }
     };
+    
     fetchData();
   }, [userId, navigate]);
 
-  // Program config sync
+  // 🔧 FIX: Fetch the detailed program configuration and sync localStorage + auth state
   useEffect(() => {
     if (!userId) return;
     fetch(`/api/user-program-config/${userId}`)
@@ -145,16 +162,24 @@ export default function Dashboard() {
       .then(data => {
         if (data.config) {
           setProgramConfig(data.config);
+          
+          // Sync local storage so routing across the app immediately shifts to the specific tracking engine
           localStorage.setItem("activeProgramConfig", JSON.stringify(data.config));
+          
+          // Ensure the global program pointer points to the display name or database program name
           const programName = data.config.displayTitle || data.config.programName;
-          if (programName) localStorage.setItem("program", programName);
+          if (programName) {
+            localStorage.setItem("program", programName);
+          }
+          
+          // Notify App.jsx reactively (so the session route guard picks up the change)
           window.dispatchEvent(new Event("authChange"));
         }
       })
-      .catch(error => console.error("Failed to fetch program config:", error));
+      .catch(err => console.error("Failed to fetch program config:", err));
   }, [userId]);
 
-  // Rewards
+  // Fetch streak rewards
   useEffect(() => {
     if (!userId) return;
     fetch(`/api/user-rewards/${userId}`)
@@ -165,41 +190,27 @@ export default function Dashboard() {
           localStorage.setItem("streak", data.streak);
         }
       })
-      .catch(error => console.error("Rewards fetch error:", error));
+      .catch(err => console.error(err));
   }, [userId]);
 
-  // Daily quote
+  // Fetch daily quote if streak >= 3
   useEffect(() => {
     const streak = parseInt(localStorage.getItem("streak") || 0);
     if (streak >= 3) {
       fetch(`/api/daily-quote`)
         .then(res => res.json())
         .then(data => setDailyQuote(data))
-        .catch(error => console.error("Quote fetch error:", error));
+        .catch(err => console.error(err));
     }
   }, [rewards.streak]);
 
-  // Admin data fetching (fetchManualPremiumUsers defined inside effect to avoid missing dependency)
+  // Fetch manual premium users if admin
   useEffect(() => {
-    if (!isAdmin) return;
-    const fetchManualPremiumUsers = async () => {
-      setLoadingPremiumUsers(true);
-      try {
-        const res = await fetch("/api/admin/manual-premium-users", {
-          headers: { adminEmail: userEmail }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setManualPremiumUsers(data);
-        }
-      } catch (error) {
-        console.error("Error fetching manual premium users:", error);
-      } finally {
-        setLoadingPremiumUsers(false);
-      }
-    };
-    fetchManualPremiumUsers();
-  }, [isAdmin, userEmail]);
+    if (isAdmin) {
+      fetchManualPremiumUsers();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
 
   const handleStartWorkout = async () => {
     const program = localStorage.getItem("program");
@@ -207,6 +218,7 @@ export default function Dashboard() {
       navigate("/program");
       return;
     }
+
     try {
       const res = await fetch(`/api/next-session/${userId}?program=${encodeURIComponent(program)}`);
       if (res.ok) {
@@ -218,7 +230,7 @@ export default function Dashboard() {
         localStorage.setItem("nextDay", 1);
       }
     } catch (err) {
-      console.error("Start workout error:", err);
+      console.error(err);
       localStorage.setItem("nextWeek", 1);
       localStorage.setItem("nextDay", 1);
     }
@@ -235,7 +247,6 @@ export default function Dashboard() {
     link.click();
   };
 
-  // Admin functions
   const assignProgramToUser = async () => {
     if (!assignEmail || !assignProgram) {
       setAdminMessage("Please fill in email and program");
@@ -245,11 +256,16 @@ export default function Dashboard() {
       const res = await fetch("/api/admin/assign-program", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adminEmail: userEmail, userEmail: assignEmail, programName: assignProgram })
+        body: JSON.stringify({
+          adminEmail: userEmail,
+          userEmail: assignEmail,
+          programName: assignProgram
+        })
       });
       const data = await res.json();
       if (res.ok) {
         setAdminMessage(`✅ ${data.message}`);
+        
         if (assignEmail === userEmail) {
           const loginRes = await fetch("/api/login", {
             method: "POST",
@@ -262,6 +278,7 @@ export default function Dashboard() {
             setPurchasedPrograms(loginData.purchasedPrograms);
           }
         }
+        
         setAssignEmail("");
         setAssignProgram("");
       } else {
@@ -281,7 +298,11 @@ export default function Dashboard() {
       const res = await fetch("/api/admin/remove-program", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adminEmail: userEmail, userEmail: removeEmail, programName: removeProgram })
+        body: JSON.stringify({
+          adminEmail: userEmail,
+          userEmail: removeEmail,
+          programName: removeProgram
+        })
       });
       const data = await res.json();
       if (res.ok) {
@@ -296,6 +317,7 @@ export default function Dashboard() {
     }
   };
 
+  // Manual premium functions
   const grantManualPremium = async () => {
     if (!premiumEmail) {
       setPremiumMessage("Please enter an email");
@@ -305,20 +327,16 @@ export default function Dashboard() {
       const res = await fetch("/api/admin/grant-premium", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adminEmail: userEmail, userEmail: premiumEmail })
+        body: JSON.stringify({
+          adminEmail: userEmail,
+          userEmail: premiumEmail
+        })
       });
       const data = await res.json();
       if (res.ok) {
         setPremiumMessage(`✅ ${data.message}`);
         setPremiumEmail("");
-        // Refresh the list
-        const refreshRes = await fetch("/api/admin/manual-premium-users", {
-          headers: { adminEmail: userEmail }
-        });
-        if (refreshRes.ok) {
-          const users = await refreshRes.json();
-          setManualPremiumUsers(users);
-        }
+        fetchManualPremiumUsers();
       } else {
         setPremiumMessage(`❌ ${data.error}`);
       }
@@ -333,18 +351,15 @@ export default function Dashboard() {
       const res = await fetch("/api/admin/revoke-premium", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adminEmail: userEmail, userEmail: emailToRevoke })
+        body: JSON.stringify({
+          adminEmail: userEmail,
+          userEmail: emailToRevoke
+        })
       });
       const data = await res.json();
       if (res.ok) {
         setPremiumMessage(`✅ ${data.message}`);
-        const refreshRes = await fetch("/api/admin/manual-premium-users", {
-          headers: { adminEmail: userEmail }
-        });
-        if (refreshRes.ok) {
-          const users = await refreshRes.json();
-          setManualPremiumUsers(users);
-        }
+        fetchManualPremiumUsers();
       } else {
         setPremiumMessage(`❌ ${data.error}`);
       }
@@ -353,20 +368,60 @@ export default function Dashboard() {
     }
   };
 
+  const fetchManualPremiumUsers = async () => {
+    if (!isAdmin) return;
+    setLoadingPremiumUsers(true);
+    try {
+      const res = await fetch("/api/admin/manual-premium-users", {
+        headers: {
+          adminEmail: userEmail
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setManualPremiumUsers(data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingPremiumUsers(false);
+    }
+  };
+
+  function predictPR(history) {
+    if (history.length < 2) return null;
+    const recent = history.slice(-4);
+    const x = recent.map((_, i) => i);
+    const y = recent.map(h => h.estimated1RM);
+    const n = x.length;
+    const sumX = x.reduce((a, b) => a + b, 0);
+    const sumY = y.reduce((a, b) => a + b, 0);
+    const sumXY = x.reduce((a, b, i) => a + b * y[i], 0);
+    const sumX2 = x.reduce((a, b) => a + b * b, 0);
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+    const nextX = recent.length;
+    return Math.round(slope * nextX + intercept);
+  }
+
   const fetchLeads = async () => {
     if (!isAdmin) return;
     setLoadingLeads(true);
     try {
       const res = await fetch("/api/admin/leads", {
-        headers: { adminEmail: userEmail }
+        headers: {
+          adminEmail: userEmail
+        }
       });
       if (res.ok) {
         const data = await res.json();
         setLeads(data);
       } else {
+        console.error("Failed to fetch leads");
         setAdminMessage("❌ Failed to fetch leads");
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       setAdminMessage("❌ Network error fetching leads");
     } finally {
       setLoadingLeads(false);
@@ -378,7 +433,9 @@ export default function Dashboard() {
     setExporting(true);
     try {
       const res = await fetch("/api/admin/leads/export", {
-        headers: { adminEmail: userEmail }
+        headers: {
+          adminEmail: userEmail
+        }
       });
       if (res.ok) {
         const blob = await res.blob();
@@ -401,37 +458,23 @@ export default function Dashboard() {
     }
   };
 
-  function predictPR(history) {
-    if (history.length < 2) return null;
-    const recent = history.slice(-4);
-    const x = recent.map((_, i) => i);
-    const y = recent.map(h => h.estimated1RM);
-    const n = x.length;
-    const sumX = x.reduce((a, b) => a + b, 0);
-    const sumY = y.reduce((a, b) => a + b, 0);
-    const sumXY = x.reduce((a, b, i) => a + b * y[i], 0);
-    const sumX2 = x.reduce((a, b) => a + b * b, 0);
-    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-    const intercept = (sumY - slope * sumX) / n;
-    const nextX = recent.length;
-    return Math.round(slope * nextX + intercept);
-  }
-
   if (loading) return <div className="dashboard-loading">Loading your data...</div>;
 
-  // ----- Card definitions (original, with cleaner styling) -----
+  // ----- CARD DEFINITIONS -----
   const programCard = (
-    <div className="card premium-card-style">
+    <div className="card">
       <h2>Your Program</h2>
       {purchasedPrograms.length === 0 && !programConfig ? (
         <p>No programs purchased. <a href="/" style={{ color: "var(--accent)" }}>Buy now</a></p>
       ) : (
         <>
+          {/* Show detailed config if available */}
           {programConfig ? (
             <div style={{ marginBottom: "12px" }}>
               <p><strong>{programConfig.displayTitle || localStorage.getItem("program") || "Active program"}</strong></p>
               {programConfig.frequency && <p>📅 {programConfig.frequency} days/week</p>}
               {programConfig.focus && <p>🎯 Focus: {programConfig.focus.replace('_', ' ').toUpperCase()}</p>}
+              {/* Optional: you could fetch and show fatigue cap from the program JSON, but not stored in config */}
             </div>
           ) : (
             <p>Active: <strong>{localStorage.getItem("program") || "Not selected"}</strong></p>
@@ -442,22 +485,31 @@ export default function Dashboard() {
       <button onClick={handleStartWorkout} className="btn-workout">🏋️ Start Workout</button>
       <button onClick={() => navigate("/")} className="btn-secondary">Browse More Programs</button>
       {!subscriptionActive && (purchasedPrograms.length > 0 || programConfig) && (
-        <div className="subscription-warning">
-          <strong>⚠️ Your subscription has expired.</strong> You can still view your history, but weight recommendations are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe now</a>
+        <div style={{ background: "#ffaa4422", padding: "12px", borderRadius: "8px", marginBottom: "12px", textAlign: "center" }}>
+          <strong>⚠️ Your subscription has expired.</strong> You can still view your history,
+          but weight recommendations are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe now</a>
         </div>
       )}
-      <div className="card-buttons">
-        <button onClick={() => {
+      <button 
+        onClick={() => {
           const shareText = `I finally stopped guessing my weights. Apex Method calculates every set based on my actual performance. 30 days free.`;
           window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
-        }} className="share-twitter">🐦 Share</button>
-        <button onClick={shareProgress} className="share-progress">📸 Share My Progress</button>
-      </div>
+        }}
+        style={{ background: "#1da1f2", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer" }}
+      >
+        🐦 Share
+      </button>
+      <button 
+        onClick={shareProgress}
+        style={{ background: "#10b981", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", marginTop: "8px", cursor: "pointer" }}
+      >
+        📸 Share My Progress
+      </button>
     </div>
   );
 
   const oneRMCard = (
-    <div className="card premium-card-style">
+    <div className="card">
       <h2>Estimated 1RM</h2>
       <div className="estimates-list">
         <div className="estimate-item"><span>Squat</span><strong>{estimates["Squat (Top Set)"] || "—"} kg</strong></div>
@@ -469,7 +521,7 @@ export default function Dashboard() {
         <strong>{predictPR || estimates["Squat (Top Set)"]} kg</strong>
       </div>
       <details>
-        <summary>View Progress Chart</summary>
+        <summary style={{ cursor: "pointer", marginTop: "16px", color: "var(--accent)" }}>View Progress Chart</summary>
         <DashboardChart userId={userId} liftName="Squat (Top Set)" />
         <DashboardChart userId={userId} liftName="Bench (Top Set)" />
         <DashboardChart userId={userId} liftName="Deadlift (Top Set)" />
@@ -478,40 +530,177 @@ export default function Dashboard() {
   );
 
   const coachCard = <CoachPrompts userId={userId} />;
-  const recentActivityCard = <ProgressLog recentSessions={recentSessions} expandedWorkout={expandedWorkout} setExpandedWorkout={setExpandedWorkout} />;
+
+  const recentActivityCard = (
+    <div className="card">
+      <h2>Recent Activity</h2>
+      {recentSessions.length === 0 ? (
+        <p>No sessions logged yet.</p>
+      ) : (
+        (() => {
+          const workoutMap = new Map();
+          recentSessions.forEach(session => {
+            const date = new Date(session.createdAt);
+            const dateKey = date.toDateString();
+            const workoutKey = `${dateKey}_w${session.week}_d${session.day}`;
+            if (!workoutMap.has(workoutKey)) {
+              workoutMap.set(workoutKey, {
+                id: workoutKey,
+                date: session.createdAt,
+                week: session.week,
+                day: session.day,
+                focus: session.programName || "Workout",
+                exercises: [],
+                isExpanded: false
+              });
+            }
+            workoutMap.get(workoutKey).exercises.push(session);
+          });
+          const workouts = Array.from(workoutMap.values())
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 4);
+          
+          const getWorkoutSummary = (exercises) => {
+            let qualityCount = 0;
+            let struggleCount = 0;
+            exercises.forEach(ex => {
+              if (ex.actualRPE && ex.targetRPE && ex.actualRPE <= ex.targetRPE + 0.5) qualityCount++;
+              if (ex.actualRIR && ex.targetRIR && ex.actualRIR <= ex.targetRIR) qualityCount++;
+              if (ex.actualStability && ex.targetStability && ex.actualStability >= ex.targetStability) qualityCount++;
+              if (ex.actualQuality && ex.targetQuality && ex.actualQuality >= ex.targetQuality) qualityCount++;
+              if (ex.actualRPE && ex.targetRPE && ex.actualRPE > ex.targetRPE + 1) struggleCount++;
+              if (ex.actualRIR && ex.targetRIR && ex.actualRIR < ex.targetRIR - 1) struggleCount++;
+              if (ex.actualStability && ex.targetStability && ex.actualStability < ex.targetStability - 1) struggleCount++;
+            });
+            const successRate = exercises.length > 0 ? Math.round((qualityCount / exercises.length) * 100) : 0;
+            return { successRate, struggleCount };
+          };
+          
+          return (
+            <>
+              {workouts.map((workout) => {
+                const isExpanded = expandedWorkout === workout.id;
+                const workoutDate = new Date(workout.date);
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                let dateDisplay = workoutDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+                if (workoutDate.toDateString() === today.toDateString()) dateDisplay = "Today";
+                else if (workoutDate.toDateString() === yesterday.toDateString()) dateDisplay = "Yesterday";
+                const { successRate, struggleCount } = getWorkoutSummary(workout.exercises);
+                let statusEmoji = "✅", statusColor = "var(--accent)";
+                if (successRate >= 80) { statusEmoji = "🔥"; statusColor = "#4caf50"; }
+                else if (successRate >= 60) { statusEmoji = "💪"; statusColor = "var(--accent)"; }
+                else if (successRate >= 40) { statusEmoji = "⚠️"; statusColor = "#ffaa44"; }
+                else { statusEmoji = "😓"; statusColor = "#ff5555"; }
+                
+                return (
+                  <div key={workout.id} style={{ marginBottom: 16, borderBottom: "1px solid var(--border)", paddingBottom: 12 }}>
+                    <div onClick={() => setExpandedWorkout(isExpanded ? null : workout.id)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", padding: "8px", borderRadius: "8px", background: isExpanded ? "var(--card-hover)" : "transparent" }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: 4 }}>
+                          <span style={{ fontSize: "1.2rem" }}>{statusEmoji}</span>
+                          <h3 style={{ color: statusColor, margin: 0, fontSize: "1rem" }}>{dateDisplay} - Week {workout.week}, Day {workout.day}</h3>
+                        </div>
+                        <div style={{ display: "flex", gap: "12px", fontSize: "0.75rem", color: "var(--text-gray)" }}>
+                          <span>📋 {workout.exercises.length} exercises</span>
+                          <span>⭐ {successRate}% quality</span>
+                          {struggleCount > 0 && <span>⚠️ {struggleCount} struggled</span>}
+                        </div>
+                      </div>
+                      <span style={{ fontSize: "1.2rem" }}>{isExpanded ? "▲" : "▼"}</span>
+                    </div>
+                    {isExpanded && (
+                      <div style={{ marginTop: 12, paddingLeft: 8 }}>
+                        {workout.exercises.map((s, idx) => {
+                          let exerciseEmoji = "✓", exerciseColor = "#888";
+                          if (s.actualRPE && s.targetRPE) {
+                            if (s.actualRPE <= s.targetRPE + 0.5) { exerciseEmoji = "✅"; exerciseColor = "#4caf50"; }
+                            else if (s.actualRPE > s.targetRPE + 1) { exerciseEmoji = "⚠️"; exerciseColor = "#ffaa44"; }
+                          }
+                          if (s.actualRIR && s.targetRIR) {
+                            if (s.actualRIR <= s.targetRIR) { exerciseEmoji = "✅"; exerciseColor = "#4caf50"; }
+                            else if (s.actualRIR > s.targetRIR + 1) { exerciseEmoji = "⚠️"; exerciseColor = "#ffaa44"; }
+                          }
+                          return (
+                            <div key={idx} style={{ fontSize: "0.85rem", marginBottom: 8, padding: "4px 8px", borderRadius: "6px", background: "var(--bg-light)" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <span style={{ color: exerciseColor }}>{exerciseEmoji}</span>
+                                <strong>{s.liftName}</strong>
+                                <span style={{ color: "var(--text-gray)", fontSize: "0.75rem" }}>
+                                  {s.repsPerSet && s.repsPerSet.length > 0 ? `Sets: [${s.repsPerSet.join(", ")}]` : `${s.setsCompleted || 1} × ${s.repsCompleted} reps`}
+                                  {s.actualWeight && ` @ ${s.actualWeight}kg`}
+                                </span>
+                              </div>
+                              <div style={{ fontSize: "0.7rem", color: "var(--text-gray)", paddingLeft: "24px" }}>
+                                {s.actualRPE && <span>Target RPE: {s.targetRPE} → Actual: {s.actualRPE}</span>}
+                                {s.actualRIR && <span>Target RIR: {s.targetRIR} → Actual: {s.actualRIR}</span>}
+                                {s.actualStability && <span>Stability: {s.actualStability}/10</span>}
+                                {s.actualPain && <span>Pain: {s.actualPain}/10</span>}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              <details style={{ marginTop: "12px" }}>
+                <summary style={{ cursor: "pointer", color: "var(--accent)", fontSize: "14px" }}>📈 View full progress comparison</summary>
+                <ProgressLog userId={userId} />
+              </details>
+            </>
+          );
+        })()
+      )}
+    </div>
+  );
+
   const streakCard = (
-    <div className="card premium-card-style">
+    <div className="card">
       <h2>Workout Streak</h2>
-      <p className="streak-value">{localStorage.getItem("streak") || 0} 🔥</p>
+      <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent)" }}>{localStorage.getItem("streak") || 0} 🔥</p>
       <p>Consecutive workout days</p>
     </div>
   );
 
   const dailyQuoteCard = dailyQuote && (
-    <div className="card quote-card">
+    <div className="card" style={{ textAlign: "center" }}>
       <h2>💪 Daily Motivation</h2>
-      <p className="quote-text">"{dailyQuote.text}"</p>
-      <p className="quote-author">— {dailyQuote.author}</p>
+      <p style={{ fontStyle: "italic", fontSize: "1.1rem", marginBottom: "8px" }}>"{dailyQuote.text}"</p>
+      <p style={{ color: "var(--text-gray)", fontSize: "0.85rem" }}>— {dailyQuote.author}</p>
     </div>
   );
 
   const rewardsCard = (
-    <div className="card premium-card-style">
+    <div className="card">
       <h2>🏆 Streak Rewards</h2>
-      <div className="streak-header">
-        <p className="streak-big">{localStorage.getItem("streak") || 0} days 🔥</p>
-        {nextMilestone && <div className="next-milestone">Next reward in {nextMilestone.daysNeeded} days</div>}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+        <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent)", margin: 0 }}>{localStorage.getItem("streak") || 0} days 🔥</p>
+        {nextMilestone && (
+          <div style={{ textAlign: "right" }}>
+            <span style={{ fontSize: "12px", color: "var(--text-gray)" }}>Next reward in</span>
+            <div style={{ fontWeight: "bold", color: "var(--accent)" }}>{nextMilestone.daysNeeded} days</div>
+          </div>
+        )}
       </div>
       {nextMilestone && (
-        <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${((parseInt(localStorage.getItem("streak") || 0) - (nextMilestone.days - nextMilestone.daysNeeded)) / nextMilestone.daysNeeded * 100)}%` }}></div>
+        <div style={{ marginBottom: "16px" }}>
+          <div style={{ background: "var(--bg-light)", borderRadius: "10px", height: "8px", overflow: "hidden" }}>
+            <div style={{ width: `${((parseInt(localStorage.getItem("streak") || 0) - (nextMilestone.days - nextMilestone.daysNeeded)) / nextMilestone.daysNeeded * 100)}%`, background: "var(--accent)", height: "100%" }} />
+          </div>
+          <div style={{ fontSize: "12px", color: "var(--text-gray)", marginTop: "4px" }}>{nextMilestone.daysNeeded} days until {nextMilestone.reward}</div>
         </div>
       )}
       <details>
-        <summary>View unlocked rewards ({unlockedRewards.length})</summary>
-        <div className="rewards-list">
+        <summary style={{ cursor: "pointer", color: "var(--accent)", fontSize: "14px" }}>View unlocked rewards ({unlockedRewards.length})</summary>
+        <div style={{ marginTop: "12px" }}>
           {unlockedRewards.map(reward => (
-            <div key={reward.rewardId}><span>✅</span> <strong>{reward.days} days:</strong> {reward.name}</div>
+            <div key={reward.rewardId} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", fontSize: "13px" }}>
+              <span>✅</span>
+              <span><strong>{reward.days} days:</strong> {reward.name}</span>
+            </div>
           ))}
         </div>
       </details>
@@ -537,7 +726,7 @@ export default function Dashboard() {
         <button onClick={assignProgramToUser} className="btn-primary">Assign Program</button>
         {adminMessage && <p className="admin-message">{adminMessage}</p>}
       </div>
-      <div className="admin-section">
+      <div style={{ marginTop: "20px", borderTop: "1px solid #333", paddingTop: "20px" }}>
         <h3>🗑️ Remove Program from User</h3>
         <div className="admin-form">
           <input type="email" placeholder="User Email" value={removeEmail} onChange={e => setRemoveEmail(e.target.value)} className="admin-input" />
@@ -550,29 +739,31 @@ export default function Dashboard() {
             <option value="6-Week Wave Powerlifting">6-Week Wave Powerlifting</option>
             <option value="High-Frequency Specificity Wave">High-Frequency Specificity Wave</option>
           </select>
-          <button onClick={removeProgramFromUser} className="remove-btn">Remove Program</button>
+          <button onClick={removeProgramFromUser} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer" }}>Remove Program</button>
           {removeMessage && <p className="admin-message">{removeMessage}</p>}
         </div>
       </div>
-      <hr />
+      <hr style={{ margin: "20px 0", borderColor: "#333" }} />
       <div>
-        <div className="leads-header">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
           <h3>📧 Captured Leads ({leads.length})</h3>
           <div>
-            <button onClick={fetchLeads} className="btn-secondary">Refresh</button>
+            <button onClick={fetchLeads} className="btn-secondary" style={{ marginRight: "10px" }}>Refresh</button>
             <button onClick={exportLeads} className="btn-primary" disabled={exporting}>{exporting ? "Exporting..." : "Export CSV"}</button>
           </div>
         </div>
         {loadingLeads ? <p>Loading leads...</p> : leads.length === 0 ? <p>No leads yet.</p> : (
-          <div className="leads-table">
-            <table>
-              <thead><tr><th>Email</th><th>Source</th><th>Date</th></tr></thead>
+          <div style={{ maxHeight: "300px", overflowY: "auto", marginTop: "10px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
+              <thead>
+                <tr><th>Email</th><th>Source</th><th>Date</th></tr>
+              </thead>
               <tbody>
                 {leads.map((lead, idx) => (
-                  <tr key={idx}>
-                    <td>{lead.email}</td>
-                    <td>{lead.source || "register_modal"}</td>
-                    <td>{new Date(lead.createdAt).toLocaleDateString()}</td>
+                  <tr key={idx} style={{ borderTop: "1px solid #333" }}>
+                    <td style={{ padding: "8px 4px" }}>{lead.email}</td>
+                    <td style={{ padding: "8px 4px" }}>{lead.source || "register_modal"}</td>
+                    <td style={{ padding: "8px 4px" }}>{new Date(lead.createdAt).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -580,85 +771,112 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-      <hr />
+      <hr style={{ margin: "20px 0", borderColor: "#333" }} />
       <div>
         <h3>👑 Manual Premium Access</h3>
-        <p className="premium-note">Grant full app access to users who pay you directly</p>
+        <p style={{ fontSize: "12px", color: "var(--text-gray)", marginBottom: "10px" }}>Grant full app access to users who pay you directly</p>
         <div className="admin-form">
           <input type="email" placeholder="User Email" value={premiumEmail} onChange={e => setPremiumEmail(e.target.value)} className="admin-input" />
-          <div className="premium-buttons">
-            <button onClick={grantManualPremium} className="grant-btn">Grant Premium Access</button>
-            <button onClick={fetchLeads} className="btn-secondary">Refresh List</button>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button onClick={grantManualPremium} style={{ background: "#10b981", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer", flex: 1 }}>Grant Premium Access</button>
+            <button onClick={fetchManualPremiumUsers} className="btn-secondary" style={{ flex: 0.5 }}>Refresh List</button>
           </div>
           {premiumMessage && <p className="admin-message">{premiumMessage}</p>}
         </div>
         {loadingPremiumUsers ? <p>Loading premium users...</p> : manualPremiumUsers.length > 0 ? (
-          <div className="premium-users-table">
-            <table>
-              <thead><tr><th>Email</th><th>Granted</th><th>Streak</th><th>Action</th></tr></thead>
+          <div style={{ marginTop: "15px", maxHeight: "200px", overflowY: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+              <thead>
+                <tr><th>Email</th><th>Granted</th><th>Streak</th><th>Action</th></tr>
+              </thead>
               <tbody>
                 {manualPremiumUsers.map((user, idx) => (
-                  <tr key={idx}>
-                    <td>{user.email}</td>
-                    <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                    <td>{user.streak || 0}🔥</td>
-                    <td><button onClick={() => revokeManualPremium(user.email)} className="revoke-btn">Revoke</button></td>
+                  <tr key={idx} style={{ borderTop: "1px solid #333" }}>
+                    <td style={{ padding: "8px 4px" }}>{user.email}</td>
+                    <td style={{ padding: "8px 4px" }}>{new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td style={{ padding: "8px 4px" }}>{user.streak || 0}🔥</td>
+                    <td style={{ padding: "8px 4px" }}>
+                      <button onClick={() => revokeManualPremium(user.email)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "4px 8px", borderRadius: "4px", cursor: "pointer", fontSize: "11px" }}>Revoke</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        ) : <p>No manual premium users yet</p>}
+        ) : <p style={{ fontSize: "12px", color: "var(--text-gray)", marginTop: "10px" }}>No manual premium users yet</p>}
       </div>
     </div>
   );
 
   const cancelCard = subscriptionActive && !isAdmin && (
-    <div className="card cancel-card">
-      <h2>⚠️ Cancel Subscription</h2>
+    <div className="card" style={{ borderTop: "2px solid #dc2626" }}>
+      <h2 style={{ color: "#dc2626" }}>⚠️ Cancel Subscription</h2>
       <p>Your subscription will remain active until the end of the current billing period. After that, you will lose premium features (weight recommendations, adaptive progression).</p>
-      <button onClick={async () => {
-        if (!confirm("Are you sure you want to cancel your subscription? You will keep access until the next billing date, then your plan will end.")) return;
-        try {
-          const res = await fetch("/api/cancel-subscription", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userId }) });
-          const data = await res.json();
-          if (res.ok) {
-            alert("Subscription cancelled. You will retain premium access until the end of your billing period.");
-            const statusRes = await fetch(`/api/subscription-status/${userId}`);
-            const statusData = await statusRes.json();
-            setSubscriptionActive(statusData.active);
-          } else {
-            alert(data.error || "Failed to cancel subscription");
+      <button
+        onClick={async () => {
+          if (!confirm("Are you sure you want to cancel your subscription? You will keep access until the next billing date, then your plan will end.")) return;
+          try {
+            const res = await fetch("/api/cancel-subscription", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+              alert("Subscription cancelled. You will retain premium access until the end of your billing period.");
+              const statusRes = await fetch(`/api/subscription-status/${userId}`);
+              const statusData = await statusRes.json();
+              setSubscriptionActive(statusData.active);
+            } else {
+              alert(data.error || "Failed to cancel subscription");
+            }
+          } catch (err) {
+            alert("Error: " + err.message);
           }
-        } catch (err) {
-          alert("Error: " + err.message);
-        }
-      }} className="cancel-btn">Cancel Subscription</button>
+        }}
+        style={{
+          background: "#dc2626",
+          color: "#fff",
+          border: "none",
+          padding: "10px 20px",
+          borderRadius: "8px",
+          cursor: "pointer",
+          marginTop: "12px",
+          width: "100%",
+        }}
+      >
+        Cancel Subscription
+      </button>
     </div>
   );
 
-  // Build cards array (same as original)
+  // Build the array of cards (only include if they should appear)
   let cards = [programCard, oneRMCard, coachCard, recentActivityCard, streakCard];
   if (dailyQuote) cards.push(dailyQuoteCard);
   cards.push(rewardsCard);
   if (isAdmin) cards.push(adminCard);
   if (subscriptionActive && !isAdmin) cards.push(cancelCard);
+
+  // Update currentCard if it becomes out of bounds (e.g., after loading)
   if (currentCard >= cards.length) setCurrentCard(0);
 
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <span className="dashboard-logo" onClick={() => navigate("/")}>APEX METHOD</span>
+        <span className="dashboard-logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
+          APEX METHOD
+        </span>
         <button onClick={() => { localStorage.clear(); navigate("/"); }} className="logout-btn">Logout</button>
       </div>
 
       {showInstallBanner && (
-        <div className="install-banner">
+        <div className="install-banner" style={{ background: "#2a2a35", padding: "12px", borderRadius: "8px", marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>📲 Install Apex Method as an app</span>
-          <button onClick={handleInstallClick}>Install</button>
+          <button onClick={handleInstallClick} style={{ background: "var(--accent)", border: "none", padding: "8px 16px", borderRadius: "6px", cursor: "pointer" }}>Install</button>
         </div>
       )}
 
+      {/* Carousel */}
       <div className="carousel-container">
         <div className="carousel-header">
           <span className="carousel-counter">{currentCard + 1} / {cards.length}</span>
@@ -668,10 +886,13 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="carousel-card-wrapper" {...swipeHandlers}>
-          <div className="carousel-card">{cards[currentCard]}</div>
+          <div className="carousel-card">
+            {cards[currentCard]}
+          </div>
         </div>
       </div>
 
+      {/* Hidden progress-share-card for screenshot */}
       <div className="progress-share-card" style={{ position: 'absolute', left: '-9999px', top: 0, width: '400px', background: '#1e1e2a', padding: '20px', borderRadius: '16px' }}>
         <h3 style={{ color: 'var(--accent)' }}>My Apex Method Progress</h3>
         <p>🔥 Streak: {localStorage.getItem("streak") || 0} days</p>
