@@ -8,6 +8,8 @@ import { meetPrepMaster } from './programData/meetPrepMaster.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.resolve(__dirname, '../frontend/public/programs');
+const BACKEND_DATA_DIR = path.resolve(__dirname, '../data');   // or '../programs' – adjust if needed
+if (!fs.existsSync(BACKEND_DATA_DIR)) fs.mkdirSync(BACKEND_DATA_DIR, { recursive: true });
 
 // Ensure output directory exists
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -287,7 +289,10 @@ for (const freq of freqs) {
   for (const focus of strengthFoci) {
     const prog = generatePowerliftingProgram(freq, focus);
     const fileName = `str_${freq}_${focus}.json`;
-    fs.writeFileSync(path.join(OUTPUT_DIR, fileName), JSON.stringify(prog, null, 2));
+    const filePathFrontend = path.join(OUTPUT_DIR, fileName);
+const filePathBackend = path.join(BACKEND_DATA_DIR, fileName);
+fs.writeFileSync(filePathFrontend, JSON.stringify(prog, null, 2));
+fs.writeFileSync(filePathBackend, JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
 }
@@ -296,7 +301,10 @@ for (const freq of freqs) {
   for (const split of hypertrophySplits) {
     const prog = generateHypertrophyProgram(freq, split);
     const fileName = `hyp_${freq}_${split}.json`;
-    fs.writeFileSync(path.join(OUTPUT_DIR, fileName), JSON.stringify(prog, null, 2));
+    const filePathFrontend = path.join(OUTPUT_DIR, fileName);
+const filePathBackend = path.join(BACKEND_DATA_DIR, fileName);
+fs.writeFileSync(filePathFrontend, JSON.stringify(prog, null, 2));
+fs.writeFileSync(filePathBackend, JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
 }
@@ -305,7 +313,10 @@ for (const freq of freqs) {
   for (const focus of meetPrepFoci) {
     const prog = generateMeetPrepProgram(freq, focus);
     const fileName = `mp_${freq}_${focus}.json`;
-    fs.writeFileSync(path.join(OUTPUT_DIR, fileName), JSON.stringify(prog, null, 2));
+    const filePathFrontend = path.join(OUTPUT_DIR, fileName);
+const filePathBackend = path.join(BACKEND_DATA_DIR, fileName);
+fs.writeFileSync(filePathFrontend, JSON.stringify(prog, null, 2));
+fs.writeFileSync(filePathBackend, JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
 }
