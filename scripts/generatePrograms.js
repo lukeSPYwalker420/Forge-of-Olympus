@@ -96,30 +96,45 @@ function generatePowerliftingProgram(freq, focus) {
 function generateHypertrophyProgram(freq, split) {
   const { planeSessions, armsDay, volumeFactors } = hypertrophyMaster;
   let sessions = [];
+
   if (split === "plane") {
-    sessions = [planeSessions.upperHorizontal, planeSessions.lowerQuad, planeSessions.upperVertical, planeSessions.lowerPosterior];
+    // Deep clone the master sessions so we don't mutate the original
+    sessions = [
+      JSON.parse(JSON.stringify(planeSessions.upperHorizontal)),
+      JSON.parse(JSON.stringify(planeSessions.lowerQuad)),
+      JSON.parse(JSON.stringify(planeSessions.upperVertical)),
+      JSON.parse(JSON.stringify(planeSessions.lowerPosterior))
+    ];
   } else if (split === "upper_lower") {
-    sessions = [planeSessions.upperHorizontal, planeSessions.lowerQuad, planeSessions.upperVertical, planeSessions.lowerPosterior];
-    sessions[0].focus = "Upper (Horizontal)"; sessions[1].focus = "Lower (Quad)"; sessions[2].focus = "Upper (Vertical)"; sessions[3].focus = "Lower (Posterior)";
+    sessions = [
+      JSON.parse(JSON.stringify(planeSessions.upperHorizontal)),
+      JSON.parse(JSON.stringify(planeSessions.lowerQuad)),
+      JSON.parse(JSON.stringify(planeSessions.upperVertical)),
+      JSON.parse(JSON.stringify(planeSessions.lowerPosterior))
+    ];
+    sessions[0].focus = "Upper (Horizontal)";
+    sessions[1].focus = "Lower (Quad)";
+    sessions[2].focus = "Upper (Vertical)";
+    sessions[3].focus = "Lower (Posterior)";
   } else if (split === "ppl") {
-    // Safely get pools, fallback to empty array if missing
+    // For PPL, we create new objects, so no need to clone (they are already new)
     const upperHorPool = planeSessions.upperHorizontal?.exercisePool ?? [];
     const upperVerPool = planeSessions.upperVertical?.exercisePool ?? [];
     const lowerQuadPool = planeSessions.lowerQuad?.exercisePool ?? [];
     const lowerPostPool = planeSessions.lowerPosterior?.exercisePool ?? [];
-    
     sessions = [
       { focus: "Push (Chest/Shoulders/Triceps)", exercisePool: [...upperHorPool, ...upperVerPool] },
       { focus: "Pull (Back/Biceps)", exercisePool: [...upperHorPool, ...upperVerPool] },
       { focus: "Legs (Quads/Hams/Glutes)", exercisePool: [...lowerQuadPool, ...lowerPostPool] },
       { focus: "Full Body / Arms", exercisePool: [...upperHorPool, ...lowerQuadPool] }
     ];
-}
+  }
+
   if (freq === 3) sessions = sessions.slice(0,3);
-else if (freq === 5) {
+  else if (freq === 5) {
     const armsPool = armsDay?.exercisePool ?? [];
     sessions.splice(2, 0, { focus: armsDay?.focus || "Arms & Shoulders", exercisePool: armsPool });
-}
+  }
 
   const factor = volumeFactors[freq];
   sessions.forEach(s => {
