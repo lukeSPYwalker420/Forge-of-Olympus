@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { powerliftingMaster } from './programData/powerliftingMaster.js';
 import { hypertrophyMaster } from './programData/hypertrophyMaster.js';
+import { meetPrepMaster } from './programData/meetPrepMaster.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.resolve(__dirname, '../frontend/public/programs');
@@ -24,27 +25,25 @@ function pickItems(arr, count) {
 
 // ========== POWERLIFTING GENERATOR ==========
 function generatePowerliftingProgram(freq, focus) {
-  const sessions = [];
   const { primarySessions, secondaryLifts, accessories, tertiary } = powerliftingMaster;
+  let sessions = [];
 
-  // Add primary sessions
-  sessions.push(primarySessions.squat, primarySessions.bench, primarySessions.deadlift);
-
-  if (freq === 4) {
-    // Add bench volume day
+  if (freq === 3) {
+    sessions = [primarySessions.squat, primarySessions.bench, primarySessions.deadlift];
+  } else if (freq === 4) {
+    sessions = [primarySessions.squat, primarySessions.bench, primarySessions.deadlift];
     const benchVol = JSON.parse(JSON.stringify(primarySessions.bench));
     benchVol.focus = "Bench Volume";
     benchVol.exercises.forEach(ex => { if (ex.reps === "4") ex.reps = "8"; if (ex.rpeTarget) ex.rpeTarget = Math.max(5, ex.rpeTarget - 1); });
     sessions.push(benchVol);
   } else if (freq === 5) {
-    // Add secondary + tertiary
+    sessions = [primarySessions.squat, primarySessions.bench, primarySessions.deadlift];
     let secEx = [];
     if (focus === "squat") secEx = pickItems(secondaryLifts.squatVariations, 2);
     else if (focus === "bench") secEx = pickItems(secondaryLifts.benchVariations, 2);
     else if (focus === "deadlift") secEx = pickItems(secondaryLifts.deadliftVariations, 2);
     else secEx = pickItems([...secondaryLifts.squatVariations, ...secondaryLifts.benchVariations], 2);
     sessions.push({ focus: "Secondary Variation", exercises: secEx });
-
     let tertEx = [];
     if (focus === "squat") tertEx = pickItems(tertiary.squatTertiary, 2);
     else if (focus === "bench") tertEx = pickItems(tertiary.benchTertiary, 2);
@@ -98,7 +97,6 @@ function generateHypertrophyProgram(freq, split) {
   let sessions = [];
 
   if (split === "plane") {
-    // Deep clone the master sessions so we don't mutate the original
     sessions = [
       JSON.parse(JSON.stringify(planeSessions.upperHorizontal)),
       JSON.parse(JSON.stringify(planeSessions.lowerQuad)),
@@ -117,7 +115,6 @@ function generateHypertrophyProgram(freq, split) {
     sessions[2].focus = "Upper (Vertical)";
     sessions[3].focus = "Lower (Posterior)";
   } else if (split === "ppl") {
-    // For PPL, we create new objects, so no need to clone (they are already new)
     const upperHorPool = planeSessions.upperHorizontal?.exercisePool ?? [];
     const upperVerPool = planeSessions.upperVertical?.exercisePool ?? [];
     const lowerQuadPool = planeSessions.lowerQuad?.exercisePool ?? [];
@@ -162,27 +159,130 @@ function generateHypertrophyProgram(freq, split) {
   return fullProgram;
 }
 
+// ========== MEET PREP GENERATOR ==========
+function generateMeetPrepProgram(freq, focus) {
+  const { peakingWaves, taperOptions, coreLifts, variationPool, accessoryPool, volumeFactors } = meetPrepMaster;
+  const isPeaking = focus === "peaking";
+  const wave = isPeaking ? peakingWaves["8week"] : peakingWaves["6week"];
+  const factor = volumeFactors[freq];
+  let sessions = [];
+
+  for (let w = 0; w < wave.weeks.length; w++) {
+    const weekData = wave.weeks[w];
+    const weekNum = w + 1;
+    const isTaperWeek = !isPeaking && weekNum >= wave.weeks.length - 1;
+
+    // Determine session days based on frequency
+    let sessionDays = [];
+    if (freq === 3) sessionDays = [1, 3, 5];
+    else if (freq === 4) sessionDays = [1, 2, 4, 5];
+    else sessionDays = [1, 2, 3, 4, 5];
+
+    for (let dayIdx = 0; dayIdx < sessionDays.length; dayIdx++) {
+      const dayNum = sessionDays[dayIdx];
+      let exercises = [];
+
+      // Add core lifts based on day
+      if (dayNum === 1) exercises.push(...coreLifts.filter(l => l.liftName.includes("Squat")));
+      if (dayNum === 2 || dayNum === 4) exercises.push(...coreLifts.filter(l => l.liftName.includes("Bench")));
+      if (dayNum === 3 || dayNum === 5) exercises.push(...coreLifts.filter(l => l.liftName.includes("Deadlift")));
+
+      // Add a variation lift (rotated weekly)
+      const weekParity = weekNum % 3;
+      if (dayNum === 1 && weekParity === 0 && variationPool.squat.length) {
+        const varLift = JSON.parse(JSON.stringify(variationPool.squat[weekNum % variationPool.squat.length]));
+        varLift.role = "variation";
+        varLift.sets = 3;
+        varLift.reps = "5-6";
+        varLift.rpeTarget = weekData.rpeBase - 0.5;
+        exercises.push(varLift);
+      }
+      if (dayNum === 2 && weekParity === 1 && variationPool.bench.length) {
+        const varLift = JSON.parse(JSON.stringify(variationPool.bench[weekNum % variationPool.bench.length]));
+        varLift.role = "variation";
+        varLift.sets = 3;
+        varLift.reps = "5-6";
+        varLift.rpeTarget = weekData.rpeBase - 0.5;
+        exercises.push(varLift);
+      }
+      if (dayNum === 3 && weekParity === 2 && variationPool.deadlift.length) {
+        const varLift = JSON.parse(JSON.stringify(variationPool.deadlift[weekNum % variationPool.deadlift.length]));
+        varLift.role = "variation";
+        varLift.sets = 2;
+        varLift.reps = "4-5";
+        varLift.rpeTarget = weekData.rpeBase - 0.5;
+        exercises.push(varLift);
+      }
+
+      // Add accessories (reduced as intensity increases)
+      let accessoryCount = freq === 3 ? 2 : (freq === 4 ? 3 : 4);
+      if (weekData.rpeBase >= 8.5) accessoryCount = Math.max(1, accessoryCount - 1);
+      if (accessoryCount > 0) {
+        const allAcc = [...accessoryPool.quads, ...accessoryPool.posterior, ...accessoryPool.push, ...accessoryPool.pull];
+        const selected = pickItems(allAcc, accessoryCount);
+        exercises.push(...selected);
+      }
+
+      // Apply volume factor and weekly RPE adjustments
+      exercises.forEach(ex => {
+        if (ex.sets) ex.sets = Math.max(1, Math.floor(ex.sets * weekData.volumeFactor * factor));
+        if (ex.rpeTarget !== undefined) ex.rpeTarget = Math.min(9.5, ex.rpeTarget + (weekData.rpeBase - 7));
+        if (isTaperWeek && ex.role === "top-set") {
+          ex.rpeTarget = Math.min(9, ex.rpeTarget + 0.5);
+          ex.sets = 1;
+        }
+      });
+
+      sessions.push({
+        week: weekNum,
+        day: dayNum,
+        focus: `Meet Prep - ${weekData.description || (isPeaking ? "Peaking" : "Taper")}`,
+        fatigueCap: Math.floor(weekData.fatigueCap * (freq === 5 ? 1.1 : freq === 3 ? 0.85 : 1)),
+        exercises: exercises
+      });
+    }
+  }
+
+  const fullProgram = {
+    name: `Meet Prep - ${freq} day / ${focus.toUpperCase()}`,
+    logic: "STRENGTH_RPE",
+    useFatigueBudget: true,
+    sessions: sessions
+  };
+  return fullProgram;
+}
+
 // ========== GENERATE ALL ==========
 const freqs = [3,4,5];
 const strengthFoci = ["balanced","squat","bench","deadlift"];
 const hypertrophySplits = ["upper_lower","ppl","plane"];
+const meetPrepFoci = ["peaking","taper"];
 
 for (const freq of freqs) {
   for (const focus of strengthFoci) {
     const prog = generatePowerliftingProgram(freq, focus);
-    // CHANGE: use the exact ID pattern expected by ProgramSelector
     const fileName = `str_${freq}_${focus}.json`;
     fs.writeFileSync(path.join(OUTPUT_DIR, fileName), JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
 }
+
 for (const freq of freqs) {
   for (const split of hypertrophySplits) {
     const prog = generateHypertrophyProgram(freq, split);
-    // CHANGE: use "hyp_" prefix to match the IDs in ProgramSelector
     const fileName = `hyp_${freq}_${split}.json`;
     fs.writeFileSync(path.join(OUTPUT_DIR, fileName), JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
 }
-console.log("✅ All 21 program files written to frontend/public/programs/");
+
+for (const freq of freqs) {
+  for (const focus of meetPrepFoci) {
+    const prog = generateMeetPrepProgram(freq, focus);
+    const fileName = `mp_${freq}_${focus}.json`;
+    fs.writeFileSync(path.join(OUTPUT_DIR, fileName), JSON.stringify(prog, null, 2));
+    console.log(`Generated ${fileName}`);
+  }
+}
+
+console.log("✅ All program files written to frontend/public/programs/");
