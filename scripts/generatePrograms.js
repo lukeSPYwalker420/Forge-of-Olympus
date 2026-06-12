@@ -102,15 +102,24 @@ function generateHypertrophyProgram(freq, split) {
     sessions = [planeSessions.upperHorizontal, planeSessions.lowerQuad, planeSessions.upperVertical, planeSessions.lowerPosterior];
     sessions[0].focus = "Upper (Horizontal)"; sessions[1].focus = "Lower (Quad)"; sessions[2].focus = "Upper (Vertical)"; sessions[3].focus = "Lower (Posterior)";
   } else if (split === "ppl") {
+    // Safely get pools, fallback to empty array if missing
+    const upperHorPool = planeSessions.upperHorizontal?.exercisePool ?? [];
+    const upperVerPool = planeSessions.upperVertical?.exercisePool ?? [];
+    const lowerQuadPool = planeSessions.lowerQuad?.exercisePool ?? [];
+    const lowerPostPool = planeSessions.lowerPosterior?.exercisePool ?? [];
+    
     sessions = [
-      { focus: "Push (Chest/Shoulders/Triceps)", exercisePool: [...planeSessions.upperHorizontal.exercisePool, ...planeSessions.upperVertical.exercisePool] },
-      { focus: "Pull (Back/Biceps)", exercisePool: [...planeSessions.upperHorizontal.exercisePool, ...planeSessions.upperVertical.exercisePool] },
-      { focus: "Legs (Quads/Hams/Glutes)", exercisePool: [...planeSessions.lowerQuad.exercisePool, ...planeSessions.lowerPosterior.exercisePool] },
-      { focus: "Full Body / Arms", exercisePool: [...planeSessions.upperHorizontal.exercisePool, ...planeSessions.lowerQuad.exercisePool] }
+      { focus: "Push (Chest/Shoulders/Triceps)", exercisePool: [...upperHorPool, ...upperVerPool] },
+      { focus: "Pull (Back/Biceps)", exercisePool: [...upperHorPool, ...upperVerPool] },
+      { focus: "Legs (Quads/Hams/Glutes)", exercisePool: [...lowerQuadPool, ...lowerPostPool] },
+      { focus: "Full Body / Arms", exercisePool: [...upperHorPool, ...lowerQuadPool] }
     ];
-  }
+}
   if (freq === 3) sessions = sessions.slice(0,3);
-  else if (freq === 5) sessions.splice(2, 0, { focus: armsDay.focus, exercisePool: armsDay.exercisePool });
+else if (freq === 5) {
+    const armsPool = armsDay?.exercisePool ?? [];
+    sessions.splice(2, 0, { focus: armsDay?.focus || "Arms & Shoulders", exercisePool: armsPool });
+}
 
   const factor = volumeFactors[freq];
   sessions.forEach(s => {
