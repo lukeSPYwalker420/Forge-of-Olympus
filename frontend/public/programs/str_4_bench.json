@@ -1,0 +1,4987 @@
+{
+  "name": "Apex Strength – 4d / bench focus",
+  "logic": "STRENGTH_RPE",
+  "useFatigueBudget": true,
+  "sessions": [
+    {
+      "focus": "Squat Primary",
+      "baseFatigueCap": 24,
+      "exercises": [
+        {
+          "liftName": "Squat (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "4",
+          "rpeTarget": 7,
+          "baseFUCost": 4,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 4,
+          "reps": "4",
+          "rpeTarget": 6,
+          "baseFUCost": 4,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 1,
+      "day": 1
+    },
+    {
+      "focus": "Bench Primary",
+      "baseFatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Bench Press (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "4",
+          "rpeTarget": 7,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench Press (Back Off)",
+          "role": "back-off",
+          "sets": 4,
+          "reps": "4",
+          "rpeTarget": 6,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 1,
+      "day": 2
+    },
+    {
+      "focus": "Deadlift Primary",
+      "baseFatigueCap": 26,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "3",
+          "rpeTarget": 7,
+          "baseFUCost": 5,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 3,
+          "reps": "3",
+          "rpeTarget": 6,
+          "baseFUCost": 5,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 1,
+      "day": 3
+    },
+    {
+      "focus": "Bench Volume",
+      "baseFatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Bench Press (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "8",
+          "rpeTarget": 6,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench Press (Back Off)",
+          "role": "back-off",
+          "sets": 4,
+          "reps": "8",
+          "rpeTarget": 5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 2,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 1,
+      "day": 4
+    },
+    {
+      "focus": "Squat Primary",
+      "baseFatigueCap": 24,
+      "exercises": [
+        {
+          "liftName": "Squat (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "4",
+          "rpeTarget": 7.5,
+          "baseFUCost": 4,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 4,
+          "reps": "4",
+          "rpeTarget": 6.5,
+          "baseFUCost": 4,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 2,
+      "day": 1
+    },
+    {
+      "focus": "Bench Primary",
+      "baseFatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Bench Press (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "4",
+          "rpeTarget": 7.5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench Press (Back Off)",
+          "role": "back-off",
+          "sets": 4,
+          "reps": "4",
+          "rpeTarget": 6.5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 2,
+      "day": 2
+    },
+    {
+      "focus": "Deadlift Primary",
+      "baseFatigueCap": 26,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "3",
+          "rpeTarget": 7.5,
+          "baseFUCost": 5,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 3,
+          "reps": "3",
+          "rpeTarget": 6.5,
+          "baseFUCost": 5,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 2,
+      "day": 3
+    },
+    {
+      "focus": "Bench Volume",
+      "baseFatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Bench Press (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "8",
+          "rpeTarget": 6.5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench Press (Back Off)",
+          "role": "back-off",
+          "sets": 4,
+          "reps": "8",
+          "rpeTarget": 5.5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 2,
+      "day": 4
+    },
+    {
+      "focus": "Squat Primary",
+      "baseFatigueCap": 24,
+      "exercises": [
+        {
+          "liftName": "Squat (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "4",
+          "rpeTarget": 7.5,
+          "baseFUCost": 4,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 4,
+          "reps": "4",
+          "rpeTarget": 6.5,
+          "baseFUCost": 4,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 3,
+      "day": 1
+    },
+    {
+      "focus": "Bench Primary",
+      "baseFatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Bench Press (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "4",
+          "rpeTarget": 7.5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench Press (Back Off)",
+          "role": "back-off",
+          "sets": 4,
+          "reps": "4",
+          "rpeTarget": 6.5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 3,
+      "day": 2
+    },
+    {
+      "focus": "Deadlift Primary",
+      "baseFatigueCap": 26,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "3",
+          "rpeTarget": 7.5,
+          "baseFUCost": 5,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 3,
+          "reps": "3",
+          "rpeTarget": 6.5,
+          "baseFUCost": 5,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 3,
+      "day": 3
+    },
+    {
+      "focus": "Bench Volume",
+      "baseFatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Bench Press (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "8",
+          "rpeTarget": 6.5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench Press (Back Off)",
+          "role": "back-off",
+          "sets": 4,
+          "reps": "8",
+          "rpeTarget": 5.5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 3,
+      "day": 4
+    },
+    {
+      "focus": "Squat Primary",
+      "baseFatigueCap": 24,
+      "exercises": [
+        {
+          "liftName": "Squat (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "4",
+          "rpeTarget": 7.5,
+          "baseFUCost": 4,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 4,
+          "reps": "4",
+          "rpeTarget": 6.5,
+          "baseFUCost": 4,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 4,
+      "day": 1
+    },
+    {
+      "focus": "Bench Primary",
+      "baseFatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Bench Press (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "4",
+          "rpeTarget": 7.5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench Press (Back Off)",
+          "role": "back-off",
+          "sets": 4,
+          "reps": "4",
+          "rpeTarget": 6.5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 4,
+      "day": 2
+    },
+    {
+      "focus": "Deadlift Primary",
+      "baseFatigueCap": 26,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "3",
+          "rpeTarget": 7.5,
+          "baseFUCost": 5,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 3,
+          "reps": "3",
+          "rpeTarget": 6.5,
+          "baseFUCost": 5,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 4,
+      "day": 3
+    },
+    {
+      "focus": "Bench Volume",
+      "baseFatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Bench Press (Top Set)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "8",
+          "rpeTarget": 6.5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench Press (Back Off)",
+          "role": "back-off",
+          "sets": 4,
+          "reps": "8",
+          "rpeTarget": 5.5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 4,
+      "day": 4
+    },
+    {
+      "focus": "Squat Primary",
+      "baseFatigueCap": 24,
+      "exercises": [
+        {
+          "liftName": "Squat (Top Set)",
+          "role": "top-set",
+          "sets": 2,
+          "reps": "4",
+          "rpeTarget": 5,
+          "baseFUCost": 4,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 3,
+          "reps": "4",
+          "rpeTarget": 5,
+          "baseFUCost": 4,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 5,
+      "day": 1
+    },
+    {
+      "focus": "Bench Primary",
+      "baseFatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Bench Press (Top Set)",
+          "role": "top-set",
+          "sets": 2,
+          "reps": "4",
+          "rpeTarget": 5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench Press (Back Off)",
+          "role": "back-off",
+          "sets": 3,
+          "reps": "4",
+          "rpeTarget": 5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 5,
+      "day": 2
+    },
+    {
+      "focus": "Deadlift Primary",
+      "baseFatigueCap": 26,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Top Set)",
+          "role": "top-set",
+          "sets": 2,
+          "reps": "3",
+          "rpeTarget": 5,
+          "baseFUCost": 5,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 2,
+          "reps": "3",
+          "rpeTarget": 5,
+          "baseFUCost": 5,
+          "priority": 1,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 5,
+      "day": 3
+    },
+    {
+      "focus": "Bench Volume",
+      "baseFatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Bench Press (Top Set)",
+          "role": "top-set",
+          "sets": 2,
+          "reps": "8",
+          "rpeTarget": 5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench Press (Back Off)",
+          "role": "back-off",
+          "sets": 3,
+          "reps": "8",
+          "rpeTarget": 5,
+          "baseFUCost": 2.5,
+          "priority": 1,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "45° Hyperextension",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "10-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Extensions",
+          "baseFUCost": 1,
+          "reps": "12-15",
+          "rirTarget": 4,
+          "stressTags": [
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Incline Dumbbell Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Machine Press (plate loaded)",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "pull"
+          ]
+        },
+        {
+          "liftName": "Romanian Deadlift",
+          "baseFUCost": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "stressTags": [
+            "hinge"
+          ]
+        }
+      ],
+      "week": 5,
+      "day": 4
+    }
+  ]
+}

@@ -1,0 +1,813 @@
+{
+  "name": "Meet Prep - 3 day / TAPER",
+  "logic": "STRENGTH_RPE",
+  "useFatigueBudget": true,
+  "sessions": [
+    {
+      "week": 1,
+      "day": 1,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Squat (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 1,
+      "day": 3,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 1,
+      "day": 5,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "day": 1,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 23,
+      "exercises": [
+        {
+          "liftName": "Squat (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "day": 3,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 23,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Snatch Grip Deadlift",
+          "baseFUCost": 4,
+          "role": "variation",
+          "sets": 1,
+          "reps": "4-5",
+          "rpeTarget": 7.5
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "day": 5,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 23,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "day": 1,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 23,
+      "exercises": [
+        {
+          "liftName": "Squat (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "SSB Squat",
+          "baseFUCost": 3,
+          "role": "variation",
+          "sets": 2,
+          "reps": "5-6",
+          "rpeTarget": 8.5
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "day": 3,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 23,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "day": 5,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 23,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 1,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 18,
+      "exercises": [
+        {
+          "liftName": "Squat (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 3,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 18,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 5,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 18,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 1,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 20,
+      "exercises": [
+        {
+          "liftName": "Squat (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 3,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 20,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Rack Pull",
+          "baseFUCost": 3.5,
+          "role": "variation",
+          "sets": 1,
+          "reps": "4-5",
+          "rpeTarget": 8.5
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 5,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 20,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "day": 1,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 17,
+      "exercises": [
+        {
+          "liftName": "Squat (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "High Bar Squat",
+          "baseFUCost": 3,
+          "role": "variation",
+          "sets": 1,
+          "reps": "5-6",
+          "rpeTarget": 9.5
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "day": 3,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 17,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "day": 5,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 17,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    }
+  ]
+}

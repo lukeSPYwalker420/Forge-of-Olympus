@@ -1,0 +1,1481 @@
+{
+  "name": "Apex Hypertrophy – 5d / UPPER_LOWER split",
+  "logic": "HYPERTROPHY_VOLUME",
+  "sessions": [
+    {
+      "focus": "Upper (Horizontal)",
+      "exercises": [
+        {
+          "liftName": "Barbell Bench Press (full ROM)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Lateral Raises (leaning stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Chest Supported Row (stretch at bottom)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Incline Dumbbell Press (deep stretch)",
+          "sets": 2,
+          "reps": "10-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Bicep Curls (preacher or incline stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Seated Cable Row (full stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Tricep Pushdowns (overhead variant for stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 1,
+      "day": 1
+    },
+    {
+      "focus": "Lower (Quad)",
+      "exercises": [
+        {
+          "liftName": "Back Squat (deep, stretch)",
+          "sets": 3,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Standing Calf Raises (full stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Press (deep stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Sissy Squat (or hack squat)",
+          "sets": 2,
+          "reps": "8-10",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Front Squat (upright, quad stretch)",
+          "sets": 3,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Extension (stretch at bottom)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Walking Lunges (long stride, stretch)",
+          "sets": 3,
+          "reps": "12 per leg",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 1,
+      "day": 2
+    },
+    {
+      "focus": "Arms & Shoulders (Stretch Focus)",
+      "exercises": [
+        {
+          "liftName": "Tricep Overhead Extension (stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Concentration Curl (stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bayesian Cable Curl (stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Lateral Raises (leaning stretch)",
+          "sets": 4,
+          "reps": "15-20",
+          "rirTarget": 3
+        },
+        {
+          "liftName": "Skull Crushers (stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Face Pulls (rear delt stretch)",
+          "sets": 3,
+          "reps": "15",
+          "rirTarget": 3
+        }
+      ],
+      "week": 1,
+      "day": 3
+    },
+    {
+      "focus": "Upper (Vertical)",
+      "exercises": [
+        {
+          "liftName": "Overhead Press (full ROM)",
+          "sets": 4,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Tricep Overhead Extension (stretch at bottom)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Pull-Ups (weighted, full stretch)",
+          "sets": 4,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Incline Chest Press Machine (deep stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Rear Delt Fly (bent over, stretch)",
+          "sets": 2,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Single Arm Dumbbell Row (stretch at bottom)",
+          "sets": 2,
+          "reps": "10 per arm",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Straight Arm Pulldown (lat stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 1,
+      "day": 4
+    },
+    {
+      "focus": "Lower (Posterior)",
+      "exercises": [
+        {
+          "liftName": "Romanian Deadlift (deep stretch)",
+          "sets": 4,
+          "reps": "8-10",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Seated Calf Raises (stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Hip Thrust (hold stretch at top)",
+          "sets": 4,
+          "reps": "10-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Curl (lying, stretch bias)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Good Morning (stretch hamstrings)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Cable Kickback (glute stretch)",
+          "sets": 3,
+          "reps": "10-12 per leg",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Nordic Curl (eccentric stretch)",
+          "sets": 2,
+          "reps": "6-10",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 1,
+      "day": 5
+    },
+    {
+      "focus": "Upper (Horizontal)",
+      "exercises": [
+        {
+          "liftName": "Barbell Bench Press (full ROM)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Lateral Raises (leaning stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Chest Supported Row (stretch at bottom)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Incline Dumbbell Press (deep stretch)",
+          "sets": 2,
+          "reps": "10-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Bicep Curls (preacher or incline stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Seated Cable Row (full stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Tricep Pushdowns (overhead variant for stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 2,
+      "day": 1
+    },
+    {
+      "focus": "Lower (Quad)",
+      "exercises": [
+        {
+          "liftName": "Back Squat (deep, stretch)",
+          "sets": 3,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Standing Calf Raises (full stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Press (deep stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Sissy Squat (or hack squat)",
+          "sets": 2,
+          "reps": "8-10",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Front Squat (upright, quad stretch)",
+          "sets": 3,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Extension (stretch at bottom)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Walking Lunges (long stride, stretch)",
+          "sets": 3,
+          "reps": "12 per leg",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 2,
+      "day": 2
+    },
+    {
+      "focus": "Arms & Shoulders (Stretch Focus)",
+      "exercises": [
+        {
+          "liftName": "Tricep Overhead Extension (stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Concentration Curl (stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bayesian Cable Curl (stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Lateral Raises (leaning stretch)",
+          "sets": 4,
+          "reps": "15-20",
+          "rirTarget": 3
+        },
+        {
+          "liftName": "Skull Crushers (stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Face Pulls (rear delt stretch)",
+          "sets": 3,
+          "reps": "15",
+          "rirTarget": 3
+        }
+      ],
+      "week": 2,
+      "day": 3
+    },
+    {
+      "focus": "Upper (Vertical)",
+      "exercises": [
+        {
+          "liftName": "Overhead Press (full ROM)",
+          "sets": 4,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Tricep Overhead Extension (stretch at bottom)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Pull-Ups (weighted, full stretch)",
+          "sets": 4,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Incline Chest Press Machine (deep stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Rear Delt Fly (bent over, stretch)",
+          "sets": 2,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Single Arm Dumbbell Row (stretch at bottom)",
+          "sets": 2,
+          "reps": "10 per arm",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Straight Arm Pulldown (lat stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 2,
+      "day": 4
+    },
+    {
+      "focus": "Lower (Posterior)",
+      "exercises": [
+        {
+          "liftName": "Romanian Deadlift (deep stretch)",
+          "sets": 4,
+          "reps": "8-10",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Seated Calf Raises (stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 3,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Hip Thrust (hold stretch at top)",
+          "sets": 4,
+          "reps": "10-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Curl (lying, stretch bias)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Good Morning (stretch hamstrings)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Cable Kickback (glute stretch)",
+          "sets": 3,
+          "reps": "10-12 per leg",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Nordic Curl (eccentric stretch)",
+          "sets": 2,
+          "reps": "6-10",
+          "rirTarget": 2,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 2,
+      "day": 5
+    },
+    {
+      "focus": "Upper (Horizontal)",
+      "exercises": [
+        {
+          "liftName": "Barbell Bench Press (full ROM)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Lateral Raises (leaning stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Chest Supported Row (stretch at bottom)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Incline Dumbbell Press (deep stretch)",
+          "sets": 2,
+          "reps": "10-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Bicep Curls (preacher or incline stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Seated Cable Row (full stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Tricep Pushdowns (overhead variant for stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 3,
+      "day": 1
+    },
+    {
+      "focus": "Lower (Quad)",
+      "exercises": [
+        {
+          "liftName": "Back Squat (deep, stretch)",
+          "sets": 3,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Standing Calf Raises (full stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Press (deep stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Sissy Squat (or hack squat)",
+          "sets": 2,
+          "reps": "8-10",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Front Squat (upright, quad stretch)",
+          "sets": 3,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Extension (stretch at bottom)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Walking Lunges (long stride, stretch)",
+          "sets": 3,
+          "reps": "12 per leg",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 3,
+      "day": 2
+    },
+    {
+      "focus": "Arms & Shoulders (Stretch Focus)",
+      "exercises": [
+        {
+          "liftName": "Tricep Overhead Extension (stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 1.5
+        },
+        {
+          "liftName": "Concentration Curl (stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 1.5
+        },
+        {
+          "liftName": "Bayesian Cable Curl (stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 1.5
+        },
+        {
+          "liftName": "Lateral Raises (leaning stretch)",
+          "sets": 4,
+          "reps": "15-20",
+          "rirTarget": 2.5
+        },
+        {
+          "liftName": "Skull Crushers (stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 1.5
+        },
+        {
+          "liftName": "Face Pulls (rear delt stretch)",
+          "sets": 3,
+          "reps": "15",
+          "rirTarget": 2.5
+        }
+      ],
+      "week": 3,
+      "day": 3
+    },
+    {
+      "focus": "Upper (Vertical)",
+      "exercises": [
+        {
+          "liftName": "Overhead Press (full ROM)",
+          "sets": 4,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Tricep Overhead Extension (stretch at bottom)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Pull-Ups (weighted, full stretch)",
+          "sets": 4,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Incline Chest Press Machine (deep stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Rear Delt Fly (bent over, stretch)",
+          "sets": 2,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Single Arm Dumbbell Row (stretch at bottom)",
+          "sets": 2,
+          "reps": "10 per arm",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Straight Arm Pulldown (lat stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 3,
+      "day": 4
+    },
+    {
+      "focus": "Lower (Posterior)",
+      "exercises": [
+        {
+          "liftName": "Romanian Deadlift (deep stretch)",
+          "sets": 4,
+          "reps": "8-10",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Seated Calf Raises (stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Hip Thrust (hold stretch at top)",
+          "sets": 4,
+          "reps": "10-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Curl (lying, stretch bias)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Good Morning (stretch hamstrings)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Cable Kickback (glute stretch)",
+          "sets": 3,
+          "reps": "10-12 per leg",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Nordic Curl (eccentric stretch)",
+          "sets": 2,
+          "reps": "6-10",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 3,
+      "day": 5
+    },
+    {
+      "focus": "Upper (Horizontal)",
+      "exercises": [
+        {
+          "liftName": "Barbell Bench Press (full ROM)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Lateral Raises (leaning stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Chest Supported Row (stretch at bottom)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Incline Dumbbell Press (deep stretch)",
+          "sets": 2,
+          "reps": "10-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Bicep Curls (preacher or incline stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Seated Cable Row (full stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Tricep Pushdowns (overhead variant for stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 4,
+      "day": 1
+    },
+    {
+      "focus": "Lower (Quad)",
+      "exercises": [
+        {
+          "liftName": "Back Squat (deep, stretch)",
+          "sets": 3,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Standing Calf Raises (full stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Press (deep stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Sissy Squat (or hack squat)",
+          "sets": 2,
+          "reps": "8-10",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Front Squat (upright, quad stretch)",
+          "sets": 3,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Extension (stretch at bottom)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Walking Lunges (long stride, stretch)",
+          "sets": 3,
+          "reps": "12 per leg",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 4,
+      "day": 2
+    },
+    {
+      "focus": "Arms & Shoulders (Stretch Focus)",
+      "exercises": [
+        {
+          "liftName": "Tricep Overhead Extension (stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 1.5
+        },
+        {
+          "liftName": "Concentration Curl (stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 1.5
+        },
+        {
+          "liftName": "Bayesian Cable Curl (stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 1.5
+        },
+        {
+          "liftName": "Lateral Raises (leaning stretch)",
+          "sets": 4,
+          "reps": "15-20",
+          "rirTarget": 2.5
+        },
+        {
+          "liftName": "Skull Crushers (stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 1.5
+        },
+        {
+          "liftName": "Face Pulls (rear delt stretch)",
+          "sets": 3,
+          "reps": "15",
+          "rirTarget": 2.5
+        }
+      ],
+      "week": 4,
+      "day": 3
+    },
+    {
+      "focus": "Upper (Vertical)",
+      "exercises": [
+        {
+          "liftName": "Overhead Press (full ROM)",
+          "sets": 4,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Tricep Overhead Extension (stretch at bottom)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Pull-Ups (weighted, full stretch)",
+          "sets": 4,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Incline Chest Press Machine (deep stretch)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Rear Delt Fly (bent over, stretch)",
+          "sets": 2,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Single Arm Dumbbell Row (stretch at bottom)",
+          "sets": 2,
+          "reps": "10 per arm",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Straight Arm Pulldown (lat stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 4,
+      "day": 4
+    },
+    {
+      "focus": "Lower (Posterior)",
+      "exercises": [
+        {
+          "liftName": "Romanian Deadlift (deep stretch)",
+          "sets": 4,
+          "reps": "8-10",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Seated Calf Raises (stretch)",
+          "sets": 4,
+          "reps": "12-15",
+          "rirTarget": 2.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Hip Thrust (hold stretch at top)",
+          "sets": 4,
+          "reps": "10-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Curl (lying, stretch bias)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Good Morning (stretch hamstrings)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Cable Kickback (glute stretch)",
+          "sets": 3,
+          "reps": "10-12 per leg",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Nordic Curl (eccentric stretch)",
+          "sets": 2,
+          "reps": "6-10",
+          "rirTarget": 1.5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 4,
+      "day": 5
+    },
+    {
+      "focus": "Upper (Horizontal)",
+      "exercises": [
+        {
+          "liftName": "Barbell Bench Press (full ROM)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Lateral Raises (leaning stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Chest Supported Row (stretch at bottom)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Incline Dumbbell Press (deep stretch)",
+          "sets": 2,
+          "reps": "10-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Bicep Curls (preacher or incline stretch)",
+          "sets": 2,
+          "reps": "12-15",
+          "rirTarget": 5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Seated Cable Row (full stretch)",
+          "sets": 2,
+          "reps": "10-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Tricep Pushdowns (overhead variant for stretch)",
+          "sets": 2,
+          "reps": "12-15",
+          "rirTarget": 5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 5,
+      "day": 1
+    },
+    {
+      "focus": "Lower (Quad)",
+      "exercises": [
+        {
+          "liftName": "Back Squat (deep, stretch)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Standing Calf Raises (full stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 5,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Press (deep stretch)",
+          "sets": 2,
+          "reps": "10-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Sissy Squat (or hack squat)",
+          "sets": 2,
+          "reps": "8-10",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Front Squat (upright, quad stretch)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Extension (stretch at bottom)",
+          "sets": 2,
+          "reps": "12-15",
+          "rirTarget": 5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Walking Lunges (long stride, stretch)",
+          "sets": 2,
+          "reps": "12 per leg",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 5,
+      "day": 2
+    },
+    {
+      "focus": "Arms & Shoulders (Stretch Focus)",
+      "exercises": [
+        {
+          "liftName": "Tricep Overhead Extension (stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 4
+        },
+        {
+          "liftName": "Concentration Curl (stretch)",
+          "sets": 2,
+          "reps": "12-15",
+          "rirTarget": 4
+        },
+        {
+          "liftName": "Bayesian Cable Curl (stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 4
+        },
+        {
+          "liftName": "Lateral Raises (leaning stretch)",
+          "sets": 3,
+          "reps": "15-20",
+          "rirTarget": 5
+        },
+        {
+          "liftName": "Skull Crushers (stretch)",
+          "sets": 2,
+          "reps": "10-12",
+          "rirTarget": 4
+        },
+        {
+          "liftName": "Face Pulls (rear delt stretch)",
+          "sets": 2,
+          "reps": "15",
+          "rirTarget": 5
+        }
+      ],
+      "week": 5,
+      "day": 3
+    },
+    {
+      "focus": "Upper (Vertical)",
+      "exercises": [
+        {
+          "liftName": "Overhead Press (full ROM)",
+          "sets": 3,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Tricep Overhead Extension (stretch at bottom)",
+          "sets": 2,
+          "reps": "12-15",
+          "rirTarget": 5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Pull-Ups (weighted, full stretch)",
+          "sets": 3,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Incline Chest Press Machine (deep stretch)",
+          "sets": 2,
+          "reps": "10-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Rear Delt Fly (bent over, stretch)",
+          "sets": 2,
+          "reps": "12-15",
+          "rirTarget": 5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Single Arm Dumbbell Row (stretch at bottom)",
+          "sets": 2,
+          "reps": "10 per arm",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Straight Arm Pulldown (lat stretch)",
+          "sets": 2,
+          "reps": "12-15",
+          "rirTarget": 5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 5,
+      "day": 4
+    },
+    {
+      "focus": "Lower (Posterior)",
+      "exercises": [
+        {
+          "liftName": "Romanian Deadlift (deep stretch)",
+          "sets": 3,
+          "reps": "8-10",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Seated Calf Raises (stretch)",
+          "sets": 3,
+          "reps": "12-15",
+          "rirTarget": 5,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Hip Thrust (hold stretch at top)",
+          "sets": 3,
+          "reps": "10-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "medium"
+        },
+        {
+          "liftName": "Leg Curl (lying, stretch bias)",
+          "sets": 2,
+          "reps": "10-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Good Morning (stretch hamstrings)",
+          "sets": 2,
+          "reps": "8-12",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Cable Kickback (glute stretch)",
+          "sets": 2,
+          "reps": "10-12 per leg",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        },
+        {
+          "liftName": "Nordic Curl (eccentric stretch)",
+          "sets": 2,
+          "reps": "6-10",
+          "rirTarget": 4,
+          "progressionType": "volume",
+          "stretchPriority": "high"
+        }
+      ],
+      "week": 5,
+      "day": 5
+    }
+  ]
+}

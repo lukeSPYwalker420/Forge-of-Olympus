@@ -1,0 +1,1192 @@
+{
+  "name": "Meet Prep - 4 day / TAPER",
+  "logic": "STRENGTH_RPE",
+  "useFatigueBudget": true,
+  "sessions": [
+    {
+      "week": 1,
+      "day": 1,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 26,
+      "exercises": [
+        {
+          "liftName": "Squat (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 1,
+      "day": 2,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 26,
+      "exercises": [
+        {
+          "liftName": "Bench (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Close Grip Bench",
+          "baseFUCost": 2.5,
+          "role": "variation",
+          "sets": 3,
+          "reps": "5-6",
+          "rpeTarget": 6.5
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 1,
+      "day": 4,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 26,
+      "exercises": [
+        {
+          "liftName": "Bench (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 1,
+      "day": 5,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 26,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "day": 1,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 28,
+      "exercises": [
+        {
+          "liftName": "Squat (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "day": 2,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 28,
+      "exercises": [
+        {
+          "liftName": "Bench (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "day": 4,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 28,
+      "exercises": [
+        {
+          "liftName": "Bench (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "day": 5,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 28,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "day": 1,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 28,
+      "exercises": [
+        {
+          "liftName": "Squat (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "SSB Squat",
+          "baseFUCost": 3,
+          "role": "variation",
+          "sets": 2,
+          "reps": "5-6",
+          "rpeTarget": 8.5
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "day": 2,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 28,
+      "exercises": [
+        {
+          "liftName": "Bench (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "day": 4,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 28,
+      "exercises": [
+        {
+          "liftName": "Bench (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "day": 5,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 28,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 1,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Squat (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 2,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Bench (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Spoto Press",
+          "baseFUCost": 2.5,
+          "mechanicalDisadvantage": true,
+          "role": "variation",
+          "sets": 2,
+          "reps": "5-6",
+          "rpeTarget": 6.5
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 4,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Bench (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "day": 5,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 22,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 1,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 24,
+      "exercises": [
+        {
+          "liftName": "Squat (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 2,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 24,
+      "exercises": [
+        {
+          "liftName": "Bench (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 4,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 24,
+      "exercises": [
+        {
+          "liftName": "Bench (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "day": 5,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 24,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Bulgarian Split Squat",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "day": 1,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 20,
+      "exercises": [
+        {
+          "liftName": "Squat (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "Squat (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 4,
+          "stressTags": [
+            "axial",
+            "knee-dominant"
+          ]
+        },
+        {
+          "liftName": "High Bar Squat",
+          "baseFUCost": 3,
+          "role": "variation",
+          "sets": 1,
+          "reps": "5-6",
+          "rpeTarget": 9.5
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "day": 2,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 20,
+      "exercises": [
+        {
+          "liftName": "Bench (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "day": 4,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 20,
+      "exercises": [
+        {
+          "liftName": "Bench (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-3",
+          "rpeTarget": 9,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Bench (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "3-5",
+          "rpeTarget": 9.5,
+          "baseFUCost": 2.5,
+          "stressTags": [
+            "push"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "day": 5,
+      "focus": "Meet Prep - Taper",
+      "fatigueCap": 20,
+      "exercises": [
+        {
+          "liftName": "Deadlift (Comp)",
+          "role": "top-set",
+          "sets": 1,
+          "reps": "1-2",
+          "rpeTarget": 9,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Deadlift (Back Off)",
+          "role": "back-off",
+          "sets": 1,
+          "reps": "2-3",
+          "rpeTarget": 9.5,
+          "baseFUCost": 5,
+          "stressTags": [
+            "axial",
+            "hinge"
+          ]
+        },
+        {
+          "liftName": "Leg Press",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        },
+        {
+          "liftName": "Pull-Ups",
+          "baseFUCost": 1.5,
+          "reps": "8-12",
+          "rirTarget": 2
+        }
+      ]
+    }
+  ]
+}
