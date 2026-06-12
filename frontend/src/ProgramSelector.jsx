@@ -244,10 +244,80 @@ const PROGRAM_DATABASE = [
     duration: "6-Week Hypertrophy Base Block",
     fatigueCap: "Volume Allocation: 80 FU / Week",
     features: ["Horizontal/vertical rotation 5x/week", "Maximum plane‑specific volume", "For experienced lifters only"]
+  },
+
+  // ========== MEET PREP (4-day) ==========
+  {
+    id: "mp_4_peaking",
+    goal: "meetprep",
+    frequency: 4,
+    focus: "peaking",
+    displayTitle: "Meet Prep: Peaking Block (4‑Day)",
+    programName: "High-Frequency Specificity Wave",
+    duration: "8-Week Peaking Cycle",
+    fatigueCap: "Axial Load Budget: 50 FU / Week",
+    features: ["Peaking wave loading", "Specificity to competition lifts", "Taper to openers"]
+  },
+  {
+    id: "mp_4_taper",
+    goal: "meetprep",
+    frequency: 4,
+    focus: "taper",
+    displayTitle: "Meet Prep: Taper & Deload (4‑Day)",
+    programName: "6-Week Wave Powerlifting",
+    duration: "4-Week Taper + 2-Week Peak",
+    fatigueCap: "Axial Load Budget: 45 FU / Week",
+    features: ["Fatigue managed", "Openers rehearsal", "Low volume, high intensity"]
+  },
+  // ========== MEET PREP (3-day) ==========
+  {
+    id: "mp_3_peaking",
+    goal: "meetprep",
+    frequency: 3,
+    focus: "peaking",
+    displayTitle: "Meet Prep: Peaking Block (3‑Day)",
+    programName: "High-Frequency Specificity Wave",
+    duration: "8-Week Peaking Cycle",
+    fatigueCap: "Axial Load Budget: 40 FU / Week",
+    features: ["3‑day wave", "Lower fatigue accumulation", "Still peaks effectively"]
+  },
+  {
+    id: "mp_3_taper",
+    goal: "meetprep",
+    frequency: 3,
+    focus: "taper",
+    displayTitle: "Meet Prep: Taper & Deload (3‑Day)",
+    programName: "6-Week Wave Powerlifting",
+    duration: "4-Week Taper + 2-Week Peak",
+    fatigueCap: "Axial Load Budget: 38 FU / Week",
+    features: ["3‑day schedule", "Great for advanced lifters", "Openers rehearsal"]
+  },
+  // ========== MEET PREP (5-day) ==========
+  {
+    id: "mp_5_peaking",
+    goal: "meetprep",
+    frequency: 5,
+    focus: "peaking",
+    displayTitle: "Meet Prep: Peaking Block (5‑Day)",
+    programName: "High-Frequency Specificity Wave",
+    duration: "8-Week Peaking Cycle",
+    fatigueCap: "Axial Load Budget: 60 FU / Week",
+    features: ["High frequency peaking", "Maximum specificity", "Advanced recovery required"]
+  },
+  {
+    id: "mp_5_taper",
+    goal: "meetprep",
+    frequency: 5,
+    focus: "taper",
+    displayTitle: "Meet Prep: Taper & Deload (5‑Day)",
+    programName: "6-Week Wave Powerlifting",
+    duration: "4-Week Taper + 2-Week Peak",
+    fatigueCap: "Axial Load Budget: 55 FU / Week",
+    features: ["5‑day high frequency", "Intensity wave", "Ideal for experienced lifters"]
   }
 ];
 
-export default function ProgramSelector({ onSubscribe }) {
+export default function ProgramSelector({ onSubscribe, isAdmin = false }) {
   const [goal, setGoal] = useState("strength");
   const [frequency, setFrequency] = useState(4);
   const [focus, setFocus] = useState("balanced");
@@ -257,8 +327,11 @@ export default function ProgramSelector({ onSubscribe }) {
     setGoal(newGoal);
     if (newGoal === "strength") {
       setFocus("balanced");
-    } else {
+    } else if (newGoal === "hypertrophy") {
       setFocus("upper_lower");
+    } else {
+      // meetprep defaults to peaking
+      setFocus("peaking");
     }
   };
 
@@ -273,30 +346,35 @@ export default function ProgramSelector({ onSubscribe }) {
   );
 
   const handleSubscribeClick = async () => {
-  if (matchedProgram && onSubscribe) {
-    // Construct the JSON file name from the programId
-    const jsonFile = `${matchedProgram.id}.json`;
-    try {
-      const response = await fetch(`/programs/${jsonFile}`);
-      const programData = await response.json();
-      onSubscribe(matchedProgram.programName, programData);
-    } catch (error) {
-      console.error("Failed to load program:", error);
+    if (matchedProgram && onSubscribe) {
+      const jsonFile = `${matchedProgram.id}.json`;
+      try {
+        const response = await fetch(`/programs/${jsonFile}`);
+        const programData = await response.json();
+        // If admin, bypass Stripe and directly load the program
+        if (isAdmin) {
+          onSubscribe(matchedProgram.programName, programData, { adminBypass: true });
+        } else {
+          // Normal user: pass data to parent, which should trigger Stripe checkout
+          onSubscribe(matchedProgram.programName, programData);
+        }
+      } catch (error) {
+        console.error("Failed to load program:", error);
+      }
     }
-  }
-};
+  };
 
   return (
     <div className="program-selector-container" style={{ padding: "40px 20px", maxWidth: "600px", margin: "0 auto", background: "#0d0d13", color: "#fff", borderRadius: "16px" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "8px", fontSize: "24px", fontWeight: "bold" }}>Configure Your System</h2>
+      <h2 style={{ textAlign: "center", marginBottom: "8px", fontSize: "24px", fontWeight: "bold" }}>Choose Your Training Path</h2>
       <p style={{ textAlign: "center", color: "#8a8a93", marginBottom: "32px", fontSize: "14px" }}>
-        Select your performance metrics to initialize your training block.
+        Select your primary goal, how often you train, and your focus area. We'll build a custom plan that adapts to you.
       </p>
 
       {/* STEP 1: GOAL */}
       <div className="selector-group" style={{ marginBottom: "24px" }}>
-        <label style={{ display: "block", fontSize: "12px", color: "var(--accent, #06b6d4)", fontWeight: "bold", marginBottom: "8px", textTransform: "uppercase" }}>1. Primary Modality</label>
-        <div style={{ display: "flex", gap: "10px", background: "#1a1a24", padding: "4px", borderRadius: "8px" }}>
+        <label style={{ display: "block", fontSize: "12px", color: "var(--accent, #06b6d4)", fontWeight: "bold", marginBottom: "8px", textTransform: "uppercase" }}>1. What's your main objective?</label>
+        <div style={{ display: "flex", gap: "10px", background: "#1a1a24", padding: "4px", borderRadius: "8px", flexWrap: "wrap" }}>
           <button
             onClick={() => handleGoalChange("strength")}
             style={{
@@ -305,7 +383,7 @@ export default function ProgramSelector({ onSubscribe }) {
               color: goal === "strength" ? "#fff" : "#8a8a93"
             }}
           >
-            ⚡ Strength & Peaking
+            🏋️ Strength & Peaking
           </button>
           <button
             onClick={() => handleGoalChange("hypertrophy")}
@@ -315,14 +393,24 @@ export default function ProgramSelector({ onSubscribe }) {
               color: goal === "hypertrophy" ? "#fff" : "#8a8a93"
             }}
           >
-            💪 Hypertrophy Base
+            💪 Hypertrophy (Muscle Growth)
+          </button>
+          <button
+            onClick={() => handleGoalChange("meetprep")}
+            style={{
+              flex: 1, padding: "10px", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "bold",
+              background: goal === "meetprep" ? "#2a2a3a" : "transparent",
+              color: goal === "meetprep" ? "#fff" : "#8a8a93"
+            }}
+          >
+            🎯 Meet Prep (Competition Peak)
           </button>
         </div>
       </div>
 
       {/* STEP 2: FREQUENCY */}
       <div className="selector-group" style={{ marginBottom: "24px" }}>
-        <label style={{ display: "block", fontSize: "12px", color: "var(--accent, #06b6d4)", fontWeight: "bold", marginBottom: "8px", textTransform: "uppercase" }}>2. Weekly Frequency</label>
+        <label style={{ display: "block", fontSize: "12px", color: "var(--accent, #06b6d4)", fontWeight: "bold", marginBottom: "8px", textTransform: "uppercase" }}>2. How many days per week can you train?</label>
         <div style={{ display: "flex", gap: "10px", background: "#1a1a24", padding: "4px", borderRadius: "8px" }}>
           {[3, 4, 5].map(dayOption => {
             const hasAnyPlan = PROGRAM_DATABASE.some(p => p.goal === goal && p.frequency === dayOption);
@@ -339,7 +427,7 @@ export default function ProgramSelector({ onSubscribe }) {
                   opacity: hasAnyPlan ? 1 : 0.4
                 }}
               >
-                {dayOption} Days
+                {dayOption} Days/Week
               </button>
             );
           })}
@@ -347,67 +435,87 @@ export default function ProgramSelector({ onSubscribe }) {
       </div>
 
       {/* STEP 3: FOCUS / SPLIT */}
-<div className="selector-group" style={{ marginBottom: "32px" }}>
-  <label style={{ display: "block", fontSize: "12px", color: "var(--accent, #06b6d4)", fontWeight: "bold", marginBottom: "8px", textTransform: "uppercase" }}>
-    {goal === "strength" ? "3. Vector Focus" : "3. Split Architecture"}
-  </label>
-  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
-    {goal === "strength" ? (
-      ["balanced", "squat", "bench", "deadlift"].map(foc => {
-        const available = isComboAvailable(goal, frequency, foc);
-        return (
-          <button
-            key={foc}
-            disabled={!available}
-            onClick={() => setFocus(foc)}
-            style={{
-              padding: "12px", border: "1px solid #2a2a3a", borderRadius: "8px", fontWeight: "bold", textTransform: "capitalize",
-              cursor: available ? "pointer" : "not-allowed",
-              background: focus === foc ? "#2a2a3a" : "#1a1a24",
-              color: focus === foc ? "#fff" : available ? "#8a8a93" : "#3a3a4a",
-              borderColor: focus === foc ? "var(--accent, #06b6d4)" : "#2a2a3a",
-              opacity: available ? 1 : 0.4
-            }}
-          >
-            {foc === "balanced" ? "🎯 Balanced Base" : `🏋️ ${foc.charAt(0).toUpperCase() + foc.slice(1)} Focus`}
-          </button>
-        );
-      })
-    ) : (
-      // Hypertrophy: three buttons for upper_lower, ppl, and plane
-      ["upper_lower", "ppl", "plane"].map(foc => {
-        const available = isComboAvailable(goal, frequency, foc);
-        let displayText = "";
-        if (foc === "upper_lower") displayText = "🧱 Upper / Lower";
-        else if (foc === "ppl") displayText = "☠️ Push / Pull / Legs";
-        else displayText = "✈️ Plane Bias (Horizontal/Vertical)";
-        return (
-          <button
-            key={foc}
-            disabled={!available}
-            onClick={() => setFocus(foc)}
-            style={{
-              padding: "12px", border: "1px solid #2a2a3a", borderRadius: "8px", fontWeight: "bold",
-              cursor: available ? "pointer" : "not-allowed",
-              background: focus === foc ? "#2a2a3a" : "#1a1a24",
-              color: focus === foc ? "#fff" : available ? "#8a8a93" : "#3a3a4a",
-              borderColor: focus === foc ? "var(--accent, #06b6d4)" : "#2a2a3a",
-              opacity: available ? 1 : 0.4
-            }}
-          >
-            {displayText}
-          </button>
-        );
-      })
-    )}
-  </div>
-</div>
+      <div className="selector-group" style={{ marginBottom: "32px" }}>
+        <label style={{ display: "block", fontSize: "12px", color: "var(--accent, #06b6d4)", fontWeight: "bold", marginBottom: "8px", textTransform: "uppercase" }}>
+          {goal === "strength" ? "3. Which lift do you want to prioritise?" : goal === "hypertrophy" ? "3. How do you prefer to split your workouts?" : "3. What's your meet prep style?"}
+        </label>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "10px" }}>
+          {goal === "strength" ? (
+            ["balanced", "squat", "bench", "deadlift"].map(foc => {
+              const available = isComboAvailable(goal, frequency, foc);
+              let label = foc === "balanced" ? "Balanced (All lifts)" : `${foc.charAt(0).toUpperCase() + foc.slice(1)} Focus`;
+              return (
+                <button
+                  key={foc}
+                  disabled={!available}
+                  onClick={() => setFocus(foc)}
+                  style={{
+                    padding: "12px", border: "1px solid #2a2a3a", borderRadius: "8px", fontWeight: "bold",
+                    cursor: available ? "pointer" : "not-allowed",
+                    background: focus === foc ? "#2a2a3a" : "#1a1a24",
+                    color: focus === foc ? "#fff" : available ? "#8a8a93" : "#3a3a4a",
+                    borderColor: focus === foc ? "var(--accent, #06b6d4)" : "#2a2a3a",
+                    opacity: available ? 1 : 0.4
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })
+          ) : goal === "hypertrophy" ? (
+            ["upper_lower", "ppl", "plane"].map(foc => {
+              const available = isComboAvailable(goal, frequency, foc);
+              let displayText = foc === "upper_lower" ? "Upper / Lower" : foc === "ppl" ? "Push / Pull / Legs" : "Plane Bias (Horizontal/Vertical)";
+              return (
+                <button
+                  key={foc}
+                  disabled={!available}
+                  onClick={() => setFocus(foc)}
+                  style={{
+                    padding: "12px", border: "1px solid #2a2a3a", borderRadius: "8px", fontWeight: "bold",
+                    cursor: available ? "pointer" : "not-allowed",
+                    background: focus === foc ? "#2a2a3a" : "#1a1a24",
+                    color: focus === foc ? "#fff" : available ? "#8a8a93" : "#3a3a4a",
+                    borderColor: focus === foc ? "var(--accent, #06b6d4)" : "#2a2a3a",
+                    opacity: available ? 1 : 0.4
+                  }}
+                >
+                  {displayText}
+                </button>
+              );
+            })
+          ) : (
+            ["peaking", "taper"].map(foc => {
+              const available = isComboAvailable(goal, frequency, foc);
+              let displayText = foc === "peaking" ? "Full Peaking Block (8 weeks)" : "Taper & Deload (6 weeks)";
+              return (
+                <button
+                  key={foc}
+                  disabled={!available}
+                  onClick={() => setFocus(foc)}
+                  style={{
+                    padding: "12px", border: "1px solid #2a2a3a", borderRadius: "8px", fontWeight: "bold",
+                    cursor: available ? "pointer" : "not-allowed",
+                    background: focus === foc ? "#2a2a3a" : "#1a1a24",
+                    color: focus === foc ? "#fff" : available ? "#8a8a93" : "#3a3a4a",
+                    borderColor: focus === foc ? "var(--accent, #06b6d4)" : "#2a2a3a",
+                    opacity: available ? 1 : 0.4
+                  }}
+                >
+                  {displayText}
+                </button>
+              );
+            })
+          )}
+        </div>
+      </div>
 
       {/* DYNAMIC HERO CARD */}
       {matchedProgram ? (
         <div className="hero-program-card" style={{ background: "linear-gradient(135deg, #1e1e2f 0%, #12121a 100%)", padding: "24px", borderRadius: "12px", border: "1px solid #2a2a40", boxShadow: "0 10px 30px rgba(0,0,0,0.5)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-            <span style={{ fontSize: "11px", background: "#2a2a40", padding: "4px 8px", borderRadius: "4px", color: "var(--accent, #06b6d4)", fontWeight: "bold", letterSpacing: "1px" }}>SYSTEM MATCH</span>
+            <span style={{ fontSize: "11px", background: "#2a2a40", padding: "4px 8px", borderRadius: "4px", color: "var(--accent, #06b6d4)", fontWeight: "bold", letterSpacing: "1px" }}>YOUR MATCH</span>
+            {isAdmin && <span style={{ fontSize: "11px", background: "#ffaa44", padding: "4px 8px", borderRadius: "4px", color: "#000", fontWeight: "bold" }}>ADMIN MODE – No Payment</span>}
           </div>
           <h3 style={{ fontSize: "20px", fontWeight: "bold", marginBottom: "12px", color: "#fff" }}>{matchedProgram.displayTitle}</h3>
 
@@ -428,12 +536,12 @@ export default function ProgramSelector({ onSubscribe }) {
             onClick={handleSubscribeClick}
             style={{ display: "block", width: "100%", textAlign: "center", padding: "14px", background: "var(--accent, #06b6d4)", color: "#000", border: "none", borderRadius: "8px", fontWeight: "bold", fontSize: "15px", cursor: "pointer", transition: "background 0.2s" }}
           >
-            Initialize Training Block Engine →
+            {isAdmin ? "Initialize Program (Admin Bypass)" : "Subscribe & Initialize Training →"}
           </button>
         </div>
       ) : (
         <div style={{ textAlign: "center", padding: "20px", border: "1px dashed #3a3a4a", borderRadius: "8px", color: "#8a8a93" }}>
-          Select parameters to calculate allocation matrix.
+          Select your training parameters above – we'll find the perfect system for you.
         </div>
       )}
     </div>

@@ -14,12 +14,16 @@ export default function App() {
   // Reactive auth state – updates when localStorage changes
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
   const [program, setProgram] = useState(localStorage.getItem("program"));
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const handleStorage = () => {
+      const email = localStorage.getItem("userEmail");
       setUserId(localStorage.getItem("userId"));
       setProgram(localStorage.getItem("program"));
+      setIsAdmin(email === "kieren2203@googlemail.com");
     };
+    handleStorage(); // initial
     window.addEventListener("storage", handleStorage);
     window.addEventListener("authChange", handleStorage);
     return () => {
@@ -40,10 +44,41 @@ export default function App() {
   }, []);
 
   // Shared subscribe handler – used by both Home.jsx and ProgramSelector
-  // Note: Older CTAs that call onSubscribe(programName) still work because metadataConfig defaults to {}.
-  // The server will use displayTitle = programName (fallback) and programId = null, frequency = null, focus = null.
-  // This is safe and won't break the checkout.
-  const handleSubscribe = async (programName, metadataConfig = {}) => {
+  const handleSubscribe = async (programName, metadataConfig = {}, options = {}) => {
+    const { adminBypass = false } = options;
+    const userEmail = localStorage.getItem("userEmail");
+    const isCurrentAdmin = userEmail === "kieren2203@googlemail.com";
+
+    // Admin bypass: directly assign program without Stripe
+    if (adminBypass && isCurrentAdmin) {
+      try {
+        const res = await fetch("/api/admin/assign-program", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            adminEmail: userEmail,
+            userEmail: userEmail,
+            programName: programName
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          localStorage.setItem("program", programName);
+          localStorage.setItem("programJustSelected", "true");
+          if (metadataConfig.displayTitle) {
+            localStorage.setItem("activeProgramConfig", JSON.stringify(metadataConfig));
+          }
+          window.location.href = "/dashboard";
+        } else {
+          alert("Admin assignment failed: " + data.error);
+        }
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+      return;
+    }
+
+    // Normal Stripe flow
     try {
       let email = localStorage.getItem("userEmail");
       if (!email) {
@@ -92,12 +127,6 @@ export default function App() {
     }
   };
 
-  // Pass handleSubscribe to Home via prop (Home will use it instead of its own)
-  // But Home.jsx currently has its own handleSubscribe – we'll override by passing a prop.
-  // To avoid breaking existing code, we'll modify Home to accept onSubscribe prop.
-  // For now, keep existing Home.jsx as is – the new route /select-program uses the shared handler.
-  // The old program grid in Home.jsx still uses its own handler, which is fine for backward compatibility.
-
   return (
     <BrowserRouter>
       <Routes>
@@ -114,7 +143,7 @@ export default function App() {
         />
         <Route
           path="/select-program"
-          element={userId ? <ProgramSelector onSubscribe={handleSubscribe} /> : <Navigate to="/login" replace />}
+          element={userId ? <ProgramSelector onSubscribe={handleSubscribe} isAdmin={isAdmin} /> : <Navigate to="/login" replace />}
         />
 
         {/* Protected routes */}
