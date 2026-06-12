@@ -20,16 +20,17 @@ export default function Dashboard() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [programConfig, setProgramConfig] = useState(null);
-
   const [rewards, setRewards] = useState({ unlockedRewards: [], nextMilestone: null, streak: 0 });
   const [dailyQuote, setDailyQuote] = useState(null);
 
+  // Admin state (restored original admin detection)
   const [assignEmail, setAssignEmail] = useState("");
   const [assignProgram, setAssignProgram] = useState("");
   const [adminMessage, setAdminMessage] = useState("");
   const [leads, setLeads] = useState([]);
 
-  const isAdmin = userEmail.toLowerCase() === "admin@apex.com" || userEmail.toLowerCase() === "coach@apex.com";
+  const ADMIN_EMAIL = "kieren2203@googlemail.com";
+  const isAdmin = userEmail === ADMIN_EMAIL;
 
   useEffect(() => {
     if (!userId) {
@@ -37,7 +38,7 @@ export default function Dashboard() {
       return;
     }
 
-    // Pull configuration profiles securely downstream
+    // Fetch program configuration (from backend)
     fetch(`/api/user-program-config/${userId}`)
       .then(res => res.json())
       .then(data => {
@@ -50,6 +51,7 @@ export default function Dashboard() {
       })
       .catch(console.error);
 
+    // Fetch all dashboard data in parallel
     Promise.all([
       fetch(`/api/user-status/${userId}`).then(res => res.json()),
       fetch(`/api/estimated-1rm/${userId}`).then(res => res.json()),
@@ -145,6 +147,7 @@ export default function Dashboard() {
         a.href = url;
         a.download = 'apex-progress.png';
         a.click();
+        URL.revokeObjectURL(url);
       }
     } catch (err) {
       console.error("Sharing failed:", err);
@@ -153,18 +156,18 @@ export default function Dashboard() {
     }
   };
 
-  // Carousel Configuration
+  // Carousel Configuration (polished)
   const [currentCard, setCurrentCard] = useState(0);
   const cards = [
     <div key="quote" className="carousel-inner-content">
-      <h4 style={{ color: "var(--accent)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px" }}>Daily Mindset Archetype</h4>
-      <p style={{ fontStyle: "italic", fontSize: "1.05rem", color: "var(--text-light)", lineHeight: "1.6" }}>"{dailyQuote || 'The platform rewards absolute precision. Commit to your warm-up tracking metrics.'}"</p>
+      <h4 style={{ color: "var(--accent)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px" }}>Daily Mindset</h4>
+      <p style={{ fontStyle: "italic", fontSize: "1.05rem", color: "var(--text-light)", lineHeight: "1.6" }}>“{dailyQuote || 'The platform rewards absolute precision. Commit to your warm-up tracking metrics.'}”</p>
     </div>,
     <div key="rewards" className="carousel-inner-content">
-      <h4 style={{ color: "var(--accent)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px" }}>System Milestones & Streaks</h4>
-      <p style={{ fontSize: "1rem", color: "var(--text-light)" }}>🔥 Current Streak: <strong style={{ color: "var(--accent)" }}>{rewards.streak || 0} Days Balance</strong></p>
+      <h4 style={{ color: "var(--accent)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px" }}>System Milestones</h4>
+      <p style={{ fontSize: "1rem", color: "var(--text-light)" }}>🔥 Current Streak: <strong style={{ color: "var(--accent)" }}>{rewards.streak || 0} days</strong></p>
       {rewards.nextMilestone && (
-        <p style={{ fontSize: "0.9rem", color: "var(--text-gray)", marginTop: "4px" }}>🎯 Next structural milestone: {rewards.nextMilestone}</p>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-gray)", marginTop: "4px" }}>🎯 Next milestone: {rewards.nextMilestone}</p>
       )}
     </div>
   ];
@@ -174,7 +177,7 @@ export default function Dashboard() {
   const swipeHandlers = useSwipeable({ onSwipedLeft: nextCard, onSwipedRight: prevCard, preventDefaultTouchmoveEvent: true, trackMouse: true });
 
   if (loading) {
-    return <div className="dashboard-loading"><div className="spinner">Initializing Dashboard Context...</div></div>;
+    return <div className="dashboard-loading"><div className="spinner">Loading dashboard...</div></div>;
   }
 
   return (
@@ -182,13 +185,13 @@ export default function Dashboard() {
       <div className="dashboard-wrapper">
         
         <header className="dashboard-header">
-          <div className="dashboard-logo" onClick={() => navigate("/")}>Apex Framework</div>
-          <button onClick={handleLogout} className="logout-btn">Terminate Session</button>
+          <div className="dashboard-logo" onClick={() => navigate("/")}>APEX METHOD</div>
+          <button onClick={handleLogout} className="logout-btn">Logout</button>
         </header>
 
         {!subscriptionActive && (
           <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid #ef4444", padding: "16px", borderRadius: "8px", marginBottom: "32px", fontSize: "0.95rem" }}>
-            ⚠️ <strong>Subscription Status Warning:</strong> Your access plan is currently inactive. Please check your billing settings to prevent metric locking.
+            ⚠️ <strong>Subscription inactive</strong> – weight recommendations are hidden. <a href="/" style={{ color: "var(--accent)" }}>Resubscribe</a> to unlock full guidance.
           </div>
         )}
 
@@ -204,106 +207,108 @@ export default function Dashboard() {
           <div className="carousel-card-wrapper">{cards[currentCard]}</div>
         </div>
 
-        {/* Master Asymmetric Layout Block */}
+        {/* Main Layout */}
         <main className="dashboard-grid">
           
-          {/* Main Action and Analytics Column */}
+          {/* Left Column */}
           <section style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
             
             <div className="premium-card">
-              <h2 className="card-title">🚀 Active Performance Systems</h2>
+              <h2 className="card-title">🚀 Active Training System</h2>
               {purchasedPrograms.length === 0 ? (
                 <div>
-                  <p style={{ color: "var(--text-gray)", marginBottom: "20px" }}>No active training block engines initialized.</p>
-                  <button onClick={() => navigate("/select-program")} className="premium-btn">Configure Training Block</button>
+                  <p style={{ color: "var(--text-gray)", marginBottom: "20px" }}>No active program found.</p>
+                  <button onClick={() => navigate("/select-program")} className="premium-btn">Configure Program →</button>
                 </div>
               ) : (
-                <div style={{ display: "flex", justifyContent: "between", alignItems: "center", flexWrap: "wrap", gap: "20px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "20px" }}>
                   <div>
                     <h3 style={{ fontSize: "1.4rem", fontWeight: "700", color: "var(--accent)" }}>
                       {programConfig?.displayTitle || purchasedPrograms[0]}
                     </h3>
                     <p style={{ color: "var(--text-gray)", fontSize: "0.9rem", marginTop: "4px" }}>
-                      Engine Status: Operational • {programConfig?.fatigueCap || "Fatigue Budget Active"}
+                      {programConfig?.frequency && `📅 ${programConfig.frequency} days/week`}
+                      {programConfig?.focus && ` • 🎯 Focus: ${programConfig.focus.replace('_', ' ').toUpperCase()}`}
+                      {!programConfig && "Fatigue budget active"}
                     </p>
                   </div>
                   <button onClick={() => navigate("/session")} className="premium-btn" style={{ marginLeft: "auto" }}>
-                    Launch Next Session →
+                    Start Workout →
                   </button>
                 </div>
               )}
             </div>
 
             <div className="premium-card">
-              <h2 className="card-title">📊 Strategic Absolute Strength Profiles (1RM)</h2>
+              <h2 className="card-title">📊 Estimated 1RM</h2>
               <div className="estimates-grid">
                 <div className="metric-pill">
-                  <div className="metric-label">Squat Profile</div>
-                  <div className="metric-value">{estimates["Squat (Top Set)"] ? `${estimates["Squat (Top Set)"]}kg` : "—"}</div>
+                  <div className="metric-label">Squat</div>
+                  <div className="metric-value">{estimates["Squat (Top Set)"] ? `${estimates["Squat (Top Set)"]} kg` : "—"}</div>
                 </div>
                 <div className="metric-pill">
-                  <div className="metric-label">Bench Profile</div>
-                  <div className="metric-value">{estimates["Bench (Top Set)"] ? `${estimates["Bench (Top Set)"]}kg` : "—"}</div>
+                  <div className="metric-label">Bench</div>
+                  <div className="metric-value">{estimates["Bench (Top Set)"] ? `${estimates["Bench (Top Set)"]} kg` : "—"}</div>
                 </div>
                 <div className="metric-pill">
-                  <div className="metric-label">Deadlift Profile</div>
-                  <div className="metric-value">{estimates["Deadlift (Top Set)"] ? `${estimates["Deadlift (Top Set)"]}kg` : "—"}</div>
+                  <div className="metric-label">Deadlift</div>
+                  <div className="metric-value">{estimates["Deadlift (Top Set)"] ? `${estimates["Deadlift (Top Set)"]} kg` : "—"}</div>
                 </div>
               </div>
               <div style={{ marginTop: "32px" }}>
                 <DashboardChart userId={userId} />
               </div>
-              <button onClick={shareProgress} className="logout-btn" style={{ marginTop: "24px", width: "100%", display: "block" }}>
-                Export Metric Card Profile
+              <button onClick={shareProgress} className="logout-btn" style={{ marginTop: "24px", width: "100%" }}>
+                Export Progress Card
               </button>
             </div>
 
             <div className="premium-card">
-              <h2 className="card-title">🧠 Real-Time AI Coaching Insights</h2>
+              <h2 className="card-title">🧠 AI Coaching Insights</h2>
               <CoachPrompts userId={userId} />
             </div>
 
           </section>
 
-          {/* Right Sidebar Column - History & Utilities */}
+          {/* Right Column */}
           <section style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
             
             <div className="premium-card">
-              <h2 className="card-title">⏱️ Session Ledger History</h2>
+              <h2 className="card-title">⏱️ Recent Sessions</h2>
               <ProgressLog recentSessions={recentSessions} expandedWorkout={expandedWorkout} setExpandedWorkout={setExpandedWorkout} />
             </div>
 
-            {/* Hidden Share Card Module */}
+            {/* Hidden share card */}
             <div className="progress-share-card" style={{ position: 'absolute', left: '-9999px', top: 0, width: '400px', background: '#070a13', padding: '24px', borderRadius: '12px', border: '1px solid var(--accent)' }}>
-              <h3 style={{ color: 'var(--accent)', fontSize: '1.2rem', marginBottom: '16px', letterSpacing: '-0.02em' }}>Apex Method Profile</h3>
-              <p style={{ marginBottom: '8px', color: '#fff' }}>🔥 Dynamic Balance Streak: {rewards.streak || 0} Days</p>
-              <p style={{ marginBottom: '8px', color: '#fff' }}>🏋️ Squat Absolute: {estimates["Squat (Top Set)"] || "—"} kg</p>
-              <p style={{ marginBottom: '8px', color: '#fff' }}>💪 Bench Absolute: {estimates["Bench (Top Set)"] || "—"} kg</p>
-              <p style={{ color: '#fff' }}>⚡ Deadlift Absolute: {estimates["Deadlift (Top Set)"] || "—"} kg</p>
+              <h3 style={{ color: 'var(--accent)', fontSize: '1.2rem', marginBottom: '16px' }}>Apex Method Progress</h3>
+              <p style={{ marginBottom: '8px', color: '#fff' }}>🔥 Streak: {rewards.streak || 0} days</p>
+              <p style={{ marginBottom: '8px', color: '#fff' }}>🏋️ Squat 1RM: {estimates["Squat (Top Set)"] || "—"} kg</p>
+              <p style={{ marginBottom: '8px', color: '#fff' }}>💪 Bench 1RM: {estimates["Bench (Top Set)"] || "—"} kg</p>
+              <p style={{ color: '#fff' }}>⚡ Deadlift 1RM: {estimates["Deadlift (Top Set)"] || "—"} kg</p>
             </div>
 
-            {/* PWA Installation Drawer */}
+            {/* PWA Install Banner */}
             {showInstallBanner && (
               <div className="premium-card" style={{ borderColor: "var(--accent)" }}>
-                <h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "8px" }}>Sync to Local Machine</h3>
-                <p style={{ color: "var(--text-gray)", fontSize: "0.85rem", marginBottom: "16px" }}>Install the native Apex environment directly into your taskbar framework.</p>
-                <button onClick={handleInstallClick} className="premium-btn" style={{ width: "100%", padding: "10px" }}>Install Native Engine</button>
+                <h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "8px" }}>Install as App</h3>
+                <p style={{ color: "var(--text-gray)", fontSize: "0.85rem", marginBottom: "16px" }}>Add Apex Method to your home screen for faster access.</p>
+                <button onClick={handleInstallClick} className="premium-btn" style={{ width: "100%", padding: "10px" }}>Install</button>
               </div>
             )}
 
-            {/* Control Panel (Coach Privileges) */}
+            {/* Admin Panel (restored original admin detection) */}
             {isAdmin && (
               <div className="premium-card" style={{ borderColor: "#f59e0b" }}>
-                <h2 className="card-title" style={{ color: "#f59e0b" }}>🛡️ Control Panel</h2>
+                <h2 className="card-title" style={{ color: "#f59e0b" }}>🔧 Admin Panel</h2>
                 <form onSubmit={handleAssignProgram} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  <input type="email" placeholder="Client email pointer" value={assignEmail} onChange={e => setAssignEmail(e.target.value)} className="premium-input" />
-                  <input type="text" placeholder="Engine ID (e.g., Ares Protocol)" value={assignProgram} onChange={e => setAssignProgram(e.target.value)} className="premium-input" />
-                  <button type="submit" className="premium-btn" style={{ background: "#f59e0b" }}>Force Assign System</button>
+                  <input type="email" placeholder="User email" value={assignEmail} onChange={e => setAssignEmail(e.target.value)} className="premium-input" />
+                  <input type="text" placeholder="Program name (e.g., Ares Protocol)" value={assignProgram} onChange={e => setAssignProgram(e.target.value)} className="premium-input" />
+                  <button type="submit" className="premium-btn" style={{ background: "#f59e0b" }}>Assign Program</button>
                 </form>
                 {adminMessage && <p style={{ fontSize: "0.85rem", marginTop: "12px", color: "#f59e0b" }}>{adminMessage}</p>}
                 
                 <div style={{ marginTop: "24px", paddingTop: "24px", borderTop: "1px solid var(--border-subtle)" }}>
-                  <h4 style={{ fontSize: "0.9rem", marginBottom: "12px" }}>Inbound Funnel Leads ({leads.length})</h4>
+                  <h4 style={{ fontSize: "0.9rem", marginBottom: "12px" }}>Captured Leads ({leads.length})</h4>
                   <div style={{ maxHeight: "150px", overflowY: "auto", fontSize: "0.8rem", color: "var(--text-gray)" }}>
                     {leads.map((l, idx) => <div key={idx} style={{ padding: "4px 0" }}>• {l.email}</div>)}
                   </div>
