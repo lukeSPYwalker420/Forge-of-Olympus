@@ -185,7 +185,8 @@ const PurchaseSchema = new mongoose.Schema({
   purchasedAt: { type: Date, default: Date.now },
   canceledAt: { type: Date },
   lastPaymentFailure: { type: Date },
-  gracePeriodEnds: { type: Date }
+  gracePeriodEnds: { type: Date },
+  programConfig: { type: Object, default: null } // stores { programId, displayTitle, frequency, focus }
 });
 const Purchase = mongoose.model("Purchase", PurchaseSchema);
 
@@ -273,23 +274,34 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
         console.log(`📝 Created new user: ${customerEmail}`);
       }
 
-      await Purchase.findOneAndUpdate(
-        { stripePaymentIntentId: session.payment_intent },
-        { 
-          email: customerEmail, 
-          programName: normalizedProgramName, 
-          stripePaymentIntentId: session.payment_intent,
-          stripeSubscriptionId: session.subscription,
-          active: true,
-          purchasedAt: new Date(),
-          canceledAt: null,
-          lastPaymentFailure: null,
-          gracePeriodEnds: null
-        },
-        { upsert: true, new: true }
-      );
+      // Extract program configuration from session metadata
+      const programConfig = {
+        programId: session.metadata?.programId || null,
+        displayTitle: session.metadata?.displayTitle || null,
+        frequency: session.metadata?.frequency ? parseInt(session.metadata.frequency) : null,
+        focus: session.metadata?.focus || null
+      };
+
+      // 🔧 FIX: Use stripeSubscriptionId (always present) instead of payment_intent (null on trials)
+      // Fixed, valid version for production:
+await Purchase.findOneAndUpdate(
+  { stripeSubscriptionId: session.subscription },
+  {
+    email: customerEmail,
+    programName: normalizedProgramName,
+    stripePaymentIntentId: session.payment_intent || null,
+    stripeSubscriptionId: session.subscription,
+    active: true,
+    purchasedAt: new Date(),
+    canceledAt: null,
+    lastPaymentFailure: null,
+    gracePeriodEnds: null,
+    programConfig: programConfig   
+  }, // <-- Keep this matching closing curly brace
+  { upsert: true, new: true }
+);
       
-      console.log(`✅ Purchase recorded: ${customerEmail} → ${normalizedProgramName}`);
+      console.log(`✅ Purchase recorded: ${customerEmail} → ${normalizedProgramName}`, programConfig);
       
     } catch (dbError) {
       console.error("Database error in webhook:", dbError);
@@ -1693,7 +1705,7 @@ app.post("/api/admin/assign-program", async (req, res) => {
 
 app.post("/api/create-checkout-session", async (req, res) => {
   try {
-    let { programName, email } = req.body;
+    let { programName, email, customMetadata = {} } = req.body;
     
     if (email) {
       email = email.toLowerCase().trim();
@@ -1728,6 +1740,8 @@ app.post("/api/create-checkout-session", async (req, res) => {
       console.log(`[DEBUG] Existing user ${email} - no trial (already used)`);
     }
 
+    // ⚠️ Stripe metadata limit: each value must be ≤ 50 characters.
+    // Keep `displayTitle` short (under 50 chars) to avoid 400 errors.
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer_email: email,
@@ -1738,7 +1752,11 @@ app.post("/api/create-checkout-session", async (req, res) => {
       cancel_url: "https://forge-of-olympus.onrender.com/cancel",
       metadata: {
         programName: programName,
-        userEmail: email
+        userEmail: email,
+        programId: customMetadata.programId || "",
+        displayTitle: customMetadata.displayTitle || programName,
+        frequency: customMetadata.frequency ? String(customMetadata.frequency) : "",
+        focus: customMetadata.focus || ""
       }
     });
 
@@ -1746,6 +1764,24 @@ app.post("/api/create-checkout-session", async (req, res) => {
   } catch (error) {
     console.error("Checkout error:", error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// NEW: Get user's active program configuration
+app.get("/api/user-program-config/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const activePurchase = await Purchase.findOne({ email: user.email, active: true });
+    if (!activePurchase || !activePurchase.programConfig) {
+      return res.json({ config: null });
+    }
+
+    res.json({ config: activePurchase.programConfig });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 });
 
