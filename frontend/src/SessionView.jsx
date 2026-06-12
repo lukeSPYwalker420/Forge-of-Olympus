@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import Skeleton from "./Skeleton";
 import SessionReadiness from "./SessionReadiness";
+import "./Dashboard.css"; // Reuse our premium typography and card styling layout tokens
 
 export default function SessionView() {
   const [subscriptionActive, setSubscriptionActive] = useState(true);
@@ -29,916 +30,278 @@ export default function SessionView() {
   });
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [workoutSummary, setWorkoutSummary] = useState(null);
-  const [completedLifts, setCompletedLifts] = useState(new Set());
 
-  const [missedOpportunityBanner, setMissedOpportunityBanner] = useState(null);
-  const [nextPreview, setNextPreview] = useState(null);
+  // Onboarding tracking context for baseline configuration
+  const [onboardingLifts, setOnboardingLifts] = useState([]);
+  const [onboardingValues, setOnboardingValues] = useState({});
+  const [onboardingSubmitting, setOnboardingSubmitting] = useState(false);
 
   const userId = localStorage.getItem("userId");
   const program = localStorage.getItem("program");
-  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
-const [onboardingLifts, setOnboardingLifts] = useState([]);
-const [onboardingValues, setOnboardingValues] = useState({});
-const [onboardingSubmitting, setOnboardingSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!userId || !program) return;
-
-    const rpeAdj = adjustments.rpeAdjustment || 0;
-    const rirAdj = adjustments.rirAdjustment || 0;
-    const qualityAdj = adjustments.qualityAdjustment || 0;
-    const painAdj = adjustments.painAdjustment || 0;
-    const stabAdj = adjustments.stabilityAdjustment || 0;
-
-    const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`
-      + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
-      + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
-
-    fetch(url)
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch");
-        return res.json();
-      })
-      .then(setData)
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [week, day, userId, program, adjustments]);
-
-  useEffect(() => {
-    const checkSubscription = async () => {
-      try {
-        const userEmail = localStorage.getItem("userEmail");
-        const isAdmin = userEmail === "kieren2203@googlemail.com";
-
-        if (isAdmin) {
-          setSubscriptionActive(true);
-          setCheckingStatus(false);
-          return;
+    if (!userId) return;
+    fetch(`/api/user-status/${userId}`)
+      .then(res => res.json())
+      .then(statusData => {
+        if (statusData.subscriptionActive !== undefined) {
+          setSubscriptionActive(statusData.subscriptionActive);
         }
-
-        const res = await fetch(`/api/subscription-status/${userId}`);
-        const data = await res.json();
-        setSubscriptionActive(data.active);
-      } catch (err) {
-        console.error("Subscription check error:", err);
-      } finally {
         setCheckingStatus(false);
-      }
-    };
-
-    if (userId) checkSubscription();
+      })
+      .catch(() => setCheckingStatus(false));
   }, [userId]);
 
-  // Detect missing 1RM for strength lifts (onboarding)
-useEffect(() => {
-  if (!data || loading) return;
-
-  const missing = data.projected?.filter(lift => {
-    const isStrength = lift.progressionType === "strength" || data.logic === "STRENGTH_RPE";
-    const hasZeroWeight = !lift.currentWeight || lift.currentWeight === 0;
-    const noExistingState = !history[lift.liftName] || history[lift.liftName].length === 0;
-    return isStrength && hasZeroWeight && noExistingState;
-  }) || [];
-
-  if (missing.length > 0) {
-    setOnboardingLifts(missing);
-    const initialValues = {};
-    missing.forEach(lift => {
-      initialValues[lift.liftName] = "";
-    });
-    setOnboardingValues(initialValues);
-    setShowOnboardingModal(true);
-  }
-}, [data, loading, history]);
-
-  const handleReadinessComplete = (readinessData) => {
-    setAdjustments({
-      rpeAdjustment: readinessData.adjustments.rpeAdjustment ?? 0,
-      rirAdjustment: readinessData.adjustments.rirAdjustment ?? 0,
-      qualityAdjustment: 0,
-      painAdjustment: readinessData.adjustments.painAdjustment ?? 0,
-      stabilityAdjustment: readinessData.adjustments.stabilityAdjustment ?? 0,
-    });
-    setShowReadiness(false);
-  };
-
-  const handleUndoLastEntry = async (liftName) => {
-    if (!confirm("Undo the last entry for this exercise?")) return;
-
-    try {
-      const historyRes = await fetch(`/api/history/${userId}/${encodeURIComponent(liftName)}`);
-      const hist = await historyRes.json();
-
-      if (hist.length === 0) {
-        alert("No entries to undo");
-        return;
-      }
-
-      const lastEntry = hist[0];
-
-      await fetch(`/api/session-log/${lastEntry._id}`, {
-        method: "DELETE"
-      });
-
-      await fetchHistory(liftName);
-
-      const rpeAdj = adjustments.rpeAdjustment || 0;
-      const rirAdj = adjustments.rirAdjustment || 0;
-      const qualityAdj = adjustments.qualityAdjustment || 0;
-      const painAdj = adjustments.painAdjustment || 0;
-      const stabAdj = adjustments.stabilityAdjustment || 0;
-      const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`
-        + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
-        + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
-      const res = await fetch(url);
-      const json = await res.json();
-      setData(json);
-
-      alert("Last entry undone!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to undo");
-    }
-  };
-
-  const loadNextPreview = async () => {
-    try {
-      const nextRes = await fetch(`/api/next-session/${userId}?program=${encodeURIComponent(program)}`);
-      if (!nextRes.ok) return;
-      const { week: nextWeek, day: nextDay } = await nextRes.json();
-      if (nextWeek && nextDay) {
-        const rpeAdj = adjustments.rpeAdjustment || 0;
-        const rirAdj = adjustments.rirAdjustment || 0;
-        const qualityAdj = adjustments.qualityAdjustment || 0;
-        const painAdj = adjustments.painAdjustment || 0;
-        const stabAdj = adjustments.stabilityAdjustment || 0;
-        const previewUrl = `/api/session-view/${nextWeek}/${nextDay}/${userId}?program=${encodeURIComponent(program)}`
-          + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
-          + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
-        const previewRes = await fetch(previewUrl);
-        const previewData = await previewRes.json();
-        if (previewData.projected && previewData.projected.length) {
-          setNextPreview(previewData.projected.slice(0, 2));
+  useEffect(() => {
+    if (!userId || !program || !subscriptionActive) return;
+    setLoading(true);
+    fetch(`/api/program-session?programName=${encodeURIComponent(program)}&week=${week}&day=${day}&userId=${userId}`)
+      .then(res => {
+        if (!res.ok) return res.json().then(err => { throw new Error(err.error || "Failed to load engine profiles"); });
+        return res.json();
+      })
+      .then(json => {
+        if (json.needsOnboarding) {
+          setOnboardingLifts(json.lifts);
+          const initialVals = {};
+          json.lifts.forEach(l => { initialVals[l.liftName] = ""; });
+          setOnboardingValues(initialVals);
+          setData({ onboarding: true });
+        } else {
+          setData(json);
+          if (json.history) setHistory(json.history);
+          const initialInputs = {};
+          json.exercises.forEach((ex, exIdx) => {
+            ex.sets.forEach((set, setIdx) => {
+              const keyBase = `${exIdx}_${setIdx}`;
+              initialInputs[`${keyBase}_weight`] = set.weight || "";
+              initialInputs[`${keyBase}_reps`] = set.reps || "";
+              initialInputs[`${keyBase}_rpe`] = set.rpe || "";
+            });
+          });
+          setInputs(initialInputs);
         }
-      }
-    } catch (err) {
-      console.error("Failed to load next preview", err);
-    }
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [userId, program, week, day, subscriptionActive]);
+
+  const handleInputChange = (exIdx, setIdx, field, val) => {
+    setInputs(prev => ({ ...prev, [`${exIdx}_${setIdx}_${field}`]: val }));
   };
 
-  const handleAutoFill = (lift) => {
-    const newInputs = { ...inputs };
-    const liftInputs = newInputs[lift.liftName] || {};
-
-    const targetRepsPerSet = [];
-    const targetRepsValue = lift.reps;
-
-    let targetRepsNumber = 8;
-    if (targetRepsValue) {
-      if (typeof targetRepsValue === 'string' && targetRepsValue.includes('-')) {
-        const parts = targetRepsValue.split('-').map(Number);
-        targetRepsNumber = parts[1] || parts[0];
-      } else {
-        targetRepsNumber = parseInt(targetRepsValue, 10);
-      }
+  const handleInitializeLifts = async () => {
+    const missing = onboardingLifts.filter(l => !onboardingValues[l.liftName]);
+    if (missing.length > 0) {
+      alert("Please provide valid absolute numbers for all structural movements.");
+      return;
     }
-
-    for (let i = 0; i < (lift.sets || 1); i++) {
-      targetRepsPerSet.push(targetRepsNumber);
-    }
-    liftInputs.repsPerSet = targetRepsPerSet;
-
-    if (lift.currentWeight && lift.currentWeight > 0) {
-      liftInputs.weight = lift.currentWeight;
-    }
-
-    if (lift.progressionType === "strength" || data?.logic === "STRENGTH_RPE") {
-      const targetRPE = lift.adjustedRpeTarget || lift.rpeTarget;
-      liftInputs.rpe = targetRPE;
-    }
-
-    if (data?.logic === "HYPERTROPHY_VOLUME" || lift.progressionType === "volume") {
-      const targetRIR = lift.adjustedRirTarget || lift.rirTarget;
-      liftInputs.rir = targetRIR;
-    }
-
-    if (lift.progressionType === "power") {
-      const targetQuality = lift.adjustedQualityTarget || lift.qualityTarget;
-      liftInputs.quality = targetQuality;
-    }
-
-    if (lift.progressionType === "mobility") {
-      liftInputs.stability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
-      liftInputs.pain = lift.painTarget || 4;
-    }
-
-    newInputs[lift.liftName] = liftInputs;
-    setInputs(newInputs);
-  };
-
-  const markExerciseComplete = (liftName) => {
-    const updated = new Set(completedLifts);
-    if (updated.has(liftName)) return;
-    updated.add(liftName);
-    setCompletedLifts(updated);
-
-    if (updated.size === data?.projected?.length) {
-      generateWorkoutSummary();
-      loadNextPreview();
-    }
-  };
-
-  const generateWorkoutSummary = async () => {
+    setOnboardingSubmitting(true);
     try {
-      const res = await fetch(`/api/workout-summary/${userId}?program=${encodeURIComponent(program)}&week=${week}&day=${day}`);
-      if (res.ok) {
-        const summary = await res.json();
-        setWorkoutSummary(summary);
-        setShowCompletionModal(true);
-      }
+      const res = await fetch("/api/initialize-1rm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, lifts: onboardingValues })
+      });
+      if (!res.ok) throw new Error("Failed to write baseline calculations.");
+      window.location.reload();
     } catch (err) {
-      console.error(err);
+      alert(err.message);
+      setOnboardingSubmitting(false);
     }
   };
 
-  const logSet = async (lift) => {
-    const liftName = lift.liftName;
-    const targetReps = lift.reps;
-    const targetSets = lift.sets;
-    const progressionType = lift.progressionType;
-    const logic = data.logic;
-
-    let targetRPE = lift.adjustedRpeTarget || lift.rpeTarget;
-    if (progressionType === "strength" && targetRPE === undefined) targetRPE = 7;
-    let targetRIR = lift.adjustedRirTarget || lift.rirTarget;
-    const targetQuality = lift.adjustedQualityTarget || lift.qualityTarget;
-    const targetROM = lift.romTarget;
-    const targetPain = lift.painTarget || 4;
-    const targetStability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
-
-    const streakRes = await fetch(`/api/streak/${userId}`);
-    if (streakRes.ok) {
-      const { streak } = await streakRes.json();
-      localStorage.setItem("streak", streak);
-    }
+  const handleSubmitWorkout = async () => {
+    const payloadExercises = data.exercises.map((ex, exIdx) => {
+      const payloadSets = ex.sets.map((set, setIdx) => {
+        const keyBase = `${exIdx}_${setIdx}`;
+        return {
+          setIndex: setIdx,
+          weight: parseFloat(inputs[`${keyBase}_weight`]) || 0,
+          reps: parseInt(inputs[`${keyBase}_reps`]) || 0,
+          rpe: parseFloat(inputs[`${keyBase}_rpe`]) || 0,
+          isTopSet: set.isTopSet || false,
+          isBackOff: set.isBackOff || false,
+          tag: set.tag || "hypertrophy"
+        };
+      });
+      return { liftName: ex.liftName, sets: payloadSets };
+    });
 
     try {
-      const weight = inputs[liftName]?.weight;
-      if (!weight && progressionType !== "mobility" && progressionType !== "power") {
-        alert("Enter weight first");
-        return;
-      }
-
-      let actualRPE = null;
-      let actualRIR = null;
-      let actualQuality = null;
-      let actualROM = null;
-      let actualPain = null;
-      let actualStability = null;
-      const repsPerSet = inputs[liftName]?.repsPerSet || [];
-
-      if (progressionType === "strength" || logic === "STRENGTH_RPE") {
-        actualRPE = Number(inputs[liftName]?.rpe || targetRPE);
-      } else if (progressionType === "power") {
-        actualQuality = Number(inputs[liftName]?.quality || targetQuality);
-      } else if (progressionType === "mobility") {
-        actualStability = Number(inputs[liftName]?.stability || targetStability);
-        actualPain = Number(inputs[liftName]?.pain || targetPain);
-      } else if (logic === "HYPERTROPHY_VOLUME" || progressionType === "volume") {
-        actualRIR = Number(inputs[liftName]?.rir || targetRIR);
-      }
-
-      const repsCompleted = repsPerSet.reduce((sum, r) => sum + (parseInt(r) || 0), 0);
-
-      await fetch("/api/session-log", {
+      const response = await fetch("/api/submit-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId,
           programName: program,
-          week: data.program?.week,
-          day: data.program?.day,
-          liftName,
-          role: lift.role,
-          targetReps: typeof targetReps === 'string' ? targetReps : String(targetReps),
-          targetSets,
-          repsPerSet: repsPerSet.map(r => parseInt(r) || 0),
-          repsCompleted,
-          targetRPE,
-          targetRIR,
-          targetQuality,
-          targetROM,
-          targetPain,
-          targetStability,
-          actualRPE,
-          actualRIR,
-          actualQuality,
-          actualROM,
-          actualPain,
-          actualStability,
-          actualWeight: weight ? Number(weight) : null,
-          completed: true,
-          progressionType
+          week,
+          day,
+          exercises: payloadExercises,
+          readinessAdjustments: adjustments
         })
       });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Submission rejected");
+      
+      setWorkoutSummary(result.summary);
+      setShowCompletionModal(true);
 
-      if (weight && targetRPE && lift.rpeTarget && lift.currentWeight) {
-        const staticWeight = Math.round((lift.currentWeight / 0.82) * 0.82 / 2.5) * 2.5;
-        if (staticWeight > 0 && staticWeight !== weight) {
-          setMissedOpportunityBanner({
-            liftName: lift.liftName,
-            staticWeight,
-            actualWeight: weight
-          });
-          setTimeout(() => setMissedOpportunityBanner(null), 5000);
-        }
+      if (result.nextWeek && result.nextDay) {
+        localStorage.setItem("nextWeek", result.nextWeek);
+        localStorage.setItem("nextDay", result.nextDay);
+        setWeek(result.nextWeek);
+        setDay(result.nextDay);
       }
-
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      await fetch("/api/progression/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, liftName, logic })
-      });
-
-      const rpeAdj = adjustments.rpeAdjustment || 0;
-      const rirAdj = adjustments.rirAdjustment || 0;
-      const qualityAdj = adjustments.qualityAdjustment || 0;
-      const painAdj = adjustments.painAdjustment || 0;
-      const stabAdj = adjustments.stabilityAdjustment || 0;
-      const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`
-        + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
-        + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
-      const res = await fetch(url);
-      const json = await res.json();
-      setData(json);
-
-      await fetchHistory(liftName);
-
-      setInputs(prev => ({ ...prev, [liftName]: {} }));
-      markExerciseComplete(lift.liftName);
     } catch (err) {
-      console.error(err);
-      alert("Error logging set: " + err.message);
-    }
-  };
-
-  const fetchHistory = async (liftName) => {
-    try {
-      const res = await fetch(`/api/history/${userId}/${encodeURIComponent(liftName)}`);
-      const hist = await res.json();
-      setHistory(prev => ({ ...prev, [liftName]: hist }));
-    } catch (err) {
-      console.error(err);
+      alert(`Submission Fault: ${err.message}`);
     }
   };
 
   if (!userId) return <Navigate to="/login" replace />;
-  if (!program) return <Navigate to="/program" replace />;
-  if (showReadiness && data?.logic) {
-    return <SessionReadiness onComplete={handleReadinessComplete} programLogic={data.logic} />;
-  }
-  if (loading) return (
-    <div className="dashboard-container">
-      <Skeleton />
-      <Skeleton />
-      <Skeleton />
-    </div>
-  );
-  if (error) return <div>Error: {error}</div>;
-  if (!data) return <div>No data returned</div>;
+  if (!program) return <Navigate to="/select-program" replace />;
+  if (checkingStatus) return <div className="dashboard-loading">Validating security context...</div>;
+  if (!subscriptionActive) return <Navigate to="/dashboard" replace />;
 
-  const handleInitializeLifts = async () => {
-  setOnboardingSubmitting(true);
-  try {
-    for (const lift of onboardingLifts) {
-      const estimated1RM = Number(onboardingValues[lift.liftName]);
-      if (!estimated1RM || estimated1RM <= 0) {
-        alert(`Please enter a valid 1RM for ${lift.liftName}`);
-        setOnboardingSubmitting(false);
-        return;
-      }
-      await fetch("/api/initialize-lift", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId,
-          liftName: lift.liftName,
-          estimated1RM
-        })
-      });
-    }
-    // Refresh session data
-    const rpeAdj = adjustments.rpeAdjustment || 0;
-    const rirAdj = adjustments.rirAdjustment || 0;
-    const qualityAdj = adjustments.qualityAdjustment || 0;
-    const painAdj = adjustments.painAdjustment || 0;
-    const stabAdj = adjustments.stabilityAdjustment || 0;
-    const url = `/api/session-view/${week}/${day}/${userId}?program=${encodeURIComponent(program)}`
-      + `&rpeAdjustment=${rpeAdj}&rirAdjustment=${rirAdj}&qualityAdjustment=${qualityAdj}`
-      + `&painAdjustment=${painAdj}&stabilityAdjustment=${stabAdj}`;
-    const res = await fetch(url);
-    const json = await res.json();
-    setData(json);
-    setShowOnboardingModal(false);
-    setOnboardingLifts([]);
-    setOnboardingValues({});
-    alert("Lifts initialised! You can now use Auto Fill.");
-  } catch (err) {
-    console.error(err);
-    alert("Failed to initialise lifts: " + err.message);
-  } finally {
-    setOnboardingSubmitting(false);
-  }
-};
+  if (loading) return <div className="dashboard-container"><div className="dashboard-wrapper"><Skeleton /></div></div>;
+  if (error) return <div className="dashboard-container"><div className="premium-card" style={{ borderColor: "#ef4444" }}>Error initialized: {error}</div></div>;
 
-  const getMetricLabel = (lift) => {
-    const pt = lift.progressionType;
-    if (pt === "power") return "Quality (1-10)";
-    if (pt === "mobility") return "Stability (1-10) / Pain (1-10)";
-    if (pt === "strength" || pt === "deload" || data.logic === "STRENGTH_RPE") return "RPE";
-    if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") return "RIR";
-    return "RPE";
-  };
-
-  const getTargetValue = (lift) => {
-    const pt = lift.progressionType;
-
-    if ((pt === "strength" || pt === "deload" || data.logic === "STRENGTH_RPE" || lift.rpeTarget !== undefined) && lift.rpeTarget !== undefined) {
-      const target = lift.adjustedRpeTarget ?? lift.rpeTarget;
-      return target ?? 7;
-    }
-
-    if (pt === "power") {
-      const target = lift.adjustedQualityTarget || lift.qualityTarget;
-      return target || "—";
-    }
-
-    if (pt === "mobility") {
-      const stability = lift.adjustedStabilityTarget || lift.stabilityTarget || 7;
-      const pain = lift.painTarget || 4;
-      return `Stability ≥${stability} / Pain ≤${pain}`;
-    }
-
-    if (data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") {
-      const target = lift.adjustedRirTarget || lift.rirTarget;
-      return target || "—";
-    }
-
-    return "—";
-  };
-
-  return (
-    <div style={{ padding: 30, fontFamily: "system-ui", maxWidth: 900, margin: "0 auto" }}>
-      {missedOpportunityBanner && (
-        <div style={{
-          background: "#ffaa4422",
-          borderLeft: "4px solid #ffaa44",
-          padding: "12px",
-          marginBottom: "20px",
-          borderRadius: "8px"
-        }}>
-          <strong>💡 You would have missed this lift!</strong><br />
-          A static plan would have told you {missedOpportunityBanner.staticWeight}kg for {missedOpportunityBanner.liftName}, but you did {missedOpportunityBanner.actualWeight}kg – that’s {Math.abs(missedOpportunityBanner.actualWeight - missedOpportunityBanner.staticWeight)}kg more!
-        </div>
-      )}
-
-      {data.fatigueOptimised && (
-        <div style={{
-          background: "#2a2a3544",
-          borderLeft: "4px solid var(--accent)",
-          padding: "12px",
-          marginBottom: "20px",
-          borderRadius: "8px",
-          fontSize: "0.9rem"
-        }}>
-          <strong>📊 Volume auto‑adjusted to today's recovery capacity</strong>
-          {data.overloadedTags?.length > 0 && (
-            <span> · High stress on: {data.overloadedTags.join(', ')}</span>
-          )}
-        </div>
-      )}
-
-      <div style={{ marginBottom: 25 }}>
-        <h1>Week {data.program?.week ?? "?"} — Day {data.program?.day ?? "?"}</h1>
-        <p style={{ opacity: 0.7 }}>{data.program?.focus ?? "No focus found"}</p>
-      </div>
-      <div style={{ marginBottom: 25, display: "flex", gap: 15 }}>
-        <div>
-          <label>Week</label><br />
-          <select value={week} onChange={e => setWeek(Number(e.target.value))}>
-            {(data.availableWeeks || [1,2,3,4]).map(w => (
-              <option key={w} value={w}>Week {w}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label>Day</label><br />
-          <select value={day} onChange={e => setDay(Number(e.target.value))}>
-            {(data.availableDaysPerWeek?.[week] || [1,2,3,4,5,6,7]).map(d => (
-              <option key={d} value={d}>Day {d}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {!subscriptionActive && !checkingStatus && (
-        <div style={{
-          background: "#ffaa4422",
-          border: "1px solid #ffaa44",
-          borderRadius: "8px",
-          padding: "12px",
-          marginBottom: "20px",
-          textAlign: "center"
-        }}>
-          <strong>⚠️ Your subscription has ended.</strong> You can still log workouts manually,
-          but recommended weights are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe</a> to unlock full guidance.
-        </div>
-      )}
-
-      <div style={{ display: "grid", gap: 20 }}>
-        {(() => {
-          const allExercises = data.projected || [];
-          const visibleExercises = allExercises.filter(lift => lift.sets > 0);
-          const hiddenCount = allExercises.length - visibleExercises.length;
-
-          return (
-            <>
-              {hiddenCount > 0 && (
-                <div style={{ background: "#2a2a3544", borderLeft: "4px solid #ffaa44", padding: "12px", borderRadius: "8px", fontSize: "0.85rem", marginBottom: "8px" }}>
-                  ⚡ {hiddenCount} exercise(s) skipped today – fatigue budget exceeded
-                </div>
-              )}
-              {visibleExercises.map((lift, i) => {
-                const pt = lift.progressionType;
-                const currentRepsInputs = inputs[lift.liftName]?.repsPerSet || [];
-
-                return (
-                  <div key={i} style={{ border: "1px solid #e5e5e5", borderRadius: 12, padding: 20 }}>
-                    <h3>
-                      {lift.liftName}
-                      {lift.descendingSet && (
-                        <span style={{
-                          fontSize: "0.7rem",
-                          background: "#6a5acd",
-                          color: "#fff",
-                          padding: "2px 8px",
-                          borderRadius: "12px",
-                          marginLeft: "8px",
-                          verticalAlign: "middle"
-                        }}>⇊ Descending</span>
-                      )}
-                      {lift.mechanicalDisadvantage && (
-                        <span style={{
-                          fontSize: "0.65rem",
-                          background: "#8b5cf6",
-                          color: "#fff",
-                          padding: "2px 8px",
-                          borderRadius: "12px",
-                          marginLeft: "8px",
-                          verticalAlign: "middle"
-                        }}>🦾 Position‑specific</span>
-                      )}
-                      {lift.stressOverload && (
-                        <span style={{
-                          fontSize: "0.65rem",
-                          background: "#f97316",
-                          color: "#fff",
-                          padding: "2px 8px",
-                          borderRadius: "12px",
-                          marginLeft: "8px",
-                          verticalAlign: "middle"
-                        }}>⚡ High‑demand</span>
-                      )}
-                    </h3>
-                    <div style={{ display: "flex", gap: 20, marginBottom: 10, flexWrap: "wrap" }}>
-                      <span>Sets: {lift.sets}</span>
-                      <span>Reps: {lift.reps}</span>
-                      <span>{getMetricLabel(lift)} Target: {getTargetValue(lift)}</span>
-                      {(lift.adjustedRpeTarget || lift.adjustedRirTarget || lift.adjustedQualityTarget || lift.adjustedStabilityTarget) && (
-                        <span style={{
-                          fontSize: "0.65rem",
-                          color: "#a1a1aa",
-                          marginLeft: "6px",
-                          fontStyle: "italic"
-                        }}>(auto‑adjusted)</span>
-                      )}
-                    </div>
-                    <div style={{ display: "flex", gap: 20, marginBottom: 15, fontWeight: "bold", flexWrap: "wrap" }}>
-                      {subscriptionActive ? (
-                        <>
-                          <span>Current: {lift.currentWeight ?? 0}kg</span>
-                          <span>Next: {lift.projectedNextWeight ?? 0}kg</span>
-                          {lift.fatigueAdjusted && (
-                            <span style={{
-                              fontSize: "0.65rem",
-                              color: "#ffaa44",
-                              marginLeft: "8px",
-                              fontStyle: "italic"
-                            }}>⚡ fatigue‑adjusted</span>
-                          )}
-                        </>
-                      ) : (
-                        <span style={{ color: "#ffaa44" }}>
-                          ⚡ Subscribe to see recommended weights
-                        </span>
-                      )}
-                    </div>
-
-                    <div style={{ display: "flex", gap: 10, marginBottom: 15, flexWrap: "wrap" }}>
-                      {pt !== "mobility" && (
-                        <input
-                          type="number"
-                          placeholder={lift.currentWeight > 0 ? `${lift.currentWeight} kg` : "Weight (kg)"}
-                          style={{ padding: 8, width: "100px" }}
-                          value={inputs[lift.liftName]?.weight || ""}
-                          onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
-                        />
-                      )}
-
-                      {pt === "power" && (
-                        <input
-                          type="number"
-                          placeholder="Quality (1-10)"
-                          style={{ padding: 8, width: "100px" }}
-                          value={inputs[lift.liftName]?.quality || ""}
-                          onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], quality: e.target.value } }))}
-                        />
-                      )}
-
-                      {pt === "mobility" && (
-                        <>
-                          <input
-                            type="number"
-                            placeholder={lift.currentWeight > 0 ? `${lift.currentWeight} kg` : "Weight (kg)"}
-                            style={{ padding: 8, width: "100px" }}
-                            value={inputs[lift.liftName]?.weight || ""}
-                            onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], weight: e.target.value } }))}
-                          />
-                          <input
-                            type="number"
-                            placeholder="Stability (1-10)"
-                            style={{ padding: 8, width: "100px" }}
-                            value={inputs[lift.liftName]?.stability || ""}
-                            onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], stability: e.target.value } }))}
-                          />
-                          <input
-                            type="number"
-                            placeholder="Pain (1-10)"
-                            style={{ padding: 8, width: "100px" }}
-                            value={inputs[lift.liftName]?.pain || ""}
-                            onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], pain: e.target.value } }))}
-                          />
-                        </>
-                      )}
-
-                      {(pt === "strength" || data.logic === "STRENGTH_RPE") && (
-                        <input
-                          type="number"
-                          step="0.5"
-                          placeholder="RPE"
-                          style={{ padding: 8, width: "80px" }}
-                          value={inputs[lift.liftName]?.rpe || ""}
-                          onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], rpe: e.target.value } }))}
-                        />
-                      )}
-
-                      {(data.logic === "HYPERTROPHY_VOLUME" || pt === "volume") && (
-                        <input
-                          type="number"
-                          placeholder="RIR"
-                          style={{ padding: 8, width: "80px" }}
-                          value={inputs[lift.liftName]?.rir || ""}
-                          onChange={e => setInputs(prev => ({ ...prev, [lift.liftName]: { ...prev[lift.liftName], rir: e.target.value } }))}
-                        />
-                      )}
-                    </div>
-
-                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 15 }}>
-                      <span style={{ fontWeight: "bold", minWidth: "50px" }}>Sets:</span>
-                      {[...Array(lift.sets)].map((_, idx) => (
-                        <input
-                          key={idx}
-                          type="number"
-                          placeholder={`Set ${idx + 1}`}
-                          style={{ padding: 8, width: "70px" }}
-                          value={currentRepsInputs[idx] || ""}
-                          onChange={e => {
-                            const current = inputs[lift.liftName] || {};
-                            const newReps = [...(current.repsPerSet || [])];
-                            newReps[idx] = e.target.value;
-                            setInputs(prev => ({
-                              ...prev,
-                              [lift.liftName]: { ...current, repsPerSet: newReps }
-                            }));
-                          }}
-                        />
-                      ))}
-                    </div>
-
-                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                      <button onClick={() => logSet(lift)} style={{ padding: "10px 15px", borderRadius: 8, border: "none", background: "#111", color: "#fff", cursor: "pointer" }}>
-                        Log Set
-                      </button>
-                      <button
-                        onClick={() => handleAutoFill(lift)}
-                        disabled={!subscriptionActive}
-                        style={{
-                          padding: "10px 15px",
-                          borderRadius: 8,
-                          border: "1px solid #4caf50",
-                          background: subscriptionActive ? "#4caf50" : "#666",
-                          color: "#fff",
-                          cursor: subscriptionActive ? "pointer" : "not-allowed",
-                          opacity: subscriptionActive ? 1 : 0.5
-                        }}
-                      >
-                        ⚡ Auto Fill
-                      </button>
-                      <button onClick={() => handleUndoLastEntry(lift.liftName)} style={{ padding: "10px 15px", borderRadius: 8, border: "1px solid #ff9800", background: "#ff9800", color: "#fff", cursor: "pointer" }}>
-                        ↩ Undo Last
-                      </button>
-                      <button onClick={() => fetchHistory(lift.liftName)} style={{ padding: "10px 15px", borderRadius: 8, border: "1px solid #ccc", background: "#fff", cursor: "pointer" }}>
-                        History
-                      </button>
-                      <button onClick={() => setInputs(prev => ({ ...prev, [lift.liftName]: {} }))} style={{ padding: "6px 12px", fontSize: "12px", background: "#444", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer" }}>
-                        Clear
-                      </button>
-                    </div>
-
-                    {history[lift.liftName] && history[lift.liftName].length > 0 && (
-                      <div style={{ marginTop: 10, background: "#f5f5f5", padding: 10, color: "#000", borderRadius: 8 }}>
-                        <strong>History:</strong>
-                        {history[lift.liftName].map((entry, idx) => {
-                          let metricStr = "";
-                          if (entry.actualRPE) metricStr = `RPE ${entry.actualRPE}`;
-                          else if (entry.actualRIR) metricStr = `RIR ${entry.actualRIR}`;
-                          else if (entry.actualStability && entry.actualPain) metricStr = `Stability ${entry.actualStability} / Pain ${entry.actualPain}`;
-                          else if (entry.actualStability) metricStr = `Stability ${entry.actualStability}`;
-                          else if (entry.actualROM) metricStr = `ROM ${entry.actualROM}% / Pain ${entry.actualPain}`;
-                          const setsInfo = entry.repsPerSet && entry.repsPerSet.length ? `Sets: [${entry.repsPerSet.join(", ")}]` : `${entry.repsCompleted || 0} reps`;
-                          return (
-                            <div key={idx} style={{ fontSize: 14 }}>
-                              {new Date(entry.createdAt).toLocaleDateString()} — {entry.actualWeight ? `${entry.actualWeight}kg x ` : ""}{setsInfo} {metricStr}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </>
-          );
-        })()}
-      </div>
-
-      {nextPreview && (
-        <div style={{ marginTop: "30px", padding: "16px", background: "#1e1e2a", borderRadius: "12px", border: "1px solid var(--accent)" }}>
-          <h4>🔮 Next workout preview</h4>
-          {nextPreview.map(lift => (
-            <div key={lift.liftName} style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-              <span>{lift.liftName}</span>
-              <strong>{lift.currentWeight}kg</strong>
+  // Onboarding Layout State
+  if (data?.onboarding) {
+    return (
+      <div className="dashboard-container" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div className="premium-card" style={{ maxWidth: "500px", width: "100%" }}>
+          <h2 className="card-title" style={{ color: "var(--accent)" }}>System Initialization Baseline</h2>
+          <p style={{ color: "var(--text-gray)", fontSize: "0.9rem", marginBottom: "24px" }}>Provide current absolute 1RM metrics to seed the training tracking engines accurately.</p>
+          {onboardingLifts.map(lift => (
+            <div key={lift.liftName} style={{ marginBottom: "16px" }}>
+              <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", fontWeight: "600" }}>{lift.liftName} (1RM in kg)</label>
+              <input
+                type="number"
+                step="2.5"
+                value={onboardingValues[lift.liftName] || ""}
+                onChange={e => setOnboardingValues(prev => ({ ...prev, [lift.liftName]: e.target.value }))}
+                className="premium-input"
+                placeholder="e.g., 140"
+              />
             </div>
           ))}
+          <button onClick={handleInitializeLifts} disabled={onboardingSubmitting} className="premium-btn" style={{ width: "100%", marginTop: "16px" }}>
+            {onboardingSubmitting ? "Writing Vectors..." : "Compute Training Profiles"}
+          </button>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {showCompletionModal && workoutSummary && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(0,0,0,0.95)", zIndex: 2000,
-          display: "flex", alignItems: "center", justifyContent: "center", padding: "20px",
-          overflowY: "auto"
-        }}>
-          <div style={{
-            background: "var(--card-bg, #1e1e2a)", borderRadius: "24px", padding: "30px",
-            maxWidth: "500px", width: "100%", border: "1px solid var(--accent)",
-            maxHeight: "90vh", overflowY: "auto"
-          }}>
-            <h2 style={{ color: "var(--accent)", marginBottom: "8px" }}>Workout Complete! 🎉</h2>
-            <p style={{ color: "var(--text-gray, #a1a1aa)", marginBottom: "20px" }}>Great work today</p>
+  return (
+    <div className="dashboard-container">
+      <div className="dashboard-wrapper" style={{ maxWidth: "800px" }}>
+        
+        <header className="dashboard-header">
+          <div>
+            <div className="dashboard-logo" onClick={() => (window.location.href = "/dashboard")}>← Framework Dashboard</div>
+            <h1 style={{ fontSize: "1.6rem", fontWeight: "700", marginTop: "8px" }}>{data.workoutName || `Week ${week}, Day ${day}`}</h1>
+          </div>
+          <span style={{ fontSize: "0.8rem", color: "var(--accent)", background: "rgba(6, 182, 212, 0.1)", padding: "6px 12px", borderRadius: "20px", fontWeight: "600", letterSpacing: "0.05em" }}>
+            {program} Engine
+          </span>
+        </header>
 
-            <div style={{ marginBottom: "24px" }}>
-              <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>📊 Session Stats</h3>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                <div style={{ background: "var(--bg-light, #2a2a35)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.timeToComplete}</div>
-                  <div style={{ fontSize: "12px", color: "var(--text-gray, #a1a1aa)" }}>Time</div>
+        {showReadiness && (
+          <div className="premium-card" style={{ marginBottom: "32px" }}>
+            <h3 className="card-title">🔬 Pre-Workout Readiness Profiler</h3>
+            <SessionReadiness adjustments={adjustments} setAdjustments={setAdjustments} onComplete={() => setShowReadiness(false)} />
+          </div>
+        )}
+
+        {/* Exercises Form Module */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          {data.exercises.map((ex, exIdx) => {
+            const lastPerformed = history[ex.liftName];
+            return (
+              <div key={exIdx} className="premium-card">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "16px", borderBottom: "1px solid var(--border-subtle)", paddingBottom: "16px" }}>
+                  <div>
+                    <h3 style={{ fontSize: "1.2rem", fontWeight: "600" }}>{ex.liftName}</h3>
+                    <p style={{ color: "var(--text-gray)", fontSize: "0.85rem", marginTop: "2px" }}>{ex.notes || "Standard execution speed balance."}</p>
+                  </div>
+                  {lastPerformed && (
+                    <div style={{ textAlign: "right", fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                      <div>Prior Session Record:</div>
+                      <span style={{ color: "var(--text-light)" }}>{lastPerformed.weight}kg x {lastPerformed.reps} @ RPE {lastPerformed.rpe}</span>
+                    </div>
+                  )}
                 </div>
-                <div style={{ background: "var(--bg-light, #2a2a35)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.totalVolume}kg</div>
-                  <div style={{ fontSize: "12px", color: "var(--text-gray, #a1a1aa)" }}>Total Volume</div>
-                </div>
-                <div style={{ background: "var(--bg-light, #2a2a35)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.exercisesCompleted}</div>
-                  <div style={{ fontSize: "12px", color: "var(--text-gray, #a1a1aa)" }}>Exercises</div>
-                </div>
-                <div style={{ background: "var(--bg-light, #2a2a35)", padding: "12px", borderRadius: "8px", textAlign: "center" }}>
-                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "var(--accent)" }}>{workoutSummary.streak} 🔥</div>
-                  <div style={{ fontSize: "12px", color: "var(--text-gray, #a1a1aa)" }}>Day Streak</div>
+
+                {/* Table Layout Framework */}
+                <div style={{ overflowX: "auto" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.9rem" }}>
+                    <thead>
+                      <tr style={{ color: "var(--text-muted)", borderBottom: "1px solid var(--border-subtle)" }}>
+                        <th style={{ padding: "8px" }}>Set Order</th>
+                        <th style={{ padding: "8px" }}>Targets Matrix</th>
+                        <th style={{ padding: "8px" }}>Weight (kg)</th>
+                        <th style={{ padding: "8px" }}>Reps Completed</th>
+                        <th style={{ padding: "8px" }}>Target RPE</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ex.sets.map((set, setIdx) => {
+                        const keyBase = `${exIdx}_${setIdx}`;
+                        const setTypeLabel = set.isTopSet ? "🔥 Top Set" : set.isBackOff ? "📉 Back-Off" : "⚙️ Working";
+                        return (
+                          <tr key={setIdx} style={{ borderBottom: "1px solid rgba(255,255,255,0.02)" }}>
+                            <td style={{ padding: "12px 8px", fontWeight: "600", color: set.isTopSet ? "var(--accent)" : "inherit" }}>{setTypeLabel}</td>
+                            <td style={{ padding: "12px 8px", color: "var(--text-gray)", fontSize: "0.85rem" }}>{set.targetDescription}</td>
+                            <td style={{ padding: "6px" }}>
+                              <input type="number" step="2.5" placeholder="00.0" value={inputs[`${keyBase}_weight`]} onChange={e => handleInputChange(exIdx, setIdx, "weight", e.target.value)} className="premium-input" style={{ padding: "8px" }} />
+                            </td>
+                            <td style={{ padding: "6px" }}>
+                              <input type="number" placeholder="0" value={inputs[`${keyBase}_reps`]} onChange={e => handleInputChange(exIdx, setIdx, "reps", e.target.value)} className="premium-input" style={{ padding: "8px" }} />
+                            </td>
+                            <td style={{ padding: "6px" }}>
+                              <input type="number" step="0.5" placeholder="RPE" value={inputs[`${keyBase}_rpe`]} onChange={e => handleInputChange(exIdx, setIdx, "rpe", e.target.value)} className="premium-input" style={{ padding: "8px" }} />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            </div>
+            );
+          })}
+        </div>
 
-            {workoutSummary.prs && workoutSummary.prs.length > 0 && (
-              <div style={{ marginBottom: "24px" }}>
-                <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>🏆 Personal Records</h3>
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                  {workoutSummary.prs.map((pr, i) => (
-                    <li key={i} style={{ padding: "4px 0", color: "#4caf50" }}>✓ {pr}</li>
-                  ))}
-                </ul>
+        <button onClick={handleSubmitWorkout} className="premium-btn" style={{ width: "100%", marginTop: "32px", fontSize: "1.05rem" }}>
+          Commit Workout Session Ledger →
+        </button>
+
+        {/* Success Analytics Modal Overlay */}
+        {showCompletionModal && workoutSummary && (
+          <div className="modal-overlay" style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "20px" }}>
+            <div className="premium-card" style={{ maxWidth: "500px", width: "100%", borderColor: "var(--accent)" }}>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: "700", color: "var(--accent)", marginBottom: "12px" }}>Session Fully Processed</h2>
+              <p style={{ color: "var(--text-gray)", fontSize: "0.95rem", marginBottom: "20px" }}>The analysis engine has registered and saved your volume allocations.</p>
+              
+              <div style={{ background: "var(--bg-dark)", padding: "16px", borderRadius: "8px", display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.9rem", marginBottom: "24px" }}>
+                <div>⏱️ <strong>Completed sets counted:</strong> {workoutSummary.exercisesCompleted}</div>
+                <div>🔥 <strong>New Performance Records:</strong> {workoutSummary.prs?.length || 0} PR vectors written</div>
+                <div>📉 <strong>System Fatigue Generated:</strong> {workoutSummary.timeToComplete || "Validated"}</div>
               </div>
-            )}
 
-            {workoutSummary.underRPE && workoutSummary.underRPE.length > 0 && (
-              <div style={{ marginBottom: "24px" }}>
-                <h3 style={{ fontSize: "1rem", marginBottom: "12px" }}>💪 Nailed It</h3>
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                  {workoutSummary.underRPE.map((r, i) => (
-                    <li key={i} style={{ padding: "4px 0", color: "var(--accent)" }}>✓ {r}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {workoutSummary.nextFocus && (
-              <div style={{ marginBottom: "24px", background: "var(--bg-light, #2a2a35)", padding: "16px", borderRadius: "8px" }}>
-                <h3 style={{ fontSize: "1rem", marginBottom: "8px" }}>📝 Next Session Focus</h3>
-                <p style={{ fontSize: "14px", color: "var(--text-gray, #a1a1aa)" }}>{workoutSummary.nextFocus}</p>
-              </div>
-            )}
-
-            <div style={{ display: "flex", gap: "12px", marginTop: "20px", flexWrap: "wrap" }}>
-              <button
-                onClick={() => {
-                  const shareText = `I finally stopped guessing my weights. @ApexMethod calculates every set based on my actual performance. 30 days free.`;
-                  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
-                }}
-                style={{ flex: 1, padding: "12px", background: "#1da1f2", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}
-              >
-                🐦 Share on X
-              </button>
-              <button
-                onClick={() => {
-                  const shareText = `🔥 Just crushed my ${program} workout on Apex Method!\n\nWeek ${week}, Day ${day}\n✅ ${workoutSummary.exercisesCompleted} exercises completed\n💪 ${workoutSummary.prs?.length || 0} personal records\n⏱️ ${workoutSummary.timeToComplete}`;
-                  window.open(`https://www.facebook.com/sharer/sharer.php?u=https://forge-of-olympus.onrender.com&quote=${encodeURIComponent(shareText)}`, '_blank');
-                }}
-                style={{ flex: 1, padding: "12px", background: "#4267B2", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" }}
-              >
-                📘 Share on Facebook
-              </button>
-              <button
-                onClick={() => {
-                  setShowCompletionModal(false);
-                  window.location.href = "/dashboard";
-                }}
-                style={{ flex: 1, padding: "12px", background: "var(--accent)", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" }}
-              >
-                Go to Dashboard
+              <button onClick={() => { setShowCompletionModal(false); window.location.href = "/dashboard"; }} className="premium-btn" style={{ width: "100%" }}>
+                Return to Command Center
               </button>
             </div>
           </div>
-        </div>
-      )}
-      {showOnboardingModal && (
-  <div style={{
-    position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-    background: "rgba(0,0,0,0.95)", zIndex: 2000,
-    display: "flex", alignItems: "center", justifyContent: "center", padding: "20px"
-  }}>
-    <div style={{
-      background: "var(--card-bg, #1e1e2a)", borderRadius: "24px", padding: "30px",
-      maxWidth: "500px", width: "100%", border: "1px solid var(--accent)"
-    }}>
-      <h2 style={{ color: "var(--accent)", marginBottom: "16px" }}>Welcome to Apex Method!</h2>
-      <p style={{ marginBottom: "20px" }}>We need your current 1RM for the following lifts to give you accurate weight recommendations.</p>
-      {onboardingLifts.map(lift => (
-        <div key={lift.liftName} style={{ marginBottom: "16px" }}>
-          <label style={{ display: "block", marginBottom: "6px", fontWeight: "bold" }}>{lift.liftName} (1RM in kg)</label>
-          <input
-            type="number"
-            step="2.5"
-            value={onboardingValues[lift.liftName] || ""}
-            onChange={e => setOnboardingValues(prev => ({ ...prev, [lift.liftName]: e.target.value }))}
-            style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg-dark)", color: "white" }}
-            placeholder="e.g., 140"
-          />
-        </div>
-      ))}
-      <div style={{ display: "flex", gap: "12px", marginTop: "24px" }}>
-        <button onClick={handleInitializeLifts} disabled={onboardingSubmitting} style={{
-          flex: 1, padding: "12px", background: "var(--accent)", color: "#000", border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer"
-        }}>
-          {onboardingSubmitting ? "Saving..." : "Start Training"}
-        </button>
+        )}
+
       </div>
-    </div>
-  </div>
-)}
     </div>
   );
 }

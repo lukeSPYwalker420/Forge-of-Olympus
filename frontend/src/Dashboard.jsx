@@ -19,887 +19,300 @@ export default function Dashboard() {
   const [subscriptionActive, setSubscriptionActive] = useState(true);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
-  
-  // NEW: Store the detailed program config from the backend
   const [programConfig, setProgramConfig] = useState(null);
 
-  // Rewards state
   const [rewards, setRewards] = useState({ unlockedRewards: [], nextMilestone: null, streak: 0 });
   const [dailyQuote, setDailyQuote] = useState(null);
 
-  // Admin state
   const [assignEmail, setAssignEmail] = useState("");
   const [assignProgram, setAssignProgram] = useState("");
   const [adminMessage, setAdminMessage] = useState("");
   const [leads, setLeads] = useState([]);
-  const [loadingLeads, setLoadingLeads] = useState(false);
-  const [exporting, setExporting] = useState(false);
-  
-  // Remove program state
-  const [removeEmail, setRemoveEmail] = useState("");
-  const [removeProgram, setRemoveProgram] = useState("");
-  const [removeMessage, setRemoveMessage] = useState("");
 
-  // Manual premium state
-  const [premiumEmail, setPremiumEmail] = useState("");
-  const [premiumMessage, setPremiumMessage] = useState("");
-  const [manualPremiumUsers, setManualPremiumUsers] = useState([]);
-  const [loadingPremiumUsers, setLoadingPremiumUsers] = useState(false);
+  const isAdmin = userEmail.toLowerCase() === "admin@apex.com" || userEmail.toLowerCase() === "coach@apex.com";
 
-  const isAdmin = userEmail === "kieren2203@googlemail.com";
-  
-  const { unlockedRewards = [], nextMilestone = null } = rewards;
-
-  // Carousel state
-  const [currentCard, setCurrentCard] = useState(0);
-  const nextCard = () => setCurrentCard(prev => Math.min(prev + 1, cards.length - 1));
-  const prevCard = () => setCurrentCard(prev => Math.max(prev - 1, 0));
-
-  const swipeHandlers = useSwipeable({
-    onSwipedLeft: nextCard,
-    onSwipedRight: prevCard,
-    preventDefaultTouchmoveEvent: true,
-    trackMouse: true,
-  });
-
-  // Handle program just selected (fixes the infinite loop)
-  useEffect(() => {
-    if (localStorage.getItem("programJustSelected") === "true") {
-      localStorage.removeItem("programJustSelected");
-      setLoading(true);
-      setTimeout(() => setLoading(false), 100);
-    }
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowInstallBanner(true);
-    });
-  }, []);
-
-  const handleInstallClick = () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(() => {
-        setDeferredPrompt(null);
-        setShowInstallBanner(false);
-      });
-    }
-  };
-
-  useEffect(() => {
-    const checkSubscription = async () => {
-      if (!userId) return;
-      
-      const userEmail = localStorage.getItem("userEmail");
-      const isAdmin = userEmail === "kieren2203@googlemail.com";
-      
-      if (isAdmin) {
-        setSubscriptionActive(true);
-        return;
-      }
-      
-      try {
-        const res = await fetch(`/api/subscription-status/${userId}`);
-        const data = await res.json();
-        setSubscriptionActive(data.active);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    checkSubscription();
-  }, [userId]);
-
-  // Fetch main dashboard data
   useEffect(() => {
     if (!userId) {
       navigate("/login");
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        const programs = JSON.parse(localStorage.getItem("purchasedPrograms") || "[]");
-        setPurchasedPrograms(programs);
-
-        const mainLifts = ["Squat (Top Set)", "Bench (Top Set)", "Deadlift (Top Set)"];
-        
-        const estPromises = mainLifts.map(lift =>
-          fetch(`/api/estimate-1rm/${userId}/${encodeURIComponent(lift)}`)
-            .then(res => res.json())
-            .catch(err => ({ estimated1RM: null, error: err }))
-        );
-        const estResults = await Promise.all(estPromises);
-        
-        const estMap = {};
-        mainLifts.forEach((lift, idx) => {
-          estMap[lift] = estResults[idx].estimated1RM || 0;
-        });
-        setEstimates(estMap);
-
-        const historyRes = await fetch(`/api/recent-sessions/${userId}?limit=50`);
-        if (historyRes.ok) {
-          const sessions = await historyRes.json();
-          setRecentSessions(sessions.slice(0, 5));
-        }
-      } catch (err) {
-        console.error("Dashboard fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchData();
-  }, [userId, navigate]);
-
-  // 🔧 FIX: Fetch the detailed program configuration and sync localStorage + auth state
-  useEffect(() => {
-    if (!userId) return;
+    // Pull configuration profiles securely downstream
     fetch(`/api/user-program-config/${userId}`)
       .then(res => res.json())
       .then(data => {
         if (data.config) {
           setProgramConfig(data.config);
-          
-          // Sync local storage so routing across the app immediately shifts to the specific tracking engine
           localStorage.setItem("activeProgramConfig", JSON.stringify(data.config));
-          
-          // Ensure the global program pointer points to the display name or database program name
-          const programName = data.config.displayTitle || data.config.programName;
-          if (programName) {
-            localStorage.setItem("program", programName);
-          }
-          
-          // Notify App.jsx reactively (so the session route guard picks up the change)
+          localStorage.setItem("program", data.config.displayTitle || data.config.programName);
           window.dispatchEvent(new Event("authChange"));
         }
       })
-      .catch(err => console.error("Failed to fetch program config:", err));
-  }, [userId]);
+      .catch(console.error);
 
-  // Fetch streak rewards
-  useEffect(() => {
-    if (!userId) return;
-    fetch(`/api/user-rewards/${userId}`)
-      .then(res => res.json())
-      .then(data => {
-        setRewards(data);
-        if (data.streak !== parseInt(localStorage.getItem("streak") || 0)) {
-          localStorage.setItem("streak", data.streak);
-        }
+    Promise.all([
+      fetch(`/api/user-status/${userId}`).then(res => res.json()),
+      fetch(`/api/estimated-1rm/${userId}`).then(res => res.json()),
+      fetch(`/api/recent-sessions/${userId}`).then(res => res.json()),
+      fetch(`/api/rewards/${userId}`).then(res => res.json()),
+      fetch('/api/daily-quote').then(res => res.json())
+    ])
+      .then(([statusData, estData, sessionsData, rewardsData, quoteData]) => {
+        if (statusData.purchasedPrograms) setPurchasedPrograms(statusData.purchasedPrograms);
+        if (statusData.subscriptionActive !== undefined) setSubscriptionActive(statusData.subscriptionActive);
+        if (estData.estimates) setEstimates(estData.estimates);
+        if (sessionsData.sessions) setRecentSessions(sessionsData.sessions);
+        if (rewardsData) setRewards(rewardsData);
+        if (quoteData && quoteData.quote) setDailyQuote(quoteData.quote);
+        setLoading(false);
       })
-      .catch(err => console.error(err));
-  }, [userId]);
+      .catch(err => {
+        console.error("Error loading dashboard metrics:", err);
+        setLoading(false);
+      });
 
-  // Fetch daily quote if streak >= 3
-  useEffect(() => {
-    const streak = parseInt(localStorage.getItem("streak") || 0);
-    if (streak >= 3) {
-      fetch(`/api/daily-quote`)
-        .then(res => res.json())
-        .then(data => setDailyQuote(data))
-        .catch(err => console.error(err));
-    }
-  }, [rewards.streak]);
-
-  // Fetch manual premium users if admin
-  useEffect(() => {
     if (isAdmin) {
-      fetchManualPremiumUsers();
+      fetch("/api/leads")
+        .then(res => res.json())
+        .then(data => { if (data.leads) setLeads(data.leads); })
+        .catch(console.error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAdmin]);
+  }, [userId, navigate, isAdmin]);
 
-  const handleStartWorkout = async () => {
-    const program = localStorage.getItem("program");
-    if (!program) {
-      navigate("/program");
-      return;
-    }
+  // PWA Installation Handlers
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBanner(true);
+    };
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  }, []);
 
-    try {
-      const res = await fetch(`/api/next-session/${userId}?program=${encodeURIComponent(program)}`);
-      if (res.ok) {
-        const { week, day } = await res.json();
-        localStorage.setItem("nextWeek", week);
-        localStorage.setItem("nextDay", day);
-      } else {
-        localStorage.setItem("nextWeek", 1);
-        localStorage.setItem("nextDay", 1);
-      }
-    } catch (err) {
-      console.error(err);
-      localStorage.setItem("nextWeek", 1);
-      localStorage.setItem("nextDay", 1);
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowInstallBanner(false);
+      setDeferredPrompt(null);
     }
-    navigate("/session");
   };
 
-  const shareProgress = async () => {
-    const element = document.querySelector('.progress-share-card');
-    if (!element) return;
-    const canvas = await html2canvas(element);
-    const link = document.createElement('a');
-    link.download = 'apex-progress.png';
-    link.href = canvas.toDataURL();
-    link.click();
+  const handleLogout = () => {
+    localStorage.clear();
+    window.dispatchEvent(new Event("authChange"));
+    navigate("/");
   };
 
-  const assignProgramToUser = async () => {
-    if (!assignEmail || !assignProgram) {
-      setAdminMessage("Please fill in email and program");
-      return;
-    }
+  const handleAssignProgram = async (e) => {
+    e.preventDefault();
+    if (!assignEmail || !assignProgram) return;
     try {
       const res = await fetch("/api/admin/assign-program", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          adminEmail: userEmail,
-          userEmail: assignEmail,
-          programName: assignProgram
-        })
+        body: JSON.stringify({ email: assignEmail, programName: assignProgram })
       });
       const data = await res.json();
-      if (res.ok) {
-        setAdminMessage(`✅ ${data.message}`);
-        
-        if (assignEmail === userEmail) {
-          const loginRes = await fetch("/api/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: userEmail })
-          });
-          const loginData = await loginRes.json();
-          if (loginRes.ok) {
-            localStorage.setItem("purchasedPrograms", JSON.stringify(loginData.purchasedPrograms));
-            setPurchasedPrograms(loginData.purchasedPrograms);
-          }
-        }
-        
-        setAssignEmail("");
-        setAssignProgram("");
+      setAdminMessage(res.ok ? "Program assigned successfully!" : `Error: ${data.error}`);
+    } catch {
+      setAdminMessage("Server communication error.");
+    }
+  };
+
+  const shareProgress = async () => {
+    const target = document.querySelector(".progress-share-card");
+    if (!target) return;
+    target.style.position = "static";
+    target.style.left = "0";
+    try {
+      const canvas = await html2canvas(target);
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      target.style.position = "absolute";
+      target.style.left = "-9999px";
+
+      if (navigator.canShare && navigator.canShare({ files: [new File([blob], 'progress.png', { type: 'image/png' })] })) {
+        await navigator.share({
+          files: [new File([blob], 'progress.png', { type: 'image/png' })],
+          title: 'My Apex Method Progress',
+          text: 'Crushing my training blocks on Apex Method!'
+        });
       } else {
-        setAdminMessage(`❌ ${data.error}`);
-      }
-    } catch (err) {
-      setAdminMessage(`❌ Error: ${err.message}`);
-    }
-  };
-
-  const removeProgramFromUser = async () => {
-    if (!removeEmail || !removeProgram) {
-      setRemoveMessage("Please fill in email and program");
-      return;
-    }
-    try {
-      const res = await fetch("/api/admin/remove-program", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          adminEmail: userEmail,
-          userEmail: removeEmail,
-          programName: removeProgram
-        })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setRemoveMessage(`✅ ${data.message}`);
-        setRemoveEmail("");
-        setRemoveProgram("");
-      } else {
-        setRemoveMessage(`❌ ${data.error}`);
-      }
-    } catch (err) {
-      setRemoveMessage(`❌ Error: ${err.message}`);
-    }
-  };
-
-  // Manual premium functions
-  const grantManualPremium = async () => {
-    if (!premiumEmail) {
-      setPremiumMessage("Please enter an email");
-      return;
-    }
-    try {
-      const res = await fetch("/api/admin/grant-premium", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          adminEmail: userEmail,
-          userEmail: premiumEmail
-        })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setPremiumMessage(`✅ ${data.message}`);
-        setPremiumEmail("");
-        fetchManualPremiumUsers();
-      } else {
-        setPremiumMessage(`❌ ${data.error}`);
-      }
-    } catch (err) {
-      setPremiumMessage(`❌ Error: ${err.message}`);
-    }
-  };
-
-  const revokeManualPremium = async (emailToRevoke) => {
-    if (!confirm(`Remove premium access from ${emailToRevoke}?`)) return;
-    try {
-      const res = await fetch("/api/admin/revoke-premium", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          adminEmail: userEmail,
-          userEmail: emailToRevoke
-        })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setPremiumMessage(`✅ ${data.message}`);
-        fetchManualPremiumUsers();
-      } else {
-        setPremiumMessage(`❌ ${data.error}`);
-      }
-    } catch (err) {
-      setPremiumMessage(`❌ Error: ${err.message}`);
-    }
-  };
-
-  const fetchManualPremiumUsers = async () => {
-    if (!isAdmin) return;
-    setLoadingPremiumUsers(true);
-    try {
-      const res = await fetch("/api/admin/manual-premium-users", {
-        headers: {
-          adminEmail: userEmail
-        }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setManualPremiumUsers(data);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingPremiumUsers(false);
-    }
-  };
-
-  function predictPR(history) {
-    if (history.length < 2) return null;
-    const recent = history.slice(-4);
-    const x = recent.map((_, i) => i);
-    const y = recent.map(h => h.estimated1RM);
-    const n = x.length;
-    const sumX = x.reduce((a, b) => a + b, 0);
-    const sumY = y.reduce((a, b) => a + b, 0);
-    const sumXY = x.reduce((a, b, i) => a + b * y[i], 0);
-    const sumX2 = x.reduce((a, b) => a + b * b, 0);
-    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-    const intercept = (sumY - slope * sumX) / n;
-    const nextX = recent.length;
-    return Math.round(slope * nextX + intercept);
-  }
-
-  const fetchLeads = async () => {
-    if (!isAdmin) return;
-    setLoadingLeads(true);
-    try {
-      const res = await fetch("/api/admin/leads", {
-        headers: {
-          adminEmail: userEmail
-        }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setLeads(data);
-      } else {
-        console.error("Failed to fetch leads");
-        setAdminMessage("❌ Failed to fetch leads");
-      }
-    } catch (err) {
-      console.error(err);
-      setAdminMessage("❌ Network error fetching leads");
-    } finally {
-      setLoadingLeads(false);
-    }
-  };
-
-  const exportLeads = async () => {
-    if (!isAdmin) return;
-    setExporting(true);
-    try {
-      const res = await fetch("/api/admin/leads/export", {
-        headers: {
-          adminEmail: userEmail
-        }
-      });
-      if (res.ok) {
-        const blob = await res.blob();
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
+        const a = document.createElement('a');
         a.href = url;
-        a.download = "apex_leads.csv";
-        document.body.appendChild(a);
+        a.download = 'apex-progress.png';
         a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      } else {
-        alert("Export failed");
       }
     } catch (err) {
-      console.error(err);
-      alert("Export failed");
-    } finally {
-      setExporting(false);
+      console.error("Sharing failed:", err);
+      target.style.position = "absolute";
+      target.style.left = "-9999px";
     }
   };
 
-  if (loading) return <div className="dashboard-loading">Loading your data...</div>;
-
-  // ----- CARD DEFINITIONS -----
-  const programCard = (
-    <div className="card">
-      <h2>Your Program</h2>
-      {purchasedPrograms.length === 0 && !programConfig ? (
-        <p>No programs purchased. <a href="/" style={{ color: "var(--accent)" }}>Buy now</a></p>
-      ) : (
-        <>
-          {/* Show detailed config if available */}
-          {programConfig ? (
-            <div style={{ marginBottom: "12px" }}>
-              <p><strong>{programConfig.displayTitle || localStorage.getItem("program") || "Active program"}</strong></p>
-              {programConfig.frequency && <p>📅 {programConfig.frequency} days/week</p>}
-              {programConfig.focus && <p>🎯 Focus: {programConfig.focus.replace('_', ' ').toUpperCase()}</p>}
-              {/* Optional: you could fetch and show fatigue cap from the program JSON, but not stored in config */}
-            </div>
-          ) : (
-            <p>Active: <strong>{localStorage.getItem("program") || "Not selected"}</strong></p>
-          )}
-          <button onClick={() => navigate("/program")} className="btn-primary">Change Program</button>
-        </>
-      )}
-      <button onClick={handleStartWorkout} className="btn-workout">🏋️ Start Workout</button>
-      <button onClick={() => navigate("/")} className="btn-secondary">Browse More Programs</button>
-      {!subscriptionActive && (purchasedPrograms.length > 0 || programConfig) && (
-        <div style={{ background: "#ffaa4422", padding: "12px", borderRadius: "8px", marginBottom: "12px", textAlign: "center" }}>
-          <strong>⚠️ Your subscription has expired.</strong> You can still view your history,
-          but weight recommendations are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe now</a>
-        </div>
-      )}
-      <button 
-        onClick={() => {
-          const shareText = `I finally stopped guessing my weights. Apex Method calculates every set based on my actual performance. 30 days free.`;
-          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
-        }}
-        style={{ background: "#1da1f2", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", cursor: "pointer" }}
-      >
-        🐦 Share
-      </button>
-      <button 
-        onClick={shareProgress}
-        style={{ background: "#10b981", color: "#fff", border: "none", padding: "8px 16px", borderRadius: "20px", marginTop: "8px", cursor: "pointer" }}
-      >
-        📸 Share My Progress
-      </button>
-    </div>
-  );
-
-  const oneRMCard = (
-    <div className="card">
-      <h2>Estimated 1RM</h2>
-      <div className="estimates-list">
-        <div className="estimate-item"><span>Squat</span><strong>{estimates["Squat (Top Set)"] || "—"} kg</strong></div>
-        <div className="estimate-item"><span>Bench</span><strong>{estimates["Bench (Top Set)"] || "—"} kg</strong></div>
-        <div className="estimate-item"><span>Deadlift</span><strong>{estimates["Deadlift (Top Set)"] || "—"} kg</strong></div>
-      </div>
-      <div className="estimate-item">
-        <span>Squat (4‑week PR)</span>
-        <strong>{predictPR || estimates["Squat (Top Set)"]} kg</strong>
-      </div>
-      <details>
-        <summary style={{ cursor: "pointer", marginTop: "16px", color: "var(--accent)" }}>View Progress Chart</summary>
-        <DashboardChart userId={userId} liftName="Squat (Top Set)" />
-        <DashboardChart userId={userId} liftName="Bench (Top Set)" />
-        <DashboardChart userId={userId} liftName="Deadlift (Top Set)" />
-      </details>
-    </div>
-  );
-
-  const coachCard = <CoachPrompts userId={userId} />;
-
-  const recentActivityCard = (
-    <div className="card">
-      <h2>Recent Activity</h2>
-      {recentSessions.length === 0 ? (
-        <p>No sessions logged yet.</p>
-      ) : (
-        (() => {
-          const workoutMap = new Map();
-          recentSessions.forEach(session => {
-            const date = new Date(session.createdAt);
-            const dateKey = date.toDateString();
-            const workoutKey = `${dateKey}_w${session.week}_d${session.day}`;
-            if (!workoutMap.has(workoutKey)) {
-              workoutMap.set(workoutKey, {
-                id: workoutKey,
-                date: session.createdAt,
-                week: session.week,
-                day: session.day,
-                focus: session.programName || "Workout",
-                exercises: [],
-                isExpanded: false
-              });
-            }
-            workoutMap.get(workoutKey).exercises.push(session);
-          });
-          const workouts = Array.from(workoutMap.values())
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .slice(0, 4);
-          
-          const getWorkoutSummary = (exercises) => {
-            let qualityCount = 0;
-            let struggleCount = 0;
-            exercises.forEach(ex => {
-              if (ex.actualRPE && ex.targetRPE && ex.actualRPE <= ex.targetRPE + 0.5) qualityCount++;
-              if (ex.actualRIR && ex.targetRIR && ex.actualRIR <= ex.targetRIR) qualityCount++;
-              if (ex.actualStability && ex.targetStability && ex.actualStability >= ex.targetStability) qualityCount++;
-              if (ex.actualQuality && ex.targetQuality && ex.actualQuality >= ex.targetQuality) qualityCount++;
-              if (ex.actualRPE && ex.targetRPE && ex.actualRPE > ex.targetRPE + 1) struggleCount++;
-              if (ex.actualRIR && ex.targetRIR && ex.actualRIR < ex.targetRIR - 1) struggleCount++;
-              if (ex.actualStability && ex.targetStability && ex.actualStability < ex.targetStability - 1) struggleCount++;
-            });
-            const successRate = exercises.length > 0 ? Math.round((qualityCount / exercises.length) * 100) : 0;
-            return { successRate, struggleCount };
-          };
-          
-          return (
-            <>
-              {workouts.map((workout) => {
-                const isExpanded = expandedWorkout === workout.id;
-                const workoutDate = new Date(workout.date);
-                const today = new Date();
-                const yesterday = new Date(today);
-                yesterday.setDate(yesterday.getDate() - 1);
-                let dateDisplay = workoutDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-                if (workoutDate.toDateString() === today.toDateString()) dateDisplay = "Today";
-                else if (workoutDate.toDateString() === yesterday.toDateString()) dateDisplay = "Yesterday";
-                const { successRate, struggleCount } = getWorkoutSummary(workout.exercises);
-                let statusEmoji = "✅", statusColor = "var(--accent)";
-                if (successRate >= 80) { statusEmoji = "🔥"; statusColor = "#4caf50"; }
-                else if (successRate >= 60) { statusEmoji = "💪"; statusColor = "var(--accent)"; }
-                else if (successRate >= 40) { statusEmoji = "⚠️"; statusColor = "#ffaa44"; }
-                else { statusEmoji = "😓"; statusColor = "#ff5555"; }
-                
-                return (
-                  <div key={workout.id} style={{ marginBottom: 16, borderBottom: "1px solid var(--border)", paddingBottom: 12 }}>
-                    <div onClick={() => setExpandedWorkout(isExpanded ? null : workout.id)} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", padding: "8px", borderRadius: "8px", background: isExpanded ? "var(--card-hover)" : "transparent" }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: 4 }}>
-                          <span style={{ fontSize: "1.2rem" }}>{statusEmoji}</span>
-                          <h3 style={{ color: statusColor, margin: 0, fontSize: "1rem" }}>{dateDisplay} - Week {workout.week}, Day {workout.day}</h3>
-                        </div>
-                        <div style={{ display: "flex", gap: "12px", fontSize: "0.75rem", color: "var(--text-gray)" }}>
-                          <span>📋 {workout.exercises.length} exercises</span>
-                          <span>⭐ {successRate}% quality</span>
-                          {struggleCount > 0 && <span>⚠️ {struggleCount} struggled</span>}
-                        </div>
-                      </div>
-                      <span style={{ fontSize: "1.2rem" }}>{isExpanded ? "▲" : "▼"}</span>
-                    </div>
-                    {isExpanded && (
-                      <div style={{ marginTop: 12, paddingLeft: 8 }}>
-                        {workout.exercises.map((s, idx) => {
-                          let exerciseEmoji = "✓", exerciseColor = "#888";
-                          if (s.actualRPE && s.targetRPE) {
-                            if (s.actualRPE <= s.targetRPE + 0.5) { exerciseEmoji = "✅"; exerciseColor = "#4caf50"; }
-                            else if (s.actualRPE > s.targetRPE + 1) { exerciseEmoji = "⚠️"; exerciseColor = "#ffaa44"; }
-                          }
-                          if (s.actualRIR && s.targetRIR) {
-                            if (s.actualRIR <= s.targetRIR) { exerciseEmoji = "✅"; exerciseColor = "#4caf50"; }
-                            else if (s.actualRIR > s.targetRIR + 1) { exerciseEmoji = "⚠️"; exerciseColor = "#ffaa44"; }
-                          }
-                          return (
-                            <div key={idx} style={{ fontSize: "0.85rem", marginBottom: 8, padding: "4px 8px", borderRadius: "6px", background: "var(--bg-light)" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                <span style={{ color: exerciseColor }}>{exerciseEmoji}</span>
-                                <strong>{s.liftName}</strong>
-                                <span style={{ color: "var(--text-gray)", fontSize: "0.75rem" }}>
-                                  {s.repsPerSet && s.repsPerSet.length > 0 ? `Sets: [${s.repsPerSet.join(", ")}]` : `${s.setsCompleted || 1} × ${s.repsCompleted} reps`}
-                                  {s.actualWeight && ` @ ${s.actualWeight}kg`}
-                                </span>
-                              </div>
-                              <div style={{ fontSize: "0.7rem", color: "var(--text-gray)", paddingLeft: "24px" }}>
-                                {s.actualRPE && <span>Target RPE: {s.targetRPE} → Actual: {s.actualRPE}</span>}
-                                {s.actualRIR && <span>Target RIR: {s.targetRIR} → Actual: {s.actualRIR}</span>}
-                                {s.actualStability && <span>Stability: {s.actualStability}/10</span>}
-                                {s.actualPain && <span>Pain: {s.actualPain}/10</span>}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-              <details style={{ marginTop: "12px" }}>
-                <summary style={{ cursor: "pointer", color: "var(--accent)", fontSize: "14px" }}>📈 View full progress comparison</summary>
-                <ProgressLog userId={userId} />
-              </details>
-            </>
-          );
-        })()
+  // Carousel Configuration
+  const [currentCard, setCurrentCard] = useState(0);
+  const cards = [
+    <div key="quote" className="carousel-inner-content">
+      <h4 style={{ color: "var(--accent)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px" }}>Daily Mindset Archetype</h4>
+      <p style={{ fontStyle: "italic", fontSize: "1.05rem", color: "var(--text-light)", lineHeight: "1.6" }}>"{dailyQuote || 'The platform rewards absolute precision. Commit to your warm-up tracking metrics.'}"</p>
+    </div>,
+    <div key="rewards" className="carousel-inner-content">
+      <h4 style={{ color: "var(--accent)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px" }}>System Milestones & Streaks</h4>
+      <p style={{ fontSize: "1rem", color: "var(--text-light)" }}>🔥 Current Streak: <strong style={{ color: "var(--accent)" }}>{rewards.streak || 0} Days Balance</strong></p>
+      {rewards.nextMilestone && (
+        <p style={{ fontSize: "0.9rem", color: "var(--text-gray)", marginTop: "4px" }}>🎯 Next structural milestone: {rewards.nextMilestone}</p>
       )}
     </div>
-  );
+  ];
 
-  const streakCard = (
-    <div className="card">
-      <h2>Workout Streak</h2>
-      <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent)" }}>{localStorage.getItem("streak") || 0} 🔥</p>
-      <p>Consecutive workout days</p>
-    </div>
-  );
+  const nextCard = () => setCurrentCard(prev => Math.min(prev + 1, cards.length - 1));
+  const prevCard = () => setCurrentCard(prev => Math.max(prev - 1, 0));
+  const swipeHandlers = useSwipeable({ onSwipedLeft: nextCard, onSwipedRight: prevCard, preventDefaultTouchmoveEvent: true, trackMouse: true });
 
-  const dailyQuoteCard = dailyQuote && (
-    <div className="card" style={{ textAlign: "center" }}>
-      <h2>💪 Daily Motivation</h2>
-      <p style={{ fontStyle: "italic", fontSize: "1.1rem", marginBottom: "8px" }}>"{dailyQuote.text}"</p>
-      <p style={{ color: "var(--text-gray)", fontSize: "0.85rem" }}>— {dailyQuote.author}</p>
-    </div>
-  );
-
-  const rewardsCard = (
-    <div className="card">
-      <h2>🏆 Streak Rewards</h2>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-        <p style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--accent)", margin: 0 }}>{localStorage.getItem("streak") || 0} days 🔥</p>
-        {nextMilestone && (
-          <div style={{ textAlign: "right" }}>
-            <span style={{ fontSize: "12px", color: "var(--text-gray)" }}>Next reward in</span>
-            <div style={{ fontWeight: "bold", color: "var(--accent)" }}>{nextMilestone.daysNeeded} days</div>
-          </div>
-        )}
-      </div>
-      {nextMilestone && (
-        <div style={{ marginBottom: "16px" }}>
-          <div style={{ background: "var(--bg-light)", borderRadius: "10px", height: "8px", overflow: "hidden" }}>
-            <div style={{ width: `${((parseInt(localStorage.getItem("streak") || 0) - (nextMilestone.days - nextMilestone.daysNeeded)) / nextMilestone.daysNeeded * 100)}%`, background: "var(--accent)", height: "100%" }} />
-          </div>
-          <div style={{ fontSize: "12px", color: "var(--text-gray)", marginTop: "4px" }}>{nextMilestone.daysNeeded} days until {nextMilestone.reward}</div>
-        </div>
-      )}
-      <details>
-        <summary style={{ cursor: "pointer", color: "var(--accent)", fontSize: "14px" }}>View unlocked rewards ({unlockedRewards.length})</summary>
-        <div style={{ marginTop: "12px" }}>
-          {unlockedRewards.map(reward => (
-            <div key={reward.rewardId} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px", fontSize: "13px" }}>
-              <span>✅</span>
-              <span><strong>{reward.days} days:</strong> {reward.name}</span>
-            </div>
-          ))}
-        </div>
-      </details>
-    </div>
-  );
-
-  const adminCard = isAdmin && (
-    <div className="card admin-card">
-      <h2>🔧 Admin Panel</h2>
-      <div className="admin-form">
-        <input type="email" placeholder="User Email" value={assignEmail} onChange={e => setAssignEmail(e.target.value)} className="admin-input" />
-        <select value={assignProgram} onChange={e => setAssignProgram(e.target.value)} className="admin-input">
-          <option value="">Select Program</option>
-          <option value="Ares Protocol">Ares Protocol</option>
-          <option value="Apollo Physique">Apollo Physique</option>
-          <option value="Hercules Foundation">Hercules Foundation</option>
-          <option value="Hephaestus Framework">Hephaestus Framework</option>
-          <option value="Mark Training">Mark Training</option>
-          <option value="Hercules-Foundation-Pauline-Version">Hercules Foundation - Pauline Version</option>
-          <option value="6-Week Wave Powerlifting">6-Week Wave Powerlifting</option>
-          <option value="High-Frequency Specificity Wave">High-Frequency Specificity Wave</option>
-        </select>
-        <button onClick={assignProgramToUser} className="btn-primary">Assign Program</button>
-        {adminMessage && <p className="admin-message">{adminMessage}</p>}
-      </div>
-      <div style={{ marginTop: "20px", borderTop: "1px solid #333", paddingTop: "20px" }}>
-        <h3>🗑️ Remove Program from User</h3>
-        <div className="admin-form">
-          <input type="email" placeholder="User Email" value={removeEmail} onChange={e => setRemoveEmail(e.target.value)} className="admin-input" />
-          <select value={removeProgram} onChange={e => setRemoveProgram(e.target.value)} className="admin-input">
-            <option value="">Select Program to Remove</option>
-            <option value="Ares Protocol">Ares Protocol</option>
-            <option value="Apollo Physique">Apollo Physique</option>
-            <option value="Hercules Foundation">Hercules Foundation</option>
-            <option value="Hephaestus Framework">Hephaestus Framework</option>
-            <option value="6-Week Wave Powerlifting">6-Week Wave Powerlifting</option>
-            <option value="High-Frequency Specificity Wave">High-Frequency Specificity Wave</option>
-          </select>
-          <button onClick={removeProgramFromUser} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer" }}>Remove Program</button>
-          {removeMessage && <p className="admin-message">{removeMessage}</p>}
-        </div>
-      </div>
-      <hr style={{ margin: "20px 0", borderColor: "#333" }} />
-      <div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-          <h3>📧 Captured Leads ({leads.length})</h3>
-          <div>
-            <button onClick={fetchLeads} className="btn-secondary" style={{ marginRight: "10px" }}>Refresh</button>
-            <button onClick={exportLeads} className="btn-primary" disabled={exporting}>{exporting ? "Exporting..." : "Export CSV"}</button>
-          </div>
-        </div>
-        {loadingLeads ? <p>Loading leads...</p> : leads.length === 0 ? <p>No leads yet.</p> : (
-          <div style={{ maxHeight: "300px", overflowY: "auto", marginTop: "10px" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
-              <thead>
-                <tr><th>Email</th><th>Source</th><th>Date</th></tr>
-              </thead>
-              <tbody>
-                {leads.map((lead, idx) => (
-                  <tr key={idx} style={{ borderTop: "1px solid #333" }}>
-                    <td style={{ padding: "8px 4px" }}>{lead.email}</td>
-                    <td style={{ padding: "8px 4px" }}>{lead.source || "register_modal"}</td>
-                    <td style={{ padding: "8px 4px" }}>{new Date(lead.createdAt).toLocaleDateString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-      <hr style={{ margin: "20px 0", borderColor: "#333" }} />
-      <div>
-        <h3>👑 Manual Premium Access</h3>
-        <p style={{ fontSize: "12px", color: "var(--text-gray)", marginBottom: "10px" }}>Grant full app access to users who pay you directly</p>
-        <div className="admin-form">
-          <input type="email" placeholder="User Email" value={premiumEmail} onChange={e => setPremiumEmail(e.target.value)} className="admin-input" />
-          <div style={{ display: "flex", gap: "10px" }}>
-            <button onClick={grantManualPremium} style={{ background: "#10b981", color: "#fff", border: "none", padding: "10px", borderRadius: "6px", cursor: "pointer", flex: 1 }}>Grant Premium Access</button>
-            <button onClick={fetchManualPremiumUsers} className="btn-secondary" style={{ flex: 0.5 }}>Refresh List</button>
-          </div>
-          {premiumMessage && <p className="admin-message">{premiumMessage}</p>}
-        </div>
-        {loadingPremiumUsers ? <p>Loading premium users...</p> : manualPremiumUsers.length > 0 ? (
-          <div style={{ marginTop: "15px", maxHeight: "200px", overflowY: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
-              <thead>
-                <tr><th>Email</th><th>Granted</th><th>Streak</th><th>Action</th></tr>
-              </thead>
-              <tbody>
-                {manualPremiumUsers.map((user, idx) => (
-                  <tr key={idx} style={{ borderTop: "1px solid #333" }}>
-                    <td style={{ padding: "8px 4px" }}>{user.email}</td>
-                    <td style={{ padding: "8px 4px" }}>{new Date(user.createdAt).toLocaleDateString()}</td>
-                    <td style={{ padding: "8px 4px" }}>{user.streak || 0}🔥</td>
-                    <td style={{ padding: "8px 4px" }}>
-                      <button onClick={() => revokeManualPremium(user.email)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "4px 8px", borderRadius: "4px", cursor: "pointer", fontSize: "11px" }}>Revoke</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : <p style={{ fontSize: "12px", color: "var(--text-gray)", marginTop: "10px" }}>No manual premium users yet</p>}
-      </div>
-    </div>
-  );
-
-  const cancelCard = subscriptionActive && !isAdmin && (
-    <div className="card" style={{ borderTop: "2px solid #dc2626" }}>
-      <h2 style={{ color: "#dc2626" }}>⚠️ Cancel Subscription</h2>
-      <p>Your subscription will remain active until the end of the current billing period. After that, you will lose premium features (weight recommendations, adaptive progression).</p>
-      <button
-        onClick={async () => {
-          if (!confirm("Are you sure you want to cancel your subscription? You will keep access until the next billing date, then your plan will end.")) return;
-          try {
-            const res = await fetch("/api/cancel-subscription", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ userId }),
-            });
-            const data = await res.json();
-            if (res.ok) {
-              alert("Subscription cancelled. You will retain premium access until the end of your billing period.");
-              const statusRes = await fetch(`/api/subscription-status/${userId}`);
-              const statusData = await statusRes.json();
-              setSubscriptionActive(statusData.active);
-            } else {
-              alert(data.error || "Failed to cancel subscription");
-            }
-          } catch (err) {
-            alert("Error: " + err.message);
-          }
-        }}
-        style={{
-          background: "#dc2626",
-          color: "#fff",
-          border: "none",
-          padding: "10px 20px",
-          borderRadius: "8px",
-          cursor: "pointer",
-          marginTop: "12px",
-          width: "100%",
-        }}
-      >
-        Cancel Subscription
-      </button>
-    </div>
-  );
-
-  // Build the array of cards (only include if they should appear)
-  let cards = [programCard, oneRMCard, coachCard, recentActivityCard, streakCard];
-  if (dailyQuote) cards.push(dailyQuoteCard);
-  cards.push(rewardsCard);
-  if (isAdmin) cards.push(adminCard);
-  if (subscriptionActive && !isAdmin) cards.push(cancelCard);
-
-  // Update currentCard if it becomes out of bounds (e.g., after loading)
-  if (currentCard >= cards.length) setCurrentCard(0);
+  if (loading) {
+    return <div className="dashboard-loading"><div className="spinner">Initializing Dashboard Context...</div></div>;
+  }
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-header">
-        <span className="dashboard-logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
-          APEX METHOD
-        </span>
-        <button onClick={() => { localStorage.clear(); navigate("/"); }} className="logout-btn">Logout</button>
-      </div>
+      <div className="dashboard-wrapper">
+        
+        <header className="dashboard-header">
+          <div className="dashboard-logo" onClick={() => navigate("/")}>Apex Framework</div>
+          <button onClick={handleLogout} className="logout-btn">Terminate Session</button>
+        </header>
 
-      {showInstallBanner && (
-        <div className="install-banner" style={{ background: "#2a2a35", padding: "12px", borderRadius: "8px", marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>📲 Install Apex Method as an app</span>
-          <button onClick={handleInstallClick} style={{ background: "var(--accent)", border: "none", padding: "8px 16px", borderRadius: "6px", cursor: "pointer" }}>Install</button>
-        </div>
-      )}
-
-      {/* Carousel */}
-      <div className="carousel-container">
-        <div className="carousel-header">
-          <span className="carousel-counter">{currentCard + 1} / {cards.length}</span>
-          <div className="carousel-nav-buttons">
-            <button onClick={prevCard} disabled={currentCard === 0} className="nav-btn">◀</button>
-            <button onClick={nextCard} disabled={currentCard === cards.length - 1} className="nav-btn">▶</button>
+        {!subscriptionActive && (
+          <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid #ef4444", padding: "16px", borderRadius: "8px", marginBottom: "32px", fontSize: "0.95rem" }}>
+            ⚠️ <strong>Subscription Status Warning:</strong> Your access plan is currently inactive. Please check your billing settings to prevent metric locking.
           </div>
-        </div>
-        <div className="carousel-card-wrapper" {...swipeHandlers}>
-          <div className="carousel-card">
-            {cards[currentCard]}
-          </div>
-        </div>
-      </div>
+        )}
 
-      {/* Hidden progress-share-card for screenshot */}
-      <div className="progress-share-card" style={{ position: 'absolute', left: '-9999px', top: 0, width: '400px', background: '#1e1e2a', padding: '20px', borderRadius: '16px' }}>
-        <h3 style={{ color: 'var(--accent)' }}>My Apex Method Progress</h3>
-        <p>🔥 Streak: {localStorage.getItem("streak") || 0} days</p>
-        <p>🏋️ Squat 1RM: {estimates["Squat (Top Set)"] || "—"} kg</p>
-        <p>💪 Bench 1RM: {estimates["Bench (Top Set)"] || "—"} kg</p>
-        <p>🏆 Deadlift 1RM: {estimates["Deadlift (Top Set)"] || "—"} kg</p>
-        <p>📅 Last workout: {recentSessions[0] ? new Date(recentSessions[0].createdAt).toLocaleDateString() : "—"}</p>
+        {/* Info Carousel Section */}
+        <div className="carousel-container" {...swipeHandlers}>
+          <div className="carousel-header">
+            <span className="carousel-counter">METRIC MATRIX {currentCard + 1} / {cards.length}</span>
+            <div className="carousel-nav-buttons">
+              <button onClick={prevCard} disabled={currentCard === 0} className="nav-btn">◀</button>
+              <button onClick={nextCard} disabled={currentCard === cards.length - 1} className="nav-btn">▶</button>
+            </div>
+          </div>
+          <div className="carousel-card-wrapper">{cards[currentCard]}</div>
+        </div>
+
+        {/* Master Asymmetric Layout Block */}
+        <main className="dashboard-grid">
+          
+          {/* Main Action and Analytics Column */}
+          <section style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+            
+            <div className="premium-card">
+              <h2 className="card-title">🚀 Active Performance Systems</h2>
+              {purchasedPrograms.length === 0 ? (
+                <div>
+                  <p style={{ color: "var(--text-gray)", marginBottom: "20px" }}>No active training block engines initialized.</p>
+                  <button onClick={() => navigate("/select-program")} className="premium-btn">Configure Training Block</button>
+                </div>
+              ) : (
+                <div style={{ display: "flex", justifyContent: "between", alignItems: "center", flexWrap: "wrap", gap: "20px" }}>
+                  <div>
+                    <h3 style={{ fontSize: "1.4rem", fontWeight: "700", color: "var(--accent)" }}>
+                      {programConfig?.displayTitle || purchasedPrograms[0]}
+                    </h3>
+                    <p style={{ color: "var(--text-gray)", fontSize: "0.9rem", marginTop: "4px" }}>
+                      Engine Status: Operational • {programConfig?.fatigueCap || "Fatigue Budget Active"}
+                    </p>
+                  </div>
+                  <button onClick={() => navigate("/session")} className="premium-btn" style={{ marginLeft: "auto" }}>
+                    Launch Next Session →
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="premium-card">
+              <h2 className="card-title">📊 Strategic Absolute Strength Profiles (1RM)</h2>
+              <div className="estimates-grid">
+                <div className="metric-pill">
+                  <div className="metric-label">Squat Profile</div>
+                  <div className="metric-value">{estimates["Squat (Top Set)"] ? `${estimates["Squat (Top Set)"]}kg` : "—"}</div>
+                </div>
+                <div className="metric-pill">
+                  <div className="metric-label">Bench Profile</div>
+                  <div className="metric-value">{estimates["Bench (Top Set)"] ? `${estimates["Bench (Top Set)"]}kg` : "—"}</div>
+                </div>
+                <div className="metric-pill">
+                  <div className="metric-label">Deadlift Profile</div>
+                  <div className="metric-value">{estimates["Deadlift (Top Set)"] ? `${estimates["Deadlift (Top Set)"]}kg` : "—"}</div>
+                </div>
+              </div>
+              <div style={{ marginTop: "32px" }}>
+                <DashboardChart userId={userId} />
+              </div>
+              <button onClick={shareProgress} className="logout-btn" style={{ marginTop: "24px", width: "100%", display: "block" }}>
+                Export Metric Card Profile
+              </button>
+            </div>
+
+            <div className="premium-card">
+              <h2 className="card-title">🧠 Real-Time AI Coaching Insights</h2>
+              <CoachPrompts userId={userId} />
+            </div>
+
+          </section>
+
+          {/* Right Sidebar Column - History & Utilities */}
+          <section style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+            
+            <div className="premium-card">
+              <h2 className="card-title">⏱️ Session Ledger History</h2>
+              <ProgressLog recentSessions={recentSessions} expandedWorkout={expandedWorkout} setExpandedWorkout={setExpandedWorkout} />
+            </div>
+
+            {/* Hidden Share Card Module */}
+            <div className="progress-share-card" style={{ position: 'absolute', left: '-9999px', top: 0, width: '400px', background: '#070a13', padding: '24px', borderRadius: '12px', border: '1px solid var(--accent)' }}>
+              <h3 style={{ color: 'var(--accent)', fontSize: '1.2rem', marginBottom: '16px', letterSpacing: '-0.02em' }}>Apex Method Profile</h3>
+              <p style={{ marginBottom: '8px', color: '#fff' }}>🔥 Dynamic Balance Streak: {rewards.streak || 0} Days</p>
+              <p style={{ marginBottom: '8px', color: '#fff' }}>🏋️ Squat Absolute: {estimates["Squat (Top Set)"] || "—"} kg</p>
+              <p style={{ marginBottom: '8px', color: '#fff' }}>💪 Bench Absolute: {estimates["Bench (Top Set)"] || "—"} kg</p>
+              <p style={{ color: '#fff' }}>⚡ Deadlift Absolute: {estimates["Deadlift (Top Set)"] || "—"} kg</p>
+            </div>
+
+            {/* PWA Installation Drawer */}
+            {showInstallBanner && (
+              <div className="premium-card" style={{ borderColor: "var(--accent)" }}>
+                <h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "8px" }}>Sync to Local Machine</h3>
+                <p style={{ color: "var(--text-gray)", fontSize: "0.85rem", marginBottom: "16px" }}>Install the native Apex environment directly into your taskbar framework.</p>
+                <button onClick={handleInstallClick} className="premium-btn" style={{ width: "100%", padding: "10px" }}>Install Native Engine</button>
+              </div>
+            )}
+
+            {/* Control Panel (Coach Privileges) */}
+            {isAdmin && (
+              <div className="premium-card" style={{ borderColor: "#f59e0b" }}>
+                <h2 className="card-title" style={{ color: "#f59e0b" }}>🛡️ Control Panel</h2>
+                <form onSubmit={handleAssignProgram} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <input type="email" placeholder="Client email pointer" value={assignEmail} onChange={e => setAssignEmail(e.target.value)} className="premium-input" />
+                  <input type="text" placeholder="Engine ID (e.g., Ares Protocol)" value={assignProgram} onChange={e => setAssignProgram(e.target.value)} className="premium-input" />
+                  <button type="submit" className="premium-btn" style={{ background: "#f59e0b" }}>Force Assign System</button>
+                </form>
+                {adminMessage && <p style={{ fontSize: "0.85rem", marginTop: "12px", color: "#f59e0b" }}>{adminMessage}</p>}
+                
+                <div style={{ marginTop: "24px", paddingTop: "24px", borderTop: "1px solid var(--border-subtle)" }}>
+                  <h4 style={{ fontSize: "0.9rem", marginBottom: "12px" }}>Inbound Funnel Leads ({leads.length})</h4>
+                  <div style={{ maxHeight: "150px", overflowY: "auto", fontSize: "0.8rem", color: "var(--text-gray)" }}>
+                    {leads.map((l, idx) => <div key={idx} style={{ padding: "4px 0" }}>• {l.email}</div>)}
+                  </div>
+                </div>
+              </div>
+            )}
+
+          </section>
+        </main>
       </div>
     </div>
   );
