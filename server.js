@@ -186,7 +186,8 @@ const PurchaseSchema = new mongoose.Schema({
   canceledAt: { type: Date },
   lastPaymentFailure: { type: Date },
   gracePeriodEnds: { type: Date },
-  programConfig: { type: Object, default: null } // stores { programId, displayTitle, frequency, focus }
+  programConfig: { type: Object, default: null }, // stores { programId, displayTitle, frequency, focus }
+  programData: { type: Object, default: null }   // NEW – stores the full program JSON
 });
 const Purchase = mongoose.model("Purchase", PurchaseSchema);
 
@@ -250,6 +251,7 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
+    const cachedProgram = programDataCache.get(session.id);
     let customerEmail = session.customer_details?.email || session.customer_email || session.metadata?.userEmail;
 
     if (customerEmail) {
@@ -296,7 +298,8 @@ await Purchase.findOneAndUpdate(
     canceledAt: null,
     lastPaymentFailure: null,
     gracePeriodEnds: null,
-    programConfig: programConfig   
+    programConfig: programConfig,  
+    programData: cachedProgram,
   }, // <-- Keep this matching closing curly brace
   { upsert: true, new: true }
 );
@@ -971,7 +974,7 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     if (!programName) return res.status(400).json({ error: "Missing program name" });
 
     programName = normalizeProgramName(programName);
-    const programData = loadProgram(programName);
+    const programData = purchase.programData;
     let session = programData.sessions.find(p => p.week === week && p.day === day);
     if (!session) return res.status(404).json({ error: "Session not found" });
 
@@ -1504,7 +1507,7 @@ app.get("/api/next-session/:userId", async (req, res) => {
 
     programName = normalizeProgramName(programName);
 
-    const programData = loadProgram(programName);
+    const programData = purchase.programData;
     const sessions = programData.sessions;
     if (!sessions.length) return res.status(404).json({ error: "No sessions in program" });
 
@@ -1694,7 +1697,8 @@ app.post("/api/admin/assign-program", async (req, res) => {
       purchasedAt: new Date(),
       canceledAt: null,
       lastPaymentFailure: null,
-      gracePeriodEnds: null
+      gracePeriodEnds: null,
+      programData: programData
     },
     { upsert: true }
   );
@@ -1702,8 +1706,9 @@ app.post("/api/admin/assign-program", async (req, res) => {
   console.log(`✅ Admin assigned ${programName} to ${normalizedUserEmail}`);
   res.json({ message: `Assigned ${programName} to ${normalizedUserEmail}` });
 });
-
+const programDataCache = new Map();
 app.post("/api/create-checkout-session", async (req, res) => {
+  const { programName, email, programData, customMetadata } = req.body;
   try {
     let { programName, email, customMetadata = {} } = req.body;
     
@@ -1759,6 +1764,10 @@ app.post("/api/create-checkout-session", async (req, res) => {
         focus: customMetadata.focus || ""
       }
     });
+
+    programDataCache.set(session.id, programData);
+  // Set expiry (e.g., 1 hour)
+  setTimeout(() => programDataCache.delete(session.id), 3600000);
 
     res.json({ url: session.url });
   } catch (error) {
