@@ -108,7 +108,7 @@ function generatePowerliftingProgram(freq, focus) {
 
 // ========== HYPERTROPHY GENERATOR (CORRECTED) ==========
 function generateHypertrophyProgram(freq, split) {
-  freq = Number(freq);
+  freq = Number(freq);   // Force numeric comparison
   const { planeSessions, armsDay, volumeFactors } = hypertrophyMaster;
   let sessions = [];
 
@@ -151,7 +151,6 @@ function generateHypertrophyProgram(freq, split) {
     const armsDayData = armsDay || { focus: "Arms & Shoulders", exercisePool: [] };
     const armsPool = armsDayData.exercisePool ?? [];
     const armsSession = { focus: armsDayData.focus, exercisePool: armsPool };
-    const armsSession = { focus: armsDay?.focus || "Arms & Shoulders", exercisePool: armsPool };
     sessions = [sessions[0], sessions[1], armsSession, sessions[2], sessions[3]];
   }
 
