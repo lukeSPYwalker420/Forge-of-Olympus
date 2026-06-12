@@ -1,16 +1,35 @@
+/* global.css – Unified design tokens & base styles */
 @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
 
 :root {
+  /* Primary accent (teal) */
   --accent: #06b6d4;
   --accent-dark: #0891b2;
   --accent-muted: #22d3ee;
+  --accent-glow: rgba(6, 182, 212, 0.2);
+
+  /* Dark theme background layers */
   --bg-dark: #0b1120;
-  --card-bg: #1e293b;
-  --card-hover: #334155;
+  --bg-card: #1e293b;
+  --bg-card-hover: #334155;
+  --bg-input: #0f172a;
+
+  /* Text colors */
   --text-light: #f1f5f9;
   --text-gray: #94a3b8;
+  --text-muted: #64748b;
+
+  /* Borders & shadows */
   --border: #334155;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --border-subtle: #1e293b;
+  --shadow-card: 0 8px 20px rgba(0, 0, 0, 0.2);
+  --shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.3);
+
+  /* Spacing & radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
 }
 
 * {
@@ -34,5 +53,152 @@ button {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
+}
+
+/* ========== GLOBAL CARD STYLES ========== */
+.card,
+.premium-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--border);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover,
+.premium-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-card);
+}
+
+/* ========== GLOBAL BUTTONS ========== */
+.btn-primary,
+.premium-btn,
+button[class*="btn-primary"] {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-primary:hover,
+.premium-btn:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-light);
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-light);
+}
+
+.btn-outline:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ========== GLOBAL INPUTS ========== */
+.premium-input,
+input[type="text"],
+input[type="email"],
+input[type="number"],
+select {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-light);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.premium-input:focus,
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+/* ========== MODAL OVERLAY (unified) ========== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  padding: 2rem;
+  border-radius: var(--radius-xl);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  position: relative;
+  border: 1px solid var(--accent);
+  box-shadow: var(--shadow-hover);
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-gray);
+}
+
+.modal-close:hover {
+  color: var(--text-light);
+}
+
+/* ========== UTILITY ========== */
+.dashboard-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.skeleton {
+  background: var(--bg-card-hover);
+  border-radius: var(--radius-lg);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
 }
