@@ -974,7 +974,12 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
     if (!programName) return res.status(400).json({ error: "Missing program name" });
 
     programName = normalizeProgramName(programName);
-    const programData = purchase.programData;
+    const user = await User.findById(userId);
+const purchase = await Purchase.findOne({ email: user.email, active: true });
+if (!purchase || !purchase.programData) {
+  return res.status(404).json({ error: "No active program found" });
+}
+const programData = purchase.programData;
     let session = programData.sessions.find(p => p.week === week && p.day === day);
     if (!session) return res.status(404).json({ error: "Session not found" });
 
@@ -1271,6 +1276,12 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
 
 // ==================== SESSION LOG (with FU storage) ====================
 app.post("/api/session-log", async (req, res) => {
+  const user = await User.findById(userId);
+const purchase = await Purchase.findOne({ email: user.email, active: true });
+if (!purchase || !purchase.programData) {
+  return res.status(404).json({ error: "No active program found" });
+}
+const programData = purchase.programData;
   try {
     const log = await Session.create(req.body);
     const userId = req.body.userId;
@@ -1332,6 +1343,12 @@ app.post("/api/session-log", async (req, res) => {
 
 // ==================== PROGRESSION APPLY (with mechanical disadvantage guard) ====================
 app.post("/api/progression/apply", async (req, res) => {
+  const user = await User.findById(userId);
+const purchase = await Purchase.findOne({ email: user.email, active: true });
+if (!purchase || !purchase.programData) {
+  return res.status(404).json({ error: "No active program found" });
+}
+const programData = purchase.programData;
   try {
     const { userId, liftName, logic } = req.body;
     const lastSession = await Session.findOne({ userId, liftName }).sort({ createdAt: -1 });
@@ -1507,7 +1524,12 @@ app.get("/api/next-session/:userId", async (req, res) => {
 
     programName = normalizeProgramName(programName);
 
-    const programData = purchase.programData;
+    const user = await User.findById(userId);
+const purchase = await Purchase.findOne({ email: user.email, active: true });
+if (!purchase || !purchase.programData) {
+  return res.status(404).json({ error: "No active program found" });
+}
+const programData = purchase.programData;
     const sessions = programData.sessions;
     if (!sessions.length) return res.status(404).json({ error: "No sessions in program" });
 
@@ -1668,7 +1690,7 @@ app.get("/api/admin/leads/export", async (req, res) => {
 });
 
 app.post("/api/admin/assign-program", async (req, res) => {
-  const { adminEmail, userEmail, programName } = req.body;
+  const { adminEmail, userEmail, programName, programData } = req.body;
 
   const normalizedAdminEmail = adminEmail.toLowerCase().trim();
   const normalizedUserEmail = userEmail.toLowerCase().trim();
