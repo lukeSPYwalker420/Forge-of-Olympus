@@ -170,7 +170,8 @@ const hypertrophySplits = ["upper_lower","ppl","plane"];
 for (const freq of freqs) {
   for (const focus of strengthFoci) {
     const prog = generatePowerliftingProgram(freq, focus);
-    const fileName = `strength_${freq}d_${focus}.json`;
+    // CHANGE: use the exact ID pattern expected by ProgramSelector
+    const fileName = `str_${freq}_${focus}.json`;
     fs.writeFileSync(path.join(OUTPUT_DIR, fileName), JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
@@ -178,7 +179,8 @@ for (const freq of freqs) {
 for (const freq of freqs) {
   for (const split of hypertrophySplits) {
     const prog = generateHypertrophyProgram(freq, split);
-    const fileName = `hypertrophy_${freq}d_${split}.json`;
+    // CHANGE: use "hyp_" prefix to match the IDs in ProgramSelector
+    const fileName = `hyp_${freq}_${split}.json`;
     fs.writeFileSync(path.join(OUTPUT_DIR, fileName), JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
