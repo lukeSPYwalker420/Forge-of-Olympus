@@ -26,6 +26,7 @@ function pickItems(arr, count) {
 // ========== POWERLIFTING GENERATOR ==========
 // ========== POWERLIFTING GENERATOR (CORRECTED) ==========
 function generatePowerliftingProgram(freq, focus) {
+  freq = Number(freq);
   const { primarySessions, secondaryLifts, accessories, tertiary } = powerliftingMaster;
   let sessions = [];
 
@@ -107,6 +108,7 @@ function generatePowerliftingProgram(freq, focus) {
 
 // ========== HYPERTROPHY GENERATOR (CORRECTED) ==========
 function generateHypertrophyProgram(freq, split) {
+  freq = Number(freq);
   const { planeSessions, armsDay, volumeFactors } = hypertrophyMaster;
   let sessions = [];
 
@@ -146,7 +148,9 @@ function generateHypertrophyProgram(freq, split) {
     sessions = sessions.slice(0, 3);
   } else if (freq === 5) {
     // Build exactly 5 sessions: first two, then arms, then last two
-    const armsPool = armsDay?.exercisePool ?? [];
+    const armsDayData = armsDay || { focus: "Arms & Shoulders", exercisePool: [] };
+    const armsPool = armsDayData.exercisePool ?? [];
+    const armsSession = { focus: armsDayData.focus, exercisePool: armsPool };
     const armsSession = { focus: armsDay?.focus || "Arms & Shoulders", exercisePool: armsPool };
     sessions = [sessions[0], sessions[1], armsSession, sessions[2], sessions[3]];
   }
