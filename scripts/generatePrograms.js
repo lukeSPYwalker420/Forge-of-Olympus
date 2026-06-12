@@ -24,6 +24,7 @@ function pickItems(arr, count) {
 }
 
 // ========== POWERLIFTING GENERATOR ==========
+// ========== POWERLIFTING GENERATOR (CORRECTED) ==========
 function generatePowerliftingProgram(freq, focus) {
   const { primarySessions, secondaryLifts, accessories, tertiary } = powerliftingMaster;
   let sessions = [];
@@ -37,24 +38,33 @@ function generatePowerliftingProgram(freq, focus) {
     benchVol.exercises.forEach(ex => { if (ex.reps === "4") ex.reps = "8"; if (ex.rpeTarget) ex.rpeTarget = Math.max(5, ex.rpeTarget - 1); });
     sessions.push(benchVol);
   } else if (freq === 5) {
-    sessions = [primarySessions.squat, primarySessions.bench, primarySessions.deadlift];
+    // Build exactly 5 session objects
+    sessions = [
+      primarySessions.squat,
+      primarySessions.bench,
+      primarySessions.deadlift,
+      { focus: "Secondary Variation", exercises: [] },
+      { focus: "Technique / Tertiary", exercises: [] }
+    ];
+    // Add exercises to the secondary and tertiary days
     let secEx = [];
     if (focus === "squat") secEx = pickItems(secondaryLifts.squatVariations, 2);
     else if (focus === "bench") secEx = pickItems(secondaryLifts.benchVariations, 2);
     else if (focus === "deadlift") secEx = pickItems(secondaryLifts.deadliftVariations, 2);
     else secEx = pickItems([...secondaryLifts.squatVariations, ...secondaryLifts.benchVariations], 2);
-    sessions.push({ focus: "Secondary Variation", exercises: secEx });
+    sessions[3].exercises = secEx;
+
     let tertEx = [];
     if (focus === "squat") tertEx = pickItems(tertiary.squatTertiary, 2);
     else if (focus === "bench") tertEx = pickItems(tertiary.benchTertiary, 2);
     else if (focus === "deadlift") tertEx = pickItems(tertiary.deadliftTertiary, 2);
     else tertEx = pickItems([...tertiary.squatTertiary, ...tertiary.benchTertiary], 2);
-    sessions.push({ focus: "Technique / Tertiary", exercises: tertEx });
+    sessions[4].exercises = tertEx;
   }
 
-  // Accessories
-  let selectedAcc = [];
+  // Add accessories to all sessions
   const accCount = freq === 3 ? 3 : (freq === 4 ? 4 : 5);
+  let selectedAcc = [];
   if (focus === "balanced") {
     selectedAcc = [...pickItems(accessories.quads,1), ...pickItems(accessories.posterior,1),
                    ...pickItems(accessories.push,1), ...pickItems(accessories.pull,1)];
@@ -71,13 +81,13 @@ function generatePowerliftingProgram(freq, focus) {
   selectedAcc = selectedAcc.slice(0, accCount);
   sessions.forEach(s => s.exercises.push(...selectedAcc));
 
-  // Build weeks 1-4 and deload week 5
+  // Build weeks 1‑5 (week 5 is deload)
   const fullProgram = { name: `Ares Protocol – ${freq}d / ${focus} focus`, logic: "STRENGTH_RPE", useFatigueBudget: true, sessions: [] };
   for (let week = 1; week <= 5; week++) {
     for (let i = 0; i < sessions.length; i++) {
       const sessCopy = JSON.parse(JSON.stringify(sessions[i]));
       sessCopy.week = week;
-      sessCopy.day = i+1;
+      sessCopy.day = i + 1;   // days 1,2,3,4,5 always
       if (week === 5) {
         sessCopy.exercises.forEach(ex => { if (ex.rpeTarget) ex.rpeTarget = Math.max(5, ex.rpeTarget-2); if (ex.rirTarget) ex.rirTarget = (ex.rirTarget||2)+2; if (ex.sets) ex.sets = Math.max(2, ex.sets-1); });
         if (sessCopy.fatigueCap) sessCopy.fatigueCap = Math.floor(sessCopy.fatigueCap * 0.6);
@@ -91,7 +101,7 @@ function generatePowerliftingProgram(freq, focus) {
   return fullProgram;
 }
 
-// ========== HYPERTROPHY GENERATOR ==========
+// ========== HYPERTROPHY GENERATOR (CORRECTED) ==========
 function generateHypertrophyProgram(freq, split) {
   const { planeSessions, armsDay, volumeFactors } = hypertrophyMaster;
   let sessions = [];
@@ -127,10 +137,15 @@ function generateHypertrophyProgram(freq, split) {
     ];
   }
 
-  if (freq === 3) sessions = sessions.slice(0,3);
-  else if (freq === 5) {
+  // Adjust number of days based on frequency
+  if (freq === 3) {
+    sessions = sessions.slice(0, 3);
+  } else if (freq === 5) {
+    // Insert arms day at position 2 (so it becomes day 3)
     const armsPool = armsDay?.exercisePool ?? [];
-    sessions.splice(2, 0, { focus: armsDay?.focus || "Arms & Shoulders", exercisePool: armsPool });
+    const armsSession = { focus: armsDay?.focus || "Arms & Shoulders", exercisePool: armsPool };
+    sessions.splice(2, 0, armsSession);
+    // Now sessions.length should be 5
   }
 
   const factor = volumeFactors[freq];
@@ -147,7 +162,7 @@ function generateHypertrophyProgram(freq, split) {
     for (let i = 0; i < sessions.length; i++) {
       const sessCopy = JSON.parse(JSON.stringify(sessions[i]));
       sessCopy.week = week;
-      sessCopy.day = i+1;
+      sessCopy.day = i + 1;   // days 1,2,3,4,5 always
       if (week === 5) {
         sessCopy.exercises.forEach(ex => { if (ex.rirTarget) ex.rirTarget = (ex.rirTarget||2)+2; if (ex.sets) ex.sets = Math.max(2, ex.sets-1); });
       } else if (week >= 3) {
