@@ -20,6 +20,9 @@ export default function Dashboard() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   
+  // NEW: Store the detailed program config from the backend
+  const [programConfig, setProgramConfig] = useState(null);
+
   // Rewards state
   const [rewards, setRewards] = useState({ unlockedRewards: [], nextMilestone: null, streak: 0 });
   const [dailyQuote, setDailyQuote] = useState(null);
@@ -109,6 +112,7 @@ export default function Dashboard() {
     checkSubscription();
   }, [userId]);
 
+  // Fetch main dashboard data
   useEffect(() => {
     if (!userId) {
       navigate("/login");
@@ -149,6 +153,31 @@ export default function Dashboard() {
     
     fetchData();
   }, [userId, navigate]);
+
+  // 🔧 FIX: Fetch the detailed program configuration and sync localStorage + auth state
+  useEffect(() => {
+    if (!userId) return;
+    fetch(`/api/user-program-config/${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.config) {
+          setProgramConfig(data.config);
+          
+          // Sync local storage so routing across the app immediately shifts to the specific tracking engine
+          localStorage.setItem("activeProgramConfig", JSON.stringify(data.config));
+          
+          // Ensure the global program pointer points to the display name or database program name
+          const programName = data.config.displayTitle || data.config.programName;
+          if (programName) {
+            localStorage.setItem("program", programName);
+          }
+          
+          // Notify App.jsx reactively (so the session route guard picks up the change)
+          window.dispatchEvent(new Event("authChange"));
+        }
+      })
+      .catch(err => console.error("Failed to fetch program config:", err));
+  }, [userId]);
 
   // Fetch streak rewards
   useEffect(() => {
@@ -435,17 +464,27 @@ export default function Dashboard() {
   const programCard = (
     <div className="card">
       <h2>Your Program</h2>
-      {purchasedPrograms.length === 0 ? (
+      {purchasedPrograms.length === 0 && !programConfig ? (
         <p>No programs purchased. <a href="/" style={{ color: "var(--accent)" }}>Buy now</a></p>
       ) : (
         <>
-          <p>Active: <strong>{localStorage.getItem("program") || "Not selected"}</strong></p>
+          {/* Show detailed config if available */}
+          {programConfig ? (
+            <div style={{ marginBottom: "12px" }}>
+              <p><strong>{programConfig.displayTitle || localStorage.getItem("program") || "Active program"}</strong></p>
+              {programConfig.frequency && <p>📅 {programConfig.frequency} days/week</p>}
+              {programConfig.focus && <p>🎯 Focus: {programConfig.focus.replace('_', ' ').toUpperCase()}</p>}
+              {/* Optional: you could fetch and show fatigue cap from the program JSON, but not stored in config */}
+            </div>
+          ) : (
+            <p>Active: <strong>{localStorage.getItem("program") || "Not selected"}</strong></p>
+          )}
           <button onClick={() => navigate("/program")} className="btn-primary">Change Program</button>
         </>
       )}
       <button onClick={handleStartWorkout} className="btn-workout">🏋️ Start Workout</button>
       <button onClick={() => navigate("/")} className="btn-secondary">Browse More Programs</button>
-      {!subscriptionActive && purchasedPrograms.length > 0 && (
+      {!subscriptionActive && (purchasedPrograms.length > 0 || programConfig) && (
         <div style={{ background: "#ffaa4422", padding: "12px", borderRadius: "8px", marginBottom: "12px", textAlign: "center" }}>
           <strong>⚠️ Your subscription has expired.</strong> You can still view your history,
           but weight recommendations are hidden. <a href="/" style={{ color: "#ffaa44" }}>Resubscribe now</a>

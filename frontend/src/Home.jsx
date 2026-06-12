@@ -67,15 +67,13 @@ export default function Home() {
     progressionNote = "Hard session exceeded fatigue budget → volume reduced (3 → 2 sets). Weight stays the same.";
   }
 
-  // ----- New: start free trial (redirect to program selection) -----
+  // Start free trial – redirect to program selection
   const handleStartFreeTrial = async () => {
-    // If already logged in, go straight to program selection
     if (userId) {
-      navigate("/program");
+      navigate("/select-program");
       return;
     }
 
-    // Not logged in: prompt for email, create account, then go to program selection
     const email = prompt("Enter your email to start your 30‑day free trial:");
     if (!email || !email.includes("@")) {
       alert("Please enter a valid email address");
@@ -93,7 +91,7 @@ export default function Home() {
         localStorage.setItem("userId", userData.userId);
         localStorage.setItem("userEmail", userData.email);
         localStorage.setItem("purchasedPrograms", JSON.stringify(userData.purchasedPrograms));
-        navigate("/program");
+        navigate("/select-program");
       } else {
         alert("Error creating account. Please try again.");
       }
@@ -140,50 +138,6 @@ export default function Home() {
       console.error(err);
       setModalMessage("Network error. Please try again.");
     }
-  };
-
-  const handleSubscribe = async (programName) => {
-    try {
-      let email = localStorage.getItem("userEmail");
-      if (!email) {
-        email = prompt("Enter your email to start your 30‑day free trial:");
-        if (!email || !email.includes("@")) {
-          alert("Please enter a valid email address");
-          return;
-        }
-        const loginRes = await fetch("/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email })
-        });
-        const userData = await loginRes.json();
-        if (loginRes.ok) {
-          localStorage.setItem("userId", userData.userId);
-          localStorage.setItem("userEmail", userData.email);
-          localStorage.setItem("purchasedPrograms", JSON.stringify(userData.purchasedPrograms));
-        } else {
-          alert("Error creating account. Please try again.");
-          return;
-        }
-      }
-      const response = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ programName, email })
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Checkout failed");
-      if (data.url) window.location.href = data.url;
-      else throw new Error("No checkout URL returned");
-    } catch (err) {
-      console.error("Checkout error:", err);
-      alert(`Error: ${err.message}. Please try again or contact support.`);
-    }
-  };
-
-  const handleCoaching = (programName) => {
-    const program = programs.find(p => p.originalTitle === programName);
-    if (program && program.coachingLink) window.location.href = program.coachingLink;
   };
 
   return (
@@ -407,32 +361,17 @@ export default function Home() {
         </div>
       </section>
 
+      {/* REPLACED PROGRAM GRID WITH TEASER */}
       <section className="programs" id="programs">
         <div className="container">
           <h2>Training systems</h2>
-          <div className="program-grid">
-            {programs.map((p) => (
-              <div key={p.originalTitle} className="program-card">
-                <div className="program-header">
-                  <div className="program-badge">{p.goal}</div>
-                  <h3>{p.title}</h3>
-                </div>
-                <ul className="program-features">
-                  {p.features.map((f) => (
-                    <li key={f}>{f}</li>
-                  ))}
-                </ul>
-                <div className="program-buttons">
-                  <button onClick={() => handleSubscribe(p.originalTitle)} className="btn-plan">
-                    Start free 30‑day trial<br />
-                    <span className="small">£19.99/month after trial, cancel anytime</span>
-                  </button>
-                  <button onClick={() => handleCoaching(p.originalTitle)} className="btn-coaching">
-                    Add live coaching · £169.99/month
-                  </button>
-                </div>
-              </div>
-            ))}
+          <p className="section-subtitle" style={{ color: "var(--text-gray)", marginBottom: "24px" }}>
+            Build a program that matches your exact goals, frequency, and focus.
+          </p>
+          <div style={{ textAlign: "center" }}>
+            <button onClick={() => navigate("/select-program")} className="btn btn-primary btn-large">
+              Configure Your System →
+            </button>
           </div>
         </div>
       </section>
@@ -464,35 +403,3 @@ export default function Home() {
     </>
   );
 }
-
-// Programs (unchanged)
-const programs = [
-  {
-    originalTitle: "Ares Protocol",
-    title: "Apex Strength",
-    goal: "⚡ Strength Peaking",
-    coachingLink: "https://buy.stripe.com/14A28r1y63BT6WS6mV4sE0k",
-    features: ["Auto‑calculated top sets", "RPE‑based intensity management", "Designed for powerlifting & strength athletes", "Weekly wave progression"]
-  },
-  {
-    originalTitle: "Apollo Physique",
-    title: "Apex Hypertrophy",
-    goal: "💪 Muscle Development",
-    coachingLink: "https://buy.stripe.com/8x25kD0u2fkBa947qZ4sE0i",
-    features: ["Volume‑focused schemes", "Symmetry and proportion emphasis", "Muscle group prioritisation", "Long‑term muscle development"]
-  },
-  {
-    originalTitle: "Hephaestus Framework",
-    title: "Apex Foundation",
-    goal: "🛡️ Joint Health & Longevity",
-    coachingLink: "https://buy.stripe.com/6oU8wPa4CfkB1Cy7qZ4sE0g",
-    features: ["Injury prevention protocols", "ROM & stability tracking", "Pain‑managed progression", "Designed for long‑term athleticism"]
-  },
-  {
-    originalTitle: "Hercules Foundation",
-    title: "Apex Performance",
-    goal: "🏋️ General Fitness & Power",
-    coachingLink: "https://buy.stripe.com/4gMdR9a4C5K1fto8v34sE0f",
-    features: ["Balanced strength & conditioning", "Power development for sports", "Mobility & work capacity", "5‑week wave blocks with deload"]
-  }
-];

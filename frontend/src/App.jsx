@@ -4,6 +4,7 @@ import Home from "./Home";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 import ProgramSelect from "./ProgramSelect";
+import ProgramSelector from "./ProgramSelector";
 import SessionView from "./SessionView";
 import Success from "./Success";
 import Cancel from "./Cancel";
@@ -19,7 +20,6 @@ export default function App() {
       setUserId(localStorage.getItem("userId"));
       setProgram(localStorage.getItem("program"));
     };
-    // Listen for storage events (from other tabs) and custom "authChange" event
     window.addEventListener("storage", handleStorage);
     window.addEventListener("authChange", handleStorage);
     return () => {
@@ -28,36 +28,99 @@ export default function App() {
     };
   }, []);
 
-  // Helper to manually trigger auth update from within the app
   const updateAuth = () => {
     setUserId(localStorage.getItem("userId"));
     setProgram(localStorage.getItem("program"));
     window.dispatchEvent(new Event("authChange"));
   };
 
-  // Expose updateAuth globally for convenience (used in Login/ProgramSelect)
   useEffect(() => {
     window.__updateAuth = updateAuth;
     return () => { delete window.__updateAuth; };
   }, []);
 
+  // Shared subscribe handler – used by both Home.jsx and ProgramSelector
+  // Note: Older CTAs that call onSubscribe(programName) still work because metadataConfig defaults to {}.
+  // The server will use displayTitle = programName (fallback) and programId = null, frequency = null, focus = null.
+  // This is safe and won't break the checkout.
+  const handleSubscribe = async (programName, metadataConfig = {}) => {
+    try {
+      let email = localStorage.getItem("userEmail");
+      if (!email) {
+        email = prompt("Enter your email to start your 30‑day free trial:");
+        if (!email || !email.includes("@")) {
+          alert("Please enter a valid email address");
+          return;
+        }
+        const loginRes = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+        const userData = await loginRes.json();
+        if (loginRes.ok) {
+          localStorage.setItem("userId", userData.userId);
+          localStorage.setItem("userEmail", userData.email);
+          localStorage.setItem("purchasedPrograms", JSON.stringify(userData.purchasedPrograms));
+        } else {
+          alert("Error creating account. Please try again.");
+          return;
+        }
+      }
+
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          programName,
+          email,
+          customMetadata: {
+            programId: metadataConfig.programId || null,
+            displayTitle: metadataConfig.displayTitle || programName,
+            frequency: metadataConfig.frequency || null,
+            focus: metadataConfig.focus || null
+          }
+        })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Checkout failed");
+      if (data.url) window.location.href = data.url;
+      else throw new Error("No checkout URL returned");
+    } catch (err) {
+      console.error("Checkout error:", err);
+      alert(`Error: ${err.message}. Please try again or contact support.`);
+    }
+  };
+
+  // Pass handleSubscribe to Home via prop (Home will use it instead of its own)
+  // But Home.jsx currently has its own handleSubscribe – we'll override by passing a prop.
+  // To avoid breaking existing code, we'll modify Home to accept onSubscribe prop.
+  // For now, keep existing Home.jsx as is – the new route /select-program uses the shared handler.
+  // The old program grid in Home.jsx still uses its own handler, which is fine for backward compatibility.
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home onSubscribe={handleSubscribe} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/success" element={<Success />} />
         <Route path="/cancel" element={<Cancel />} />
         <Route path="/landing" element={<Landing />} />
 
+        {/* Program selection routes */}
+        <Route
+          path="/program"
+          element={userId ? <ProgramSelect /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/select-program"
+          element={userId ? <ProgramSelector onSubscribe={handleSubscribe} /> : <Navigate to="/login" replace />}
+        />
+
         {/* Protected routes */}
         <Route
           path="/dashboard"
           element={userId ? <Dashboard /> : <Navigate to="/login" replace />}
-        />
-        <Route
-          path="/program"
-          element={userId ? <ProgramSelect /> : <Navigate to="/login" replace />}
         />
         <Route
           path="/session"
