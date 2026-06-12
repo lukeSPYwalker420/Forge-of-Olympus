@@ -38,22 +38,22 @@ function generatePowerliftingProgram(freq, focus) {
     benchVol.exercises.forEach(ex => { if (ex.reps === "4") ex.reps = "8"; if (ex.rpeTarget) ex.rpeTarget = Math.max(5, ex.rpeTarget - 1); });
     sessions.push(benchVol);
   } else if (freq === 5) {
-    // Build exactly 5 session objects
+    // Build exactly 5 sessions
     sessions = [
-      primarySessions.squat,
-      primarySessions.bench,
-      primarySessions.deadlift,
+      JSON.parse(JSON.stringify(primarySessions.squat)),
+      JSON.parse(JSON.stringify(primarySessions.bench)),
+      JSON.parse(JSON.stringify(primarySessions.deadlift)),
       { focus: "Secondary Variation", exercises: [] },
       { focus: "Technique / Tertiary", exercises: [] }
     ];
-    // Add exercises to the secondary and tertiary days
+    // Secondary day
     let secEx = [];
     if (focus === "squat") secEx = pickItems(secondaryLifts.squatVariations, 2);
     else if (focus === "bench") secEx = pickItems(secondaryLifts.benchVariations, 2);
     else if (focus === "deadlift") secEx = pickItems(secondaryLifts.deadliftVariations, 2);
     else secEx = pickItems([...secondaryLifts.squatVariations, ...secondaryLifts.benchVariations], 2);
     sessions[3].exercises = secEx;
-
+    // Tertiary day
     let tertEx = [];
     if (focus === "squat") tertEx = pickItems(tertiary.squatTertiary, 2);
     else if (focus === "bench") tertEx = pickItems(tertiary.benchTertiary, 2);
@@ -81,13 +81,17 @@ function generatePowerliftingProgram(freq, focus) {
   selectedAcc = selectedAcc.slice(0, accCount);
   sessions.forEach(s => s.exercises.push(...selectedAcc));
 
-  // Build weeks 1‑5 (week 5 is deload)
-  const fullProgram = { name: `Ares Protocol – ${freq}d / ${focus} focus`, logic: "STRENGTH_RPE", useFatigueBudget: true, sessions: [] };
+  const fullProgram = {
+    name: `Apex Strength – ${freq}d / ${focus} focus`,
+    logic: "STRENGTH_RPE",
+    useFatigueBudget: true,
+    sessions: []
+  };
   for (let week = 1; week <= 5; week++) {
     for (let i = 0; i < sessions.length; i++) {
       const sessCopy = JSON.parse(JSON.stringify(sessions[i]));
       sessCopy.week = week;
-      sessCopy.day = i + 1;   // days 1,2,3,4,5 always
+      sessCopy.day = i + 1;
       if (week === 5) {
         sessCopy.exercises.forEach(ex => { if (ex.rpeTarget) ex.rpeTarget = Math.max(5, ex.rpeTarget-2); if (ex.rirTarget) ex.rirTarget = (ex.rirTarget||2)+2; if (ex.sets) ex.sets = Math.max(2, ex.sets-1); });
         if (sessCopy.fatigueCap) sessCopy.fatigueCap = Math.floor(sessCopy.fatigueCap * 0.6);
@@ -141,11 +145,10 @@ function generateHypertrophyProgram(freq, split) {
   if (freq === 3) {
     sessions = sessions.slice(0, 3);
   } else if (freq === 5) {
-    // Insert arms day at position 2 (so it becomes day 3)
+    // Build exactly 5 sessions: first two, then arms, then last two
     const armsPool = armsDay?.exercisePool ?? [];
     const armsSession = { focus: armsDay?.focus || "Arms & Shoulders", exercisePool: armsPool };
-    sessions.splice(2, 0, armsSession);
-    // Now sessions.length should be 5
+    sessions = [sessions[0], sessions[1], armsSession, sessions[2], sessions[3]];
   }
 
   const factor = volumeFactors[freq];
@@ -157,12 +160,16 @@ function generateHypertrophyProgram(freq, split) {
     s.exercises.forEach(ex => { if (ex.sets) ex.sets = Math.max(2, Math.floor(ex.sets * factor)); });
   });
 
-  const fullProgram = { name: `Apollo Physique – ${freq}d / ${split.toUpperCase()} split`, logic: "HYPERTROPHY_VOLUME", sessions: [] };
+  const fullProgram = {
+    name: `Apex Hypertrophy – ${freq}d / ${split.toUpperCase()} split`,
+    logic: "HYPERTROPHY_VOLUME",
+    sessions: []
+  };
   for (let week = 1; week <= 5; week++) {
     for (let i = 0; i < sessions.length; i++) {
       const sessCopy = JSON.parse(JSON.stringify(sessions[i]));
       sessCopy.week = week;
-      sessCopy.day = i + 1;   // days 1,2,3,4,5 always
+      sessCopy.day = i + 1;
       if (week === 5) {
         sessCopy.exercises.forEach(ex => { if (ex.rirTarget) ex.rirTarget = (ex.rirTarget||2)+2; if (ex.sets) ex.sets = Math.max(2, ex.sets-1); });
       } else if (week >= 3) {
