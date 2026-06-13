@@ -155,4 +155,3 @@ export const meetPrepMaster = {
     5: 1.15
   }
 };
-};
