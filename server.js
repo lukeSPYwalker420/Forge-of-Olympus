@@ -28,6 +28,43 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Cache for programData during checkout (before webhook)
+const programDataCache = new Map();
+
+// Map display titles (from PROGRAM_DATABASE) to Stripe price IDs
+const displayToPriceId = {
+  // Strength programs (all map to Ares Protocol price)
+  "Apex Strength: Core IV (Base System)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Apex Strength: Core IV (Bench Specifier)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Apex Strength: Core IV (Squat Specifier)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Apex Strength: Core IV (Deadlift Specifier)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Apex Strength: Core III (Balanced)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Apex Strength: Core III (Squat Specifier)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Apex Strength: Core III (Bench Specifier)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Apex Strength: Core III (Deadlift Specifier)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Apex Strength: Core V (High Frequency)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Apex Strength: Core V (Squat Specifier)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Apex Strength: Core V (Bench Specifier)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Apex Strength: Core V (Deadlift Specifier)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  // Hypertrophy programs (map to Apollo Physique price)
+  "Apex Hypertrophy: 4‑Day Upper/Lower": "price_1TJM3yFywsnhFgWfCLEAFwZD",
+  "Apex Hypertrophy: 4‑Day Push/Pull/Legs": "price_1TJM3yFywsnhFgWfCLEAFwZD",
+  "Apollo Physique: 4‑Day Plane Bias (Horizontal / Vertical)": "price_1TJM3yFywsnhFgWfCLEAFwZD",
+  "Apex Hypertrophy: 3‑Day Upper/Lower": "price_1TJM3yFywsnhFgWfCLEAFwZD",
+  "Apex Hypertrophy: 3‑Day Push/Pull/Legs": "price_1TJM3yFywsnhFgWfCLEAFwZD",
+  "Apollo Physique: 3‑Day Plane Bias (Condensed)": "price_1TJM3yFywsnhFgWfCLEAFwZD",
+  "Apex Hypertrophy: 5‑Day Upper/Lower": "price_1TJM3yFywsnhFgWfCLEAFwZD",
+  "Apex Hypertrophy: 5‑Day Push/Pull/Legs": "price_1TJM3yFywsnhFgWfCLEAFwZD",
+  "Apollo Physique: 5‑Day Plane Bias (Advanced)": "price_1TJM3yFywsnhFgWfCLEAFwZD",
+  // Meet prep programs (map to Ares Protocol price – or create a new price if needed)
+  "Meet Prep: Peaking Block (4‑Day)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Meet Prep: Taper & Deload (4‑Day)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Meet Prep: Peaking Block (3‑Day)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Meet Prep: Taper & Deload (3‑Day)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Meet Prep: Peaking Block (5‑Day)": "price_1TJM36FywsnhFgWfMqo2H5no",
+  "Meet Prep: Taper & Deload (5‑Day)": "price_1TJM36FywsnhFgWfMqo2H5no"
+};
+
 // Variation patterns (paused, tempo, etc.) – these are harder than competition lifts
 function isVariationLift(liftName) {
   const lower = liftName.toLowerCase();
@@ -187,8 +224,8 @@ const PurchaseSchema = new mongoose.Schema({
   canceledAt: { type: Date },
   lastPaymentFailure: { type: Date },
   gracePeriodEnds: { type: Date },
-  programConfig: { type: Object, default: null }, // stores { programId, displayTitle, frequency, focus }
-  programData: { type: Object, default: null }   // NEW – stores the full program JSON
+  programConfig: { type: Object, default: null },
+  programData: { type: Object, default: null }
 });
 const Purchase = mongoose.model("Purchase", PurchaseSchema);
 
@@ -278,7 +315,6 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
         console.log(`📝 Created new user: ${customerEmail}`);
       }
 
-      // Extract program configuration from session metadata
       const programConfig = {
         programId: session.metadata?.programId || null,
         displayTitle: session.metadata?.displayTitle || null,
@@ -286,28 +322,26 @@ app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), async
         focus: session.metadata?.focus || null
       };
 
-      // 🔧 FIX: Use stripeSubscriptionId (always present) instead of payment_intent (null on trials)
-      // Fixed, valid version for production:
-await Purchase.findOneAndUpdate(
-  { stripeSubscriptionId: session.subscription },
-  {
-    email: customerEmail,
-    programName: normalizedProgramName,
-    stripePaymentIntentId: session.payment_intent || null,
-    stripeSubscriptionId: session.subscription,
-    active: true,
-    purchasedAt: new Date(),
-    canceledAt: null,
-    lastPaymentFailure: null,
-    gracePeriodEnds: null,
-    programConfig: programConfig,  
-    programData: cachedProgram,
-  }, // <-- Keep this matching closing curly brace
-  { upsert: true, new: true }
-);
+      await Purchase.findOneAndUpdate(
+        { stripeSubscriptionId: session.subscription },
+        {
+          email: customerEmail,
+          programName: normalizedProgramName,
+          stripePaymentIntentId: session.payment_intent || null,
+          stripeSubscriptionId: session.subscription,
+          active: true,
+          purchasedAt: new Date(),
+          canceledAt: null,
+          lastPaymentFailure: null,
+          gracePeriodEnds: null,
+          programConfig: programConfig,
+          programData: cachedProgram,
+        },
+        { upsert: true, new: true }
+      );
       
       console.log(`✅ Purchase recorded: ${customerEmail} → ${normalizedProgramName}`, programConfig);
-      
+      programDataCache.delete(session.id);
     } catch (dbError) {
       console.error("Database error in webhook:", dbError);
       return res.status(500).send("Database error");
@@ -433,7 +467,6 @@ const loadProgram = (programName) => {
 
   const raw = JSON.parse(fs.readFileSync(filePath, "utf-8"));
   
-  // Build sessions array (existing format)
   let sessions = [];
   let weeksMetadata = null;
   
@@ -482,13 +515,6 @@ function weightForRPE(oneRM, targetRPE, targetReps) {
 }
 
 // ==================== Progression Functions ====================
-// ==================== Robust Progression Logic ====================
-
-/**
- * STRENGTH_RPE progression (for Ares Protocol)
- * - Good session: 1RM increases if fresh estimate is higher (never decreases)
- * - Bad session: 1RM decreases by 2% (reflects regression), never increases
- */
 function strengthRPEProgression(state, sessionData) {
   let new1RM = state.estimated1RM || 0;
   let newVolumeWeight = state.currentWeight || sessionData.actualWeight || 0;
@@ -505,7 +531,6 @@ function strengthRPEProgression(state, sessionData) {
   const bestReps = Math.max(...repsPerSet);
   const fresh1RM = estimate1RM(sessionData.actualWeight, bestReps, sessionData.actualRPE);
 
-  // If targetSets is 0 (exercise was skipped), any work counts as meeting minimum
   const setsCompleted = repsPerSet.length;
   const metMinimumSets = (targetSets === 0) ? true : (setsCompleted >= targetSets);
   const metMinReps = repsPerSet.every(r => r >= targetReps);
@@ -544,7 +569,7 @@ function strengthRPEProgression(state, sessionData) {
     if (didNotMeetWork && rpeTooHigh) {
       stallCounter++;
     } else {
-      stallCounter = 0; // extra work or good RPE resets stall counter
+      stallCounter = 0;
     }
     if (stallCounter >= 3 && new1RM > 0) {
       new1RM = Math.round(new1RM * 0.98);
@@ -563,11 +588,6 @@ function strengthRPEProgression(state, sessionData) {
   };
 }
 
-/**
- * HYPERTROPHY_VOLUME progression (for Apollo Physique)
- * - Good session: increases weight after lastReps reaches maxReps
- * - Bad session: after 3 stalls, decreases weight
- */
 function hypertrophyVolumeProgression(state, sessionData) {
   let newWeight = state.currentWeight || sessionData.actualWeight || 0;
   let lastReps = state.lastRepsAchieved || 0;
@@ -625,25 +645,14 @@ function hypertrophyVolumeProgression(state, sessionData) {
   };
 }
 
-/**
- * EXPLOSIVE_POWER progression – placeholder, no auto‑adjustment
- */
 function explosivePowerProgression(state, sessionData) {
   return { currentWeight: state.currentWeight, consecutiveSuccesses: 0, stallCounter: 0 };
 }
 
-/**
- * ENDURANCE_DENSITY progression – placeholder
- */
 function enduranceDensityProgression(state, sessionData) {
   return { currentWeight: state.currentWeight, consecutiveSuccesses: 0, stallCounter: 0 };
 }
 
-/**
- * MOBILITY progression (for Hephaestus Framework)
- * - Good session: after 3 consecutive good sessions, increase weight by 2.5kg
- * - Bad session: after 2 consecutive bad sessions, decrease weight by 2.5kg
- */
 function mobilityRangeProgression(state, sessionData) {
   let newWeight = state.currentWeight || sessionData.actualWeight || 0;
   let successStreak = state.consecutiveSuccesses || 0;
@@ -680,14 +689,10 @@ function mobilityRangeProgression(state, sessionData) {
     currentWeight: Math.round(newWeight * 2) / 2,
     consecutiveSuccesses: successStreak,
     stallCounter,
-    lastROM: state.lastROM  // unchanged
+    lastROM: state.lastROM
   };
 }
 
-/**
- * GENERAL_FITNESS_HYBRID progression (for Hercules Foundation, Mark Training, etc.)
- * Supports multiple progression types: strength, power, mobility, volume/stability, deload
- */
 function generalFitnessProgression(state, sessionData) {
   let newWeight = state.currentWeight || sessionData.actualWeight || 0;
   let newROM = state.lastROM || sessionData.actualROM || 0;
@@ -696,13 +701,11 @@ function generalFitnessProgression(state, sessionData) {
   const completed = !!sessionData.completed;
   const progressionType = sessionData.progressionType || "strength";
 
-  // Helper to increment weight (5kg for squat/deadlift, else 2.5kg)
   const getIncrement = (liftName) => (liftName?.toLowerCase().includes("squat") || liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
   const getDecrement = (liftName) => (liftName?.toLowerCase().includes("squat") || liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
 
   switch (progressionType) {
     case "strength":
-      // Determine min reps per set from targetReps string (e.g., "8-10" → 8)
       const targetRepsStr = sessionData.targetReps;
       let minRepsPerSet = 8;
       if (typeof targetRepsStr === 'string' && targetRepsStr.includes('-')) {
@@ -714,16 +717,13 @@ function generalFitnessProgression(state, sessionData) {
       const repsPerSetArray = sessionData.repsPerSet || [];
       const targetSets = sessionData.targetSets || 0;
       
-      // Check if every set meets the minimum reps
       const allSetsCompleted = repsPerSetArray.length === targetSets &&
                                repsPerSetArray.every(r => r >= minRepsPerSet);
       
-      // Determine RPE success (if RPE is logged; otherwise assume success)
       let rpeOk = true;
       if (sessionData.actualRPE !== undefined && sessionData.targetRPE !== undefined) {
         rpeOk = sessionData.actualRPE <= (sessionData.targetRPE || 7) + 0.5;
       }
-      // If RIR is available instead (rare for strength), use it
       else if (sessionData.actualRIR !== undefined && sessionData.targetRIR !== undefined) {
         rpeOk = sessionData.actualRIR <= (sessionData.targetRIR || 2);
       }
@@ -761,7 +761,6 @@ function generalFitnessProgression(state, sessionData) {
         }
       } else {
         successStreak = 0;
-        // no auto‑decrease for power, just reset streak
       }
       break;
 
@@ -800,7 +799,6 @@ function generalFitnessProgression(state, sessionData) {
       if (isGoodVolume) {
         successStreak++;
         if (successStreak >= 3) {
-          // volume progress does not change weight, just records success
           successStreak = 0;
           console.log(`✅ [GF-volume] Good session ${sessionData.liftName}`);
         }
@@ -810,7 +808,6 @@ function generalFitnessProgression(state, sessionData) {
       break;
 
     case "deload":
-      // Deload weeks do nothing
       break;
 
     default:
@@ -825,9 +822,6 @@ function generalFitnessProgression(state, sessionData) {
   };
 }
 
-/**
- * Main dispatcher – selects the correct progression function based on program logic
- */
 function calculateProgression(state, sessionData, logic) {
   switch (logic) {
     case "STRENGTH_RPE":
@@ -888,17 +882,11 @@ app.get("/api/debug/programs", (req, res) => {
   });
 });
 
-/**
- * Find week metadata for a given week number
- */
 function getWeekMetadata(weeks, weekNumber) {
   if (!weeks) return null;
   return weeks.find(w => w.week === weekNumber);
 }
 
-/**
- * Apply volume modifier (reduce sets and reps)
- */
 function applyVolumeModifier(exercise, volumeModifier) {
   if (!volumeModifier || volumeModifier === 1.0) return exercise;
   const newSets = Math.max(1, Math.round((exercise.sets || 3) * volumeModifier));
@@ -915,9 +903,6 @@ function applyVolumeModifier(exercise, volumeModifier) {
   return { ...exercise, sets: newSets, reps: newReps };
 }
 
-/**
- * Apply rep drop (reduce reps by a fixed amount)
- */
 function applyRepDrop(exercise, repDropAmount = 1) {
   if (!repDropAmount) return exercise;
   let newReps = exercise.reps;
@@ -933,10 +918,6 @@ function applyRepDrop(exercise, repDropAmount = 1) {
   return { ...exercise, reps: newReps };
 }
 
-/**
- * Apply descending back-off sets – generate multiple entries for the same lift with decreasing RPE
- * This modifies the exercise list: one exercise becomes multiple (e.g., "Squat Back Offs" with descending RPE)
- */
 function applyDescendingSets(exercises, descendingFlag, weekRpe) {
   if (!descendingFlag) return exercises;
   const newExercises = [];
@@ -977,23 +958,20 @@ app.get("/api/session-view/:week/:day/:userId", async (req, res) => {
 
     programName = normalizeProgramName(programName);
     const user = await User.findById(userId);
-const purchase = await Purchase.findOne({ email: user.email, active: true });
-if (!purchase || !purchase.programData) {
-  return res.status(404).json({ error: "No active program found" });
-}
-const programData = purchase.programData;
+    const purchase = await Purchase.findOne({ email: user.email, active: true });
+    if (!purchase || !purchase.programData) {
+      return res.status(404).json({ error: "No active program found" });
+    }
+    const programData = purchase.programData;
     let session = programData.sessions.find(p => p.week === week && p.day === day);
     if (!session) return res.status(404).json({ error: "Session not found" });
 
-    // Define weekMeta and exercises BEFORE any use
     const weekMeta = getWeekMetadata(programData.weeks, week);
     let exercises = session.exercises || [];
 
-    // Apply volume modifier
     if (weekMeta?.volumeModifier && weekMeta.volumeModifier !== 1.0) {
       exercises = exercises.map(ex => applyVolumeModifier(ex, weekMeta.volumeModifier));
     }
-    // Remove back-off sets if specified
     if (weekMeta?.adjustments?.backOffSets) {
       const removeCount = weekMeta.adjustments.backOffSets;
       exercises = exercises.map(ex => {
@@ -1007,12 +985,10 @@ const programData = purchase.programData;
         return ex;
       });
     }
-    // Apply rep drop
     if (weekMeta?.adjustments?.repDrop === true) {
       const dropAmount = weekMeta.adjustments.repDropAmount || 1;
       exercises = exercises.map(ex => applyRepDrop(ex, dropAmount));
     }
-    // Week-level RPE override
     if (weekMeta?.rpe) {
       exercises = exercises.map(ex => {
         if (ex.rpeTarget === undefined) {
@@ -1022,14 +998,11 @@ const programData = purchase.programData;
       });
     }
     
-    // ✅ APPLY DESCENDING SETS (always runs for any exercise with descending:true)
     exercises = applyDescendingSets(exercises, true, weekMeta?.rpe || 7);
 
-    // ========== FATIGUE BUDGET & STRESS TAXONOMY ==========
     let fatigueOptimised = false;
     let overloadedTags = [];
     if (programData.useFatigueBudget && session.fatigueCap) {
-      // Retrieve completed sessions for the current week (same program)
       const weekSessions = await Session.find({
         userId,
         programName: programData.name,
@@ -1038,17 +1011,13 @@ const programData = purchase.programData;
       }).select("fatigueUnits stressTagTotals").lean();
 
       const weeklyTagLoads = computeWeeklyTagLoads(weekSessions);
-
       const budgetResult = allocateSessionBudget(exercises, session.fatigueCap, weeklyTagLoads);
       overloadedTags = budgetResult.overloadedTags;
       fatigueOptimised = true;
     }
-    // =====================================================
 
-    // Now rebuild the session with adjusted exercises
     const adjustedSession = { ...session, exercises };
 
-    // Rest of the route continues...
     const availableWeeks = [...new Set(programData.sessions.map(s => s.week))].sort((a,b)=>a-b);
     const availableDaysPerWeek = {};
     availableWeeks.forEach(w => {
@@ -1059,10 +1028,8 @@ const programData = purchase.programData;
     const liftStates = await LiftState.find({ userId });
 
     const projected = adjustedSession.exercises.map(ex => {
-        // Get original exercise from session (before any mutations)
       const originalEx = session.exercises.find(e => e.liftName === ex.liftName);
       if (originalEx) {
-        // Restore any lost fields from the original
         if (ex.rpeTarget === undefined && originalEx.rpeTarget !== undefined) ex.rpeTarget = originalEx.rpeTarget;
         if (ex.progressionType === undefined && originalEx.progressionType !== undefined) ex.progressionType = originalEx.progressionType;
         if (ex.rirTarget === undefined && originalEx.rirTarget !== undefined) ex.rirTarget = originalEx.rirTarget;
@@ -1071,13 +1038,10 @@ const programData = purchase.programData;
         if (ex.painTarget === undefined && originalEx.painTarget !== undefined) ex.painTarget = originalEx.painTarget;
         if (ex.romTarget === undefined && originalEx.romTarget !== undefined) ex.romTarget = originalEx.romTarget;
       }
-      // ========== NEW: Auto‑convert RIR → RPE for strength/hybrid programs ==========
       if ((logic === "STRENGTH_RPE" || logic === "GENERAL_FITNESS_HYBRID") 
           && ex.rirTarget !== undefined && ex.rpeTarget === undefined) {
-        // RPE ≈ 10 – RIR (clamp between 1 and 10)
         ex.rpeTarget = Math.min(10, Math.max(1, 10 - ex.rirTarget));
       }
-      // ============================================================================
 
       const state = liftStates.find(s => s.liftName === ex.liftName);
       let currentWeight = 0;
@@ -1096,7 +1060,6 @@ const programData = purchase.programData;
       if (qualityAdjustment !== 0 && ex.progressionType === "power") {
         adjustedQualityTarget = Math.min(10, Math.max(1, (ex.qualityTarget || 7) + qualityAdjustment));
       }
-      // Readiness adjustments for mobility/stability exercises in hybrid programs
       if (ex.progressionType === "mobility" || ex.progressionType === "stability") {
         if (painAdjustment !== 0) {
           ex.painTarget = Math.max(0, (ex.painTarget || 4) + painAdjustment);
@@ -1108,7 +1071,6 @@ const programData = purchase.programData;
         }
       }
 
-      // ========== NEW: baseLift inheritance for weight suggestions ==========
       let effectiveState = state;
       if (!effectiveState || (logic === "STRENGTH_RPE" && !effectiveState.estimated1RM)) {
         if (ex.baseLift) {
@@ -1116,18 +1078,14 @@ const programData = purchase.programData;
         }
       }
 
-      // ========== Weight calculation with back-off floor & ceiling ==========
       let computed1RM = effectiveState?.estimated1RM || 0;
-      let topSetWeightForReference = 0;   // parent top set weight suggestion
+      let topSetWeightForReference = 0;
 
       if (ex.role === "back-off" && !ex._descendingSet) {
-        // 5% fatigue reduction on 1RM (base)
         if (computed1RM > 0) {
           computed1RM = Math.round(computed1RM * 0.95);
           ex._fatigueAdjusted = true;
         }
-
-        // Find parent top set's suggested weight (without readiness adjustments for fair floor)
         if (ex.baseLift) {
           const parentLift = adjustedSession.exercises.find(
             e => e.liftName === ex.baseLift && e.role === "top-set"
@@ -1146,20 +1104,16 @@ const programData = purchase.programData;
 
       if (effectiveState) {
         if (logic === "STRENGTH_RPE" && computed1RM > 0) {
-          // Apply variation penalty (6% reduction) for paused/tempo lifts
           let effective1RM = computed1RM;
           if (isVariationLift(ex.liftName)) {
             effective1RM = Math.round(computed1RM * 0.94);
             ex._variationAdjusted = true;
           }
-
-          // Volume lifts: use independent currentWeight from LiftState
           if (ex.role === "volume" && effectiveState.currentWeight > 0) {
             currentWeight = effectiveState.currentWeight;
             const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 5 : 2.5;
             projectedNextWeight = currentWeight + inc;
           } else {
-            // Normal top‑set / back‑off calculation
             let rawWeight = weightForRPE(effective1RM, adjustedRpeTarget, ex.reps);
             if (ex.role === "back-off" && !ex._descendingSet && topSetWeightForReference > 0) {
               const liftType = ex.liftName?.toLowerCase() || "";
@@ -1175,7 +1129,6 @@ const programData = purchase.programData;
               if (rawWeight > maxBackoffWeight) rawWeight = maxBackoffWeight;
             }
             currentWeight = rawWeight;
-
             let nextRaw = weightForRPE(effective1RM, adjustedRpeTarget + 0.5, ex.reps);
             if (ex.role === "back-off" && !ex._descendingSet && topSetWeightForReference > 0) {
               const liftType = ex.liftName?.toLowerCase() || "";
@@ -1194,7 +1147,6 @@ const programData = purchase.programData;
           }
         } 
         else if (logic === "GENERAL_FITNESS_HYBRID") {
-          // Strength exercises: use RPE-based weight from estimated1RM
           if (ex.progressionType === "strength" && effectiveState?.estimated1RM > 0) {
             let effective1RM = effectiveState.estimated1RM;
             if (isVariationLift(ex.liftName)) {
@@ -1205,7 +1157,6 @@ const programData = purchase.programData;
             let nextRaw = weightForRPE(effective1RM, adjustedRpeTarget + 0.5, ex.reps);
             projectedNextWeight = nextRaw;
           }
-          // For non-strength exercises (power, mobility, volume), keep old currentWeight logic
           else if (effectiveState.currentWeight > 0) {
             currentWeight = effectiveState.currentWeight;
             let weightModifier = 1;
@@ -1217,7 +1168,6 @@ const programData = purchase.programData;
           }
         }
         else if (logic === "HYPERTROPHY_VOLUME" && effectiveState.currentWeight > 0) {
-          // Keep existing hypertrophy logic unchanged
           currentWeight = effectiveState.currentWeight;
           let weightModifier = 1;
           if (rirAdjustment !== 0) weightModifier *= (rirAdjustment === 1 ? 0.92 : rirAdjustment === -1 ? 1.08 : 1);
@@ -1228,9 +1178,7 @@ const programData = purchase.programData;
         }
       }
 
-      // ========== MECHANICAL DISADVANTAGE HANDLING ==========
       if (ex.mechanicalDisadvantage && effectiveState && logic === "STRENGTH_RPE") {
-        // No hard weight cap. Instead, limit the increase on good sessions.
         if (projectedNextWeight > currentWeight) {
           const inc = (ex.liftName?.toLowerCase().includes("squat") || ex.liftName?.toLowerCase().includes("deadlift")) ? 2.5 : 1.25;
           projectedNextWeight = currentWeight + inc;
@@ -1278,12 +1226,6 @@ const programData = purchase.programData;
 
 // ==================== SESSION LOG (with FU storage) ====================
 app.post("/api/session-log", async (req, res) => {
-  const user = await User.findById(userId);
-const purchase = await Purchase.findOne({ email: user.email, active: true });
-if (!purchase || !purchase.programData) {
-  return res.status(404).json({ error: "No active program found" });
-}
-const programData = purchase.programData;
   try {
     const log = await Session.create(req.body);
     const userId = req.body.userId;
@@ -1305,7 +1247,6 @@ const programData = purchase.programData;
       }
     }
 
-    // ========== STORE FATIGUE UNITS AND TAG LOADS ==========
     try {
       const progName = req.body.programName;
       const progWeek = req.body.week;
@@ -1314,8 +1255,6 @@ const programData = purchase.programData;
       if (progData.useFatigueBudget) {
         const sess = progData.sessions.find(s => s.week === progWeek && s.day === progDay);
         if (sess) {
-          // Build exercise list from what was actually logged (we have liftName, sets, etc.)
-          // For simplicity, we'll use the program's exercise list with the logged sets/reps/RPE.
           const exercisesForFU = sess.exercises.map(ex => {
             const logged = req.body.liftName === ex.liftName ? req.body : ex;
             return {
@@ -1334,7 +1273,6 @@ const programData = purchase.programData;
     } catch (e) {
       console.error("Failed to store FU data", e);
     }
-    // ======================================================
 
     res.json(log);
   } catch (err) {
@@ -1343,14 +1281,8 @@ const programData = purchase.programData;
   }
 });
 
-// ==================== PROGRESSION APPLY (with mechanical disadvantage guard) ====================
+// ==================== PROGRESSION APPLY ====================
 app.post("/api/progression/apply", async (req, res) => {
-  const user = await User.findById(userId);
-const purchase = await Purchase.findOne({ email: user.email, active: true });
-if (!purchase || !purchase.programData) {
-  return res.status(404).json({ error: "No active program found" });
-}
-const programData = purchase.programData;
   try {
     const { userId, liftName, logic } = req.body;
     const lastSession = await Session.findOne({ userId, liftName }).sort({ createdAt: -1 });
@@ -1361,7 +1293,6 @@ const programData = purchase.programData;
     let state = await LiftState.findOne({ userId, liftName });
     if (!state) {
       let initialState = { userId, liftName };
-      // For STRENGTH_RPE, or GENERAL_FITNESS_HYBRID with progressionType "strength"
       const isStrengthExercise = (logic === "STRENGTH_RPE") || 
         (logic === "GENERAL_FITNESS_HYBRID" && lastSession.progressionType === "strength");
       
@@ -1387,7 +1318,6 @@ const programData = purchase.programData;
       return res.json({ message: "Initial state set", state });
     }
 
-    // ========== MECHANICAL DISADVANTAGE GUARD ==========
     let isDisadvantageLift = false;
     let baseLiftName = null;
     try {
@@ -1401,7 +1331,6 @@ const programData = purchase.programData;
         }
       }
     } catch (e) { /* ignore */ }
-    // =================================================
 
     const sessionData = {
       completed: lastSession.completed,
@@ -1426,19 +1355,16 @@ const programData = purchase.programData;
 
     let result = calculateProgression(state, sessionData, logic || "STRENGTH_RPE");
 
-    // Mechanical disadvantage: lock e1RM floor and prevent parent lift contamination
     if (isDisadvantageLift) {
-      // 1RM floor: never drop more than 2.5% below current value
       if (result.estimated1RM !== undefined && state.estimated1RM > 0) {
         const floor = Math.round(state.estimated1RM * 0.975);
         if (result.estimated1RM < floor) {
           result.estimated1RM = floor;
         }
       }
-      // Also, only increase if RPE ≤ target + 0.5
       const rpeOk = lastSession.actualRPE <= (lastSession.targetRPE + 0.5);
       if (!rpeOk && result.estimated1RM > state.estimated1RM) {
-        result.estimated1RM = state.estimated1RM;   // discard increase on tough session
+        result.estimated1RM = state.estimated1RM;
       }
     }
 
@@ -1525,13 +1451,12 @@ app.get("/api/next-session/:userId", async (req, res) => {
     if (!programName) return res.status(400).json({ error: "Missing program name" });
 
     programName = normalizeProgramName(programName);
-
     const user = await User.findById(userId);
-const purchase = await Purchase.findOne({ email: user.email, active: true });
-if (!purchase || !purchase.programData) {
-  return res.status(404).json({ error: "No active program found" });
-}
-const programData = purchase.programData;
+    const purchase = await Purchase.findOne({ email: user.email, active: true });
+    if (!purchase || !purchase.programData) {
+      return res.status(404).json({ error: "No active program found" });
+    }
+    const programData = purchase.programData;
     const sessions = programData.sessions;
     if (!sessions.length) return res.status(404).json({ error: "No sessions in program" });
 
@@ -1730,11 +1655,10 @@ app.post("/api/admin/assign-program", async (req, res) => {
   console.log(`✅ Admin assigned ${programName} to ${normalizedUserEmail}`);
   res.json({ message: `Assigned ${programName} to ${normalizedUserEmail}` });
 });
-const programDataCache = new Map();
+
 app.post("/api/create-checkout-session", async (req, res) => {
-  const { programName, email, programData, customMetadata } = req.body;
   try {
-    let { programName, email, customMetadata = {} } = req.body;
+    let { programName, email, programData, customMetadata = {} } = req.body;
     
     if (email) {
       email = email.toLowerCase().trim();
@@ -1745,15 +1669,10 @@ app.post("/api/create-checkout-session", async (req, res) => {
     if (!programName) return res.status(400).json({ error: "Program name is required" });
     if (!email) return res.status(400).json({ error: "Email is required" });
 
-    const priceIds = {
-      "Ares Protocol": "price_1TJM36FywsnhFgWfMqo2H5no",
-      "Apollo Physique": "price_1TJM3yFywsnhFgWfCLEAFwZD",
-      "Hephaestus Framework": "price_1TJM5EFywsnhFgWfwr1yhP4e",
-      "Hercules Foundation": "price_1TJM4hFywsnhFgWfygiuDvQ6"
-    };
-
-    const priceId = priceIds[programName];
-    if (!priceId) return res.status(400).json({ error: `Program "${programName}" not found` });
+    const priceId = displayToPriceId[programName];
+    if (!priceId) {
+      return res.status(400).json({ error: `Program "${programName}" not found. Please try again or contact support.` });
+    }
 
     const existingPurchase = await Purchase.findOne({ email });
     const hasUsedTrialBefore = !!existingPurchase;
@@ -1769,8 +1688,6 @@ app.post("/api/create-checkout-session", async (req, res) => {
       console.log(`[DEBUG] Existing user ${email} - no trial (already used)`);
     }
 
-    // ⚠️ Stripe metadata limit: each value must be ≤ 50 characters.
-    // Keep `displayTitle` short (under 50 chars) to avoid 400 errors.
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer_email: email,
@@ -1790,8 +1707,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
     });
 
     programDataCache.set(session.id, programData);
-  // Set expiry (e.g., 1 hour)
-  setTimeout(() => programDataCache.delete(session.id), 3600000);
+    setTimeout(() => programDataCache.delete(session.id), 3600000);
 
     res.json({ url: session.url });
   } catch (error) {
@@ -1800,7 +1716,6 @@ app.post("/api/create-checkout-session", async (req, res) => {
   }
 });
 
-// NEW: Get user's active program configuration
 app.get("/api/user-program-config/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
@@ -1826,7 +1741,6 @@ app.get("/api/test-stripe", (req, res) => {
   });
 });
 
-// Cancel subscription endpoint
 app.post("/api/cancel-subscription", async (req, res) => {
   try {
     const { userId } = req.body;
@@ -1835,18 +1749,15 @@ app.post("/api/cancel-subscription", async (req, res) => {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    // Find active purchase with Stripe subscription ID
     const purchase = await Purchase.findOne({ email: user.email, active: true, stripeSubscriptionId: { $ne: null } });
     if (!purchase || !purchase.stripeSubscriptionId) {
       return res.status(400).json({ error: "No active subscription found to cancel" });
     }
 
-    // Cancel subscription in Stripe
     const subscription = await stripe.subscriptions.update(purchase.stripeSubscriptionId, {
       cancel_at_period_end: true,
     });
 
-    // Optionally mark as canceling in DB (we'll set active: false only after period end, but we can store cancel_at)
     await Purchase.updateOne(
       { _id: purchase._id },
       { cancelAtPeriodEnd: true, canceledAt: new Date() }
@@ -1873,14 +1784,11 @@ app.delete("/api/session-log/:id", async (req, res) => {
 
     let state = await LiftState.findOne({ userId, liftName });
     if (!previousSession) {
-      // No session left → remove the LiftState entirely
       if (state) await LiftState.findByIdAndDelete(state._id);
       return res.json({ message: "Session deleted and LiftState removed (no previous session)" });
     }
 
-    // Recalculate state from the previous session
     if (!state) {
-      // Shouldn't normally happen after progression, but create if needed
       state = new LiftState({ userId, liftName });
     }
 
@@ -1907,7 +1815,6 @@ app.delete("/api/session-log/:id", async (req, res) => {
 
     const result = calculateProgression(state, sessionData, logic || "STRENGTH_RPE");
 
-    // Update LiftState fields
     if (result.estimated1RM !== undefined) state.estimated1RM = result.estimated1RM;
     if (result.currentWeight !== undefined) state.currentWeight = result.currentWeight;
     if (result.lastRepsAchieved !== undefined) state.lastRepsAchieved = result.lastRepsAchieved;
@@ -2106,7 +2013,6 @@ app.get("/api/subscription-status/:userId", async (req, res) => {
   }
 });
 
-// ==================== Manual Premium Admin Routes ====================
 app.get("/api/admin/manual-premium-users", async (req, res) => {
   const { adminemail } = req.headers;
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "kieren2203@googlemail.com";
@@ -2170,11 +2076,9 @@ app.post("/api/admin/revoke-premium", async (req, res) => {
   }
 });
 
-// Progress comparison endpoint
 app.get("/api/progress-comparison/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
-    // Get all sessions grouped by week
     const sessions = await Session.find({ userId }).sort({ week: 1, day: 1, createdAt: 1 });
     if (sessions.length === 0) return res.json({ weeks: [], lifts: [] });
 
@@ -2192,7 +2096,6 @@ app.get("/api/progress-comparison/:userId", async (req, res) => {
     const firstWeekSessions = weeksMap.get(firstWeek);
     const lastWeekSessions = weeksMap.get(lastWeek);
 
-    // Map lifts to their first and last weight (average or last session per lift)
     const liftMap = new Map();
     for (const s of firstWeekSessions) {
       if (!liftMap.has(s.liftName)) liftMap.set(s.liftName, { firstWeight: null, lastWeight: null });
@@ -2231,7 +2134,6 @@ app.get("/api/coaching-prompt/:userId", async (req, res) => {
   }
 });
 
-// Initialize LiftState with a given 1RM (onboarding)
 app.post("/api/initialize-lift", async (req, res) => {
   try {
     const { userId, liftName, estimated1RM } = req.body;
@@ -2241,9 +2143,8 @@ app.post("/api/initialize-lift", async (req, res) => {
 
     let state = await LiftState.findOne({ userId, liftName });
     if (state) {
-      // Update existing
       state.estimated1RM = estimated1RM;
-      state.currentWeight = 0; // strength lifts start from 1RM
+      state.currentWeight = 0;
       state.updatedAt = new Date();
       await state.save();
     } else {
@@ -2291,13 +2192,11 @@ app.get("/api/generate-meet-prep/:userId", async (req, res) => {
     const allowedDurations = [8, 12, 16];
     const duration = allowedDurations.find(d => d <= durationWeeks) || 8;
 
-    // Fetch sessions from last 90 days
     const sessions = await Session.find({
       userId,
       createdAt: { $gte: new Date(Date.now() - 90 * 86400000) }
     }).sort({ createdAt: 1 });
 
-    // Estimate 1RM progression for each main lift
     const lifts = ["Squat (Comp)", "Bench (Comp)", "Deadlift (Comp)"];
     const progressionRates = {};
     for (const lift of lifts) {
@@ -2345,7 +2244,6 @@ app.get("/api/generate-meet-prep/:userId", async (req, res) => {
     }
     if (focusLift === "balanced" && maxRatio <= 0) focusLift = "balanced";
 
-    // Determine highest fatigue tag from last 4 weeks
     const recentSessions = await Session.find({
       userId,
       createdAt: { $gte: new Date(Date.now() - 28 * 86400000) },
@@ -2430,7 +2328,6 @@ async function sendWelcomeEmail3(email) {
   try { await transporter.sendMail(mailOptions); console.log(`📧 Day25 email to ${email}`); } catch(e) { console.error(e); }
 }
 
-// Cron job – runs daily at 09:00
 cron.schedule('0 9 * * *', async () => {
   console.log('🔁 Running welcome email cron job');
   const now = new Date();
@@ -2471,13 +2368,11 @@ app.post("/api/run-email-cron", async (req, res) => {
   res.json({ message: "Cron job executed" });
 });
 
-// Serve static files from the public directory (images)
 const publicPath = path.join(__dirname, "frontend", "public");
 if (fs.existsSync(publicPath)) {
   app.use(express.static(publicPath));
 }
 
-// Serve React build
 const distPath = path.join(__dirname, "frontend", "dist");
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
@@ -2487,7 +2382,6 @@ if (fs.existsSync(distPath)) {
   app.get("*", (req, res) => res.status(404).send("Build not found. Please run build first."));
 }
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error("Global error:", err);
   res.status(500).json({ error: err.message || "Internal server error" });
