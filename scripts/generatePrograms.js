@@ -8,11 +8,22 @@ import { meetPrepMaster } from './programData/meetPrepMaster.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.resolve(__dirname, '../frontend/public/programs');
-const BACKEND_DATA_DIR = path.resolve(__dirname, '../data');   // or '../programs' – adjust if needed
+const BACKEND_DATA_DIR = path.resolve(__dirname, '../data');
 if (!fs.existsSync(BACKEND_DATA_DIR)) fs.mkdirSync(BACKEND_DATA_DIR, { recursive: true });
 
-// Ensure output directory exists
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+
+// Helper: compute fatigueCap based on exercises (assuming RPE 7 gives multiplier ~1.15)
+function computeFatigueCap(exercises, buffer = 1.2) {
+  let totalFU = 0;
+  for (const ex of exercises) {
+    const baseFU = ex.baseFUCost !== undefined ? ex.baseFUCost : 1;
+    const rpeMult = 1.15;  // typical RPE 7
+    const sets = ex.sets || 3;
+    totalFU += baseFU * rpeMult * sets;
+  }
+  return Math.ceil(totalFU * buffer);
+}
 
 // Deterministic "random" selection (same each run)
 function pickItems(arr, count) {
@@ -26,7 +37,6 @@ function pickItems(arr, count) {
 }
 
 // ========== POWERLIFTING GENERATOR ==========
-// ========== POWERLIFTING GENERATOR (CORRECTED) ==========
 function generatePowerliftingProgram(freq, focus) {
   freq = Number(freq);
   const { primarySessions, secondaryLifts, accessories, tertiary } = powerliftingMaster;
@@ -41,7 +51,6 @@ function generatePowerliftingProgram(freq, focus) {
     benchVol.exercises.forEach(ex => { if (ex.reps === "4") ex.reps = "8"; if (ex.rpeTarget) ex.rpeTarget = Math.max(5, ex.rpeTarget - 1); });
     sessions.push(benchVol);
   } else if (freq === 5) {
-    // Build exactly 5 sessions
     sessions = [
       JSON.parse(JSON.stringify(primarySessions.squat)),
       JSON.parse(JSON.stringify(primarySessions.bench)),
@@ -97,20 +106,20 @@ function generatePowerliftingProgram(freq, focus) {
       sessCopy.day = i + 1;
       if (week === 5) {
         sessCopy.exercises.forEach(ex => { if (ex.rpeTarget) ex.rpeTarget = Math.max(5, ex.rpeTarget-2); if (ex.rirTarget) ex.rirTarget = (ex.rirTarget||2)+2; if (ex.sets) ex.sets = Math.max(2, ex.sets-1); });
-        if (sessCopy.fatigueCap) sessCopy.fatigueCap = Math.floor(sessCopy.fatigueCap * 0.6);
       } else if (week >= 2) {
         sessCopy.exercises.forEach(ex => { if (ex.rpeTarget) ex.rpeTarget = Math.min(9, ex.rpeTarget+0.5); if (ex.rirTarget) ex.rirTarget = Math.max(1, (ex.rirTarget||2)-0.5); });
-        if (week === 4 && sessCopy.fatigueCap) sessCopy.fatigueCap += 2;
       }
+      // Compute dynamic fatigueCap
+      sessCopy.fatigueCap = computeFatigueCap(sessCopy.exercises, 1.2);
       fullProgram.sessions.push(sessCopy);
     }
   }
   return fullProgram;
 }
 
-// ========== HYPERTROPHY GENERATOR (CORRECTED) ==========
+// ========== HYPERTROPHY GENERATOR ==========
 function generateHypertrophyProgram(freq, split) {
-  freq = Number(freq);   // Force numeric comparison
+  freq = Number(freq);
   const { planeSessions, armsDay, volumeFactors } = hypertrophyMaster;
   let sessions = [];
 
@@ -145,11 +154,9 @@ function generateHypertrophyProgram(freq, split) {
     ];
   }
 
-  // Adjust number of days based on frequency
   if (freq === 3) {
     sessions = sessions.slice(0, 3);
   } else if (freq === 5) {
-    // Build exactly 5 sessions: first two, then arms, then last two
     const armsDayData = armsDay || { focus: "Arms & Shoulders", exercisePool: [] };
     const armsPool = armsDayData.exercisePool ?? [];
     const armsSession = { focus: armsDayData.focus, exercisePool: armsPool };
@@ -180,6 +187,8 @@ function generateHypertrophyProgram(freq, split) {
       } else if (week >= 3) {
         sessCopy.exercises.forEach(ex => { if (ex.rirTarget) ex.rirTarget = Math.max(1, (ex.rirTarget||2)-0.5); });
       }
+      // Compute dynamic fatigueCap
+      sessCopy.fatigueCap = computeFatigueCap(sessCopy.exercises, 1.2);
       fullProgram.sessions.push(sessCopy);
     }
   }
@@ -187,19 +196,18 @@ function generateHypertrophyProgram(freq, split) {
 }
 
 // ========== MEET PREP GENERATOR ==========
-function generateMeetPrepProgram(freq, focus) {
-  const { peakingWaves, taperOptions, coreLifts, variationPool, accessoryPool, volumeFactors } = meetPrepMaster;
-  const isPeaking = focus === "peaking";
-  const wave = isPeaking ? peakingWaves["8week"] : peakingWaves["6week"];
+// In generatePrograms.js – meet prep with dynamic focus
+function generateMeetPrepProgram(freq, focusLift, durationWeeks = 8, fatiguePriority = "axial") {
+  const { waveTemplates, coreLifts, variationPool, accessoryPool, volumeFactors } = meetPrepMaster;
+  const wave = waveTemplates[durationWeeks] || waveTemplates[8];
   const factor = volumeFactors[freq];
   let sessions = [];
 
   for (let w = 0; w < wave.weeks.length; w++) {
     const weekData = wave.weeks[w];
     const weekNum = w + 1;
-    const isTaperWeek = !isPeaking && weekNum >= wave.weeks.length - 1;
+    const isTaperWeek = weekData.phase === "Taper" || weekData.phase === "Meet Week";
 
-    // Determine session days based on frequency
     let sessionDays = [];
     if (freq === 3) sessionDays = [1, 3, 5];
     else if (freq === 4) sessionDays = [1, 2, 4, 5];
@@ -209,12 +217,33 @@ function generateMeetPrepProgram(freq, focus) {
       const dayNum = sessionDays[dayIdx];
       let exercises = [];
 
-      // Add core lifts based on day
-      if (dayNum === 1) exercises.push(...coreLifts.filter(l => l.liftName.includes("Squat")));
-      if (dayNum === 2 || dayNum === 4) exercises.push(...coreLifts.filter(l => l.liftName.includes("Bench")));
-      if (dayNum === 3 || dayNum === 5) exercises.push(...coreLifts.filter(l => l.liftName.includes("Deadlift")));
+      // Add core lifts (always top-set + back-off)
+      if (dayNum === 1) {
+        exercises.push(...coreLifts.filter(l => l.liftName.includes("Squat")));
+        if (focusLift === "squat") {
+          exercises.forEach(ex => {
+            if (ex.liftName.includes("Squat")) ex.rpeTarget = Math.min(9.5, (ex.rpeTarget || 8) + 0.5);
+          });
+        }
+      }
+      if (dayNum === 2 || dayNum === 4) {
+        exercises.push(...coreLifts.filter(l => l.liftName.includes("Bench")));
+        if (focusLift === "bench") {
+          exercises.forEach(ex => {
+            if (ex.liftName.includes("Bench")) ex.rpeTarget = Math.min(9.5, (ex.rpeTarget || 8) + 0.5);
+          });
+        }
+      }
+      if (dayNum === 3 || dayNum === 5) {
+        exercises.push(...coreLifts.filter(l => l.liftName.includes("Deadlift")));
+        if (focusLift === "deadlift") {
+          exercises.forEach(ex => {
+            if (ex.liftName.includes("Deadlift")) ex.rpeTarget = Math.min(9.5, (ex.rpeTarget || 8) + 0.5);
+          });
+        }
+      }
 
-      // Add a variation lift (rotated weekly)
+      // Variation lifts (rotated weekly)
       const weekParity = weekNum % 3;
       if (dayNum === 1 && weekParity === 0 && variationPool.squat.length) {
         const varLift = JSON.parse(JSON.stringify(variationPool.squat[weekNum % variationPool.squat.length]));
@@ -241,42 +270,60 @@ function generateMeetPrepProgram(freq, focus) {
         exercises.push(varLift);
       }
 
-      // Add accessories (reduced as intensity increases)
+      // Accessories – reduce if fatiguePriority tag is high during peak weeks
       let accessoryCount = freq === 3 ? 2 : (freq === 4 ? 3 : 4);
       if (weekData.rpeBase >= 8.5) accessoryCount = Math.max(1, accessoryCount - 1);
+      if (isTaperWeek) accessoryCount = Math.max(0, accessoryCount - 1);
+      
       if (accessoryCount > 0) {
-        const allAcc = [...accessoryPool.quads, ...accessoryPool.posterior, ...accessoryPool.push, ...accessoryPool.pull];
+        let allAcc = [...accessoryPool.quads, ...accessoryPool.posterior, ...accessoryPool.push, ...accessoryPool.pull];
+        // Avoid accessories that stress the fatiguePriority tag during high fatigue weeks
+        if (weekData.rpeBase >= 8 && fatiguePriority !== "balanced") {
+          allAcc = allAcc.filter(acc => !(acc.stressTags && acc.stressTags.includes(fatiguePriority)));
+        }
         const selected = pickItems(allAcc, accessoryCount);
         exercises.push(...selected);
       }
 
-      // Apply volume factor and weekly RPE adjustments
+      // Weekly volume and RPE adjustments
       exercises.forEach(ex => {
         if (ex.sets) ex.sets = Math.max(1, Math.floor(ex.sets * weekData.volumeFactor * factor));
-        if (ex.rpeTarget !== undefined) ex.rpeTarget = Math.min(9.5, ex.rpeTarget + (weekData.rpeBase - 7));
+        if (ex.rpeTarget !== undefined) {
+          let adjustedRPE = ex.rpeTarget + (weekData.rpeBase - 7);
+          if (focusLift !== "balanced" && ex.liftName.toLowerCase().includes(focusLift)) {
+            if (weekData.phase === "Peak") adjustedRPE += 0.5;
+          }
+          ex.rpeTarget = Math.min(9.5, Math.max(5, adjustedRPE));
+        }
+        // Taper
         if (isTaperWeek && ex.role === "top-set") {
-          ex.rpeTarget = Math.min(9, ex.rpeTarget + 0.5);
           ex.sets = 1;
+          if (weekData.phase === "Meet Week") ex.rpeTarget = Math.min(9, ex.rpeTarget);
+        } else if (isTaperWeek && ex.role === "back-off") {
+          ex.sets = Math.max(0, ex.sets - 1);
         }
       });
+
+      const fatigueBuffer = (fatiguePriority !== "balanced" && weekData.rpeBase >= 8) ? 1.1 : 1.2;
+      const fatigueCap = computeFatigueCap(exercises, fatigueBuffer);
 
       sessions.push({
         week: weekNum,
         day: dayNum,
-        focus: `Meet Prep - ${weekData.description || (isPeaking ? "Peaking" : "Taper")}`,
-        fatigueCap: Math.floor(weekData.fatigueCap * (freq === 5 ? 1.1 : freq === 3 ? 0.85 : 1)),
-        exercises: exercises
+        focus: `Meet Prep - ${weekData.phase} (${focusLift} focus, clear ${fatiguePriority})`,
+        fatigueCap: fatigueCap,
+        exercises: exercises,
+        phase: weekData.phase
       });
     }
   }
 
-  const fullProgram = {
-    name: `Meet Prep - ${freq} day / ${focus.toUpperCase()}`,
+  return {
+    name: `Meet Prep - ${freq}d / ${focusLift} focus / ${durationWeeks} weeks`,
     logic: "STRENGTH_RPE",
     useFatigueBudget: true,
     sessions: sessions
   };
-  return fullProgram;
 }
 
 // ========== GENERATE ALL ==========
@@ -290,9 +337,9 @@ for (const freq of freqs) {
     const prog = generatePowerliftingProgram(freq, focus);
     const fileName = `str_${freq}_${focus}.json`;
     const filePathFrontend = path.join(OUTPUT_DIR, fileName);
-const filePathBackend = path.join(BACKEND_DATA_DIR, fileName);
-fs.writeFileSync(filePathFrontend, JSON.stringify(prog, null, 2));
-fs.writeFileSync(filePathBackend, JSON.stringify(prog, null, 2));
+    const filePathBackend = path.join(BACKEND_DATA_DIR, fileName);
+    fs.writeFileSync(filePathFrontend, JSON.stringify(prog, null, 2));
+    fs.writeFileSync(filePathBackend, JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
 }
@@ -302,9 +349,9 @@ for (const freq of freqs) {
     const prog = generateHypertrophyProgram(freq, split);
     const fileName = `hyp_${freq}_${split}.json`;
     const filePathFrontend = path.join(OUTPUT_DIR, fileName);
-const filePathBackend = path.join(BACKEND_DATA_DIR, fileName);
-fs.writeFileSync(filePathFrontend, JSON.stringify(prog, null, 2));
-fs.writeFileSync(filePathBackend, JSON.stringify(prog, null, 2));
+    const filePathBackend = path.join(BACKEND_DATA_DIR, fileName);
+    fs.writeFileSync(filePathFrontend, JSON.stringify(prog, null, 2));
+    fs.writeFileSync(filePathBackend, JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
 }
@@ -314,9 +361,9 @@ for (const freq of freqs) {
     const prog = generateMeetPrepProgram(freq, focus);
     const fileName = `mp_${freq}_${focus}.json`;
     const filePathFrontend = path.join(OUTPUT_DIR, fileName);
-const filePathBackend = path.join(BACKEND_DATA_DIR, fileName);
-fs.writeFileSync(filePathFrontend, JSON.stringify(prog, null, 2));
-fs.writeFileSync(filePathBackend, JSON.stringify(prog, null, 2));
+    const filePathBackend = path.join(BACKEND_DATA_DIR, fileName);
+    fs.writeFileSync(filePathFrontend, JSON.stringify(prog, null, 2));
+    fs.writeFileSync(filePathBackend, JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
 }

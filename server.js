@@ -196,7 +196,8 @@ const UserSchema = new mongoose.Schema({
   streak: { type: Number, default: 0 },
   lastWorkoutDate: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now },
-  manualPremium: { type: Boolean, default: false }
+  manualPremium: { type: Boolean, default: false },
+  meetDate: { type: Date, default: null }
 });
 const User = mongoose.model("User", UserSchema);
 
@@ -2258,6 +2259,131 @@ app.post("/api/initialize-lift", async (req, res) => {
 
     console.log(`📊 Initialised ${liftName} for ${userId} with 1RM = ${estimated1RM}kg`);
     res.json({ message: "Lift initialised", state });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/set-meet-date", async (req, res) => {
+  const { userId, meetDate } = req.body;
+  if (!userId || !meetDate) return res.status(400).json({ error: "Missing fields" });
+  const user = await User.findByIdAndUpdate(userId, { meetDate: new Date(meetDate) }, { new: true });
+  res.json({ meetDate: user.meetDate });
+});
+
+app.get("/api/generate-meet-prep/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+    if (!user || !user.meetDate) {
+      return res.status(400).json({ error: "Meet date not set" });
+    }
+
+    const today = new Date();
+    const meetDate = new Date(user.meetDate);
+    const daysToMeet = Math.ceil((meetDate - today) / (1000 * 60 * 60 * 24));
+    if (daysToMeet < 14) return res.status(400).json({ error: "Meet too soon – less than 2 weeks" });
+    const durationWeeks = Math.floor(daysToMeet / 7);
+    const allowedDurations = [8, 12, 16];
+    const duration = allowedDurations.find(d => d <= durationWeeks) || 8;
+
+    // Fetch sessions from last 90 days (or last mesocycle)
+    const sessions = await Session.find({
+      userId,
+      createdAt: { $gte: new Date(Date.now() - 90 * 86400000) }
+    }).sort({ createdAt: 1 });
+
+    // Estimate 1RM progression for each main lift
+    const lifts = ["Squat (Comp)", "Bench (Comp)", "Deadlift (Comp)"];
+    const progressionRates = {};
+    for (const lift of lifts) {
+      const liftSessions = sessions.filter(s => s.liftName === lift && s.actualWeight && s.repsPerSet && s.actualRPE);
+      if (liftSessions.length < 4) continue;
+      // group by week
+      const weeks = {};
+      liftSessions.forEach(s => {
+        const weekNum = Math.floor((new Date(s.createdAt) - new Date(liftSessions[0].createdAt)) / (7*86400000));
+        if (!weeks[weekNum]) weeks[weekNum] = [];
+        weeks[weekNum].push(s);
+      });
+      const weekly1RM = [];
+      for (const weekNum of Object.keys(weeks).sort((a,b)=>a-b)) {
+        const best = weeks[weekNum].reduce((max, s) => {
+          const reps = Math.max(...(s.repsPerSet || [s.repsCompleted]));
+          const est = estimate1RM(s.actualWeight, reps, s.actualRPE);
+          return Math.max(max, est);
+        }, 0);
+        if (best) weekly1RM.push(best);
+      }
+      if (weekly1RM.length >= 3) {
+        const x = weekly1RM.map((_, i) => i);
+        const y = weekly1RM;
+        const slope = (x.length * x.reduce((s,xi,i)=>s+xi*y[i],0) - x.reduce((a,b)=>a+b,0) * y.reduce((a,b)=>a+b,0)) /
+                      (x.length * x.reduce((s,xi)=>s+xi*xi,0) - Math.pow(x.reduce((a,b)=>a+b,0),2));
+        progressionRates[lift] = slope; // kg per week
+      }
+    }
+
+    // Expected norms (kg/week) for intermediate/advanced lifters
+    const norms = {
+      "Squat (Comp)": 1.5,
+      "Bench (Comp)": 1.0,
+      "Deadlift (Comp)": 2.0
+    };
+    // Determine which lift is accelerating fastest vs norm
+    let focusLift = "balanced";
+    let maxRatio = -Infinity;
+    for (const lift of lifts) {
+      const rate = progressionRates[lift] || 0;
+      const norm = norms[lift] || 1.0;
+      const ratio = rate / norm;
+      if (ratio > maxRatio && rate > 0) {
+        maxRatio = ratio;
+        focusLift = lift.toLowerCase().replace(" (comp)", "");
+      }
+    }
+    if (focusLift === "balanced" && maxRatio <= 0) focusLift = "balanced"; // no clear gain
+
+    // Determine which stress tag has highest cumulative fatigue over last 4 weeks
+    const recentSessions = await Session.find({
+      userId,
+      createdAt: { $gte: new Date(Date.now() - 28 * 86400000) },
+      stressTagTotals: { $exists: true }
+    });
+    const tagTotals = { axial: 0, hinge: 0, push: 0, "knee-dominant": 0, pull: 0, eccentric: 0 };
+    for (const sess of recentSessions) {
+      if (sess.stressTagTotals) {
+        for (const [tag, val] of Object.entries(sess.stressTagTotals)) {
+          tagTotals[tag] = (tagTotals[tag] || 0) + val;
+        }
+      }
+    }
+    let fatiguePriority = "axial";
+    let maxFatigue = 0;
+    for (const [tag, total] of Object.entries(tagTotals)) {
+      if (total > maxFatigue) {
+        maxFatigue = total;
+        fatiguePriority = tag;
+      }
+    }
+
+    // Call the meet prep generator (to be added in generatePrograms.js)
+    const { generateMeetPrepProgram } = await import("../scripts/generatePrograms.js");
+    // Assume we have a helper to get user's preferred training frequency (stored in User or Purchase)
+    const activePurchase = await Purchase.findOne({ email: user.email, active: true });
+    const freq = activePurchase?.programConfig?.frequency || 4; // default 4
+
+    const programData = generateMeetPrepProgram(freq, focusLift, duration, fatiguePriority);
+
+    // Store the generated program as a new Purchase record (or update active one)
+    await Purchase.findOneAndUpdate(
+      { email: user.email, active: true },
+      { programData: programData, programName: `Meet Prep - ${focusLift} focus` },
+      { upsert: true }
+    );
+
+    res.json({ programData, duration, focusLift, fatiguePriority });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });

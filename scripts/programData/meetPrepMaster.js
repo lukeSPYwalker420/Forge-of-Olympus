@@ -80,23 +80,23 @@ export const meetPrepMaster = {
     ]
   },
 
-  // Accessories (minimal during peak, more during accumulation)
+  // Accessories (minimal during peak, more during accumulation) – reduced FU costs
   accessoryPool: {
     quads: [
-      { liftName: "Leg Press", baseFUCost: 1.5, reps: "8-12", rirTarget: 2 },
-      { liftName: "Bulgarian Split Squat", baseFUCost: 1.5, reps: "8-12", rirTarget: 2 }
+      { liftName: "Leg Press", baseFUCost: 1.0, reps: "8-12", rirTarget: 2 },
+      { liftName: "Bulgarian Split Squat", baseFUCost: 1.0, reps: "8-12", rirTarget: 2 }
     ],
     posterior: [
-      { liftName: "Leg Curl", baseFUCost: 1.5, reps: "10-15", rirTarget: 2 },
-      { liftName: "Hip Thrust", baseFUCost: 1.5, reps: "10-12", rirTarget: 2 }
+      { liftName: "Leg Curl", baseFUCost: 1.0, reps: "10-15", rirTarget: 2 },
+      { liftName: "Hip Thrust", baseFUCost: 1.0, reps: "10-12", rirTarget: 2 }
     ],
     push: [
-      { liftName: "Tricep Pushdowns", baseFUCost: 1, reps: "10-15", rirTarget: 2 },
-      { liftName: "Overhead Press", baseFUCost: 2, reps: "8-12", rirTarget: 2 }
+      { liftName: "Tricep Pushdowns", baseFUCost: 0.7, reps: "10-15", rirTarget: 2 },
+      { liftName: "Overhead Press", baseFUCost: 1.5, reps: "8-12", rirTarget: 2 }
     ],
     pull: [
-      { liftName: "Pull-Ups", baseFUCost: 1.5, reps: "8-12", rirTarget: 2 },
-      { liftName: "Face Pulls", baseFUCost: 1, reps: "15-20", rirTarget: 2 }
+      { liftName: "Pull-Ups", baseFUCost: 1.0, reps: "8-12", rirTarget: 2 },
+      { liftName: "Face Pulls", baseFUCost: 0.7, reps: "15-20", rirTarget: 2 }
     ]
   },
 
