@@ -12,6 +12,7 @@ import { getCoachingPrompts } from './aiCoach.js';
 import LiftState from "./models/LiftState.js";
 import Session from "./models/Session.js";
 import { allocateSessionBudget, computeWeeklyTagLoads, fatigueUnitsPerSet, calculateSessionLoad } from './fatigueBudget.js';
+import { generateMeetPrepProgram } from './meetPrepGenerator.js';
 
 dotenv.config();
 
@@ -2283,12 +2284,14 @@ app.get("/api/generate-meet-prep/:userId", async (req, res) => {
     const today = new Date();
     const meetDate = new Date(user.meetDate);
     const daysToMeet = Math.ceil((meetDate - today) / (1000 * 60 * 60 * 24));
-    if (daysToMeet < 14) return res.status(400).json({ error: "Meet too soon – less than 2 weeks" });
+    if (daysToMeet < 14) {
+      return res.status(400).json({ error: "Meet too soon – less than 2 weeks" });
+    }
     const durationWeeks = Math.floor(daysToMeet / 7);
     const allowedDurations = [8, 12, 16];
     const duration = allowedDurations.find(d => d <= durationWeeks) || 8;
 
-    // Fetch sessions from last 90 days (or last mesocycle)
+    // Fetch sessions from last 90 days
     const sessions = await Session.find({
       userId,
       createdAt: { $gte: new Date(Date.now() - 90 * 86400000) }
@@ -2300,15 +2303,14 @@ app.get("/api/generate-meet-prep/:userId", async (req, res) => {
     for (const lift of lifts) {
       const liftSessions = sessions.filter(s => s.liftName === lift && s.actualWeight && s.repsPerSet && s.actualRPE);
       if (liftSessions.length < 4) continue;
-      // group by week
       const weeks = {};
       liftSessions.forEach(s => {
-        const weekNum = Math.floor((new Date(s.createdAt) - new Date(liftSessions[0].createdAt)) / (7*86400000));
+        const weekNum = Math.floor((new Date(s.createdAt) - new Date(liftSessions[0].createdAt)) / (7 * 86400000));
         if (!weeks[weekNum]) weeks[weekNum] = [];
         weeks[weekNum].push(s);
       });
       const weekly1RM = [];
-      for (const weekNum of Object.keys(weeks).sort((a,b)=>a-b)) {
+      for (const weekNum of Object.keys(weeks).sort((a, b) => a - b)) {
         const best = weeks[weekNum].reduce((max, s) => {
           const reps = Math.max(...(s.repsPerSet || [s.repsCompleted]));
           const est = estimate1RM(s.actualWeight, reps, s.actualRPE);
@@ -2319,19 +2321,17 @@ app.get("/api/generate-meet-prep/:userId", async (req, res) => {
       if (weekly1RM.length >= 3) {
         const x = weekly1RM.map((_, i) => i);
         const y = weekly1RM;
-        const slope = (x.length * x.reduce((s,xi,i)=>s+xi*y[i],0) - x.reduce((a,b)=>a+b,0) * y.reduce((a,b)=>a+b,0)) /
-                      (x.length * x.reduce((s,xi)=>s+xi*xi,0) - Math.pow(x.reduce((a,b)=>a+b,0),2));
-        progressionRates[lift] = slope; // kg per week
+        const slope = (x.length * x.reduce((s, xi, i) => s + xi * y[i], 0) - x.reduce((a, b) => a + b, 0) * y.reduce((a, b) => a + b, 0)) /
+                      (x.length * x.reduce((s, xi) => s + xi * xi, 0) - Math.pow(x.reduce((a, b) => a + b, 0), 2));
+        progressionRates[lift] = slope;
       }
     }
 
-    // Expected norms (kg/week) for intermediate/advanced lifters
     const norms = {
       "Squat (Comp)": 1.5,
       "Bench (Comp)": 1.0,
       "Deadlift (Comp)": 2.0
     };
-    // Determine which lift is accelerating fastest vs norm
     let focusLift = "balanced";
     let maxRatio = -Infinity;
     for (const lift of lifts) {
@@ -2343,9 +2343,9 @@ app.get("/api/generate-meet-prep/:userId", async (req, res) => {
         focusLift = lift.toLowerCase().replace(" (comp)", "");
       }
     }
-    if (focusLift === "balanced" && maxRatio <= 0) focusLift = "balanced"; // no clear gain
+    if (focusLift === "balanced" && maxRatio <= 0) focusLift = "balanced";
 
-    // Determine which stress tag has highest cumulative fatigue over last 4 weeks
+    // Determine highest fatigue tag from last 4 weeks
     const recentSessions = await Session.find({
       userId,
       createdAt: { $gte: new Date(Date.now() - 28 * 86400000) },
@@ -2368,18 +2368,14 @@ app.get("/api/generate-meet-prep/:userId", async (req, res) => {
       }
     }
 
-    // Call the meet prep generator (to be added in generatePrograms.js)
-    const { generateMeetPrepProgram } = await import("../scripts/generatePrograms.js");
-    // Assume we have a helper to get user's preferred training frequency (stored in User or Purchase)
     const activePurchase = await Purchase.findOne({ email: user.email, active: true });
-    const freq = activePurchase?.programConfig?.frequency || 4; // default 4
+    const freq = activePurchase?.programConfig?.frequency || 4;
 
-    const programData = generateMeetPrepProgram(freq, focusLift, duration, fatiguePriority);
+    const programData = generateMeetPrepProgram(freq, duration, focusLift);
 
-    // Store the generated program as a new Purchase record (or update active one)
     await Purchase.findOneAndUpdate(
       { email: user.email, active: true },
-      { programData: programData, programName: `Meet Prep - ${focusLift} focus` },
+      { programData: programData, programName: programData.name },
       { upsert: true }
     );
 
@@ -2388,11 +2384,6 @@ app.get("/api/generate-meet-prep/:userId", async (req, res) => {
     console.error(err);
     res.status(500).json({ error: err.message });
   }
-});
-
-app.get("/api/debug/recent-purchases", async (req, res) => {
-  const purchases = await Purchase.find().sort({ purchasedAt: -1 }).limit(10);
-  res.json(purchases);
 });
 
 // Email templates

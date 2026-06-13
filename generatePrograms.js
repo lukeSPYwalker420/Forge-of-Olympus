@@ -8,11 +8,12 @@ import { meetPrepMaster } from './programData/meetPrepMaster.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = path.resolve(__dirname, '../frontend/public/programs');
-
-// Ensure output directory exists
+const BACKEND_DATA_DIR = path.resolve(__dirname, '../data');
+if (!fs.existsSync(BACKEND_DATA_DIR)) fs.mkdirSync(BACKEND_DATA_DIR, { recursive: true });
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-// Deterministic "random" selection (same each run)
+// ========== HELPER FUNCTIONS ==========
+// Deterministic pseudo‑random pick (same order each run)
 function pickItems(arr, count) {
   if (!arr.length) return [];
   const shuffled = [...arr];
@@ -23,291 +24,345 @@ function pickItems(arr, count) {
   return shuffled.slice(0, count);
 }
 
-// ========== POWERLIFTING GENERATOR ==========
-// ========== POWERLIFTING GENERATOR (CORRECTED) ==========
-function generatePowerliftingProgram(freq, focus) {
-  freq = Number(freq);
-  const { primarySessions, secondaryLifts, accessories, tertiary } = powerliftingMaster;
-  let sessions = [];
-
-  if (freq === 3) {
-    sessions = [primarySessions.squat, primarySessions.bench, primarySessions.deadlift];
-  } else if (freq === 4) {
-    sessions = [primarySessions.squat, primarySessions.bench, primarySessions.deadlift];
-    const benchVol = JSON.parse(JSON.stringify(primarySessions.bench));
-    benchVol.focus = "Bench Volume";
-    benchVol.exercises.forEach(ex => { if (ex.reps === "4") ex.reps = "8"; if (ex.rpeTarget) ex.rpeTarget = Math.max(5, ex.rpeTarget - 1); });
-    sessions.push(benchVol);
-  } else if (freq === 5) {
-    // Build exactly 5 sessions
-    sessions = [
-      JSON.parse(JSON.stringify(primarySessions.squat)),
-      JSON.parse(JSON.stringify(primarySessions.bench)),
-      JSON.parse(JSON.stringify(primarySessions.deadlift)),
-      { focus: "Secondary Variation", exercises: [] },
-      { focus: "Technique / Tertiary", exercises: [] }
-    ];
-    // Secondary day
-    let secEx = [];
-    if (focus === "squat") secEx = pickItems(secondaryLifts.squatVariations, 2);
-    else if (focus === "bench") secEx = pickItems(secondaryLifts.benchVariations, 2);
-    else if (focus === "deadlift") secEx = pickItems(secondaryLifts.deadliftVariations, 2);
-    else secEx = pickItems([...secondaryLifts.squatVariations, ...secondaryLifts.benchVariations], 2);
-    sessions[3].exercises = secEx;
-    // Tertiary day
-    let tertEx = [];
-    if (focus === "squat") tertEx = pickItems(tertiary.squatTertiary, 2);
-    else if (focus === "bench") tertEx = pickItems(tertiary.benchTertiary, 2);
-    else if (focus === "deadlift") tertEx = pickItems(tertiary.deadliftTertiary, 2);
-    else tertEx = pickItems([...tertiary.squatTertiary, ...tertiary.benchTertiary], 2);
-    sessions[4].exercises = tertEx;
+// Compute fatigue cap from a list of exercises (assumes RPE 7 ≈ multiplier 1.15)
+function computeFatigueCap(exercises, buffer = 1.2) {
+  let total = 0;
+  for (const ex of exercises) {
+    const baseFU = ex.baseFUCost !== undefined ? ex.baseFUCost : 1;
+    const rpeMult = 1.15;
+    total += baseFU * rpeMult * (ex.sets || 3);
   }
-
-  // Add accessories to all sessions
-  const accCount = freq === 3 ? 3 : (freq === 4 ? 4 : 5);
-  let selectedAcc = [];
-  if (focus === "balanced") {
-    selectedAcc = [...pickItems(accessories.quads,1), ...pickItems(accessories.posterior,1),
-                   ...pickItems(accessories.push,1), ...pickItems(accessories.pull,1)];
-  } else if (focus === "squat") {
-    selectedAcc = [...pickItems(accessories.quads,2), ...pickItems(accessories.posterior,1),
-                   ...pickItems(accessories.push,1), ...pickItems(accessories.pull,0)];
-  } else if (focus === "bench") {
-    selectedAcc = [...pickItems(accessories.push,2), ...pickItems(accessories.pull,1),
-                   ...pickItems(accessories.posterior,1), ...pickItems(accessories.quads,0)];
-  } else if (focus === "deadlift") {
-    selectedAcc = [...pickItems(accessories.posterior,2), ...pickItems(accessories.pull,1),
-                   ...pickItems(accessories.push,1), ...pickItems(accessories.quads,0)];
-  }
-  selectedAcc = selectedAcc.slice(0, accCount);
-  sessions.forEach(s => s.exercises.push(...selectedAcc));
-
-  const fullProgram = {
-    name: `Apex Strength – ${freq}d / ${focus} focus`,
-    logic: "STRENGTH_RPE",
-    useFatigueBudget: true,
-    sessions: []
-  };
-  for (let week = 1; week <= 5; week++) {
-    for (let i = 0; i < sessions.length; i++) {
-      const sessCopy = JSON.parse(JSON.stringify(sessions[i]));
-      sessCopy.week = week;
-      sessCopy.day = i + 1;
-      if (week === 5) {
-        sessCopy.exercises.forEach(ex => { if (ex.rpeTarget) ex.rpeTarget = Math.max(5, ex.rpeTarget-2); if (ex.rirTarget) ex.rirTarget = (ex.rirTarget||2)+2; if (ex.sets) ex.sets = Math.max(2, ex.sets-1); });
-        if (sessCopy.fatigueCap) sessCopy.fatigueCap = Math.floor(sessCopy.fatigueCap * 0.6);
-      } else if (week >= 2) {
-        sessCopy.exercises.forEach(ex => { if (ex.rpeTarget) ex.rpeTarget = Math.min(9, ex.rpeTarget+0.5); if (ex.rirTarget) ex.rirTarget = Math.max(1, (ex.rirTarget||2)-0.5); });
-        if (week === 4 && sessCopy.fatigueCap) sessCopy.fatigueCap += 2;
-      }
-      fullProgram.sessions.push(sessCopy);
-    }
-  }
-  return fullProgram;
+  return Math.ceil(total * buffer);
 }
 
-// ========== HYPERTROPHY GENERATOR (CORRECTED) ==========
-function generateHypertrophyProgram(freq, split) {
-  freq = Number(freq);   // Force numeric comparison
-  const { planeSessions, armsDay, volumeFactors } = hypertrophyMaster;
-  let sessions = [];
-
-  if (split === "plane") {
-    sessions = [
-      JSON.parse(JSON.stringify(planeSessions.upperHorizontal)),
-      JSON.parse(JSON.stringify(planeSessions.lowerQuad)),
-      JSON.parse(JSON.stringify(planeSessions.upperVertical)),
-      JSON.parse(JSON.stringify(planeSessions.lowerPosterior))
-    ];
-  } else if (split === "upper_lower") {
-    sessions = [
-      JSON.parse(JSON.stringify(planeSessions.upperHorizontal)),
-      JSON.parse(JSON.stringify(planeSessions.lowerQuad)),
-      JSON.parse(JSON.stringify(planeSessions.upperVertical)),
-      JSON.parse(JSON.stringify(planeSessions.lowerPosterior))
-    ];
-    sessions[0].focus = "Upper (Horizontal)";
-    sessions[1].focus = "Lower (Quad)";
-    sessions[2].focus = "Upper (Vertical)";
-    sessions[3].focus = "Lower (Posterior)";
-  } else if (split === "ppl") {
-    const upperHorPool = planeSessions.upperHorizontal?.exercisePool ?? [];
-    const upperVerPool = planeSessions.upperVertical?.exercisePool ?? [];
-    const lowerQuadPool = planeSessions.lowerQuad?.exercisePool ?? [];
-    const lowerPostPool = planeSessions.lowerPosterior?.exercisePool ?? [];
-    sessions = [
-      { focus: "Push (Chest/Shoulders/Triceps)", exercisePool: [...upperHorPool, ...upperVerPool] },
-      { focus: "Pull (Back/Biceps)", exercisePool: [...upperHorPool, ...upperVerPool] },
-      { focus: "Legs (Quads/Hams/Glutes)", exercisePool: [...lowerQuadPool, ...lowerPostPool] },
-      { focus: "Full Body / Arms", exercisePool: [...upperHorPool, ...lowerQuadPool] }
-    ];
+// Apply wave adjustments (RPE/RIR and volume factor) to a single exercise
+function applyWave(ex, weekData, isHypertrophy = false) {
+  const newEx = { ...ex };
+  if (isHypertrophy && newEx.rirTarget !== undefined) {
+    // Hypertrophy: lower RIR = harder. Wave affects RIR inversely to RPE.
+    // Base RIR = 2, waveRIR = 2 + (7 - weekData.rpeBase)
+    let rir = 2 + (7 - weekData.rpeBase);
+    rir = Math.min(5, Math.max(0, rir));
+    newEx.rirTarget = rir;
+  } else if (newEx.rpeTarget !== undefined) {
+    // Strength: RPE = base + (weekRPE - 7)
+    let rpe = newEx.rpeTarget + (weekData.rpeBase - 7);
+    rpe = Math.min(9.5, Math.max(5, rpe));
+    newEx.rpeTarget = rpe;
   }
-
-  // Adjust number of days based on frequency
-  if (freq === 3) {
-    sessions = sessions.slice(0, 3);
-  } else if (freq === 5) {
-    // Build exactly 5 sessions: first two, then arms, then last two
-    const armsDayData = armsDay || { focus: "Arms & Shoulders", exercisePool: [] };
-    const armsPool = armsDayData.exercisePool ?? [];
-    const armsSession = { focus: armsDayData.focus, exercisePool: armsPool };
-    sessions = [sessions[0], sessions[1], armsSession, sessions[2], sessions[3]];
+  if (newEx.sets !== undefined) {
+    let sets = Math.round(newEx.sets * weekData.volumeFactor);
+    sets = Math.max(1, sets);
+    newEx.sets = sets;
   }
+  return newEx;
+}
 
-  const factor = volumeFactors[freq];
-  sessions.forEach(s => {
-    const pool = s.exercisePool;
-    delete s.exercisePool;
-    const num = Math.min(pool.length, factor === 1.2 ? 7 : (factor === 0.8 ? 5 : 6));
-    s.exercises = pickItems(pool, num);
-    s.exercises.forEach(ex => { if (ex.sets) ex.sets = Math.max(2, Math.floor(ex.sets * factor)); });
-  });
+// ========== STRENGTH GENERATOR (wave‑loaded) ==========
+// Uses 5‑week wave template with RPE wave and volume wave
+const strengthWave = {
+  weeks: [
+    { week: 1, phase: "Accumulation", rpeBase: 6, volumeFactor: 1.0 },
+    { week: 2, phase: "Intensification", rpeBase: 7, volumeFactor: 1.0 },
+    { week: 3, phase: "Overreaching", rpeBase: 7.5, volumeFactor: 0.9 },
+    { week: 4, phase: "Peak", rpeBase: 8, volumeFactor: 0.8 },
+    { week: 5, phase: "Deload", rpeBase: 5, volumeFactor: 0.6 }
+  ]
+};
 
-  const fullProgram = {
-    name: `Apex Hypertrophy – ${freq}d / ${split.toUpperCase()} split`,
-    logic: "HYPERTROPHY_VOLUME",
-    sessions: []
+function generateStrengthProgram(freq, focus) {
+  freq = Number(freq);
+  const { primarySessions, secondaryLifts, accessories, tertiary } = powerliftingMaster;
+  // Determine which sessions to include per frequency
+  let sessionOrder = [];
+  if (freq === 3) sessionOrder = ['squat', 'bench', 'deadlift'];
+  else if (freq === 4) sessionOrder = ['squat', 'bench', 'deadlift', 'bench'];
+  else sessionOrder = ['squat', 'bench', 'deadlift', 'squat', 'bench']; // 5‑day example
+
+  // Focus adjustments: add RPE to certain lifts
+  const focusAdjust = {
+    squat: { squat: 0.5 },
+    bench: { bench: 0.5 },
+    deadlift: { deadlift: 0.5 },
+    balanced: {}
   };
-  for (let week = 1; week <= 5; week++) {
-    for (let i = 0; i < sessions.length; i++) {
-      const sessCopy = JSON.parse(JSON.stringify(sessions[i]));
-      sessCopy.week = week;
-      sessCopy.day = i + 1;
-      if (week === 5) {
-        sessCopy.exercises.forEach(ex => { if (ex.rirTarget) ex.rirTarget = (ex.rirTarget||2)+2; if (ex.sets) ex.sets = Math.max(2, ex.sets-1); });
-      } else if (week >= 3) {
-        sessCopy.exercises.forEach(ex => { if (ex.rirTarget) ex.rirTarget = Math.max(1, (ex.rirTarget||2)-0.5); });
+  const adjust = focusAdjust[focus] || {};
+
+  const sessions = [];
+
+  for (const weekData of strengthWave.weeks) {
+    const weekNum = weekData.week;
+    for (let idx = 0; idx < sessionOrder.length; idx++) {
+      const lift = sessionOrder[idx];
+      const base = primarySessions[lift];
+      if (!base) continue;
+      // Clone core exercises
+      let exercises = base.exercises.map(ex => ({ ...ex }));
+      // Apply wave adjustments
+      exercises = exercises.map(ex => applyWave(ex, weekData, false));
+      // Add extra RPE for focus lift
+      if (adjust[lift]) {
+        exercises = exercises.map(ex => {
+          if (ex.role === 'top-set') {
+            ex.rpeTarget = Math.min(9.5, ex.rpeTarget + adjust[lift]);
+          }
+          return ex;
+        });
       }
-      fullProgram.sessions.push(sessCopy);
+      // Add one variation (secondary) for 4‑day and 5‑day on certain days
+      if ((freq === 4 && (idx === 1 || idx === 3)) || (freq === 5 && (idx === 3 || idx === 4))) {
+        const variationPool = secondaryLifts[`${lift}Variations`];
+        if (variationPool && variationPool.length) {
+          const varLift = { ...pickItems(variationPool, 1)[0] };
+          varLift.role = 'variation';
+          varLift.sets = Math.max(2, Math.round(3 * weekData.volumeFactor));
+          varLift = applyWave(varLift, weekData, false);
+          exercises.push(varLift);
+        }
+      }
+      // Add accessories (2–3 per session)
+      let accessoryCount = freq === 3 ? 2 : (freq === 4 ? 3 : 4);
+      if (weekData.phase === 'Deload') accessoryCount = 1;
+      if (accessoryCount > 0) {
+        let allAcc = [];
+        if (lift === 'squat') allAcc = [...accessories.quads, ...accessories.posterior];
+        else if (lift === 'bench') allAcc = [...accessories.push, ...accessories.pull];
+        else allAcc = [...accessories.posterior, ...accessories.pull, ...accessories.quads];
+        const selected = pickItems(allAcc, accessoryCount);
+        for (let acc of selected) {
+          let newAcc = { ...acc };
+          newAcc = applyWave(newAcc, weekData, false);
+          exercises.push(newAcc);
+        }
+      }
+      // Compute fatigue cap
+      const fatigueCap = computeFatigueCap(exercises, 1.2);
+      sessions.push({
+        week: weekNum,
+        day: idx + 1,
+        focus: base.focus,
+        fatigueCap,
+        exercises
+      });
     }
   }
-  return fullProgram;
+
+  return {
+    name: `Apex Strength – ${freq}d / ${focus} focus (Wave‑Loaded)`,
+    logic: "STRENGTH_RPE",
+    useFatigueBudget: true,
+    sessions
+  };
+}
+
+// ========== HYPERTROPHY GENERATOR ==========
+// Uses a 6‑week wave with RIR (higher RIR = easier)
+const hypertrophyWave = {
+  weeks: [
+    { week: 1, phase: "Accumulation", rpeBase: 6, volumeFactor: 1.0 },   // RIR ~3
+    { week: 2, phase: "Accumulation", rpeBase: 6.5, volumeFactor: 1.0 }, // RIR ~2.5
+    { week: 3, phase: "Intensification", rpeBase: 7, volumeFactor: 0.95 }, // RIR ~2
+    { week: 4, phase: "Intensification", rpeBase: 7.5, volumeFactor: 0.9 }, // RIR ~1.5
+    { week: 5, phase: "Peak", rpeBase: 8, volumeFactor: 0.85 },           // RIR ~1
+    { week: 6, phase: "Deload", rpeBase: 5, volumeFactor: 0.6 }           // RIR ~4
+  ]
+};
+
+function generateHypertrophyProgram(freq, split) {
+  freq = Number(freq);
+  const { planeSessions, armsDay, volumeFactors } = hypertrophyMaster;
+
+  // Map split to a list of session keys
+  let sessionKeys = [];
+  if (split === 'upper_lower') sessionKeys = ['upperHorizontal', 'lowerQuad', 'upperVertical', 'lowerPosterior'];
+  else if (split === 'plane') sessionKeys = ['upperHorizontal', 'lowerQuad', 'upperVertical', 'lowerPosterior'];
+  else if (split === 'ppl') sessionKeys = ['push', 'pull', 'legs', 'fullbody'];
+
+  // For 3‑day, take first 3; for 5‑day, insert arms day
+  if (freq === 3) sessionKeys = sessionKeys.slice(0, 3);
+  else if (freq === 5) {
+    // Insert arms day after 2nd session
+    sessionKeys = [sessionKeys[0], sessionKeys[1], 'arms', sessionKeys[2], sessionKeys[3]];
+  }
+
+  const factor = volumeFactors[freq] || 1.0;
+  const sessions = [];
+
+  for (const weekData of hypertrophyWave.weeks) {
+    const weekNum = weekData.week;
+    const volumeFactor = weekData.volumeFactor * factor;
+    for (let idx = 0; idx < sessionKeys.length; idx++) {
+      const key = sessionKeys[idx];
+      let base;
+      if (key === 'arms') base = armsDay;
+      else if (planeSessions[key]) base = planeSessions[key];
+      else if (key === 'push') base = { exercisePool: [...planeSessions.upperHorizontal.exercisePool, ...planeSessions.upperVertical.exercisePool] };
+      else if (key === 'pull') base = { exercisePool: [...planeSessions.upperHorizontal.exercisePool, ...planeSessions.upperVertical.exercisePool] };
+      else if (key === 'legs') base = { exercisePool: [...planeSessions.lowerQuad.exercisePool, ...planeSessions.lowerPosterior.exercisePool] };
+      else if (key === 'fullbody') base = { exercisePool: [...planeSessions.upperHorizontal.exercisePool, ...planeSessions.lowerQuad.exercisePool] };
+      if (!base || !base.exercisePool) continue;
+
+      // Select exercises from pool
+      let numExercises = factor === 1.2 ? 6 : (factor === 0.8 ? 4 : 5);
+      if (weekData.phase === 'Deload') numExercises = 3;
+      let selected = pickItems(base.exercisePool, numExercises);
+      let exercises = selected.map(ex => ({ ...ex }));
+      // Apply volume factor to sets
+      exercises.forEach(ex => {
+        if (ex.sets) ex.sets = Math.max(1, Math.floor(ex.sets * volumeFactor));
+      });
+      // Apply wave (RIR adjustment)
+      exercises = exercises.map(ex => applyWave(ex, weekData, true));
+      // Compute fatigue cap (hypertrophy uses RIR so baseFUCost is low)
+      const fatigueCap = computeFatigueCap(exercises, 1.15);
+      sessions.push({
+        week: weekNum,
+        day: idx + 1,
+        focus: base.focus || key,
+        fatigueCap,
+        exercises
+      });
+    }
+  }
+
+  return {
+    name: `Apex Hypertrophy – ${freq}d / ${split.toUpperCase()} split (Wave‑Loaded)`,
+    logic: "HYPERTROPHY_VOLUME",
+    sessions
+  };
 }
 
 // ========== MEET PREP GENERATOR ==========
-function generateMeetPrepProgram(freq, focus) {
-  const { peakingWaves, taperOptions, coreLifts, variationPool, accessoryPool, volumeFactors } = meetPrepMaster;
-  const isPeaking = focus === "peaking";
-  const wave = isPeaking ? peakingWaves["8week"] : peakingWaves["6week"];
-  const factor = volumeFactors[freq];
-  let sessions = [];
+// Uses waveTemplates from meetPrepMaster (8,12,16 weeks)
+function generateMeetPrepProgram(freq, focus, duration = 8) {
+  freq = Number(freq);
+  const { waveTemplates, coreLifts, variationPool, accessoryPool, volumeFactors } = meetPrepMaster;
+  const wave = waveTemplates[duration] || waveTemplates[8];
+  const factor = volumeFactors[freq] || 1.0;
+  const sessions = [];
 
-  for (let w = 0; w < wave.weeks.length; w++) {
-    const weekData = wave.weeks[w];
-    const weekNum = w + 1;
-    const isTaperWeek = !isPeaking && weekNum >= wave.weeks.length - 1;
+  // Map frequency to session days (simplified: 3‑day = squat/bench/deadlift split)
+  let sessionDays = [];
+  if (freq === 3) sessionDays = [1, 3, 5];
+  else if (freq === 4) sessionDays = [1, 2, 4, 5];
+  else sessionDays = [1, 2, 3, 4, 5];
 
-    // Determine session days based on frequency
-    let sessionDays = [];
-    if (freq === 3) sessionDays = [1, 3, 5];
-    else if (freq === 4) sessionDays = [1, 2, 4, 5];
-    else sessionDays = [1, 2, 3, 4, 5];
-
+  for (const weekData of wave.weeks) {
+    const weekNum = weekData.week;
+    const isTaper = weekData.phase === 'Taper' || weekData.phase === 'Meet Week';
     for (let dayIdx = 0; dayIdx < sessionDays.length; dayIdx++) {
       const dayNum = sessionDays[dayIdx];
       let exercises = [];
 
-      // Add core lifts based on day
-      if (dayNum === 1) exercises.push(...coreLifts.filter(l => l.liftName.includes("Squat")));
-      if (dayNum === 2 || dayNum === 4) exercises.push(...coreLifts.filter(l => l.liftName.includes("Bench")));
-      if (dayNum === 3 || dayNum === 5) exercises.push(...coreLifts.filter(l => l.liftName.includes("Deadlift")));
+      // Core lifts based on day
+      if (dayNum === 1) exercises.push(...coreLifts.filter(l => l.liftName.includes('Squat')));
+      if (dayNum === 2 || dayNum === 4) exercises.push(...coreLifts.filter(l => l.liftName.includes('Bench')));
+      if (dayNum === 3 || dayNum === 5) exercises.push(...coreLifts.filter(l => l.liftName.includes('Deadlift')));
 
-      // Add a variation lift (rotated weekly)
+      // Add a variation (rotated weekly)
       const weekParity = weekNum % 3;
       if (dayNum === 1 && weekParity === 0 && variationPool.squat.length) {
-        const varLift = JSON.parse(JSON.stringify(variationPool.squat[weekNum % variationPool.squat.length]));
-        varLift.role = "variation";
-        varLift.sets = 3;
-        varLift.reps = "5-6";
+        const varLift = { ...pickItems(variationPool.squat, 1)[0], role: 'variation', sets: 3, reps: '5-6' };
         varLift.rpeTarget = weekData.rpeBase - 0.5;
         exercises.push(varLift);
       }
       if (dayNum === 2 && weekParity === 1 && variationPool.bench.length) {
-        const varLift = JSON.parse(JSON.stringify(variationPool.bench[weekNum % variationPool.bench.length]));
-        varLift.role = "variation";
-        varLift.sets = 3;
-        varLift.reps = "5-6";
+        const varLift = { ...pickItems(variationPool.bench, 1)[0], role: 'variation', sets: 3, reps: '5-6' };
         varLift.rpeTarget = weekData.rpeBase - 0.5;
         exercises.push(varLift);
       }
       if (dayNum === 3 && weekParity === 2 && variationPool.deadlift.length) {
-        const varLift = JSON.parse(JSON.stringify(variationPool.deadlift[weekNum % variationPool.deadlift.length]));
-        varLift.role = "variation";
-        varLift.sets = 2;
-        varLift.reps = "4-5";
+        const varLift = { ...pickItems(variationPool.deadlift, 1)[0], role: 'variation', sets: 2, reps: '4-5' };
         varLift.rpeTarget = weekData.rpeBase - 0.5;
         exercises.push(varLift);
       }
 
-      // Add accessories (reduced as intensity increases)
+      // Accessories: fewer in peak/taper
       let accessoryCount = freq === 3 ? 2 : (freq === 4 ? 3 : 4);
       if (weekData.rpeBase >= 8.5) accessoryCount = Math.max(1, accessoryCount - 1);
+      if (isTaper) accessoryCount = Math.max(0, accessoryCount - 1);
       if (accessoryCount > 0) {
-        const allAcc = [...accessoryPool.quads, ...accessoryPool.posterior, ...accessoryPool.push, ...accessoryPool.pull];
+        let allAcc = [...accessoryPool.quads, ...accessoryPool.posterior, ...accessoryPool.push, ...accessoryPool.pull];
         const selected = pickItems(allAcc, accessoryCount);
         exercises.push(...selected);
       }
 
-      // Apply volume factor and weekly RPE adjustments
+      // Apply volume factor and RPE adjustments
       exercises.forEach(ex => {
         if (ex.sets) ex.sets = Math.max(1, Math.floor(ex.sets * weekData.volumeFactor * factor));
-        if (ex.rpeTarget !== undefined) ex.rpeTarget = Math.min(9.5, ex.rpeTarget + (weekData.rpeBase - 7));
-        if (isTaperWeek && ex.role === "top-set") {
-          ex.rpeTarget = Math.min(9, ex.rpeTarget + 0.5);
+        if (ex.rpeTarget !== undefined) {
+          let rpe = ex.rpeTarget + (weekData.rpeBase - 7);
+          rpe = Math.min(9.5, Math.max(5, rpe));
+          ex.rpeTarget = rpe;
+        }
+        if (isTaper && ex.role === 'top-set') {
           ex.sets = 1;
+          if (weekData.phase === 'Meet Week') ex.rpeTarget = Math.min(9, ex.rpeTarget);
         }
       });
 
+      const fatigueCap = computeFatigueCap(exercises, 1.2);
       sessions.push({
         week: weekNum,
         day: dayNum,
-        focus: `Meet Prep - ${weekData.description || (isPeaking ? "Peaking" : "Taper")}`,
-        fatigueCap: Math.floor(weekData.fatigueCap * (freq === 5 ? 1.1 : freq === 3 ? 0.85 : 1)),
-        exercises: exercises
+        focus: `Meet Prep – ${weekData.phase}`,
+        fatigueCap,
+        exercises
       });
     }
   }
 
-  const fullProgram = {
-    name: `Meet Prep - ${freq} day / ${focus.toUpperCase()}`,
+  return {
+    name: `Meet Prep – ${freq}d / ${duration} weeks`,
     logic: "STRENGTH_RPE",
     useFatigueBudget: true,
-    sessions: sessions
+    sessions
   };
-  return fullProgram;
 }
 
-// ========== GENERATE ALL ==========
-const freqs = [3,4,5];
-const strengthFoci = ["balanced","squat","bench","deadlift"];
-const hypertrophySplits = ["upper_lower","ppl","plane"];
-const meetPrepFoci = ["peaking","taper"];
+// ========== GENERATE ALL PROGRAMS ==========
+const freqs = [3, 4, 5];
+const strengthFoci = ['balanced', 'squat', 'bench', 'deadlift'];
+const hypertrophySplits = ['upper_lower', 'ppl', 'plane'];
+const meetPrepDurations = [8, 12, 16];
 
+// Strength
 for (const freq of freqs) {
   for (const focus of strengthFoci) {
-    const prog = generatePowerliftingProgram(freq, focus);
+    const prog = generateStrengthProgram(freq, focus);
     const fileName = `str_${freq}_${focus}.json`;
-    fs.writeFileSync(path.join(OUTPUT_DIR, fileName), JSON.stringify(prog, null, 2));
+    const frontendPath = path.join(OUTPUT_DIR, fileName);
+    const backendPath = path.join(BACKEND_DATA_DIR, fileName);
+    fs.writeFileSync(frontendPath, JSON.stringify(prog, null, 2));
+    fs.writeFileSync(backendPath, JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
 }
 
+// Hypertrophy
 for (const freq of freqs) {
   for (const split of hypertrophySplits) {
     const prog = generateHypertrophyProgram(freq, split);
     const fileName = `hyp_${freq}_${split}.json`;
-    fs.writeFileSync(path.join(OUTPUT_DIR, fileName), JSON.stringify(prog, null, 2));
+    const frontendPath = path.join(OUTPUT_DIR, fileName);
+    const backendPath = path.join(BACKEND_DATA_DIR, fileName);
+    fs.writeFileSync(frontendPath, JSON.stringify(prog, null, 2));
+    fs.writeFileSync(backendPath, JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
 }
 
+// Meet Prep
 for (const freq of freqs) {
-  for (const focus of meetPrepFoci) {
-    const prog = generateMeetPrepProgram(freq, focus);
-    const fileName = `mp_${freq}_${focus}.json`;
-    fs.writeFileSync(path.join(OUTPUT_DIR, fileName), JSON.stringify(prog, null, 2));
+  for (const duration of meetPrepDurations) {
+    const prog = generateMeetPrepProgram(freq, 'peaking', duration);
+    const fileName = `mp_${freq}_${duration}w.json`;
+    const frontendPath = path.join(OUTPUT_DIR, fileName);
+    const backendPath = path.join(BACKEND_DATA_DIR, fileName);
+    fs.writeFileSync(frontendPath, JSON.stringify(prog, null, 2));
+    fs.writeFileSync(backendPath, JSON.stringify(prog, null, 2));
     console.log(`Generated ${fileName}`);
   }
 }
 
-console.log("✅ All program files written to frontend/public/programs/");
+console.log("✅ All wave‑loaded programs generated successfully.");
