@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "generate-programs": "node scripts/generatePrograms.js",
+    "generate-programs": "rm -f data/*.json frontend/public/programs/*.json && node scripts/generatePrograms.js",
     "dev": "npm run generate-programs && cd frontend && npm run dev",
     "build": "npm run generate-programs && cd frontend && npm install && npm run build"
   },
