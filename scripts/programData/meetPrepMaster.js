@@ -4,7 +4,59 @@ export const meetPrepMaster = {
   logic: "STRENGTH_RPE",
   useFatigueBudget: true,
 
-  // Peaking wave templates (8 weeks, 6 weeks, etc.)
+  // ========== NEW: waveTemplates for dynamic duration selection ==========
+  waveTemplates: {
+    8: {
+      weeks: [
+        { week: 1, phase: "Hypertrophy", rpeBase: 6, volumeFactor: 1.0, fatigueCap: 26 },
+        { week: 2, phase: "Hypertrophy", rpeBase: 6.5, volumeFactor: 1.0, fatigueCap: 28 },
+        { week: 3, phase: "Strength", rpeBase: 7, volumeFactor: 0.95, fatigueCap: 28 },
+        { week: 4, phase: "Strength", rpeBase: 7.5, volumeFactor: 0.9, fatigueCap: 28 },
+        { week: 5, phase: "Peak", rpeBase: 8, volumeFactor: 0.85, fatigueCap: 26 },
+        { week: 6, phase: "Peak", rpeBase: 8.5, volumeFactor: 0.8, fatigueCap: 26 },
+        { week: 7, phase: "Taper", rpeBase: 8.5, volumeFactor: 0.7, fatigueCap: 22 },
+        { week: 8, phase: "Taper", rpeBase: 9, volumeFactor: 0.6, fatigueCap: 20 }
+      ]
+    },
+    12: {
+      weeks: [
+        { week: 1, phase: "Hypertrophy", rpeBase: 6, volumeFactor: 1.0, fatigueCap: 26 },
+        { week: 2, phase: "Hypertrophy", rpeBase: 6.5, volumeFactor: 1.0, fatigueCap: 28 },
+        { week: 3, phase: "Hypertrophy", rpeBase: 6.5, volumeFactor: 1.0, fatigueCap: 28 },
+        { week: 4, phase: "Strength", rpeBase: 7, volumeFactor: 0.95, fatigueCap: 28 },
+        { week: 5, phase: "Strength", rpeBase: 7.5, volumeFactor: 0.95, fatigueCap: 28 },
+        { week: 6, phase: "Strength", rpeBase: 7.5, volumeFactor: 0.9, fatigueCap: 28 },
+        { week: 7, phase: "Peak", rpeBase: 8, volumeFactor: 0.85, fatigueCap: 26 },
+        { week: 8, phase: "Peak", rpeBase: 8.5, volumeFactor: 0.85, fatigueCap: 26 },
+        { week: 9, phase: "Peak", rpeBase: 8.5, volumeFactor: 0.8, fatigueCap: 26 },
+        { week: 10, phase: "Taper", rpeBase: 8.5, volumeFactor: 0.75, fatigueCap: 22 },
+        { week: 11, phase: "Taper", rpeBase: 9, volumeFactor: 0.65, fatigueCap: 20 },
+        { week: 12, phase: "Taper", rpeBase: 9, volumeFactor: 0.55, fatigueCap: 18 }
+      ]
+    },
+    16: {
+      weeks: [
+        { week: 1, phase: "Hypertrophy", rpeBase: 6, volumeFactor: 1.0, fatigueCap: 26 },
+        { week: 2, phase: "Hypertrophy", rpeBase: 6.5, volumeFactor: 1.0, fatigueCap: 28 },
+        { week: 3, phase: "Hypertrophy", rpeBase: 6.5, volumeFactor: 1.0, fatigueCap: 28 },
+        { week: 4, phase: "Hypertrophy", rpeBase: 7, volumeFactor: 1.0, fatigueCap: 28 },
+        { week: 5, phase: "Strength", rpeBase: 7, volumeFactor: 0.95, fatigueCap: 28 },
+        { week: 6, phase: "Strength", rpeBase: 7.5, volumeFactor: 0.95, fatigueCap: 28 },
+        { week: 7, phase: "Strength", rpeBase: 7.5, volumeFactor: 0.9, fatigueCap: 28 },
+        { week: 8, phase: "Strength", rpeBase: 8, volumeFactor: 0.9, fatigueCap: 28 },
+        { week: 9, phase: "Peak", rpeBase: 8, volumeFactor: 0.85, fatigueCap: 26 },
+        { week: 10, phase: "Peak", rpeBase: 8.5, volumeFactor: 0.85, fatigueCap: 26 },
+        { week: 11, phase: "Peak", rpeBase: 8.5, volumeFactor: 0.8, fatigueCap: 26 },
+        { week: 12, phase: "Peak", rpeBase: 9, volumeFactor: 0.8, fatigueCap: 24 },
+        { week: 13, phase: "Taper", rpeBase: 9, volumeFactor: 0.7, fatigueCap: 22 },
+        { week: 14, phase: "Taper", rpeBase: 9, volumeFactor: 0.65, fatigueCap: 20 },
+        { week: 15, phase: "Taper", rpeBase: 9.5, volumeFactor: 0.6, fatigueCap: 18 },
+        { week: 16, phase: "Meet Week", rpeBase: 9.5, volumeFactor: 0.5, fatigueCap: 16 }
+      ]
+    }
+  },
+
+  // Keep your existing peakingWaves for backward compatibility
   peakingWaves: {
     "8week": {
       duration: 8,
@@ -32,7 +84,7 @@ export const meetPrepMaster = {
     }
   },
 
-  // Taper options (last 1-2 weeks)
+  // Keep your existing properties unchanged
   taperOptions: {
     standard: {
       weekFactor: 0.8,
@@ -48,7 +100,6 @@ export const meetPrepMaster = {
     }
   },
 
-  // Core lifts (always present)
   coreLifts: [
     { liftName: "Squat (Comp)", role: "top-set", sets: 1, reps: "1-3", rpeTarget: 8, baseFUCost: 4, stressTags: ["axial","knee-dominant"] },
     { liftName: "Squat (Back Off)", role: "back-off", sets: 3, reps: "3-5", rpeTarget: 7, baseFUCost: 4, stressTags: ["axial","knee-dominant"] },
@@ -58,7 +109,6 @@ export const meetPrepMaster = {
     { liftName: "Deadlift (Back Off)", role: "back-off", sets: 2, reps: "2-3", rpeTarget: 7, baseFUCost: 5, stressTags: ["axial","hinge"] }
   ],
 
-  // Variation lifts (rotated weekly)
   variationPool: {
     squat: [
       { liftName: "Paused Squat", baseFUCost: 3, mechanicalDisadvantage: true, constraintMultiplier: 1.2 },
@@ -80,7 +130,6 @@ export const meetPrepMaster = {
     ]
   },
 
-  // Accessories (minimal during peak, more during accumulation) – reduced FU costs
   accessoryPool: {
     quads: [
       { liftName: "Leg Press", baseFUCost: 1.0, reps: "8-12", rirTarget: 2 },
@@ -100,7 +149,6 @@ export const meetPrepMaster = {
     ]
   },
 
-  // Volume factor per week (inverse of RPE increase)
   volumeFactors: {
     3: 0.85,
     4: 1.0,
